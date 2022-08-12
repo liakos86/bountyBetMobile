@@ -15,12 +15,15 @@ import '../models/match_odds.dart';
 
 class OddsPage extends StatefulWidgetWithName {
 
+  var leagues = <League>[];
+
   Function(double) callback = (oddValue)=>{ };
 
   @override
-  OddsPageState createState() => OddsPageState(callback);
+  OddsPageState createState() => OddsPageState(leagues, callback);
 
-  OddsPage(Function(double) callback) {
+  OddsPage(leagues, Function(double) callback) {
+    this.leagues = leagues;
     this.callback = callback;
     setName('Today\'s Odds');
   }
@@ -29,9 +32,12 @@ class OddsPage extends StatefulWidgetWithName {
 
 class OddsPageState extends State<OddsPage>{
 
+  var leagues = <League>[];
+
   Function(double) callback = (oddValue)=>{};
 
-  OddsPageState(Function(double) callback) {
+  OddsPageState(leagues, Function(double) callback) {
+    this.leagues = leagues;
     this.callback = callback;
   }
 
@@ -40,14 +46,20 @@ class OddsPageState extends State<OddsPage>{
 
   var _todayGamesList = <MatchEvent>[];
 
-  final getLeaguesWithEventsUrl = 'http://192.168.1.2:8080/betCoreServer/betServer/getLeagues';
+  //final getLeaguesWithEventsUrl = 'http://192.168.1.2:8080/betCoreServer/betServer/getLeagues';
 
   @override
   Widget build(BuildContext context) {
 
     print("SELECTED GAMES: " + _selectedGames.length.toString());
 
-    getTodaysOdds();
+    print('LEagues: ' + leagues.length.toString());
+    if (leagues.isEmpty){
+      return Text('No games yet..');
+    }
+
+    _todayGamesList = leagues.first.getEvents();
+   // getTodaysOdds();
 
     return Container(
         width: 700,
@@ -201,70 +213,70 @@ class OddsPageState extends State<OddsPage>{
   }
 
 
-  void getTodaysOdds() async {
-    var validData = <League>[];
-
-    try {
-      if (_todayGamesList.isNotEmpty) {
-        return;
-      }
-
-      print(getLeaguesWithEventsUrl);
-      List jsonLeaguesData = <String>[];
-      try {
-        Response leaguesResponse = await get(Uri.parse(getLeaguesWithEventsUrl))
-            .timeout(const Duration(seconds: 3));
-        jsonLeaguesData = jsonDecode(leaguesResponse.body) as List;
-      } catch (e) {
-        print('ERROR REST');
-        validData = MockUtils().mockLeagues();
-        setState(() {
-          _todayGamesList = validData.first.getEvents();
-        });
-        return;
-      }
-
-
-      print("HELLO");
-
-
-      for (var leagueElement in jsonLeaguesData) {
-        print("SIZE " + jsonLeaguesData.length.toString());
-
-        List events = leagueElement['events'];
-        List<MatchEvent> leagueEvents = <MatchEvent>[];
-        for (var event in events) {
-          var eventOdds = event["odd"];
-          MatchOdds odds = MatchOdds(odd1: Odd(matchId: event["match_id"],
-              betPredictionType: BetPredictionType.homeWin,
-              value: eventOdds["odd_1"]),
-              oddX: Odd(matchId: event["match_id"],
-                  betPredictionType: BetPredictionType.draw,
-                  value: eventOdds["odd_x"]),
-              odd2: Odd(matchId: event["match_id"],
-                  betPredictionType: BetPredictionType.awayWin,
-                  value: eventOdds["odd_2"]));
-          var match = MatchEvent(eventId: event["match_id"],
-              homeTeam: event["match_hometeam_name"],
-              awayTeam: event["match_awayteam_name"],
-              odds: odds);
-          leagueEvents.add(match);
-        }
-
-        var league = League(country_id: leagueElement['country_id'],
-            country_name: leagueElement['country_name'],
-            league_id: leagueElement['league_id'],
-            league_name: leagueElement['league_name'],
-            events: leagueEvents);
-        validData.add(league);
-      }
-
-      setState(() {
-        _todayGamesList = validData.first.getEvents();
-      });
-    } catch (err) {
-      print(err);
-    }
-  }
+  // void getTodaysOdds() async {
+  //   var validData = <League>[];
+  //
+  //   try {
+  //     if (_todayGamesList.isNotEmpty) {
+  //       return;
+  //     }
+  //
+  //     print(getLeaguesWithEventsUrl);
+  //     List jsonLeaguesData = <String>[];
+  //     try {
+  //       Response leaguesResponse = await get(Uri.parse(getLeaguesWithEventsUrl))
+  //           .timeout(const Duration(seconds: 3));
+  //       jsonLeaguesData = jsonDecode(leaguesResponse.body) as List;
+  //     } catch (e) {
+  //       print('ERROR REST');
+  //       validData = MockUtils().mockLeagues();
+  //       setState(() {
+  //         _todayGamesList = validData.first.getEvents();
+  //       });
+  //       return;
+  //     }
+  //
+  //
+  //     print("HELLO");
+  //
+  //
+  //     for (var leagueElement in jsonLeaguesData) {
+  //       print("SIZE " + jsonLeaguesData.length.toString());
+  //
+  //       List events = leagueElement['events'];
+  //       List<MatchEvent> leagueEvents = <MatchEvent>[];
+  //       for (var event in events) {
+  //         var eventOdds = event["odd"];
+  //         MatchOdds odds = MatchOdds(odd1: Odd(matchId: event["match_id"],
+  //             betPredictionType: BetPredictionType.homeWin,
+  //             value: eventOdds["odd_1"]),
+  //             oddX: Odd(matchId: event["match_id"],
+  //                 betPredictionType: BetPredictionType.draw,
+  //                 value: eventOdds["odd_x"]),
+  //             odd2: Odd(matchId: event["match_id"],
+  //                 betPredictionType: BetPredictionType.awayWin,
+  //                 value: eventOdds["odd_2"]));
+  //         var match = MatchEvent(eventId: event["match_id"],
+  //             homeTeam: event["match_hometeam_name"],
+  //             awayTeam: event["match_awayteam_name"],
+  //             odds: odds);
+  //         leagueEvents.add(match);
+  //       }
+  //
+  //       var league = League(country_id: leagueElement['country_id'],
+  //           country_name: leagueElement['country_name'],
+  //           league_id: leagueElement['league_id'],
+  //           league_name: leagueElement['league_name'],
+  //           events: leagueEvents);
+  //       validData.add(league);
+  //     }
+  //
+  //     setState(() {
+  //       _todayGamesList = validData.first.getEvents();
+  //     });
+  //   } catch (err) {
+  //     print(err);
+  //   }
+  // }
 
 }
