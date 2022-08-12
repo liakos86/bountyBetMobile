@@ -1,3 +1,4 @@
+import 'dart:collection';
 import 'dart:convert';
 import 'dart:ui';
 
@@ -6,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_app/models/Odd.dart';
 import 'package:flutter_app/models/league.dart';
 import 'package:flutter_app/pages/OddsPage.dart';
+import 'package:flutter_app/widgets/SelectedOddRow.dart';
 import 'package:http/http.dart';
 
 import '../enums/BetPredictionType.dart';
@@ -25,11 +27,13 @@ class ParentPageState extends State<ParentPage>{
 
   final getLeaguesWithEventsUrl = 'http://192.168.1.2:8080/betCoreServer/betServer/getLeagues';
 
+  HashMap eventsPerIdMap = new HashMap<String, MatchEvent>();
+
   var _allLeagues = <League>[];
 
   bool showOdds = false;
 
-  double finalOdd = 0;
+  List<Odd> _selectedOdds = <Odd>[];
 
   int _selectedPage = 0;
 
@@ -51,9 +55,9 @@ class ParentPageState extends State<ParentPage>{
       pagesList.add(CircularProgressIndicator());
       pagesList.add(CircularProgressIndicator());
     }else {
-      pagesList.add(OddsPage(_allLeagues, (finalOddValue) =>
+      pagesList.add(OddsPage(_allLeagues, (selectedOdds) =>
           setState(
-                  () => finalOdd = finalOddValue)));
+                  () => _selectedOdds = selectedOdds)));
       pagesList.add(LeaderBoardPage());
       pagesList.add(MyBetsPage());
     }
@@ -68,16 +72,19 @@ class ParentPageState extends State<ParentPage>{
 
       floatingActionButton: FloatingActionButton(
         onPressed: ()=> setState(() {
-          if(!showOdds)
+          if(!showOdds && _selectedOdds.isNotEmpty)
             showOdds = true;
           else
             showOdds = false;
         }),
-        child: showOdds ? Icon(Icons.remove) : Text(finalOdd.toStringAsFixed(2), style: TextStyle(fontSize: 16),),
+
+        backgroundColor: showOdds&&_selectedOdds.isNotEmpty ? Colors.redAccent : Colors.blueAccent,
+
+        child: showOdds&&_selectedOdds.isNotEmpty ? Icon(Icons.remove) : Text(finalOddValue(), style: TextStyle(fontSize: 16),),
       ),
 
       bottomSheet:
-          showOdds ?
+          showOdds&&_selectedOdds.isNotEmpty ?
 
           ConstrainedBox(
             constraints: BoxConstraints(
@@ -88,7 +95,13 @@ class ParentPageState extends State<ParentPage>{
             ),
 
             child: Center(
-              child : Text('Selected odds here')
+
+              child : ListView.builder(
+                  padding: const EdgeInsets.all(8),
+                  itemCount: _selectedOdds.length,
+                  itemBuilder: (context, item) {
+                    return _buildBettingOddRow(_selectedOdds[item]);
+                  })
             ),
           )
       : null
@@ -127,6 +140,28 @@ class ParentPageState extends State<ParentPage>{
   }
 
 
+  Widget _buildBettingOddRow(Odd bettingOdd) {
+
+    MatchEvent eventOfOdd = eventsPerIdMap[bettingOdd.matchId];
+
+    return SelectedOddRow(event: eventOfOdd, odd: bettingOdd, callback: (odd) =>
+        setState(
+                () { _selectedOdds.remove(odd);
+                  if (_selectedOdds.isEmpty){
+                    showOdds = false;
+                  }
+                }
+        ));
+
+    // return Container(padding: EdgeInsets.all(2),
+    //         child: ListTile(tileColor: Colors.cyanAccent, title: Text(
+    //         bettingOdd.betPredictionType.toString() + ' @ ' + bettingOdd.value,
+    //         style: TextStyle(fontSize: 15.0),
+    //         )
+    //     ),
+    // );
+  }
+
   void getLeagues() async {
     var validData = <League>[];
 
@@ -134,6 +169,8 @@ class ParentPageState extends State<ParentPage>{
       if (_allLeagues.isNotEmpty) {
         return;
       }
+
+      eventsPerIdMap.clear();
 
       print(getLeaguesWithEventsUrl);
       List jsonLeaguesData = <String>[];
@@ -146,17 +183,16 @@ class ParentPageState extends State<ParentPage>{
         validData = MockUtils().mockLeagues();
         setState(() {
           _allLeagues = validData;
+          for (League league in _allLeagues){
+            for (MatchEvent event in league.getEvents()){
+              eventsPerIdMap.putIfAbsent(event.eventId, () => event);
+            }
+          }
         });
         return;
       }
 
-
-      print("HELLO");
-
-
       for (var leagueElement in jsonLeaguesData) {
-        print("SIZE " + jsonLeaguesData.length.toString());
-
         List events = leagueElement['events'];
         List<MatchEvent> leagueEvents = <MatchEvent>[];
         for (var event in events) {
@@ -175,6 +211,8 @@ class ParentPageState extends State<ParentPage>{
               awayTeam: event["match_awayteam_name"],
               odds: odds);
           leagueEvents.add(match);
+
+          eventsPerIdMap.putIfAbsent(match.eventId, () => match);//TODO: If it is already there? we need to clear map.
         }
 
         var league = League(country_id: leagueElement['country_id'],
@@ -191,6 +229,20 @@ class ParentPageState extends State<ParentPage>{
     } catch (err) {
       print(err);
     }
+  }
+
+  String finalOddValue() {
+    double oddValue = 0;
+    for (Odd odd in _selectedOdds){
+      double oddCurrent = double.parse(odd.value);
+      if (oddValue == 0){
+        oddValue = oddCurrent;
+        continue;
+      }
+      oddValue = oddValue * oddCurrent;
+    }
+
+    return oddValue.toStringAsFixed(2);
   }
 
 
