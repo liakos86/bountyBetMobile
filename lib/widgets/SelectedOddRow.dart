@@ -69,9 +69,6 @@ class SelectedOddRow extends StatelessWidget{
 
                   ],)
               ),
-
-
-
             ),
 
             Positioned(right : 0, child: FloatingActionButton(

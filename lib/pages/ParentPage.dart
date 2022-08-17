@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:collection';
 import 'dart:convert';
 import 'dart:ui';
@@ -34,6 +35,8 @@ class ParentPageState extends State<ParentPage>{
   bool showOdds = false;
 
   List<Odd> _selectedOdds = <Odd>[];
+
+  double _bettingAmount = 0;
 
   int _selectedPage = 0;
 
@@ -80,13 +83,14 @@ class ParentPageState extends State<ParentPage>{
 
         backgroundColor: showOdds&&_selectedOdds.isNotEmpty ? Colors.redAccent : Colors.blueAccent,
 
-        child: showOdds&&_selectedOdds.isNotEmpty ? Icon(Icons.remove) : Text(finalOddValue(), style: TextStyle(fontSize: 16),),
+        child: showOdds&&_selectedOdds.isNotEmpty ? Icon(Icons.remove) : Text(finalOddValue().toStringAsFixed(2), style: TextStyle(fontSize: 16),),
       ),
 
       bottomSheet:
           showOdds&&_selectedOdds.isNotEmpty ?
 
           ConstrainedBox(
+
             constraints: BoxConstraints(
               minHeight: 300,
               maxHeight: 300,
@@ -94,14 +98,65 @@ class ParentPageState extends State<ParentPage>{
               maxWidth: double.infinity
             ),
 
-            child: Center(
-
-              child : ListView.builder(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children : [
+                Expanded( flex:10 , child: ListView.builder(
                   padding: const EdgeInsets.all(8),
                   itemCount: _selectedOdds.length,
                   itemBuilder: (context, item) {
                     return _buildBettingOddRow(_selectedOdds[item]);
                   })
+              ),
+
+                Expanded( flex:2 ,
+                    child: Container(margin: EdgeInsets.only(bottom: 8),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+
+                            Text('To return: ' + (_bettingAmount * finalOddValue()).toStringAsFixed(2)),
+
+                            Flexible(
+
+                              child: TextField(
+
+                                onChanged:
+                                    (text) {
+                                      setState(() {
+                                        try{
+                                          double.parse(text);
+                                        }catch(e){
+                                          _bettingAmount = 0;
+                                          return;
+                                        }
+
+                                        _bettingAmount = double.parse(text);
+                                      });
+                                },
+                              decoration: InputDecoration(
+                              border: OutlineInputBorder(),
+                              hintText: 'enter betting amount',
+                                ),
+                              ),
+                            ),
+
+                            TextButton(
+                              style: ButtonStyle(
+                                foregroundColor: MaterialStateProperty.all<Color>(Colors.white),
+                                backgroundColor: MaterialStateProperty.all<Color>(Colors.blueAccent)
+                              ),
+                              onPressed: () {
+                                placeBet();
+                              },
+                              child: Text('Place Bet'),
+                          )
+                  ],
+                ))
+                )
+
+              ]
             ),
           )
       : null
@@ -153,13 +208,6 @@ class ParentPageState extends State<ParentPage>{
                 }
         ));
 
-    // return Container(padding: EdgeInsets.all(2),
-    //         child: ListTile(tileColor: Colors.cyanAccent, title: Text(
-    //         bettingOdd.betPredictionType.toString() + ' @ ' + bettingOdd.value,
-    //         style: TextStyle(fontSize: 15.0),
-    //         )
-    //     ),
-    // );
   }
 
   void getLeagues() async {
@@ -231,7 +279,7 @@ class ParentPageState extends State<ParentPage>{
     }
   }
 
-  String finalOddValue() {
+  double finalOddValue() {
     double oddValue = 0;
     for (Odd odd in _selectedOdds){
       double oddCurrent = double.parse(odd.value);
@@ -242,7 +290,15 @@ class ParentPageState extends State<ParentPage>{
       oddValue = oddValue * oddCurrent;
     }
 
-    return oddValue.toStringAsFixed(2);
+    return oddValue;
+  }
+
+  void placeBet() {
+    if (_bettingAmount >= 0 || _selectedOdds.isEmpty){
+        return;
+    }
+
+
   }
 
 

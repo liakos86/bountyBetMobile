@@ -17,6 +17,12 @@ class MockUtils {
     mockEvents.add(mockEvent2);
     MatchEvent mockEvent3 = mockEvent('3', '1.75', '3.1', '6.5');
     mockEvents.add(mockEvent3);
+    MatchEvent mockEvent4 = mockEvent('4', '1.75', '3.1', '6.5');
+    mockEvents.add(mockEvent4);
+    MatchEvent mockEvent5 = mockEvent('5', '1.75', '3.1', '6.5');
+    mockEvents.add(mockEvent5);
+    MatchEvent mockEvent6 = mockEvent('6', '1.75', '3.1', '6.5');
+    mockEvents.add(mockEvent6);
 
     League mockLeague = League(league_id: '1', country_name: 'Greece', country_id: '1', league_name: 'Super League', events: mockEvents);
     mockLeagues.add(mockLeague);
