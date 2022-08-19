@@ -2,7 +2,7 @@ import 'package:flutter_app/enums/BetPredictionType.dart';
 import 'package:flutter_app/models/match_event.dart';
 import 'package:flutter_app/models/match_odds.dart';
 
-import '../models/Odd.dart';
+import '../models/UserPrediction.dart';
 import '../models/league.dart';
 
 
@@ -35,7 +35,7 @@ class MockUtils {
   }
 
   MatchOdds mockOdds(eventId, odd1, oddx, odd2){
-    return MatchOdds(odd1: Odd(betPredictionType: BetPredictionType.homeWin, matchId: eventId, value: odd1), oddX: Odd(betPredictionType:BetPredictionType.draw, matchId: eventId,value: oddx), odd2: Odd(betPredictionType:BetPredictionType.awayWin, matchId: eventId,value: odd2));
+    return MatchOdds(odd1: UserPrediction(betPredictionType: BetPredictionType.homeWin, eventId: eventId, value: odd1), oddX: UserPrediction(betPredictionType:BetPredictionType.draw, eventId: eventId,value: oddx), odd2: UserPrediction(betPredictionType:BetPredictionType.awayWin, eventId: eventId,value: odd2));
   }
 
 }

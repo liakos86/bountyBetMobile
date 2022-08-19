@@ -14,4 +14,14 @@ enum BetPredictionType {
     required this.betPredictionCode
   });
 
+  static BetPredictionType? of(int category, int type){
+      BetPredictionCategory? predictionCategory = BetPredictionCategory.of(category);
+      for (BetPredictionType predictionType in BetPredictionType.values){
+        if (predictionType.betPredictionCategory == predictionCategory && predictionType.betPredictionCode == type){
+          return predictionType;
+        }
+      }
+      return null;
+  }
+
 }

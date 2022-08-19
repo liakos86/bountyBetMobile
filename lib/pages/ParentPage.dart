@@ -5,7 +5,7 @@ import 'dart:ui';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_app/models/Odd.dart';
+import 'package:flutter_app/models/UserPrediction.dart';
 import 'package:flutter_app/models/UserBet.dart';
 import 'package:flutter_app/models/league.dart';
 import 'package:flutter_app/pages/OddsPage.dart';
@@ -13,6 +13,7 @@ import 'package:flutter_app/widgets/SelectedOddRow.dart';
 import 'package:http/http.dart';
 
 import '../enums/BetPredictionType.dart';
+import '../models/User.dart';
 import '../models/match_event.dart';
 import '../models/match_odds.dart';
 import '../utils/MockUtils.dart';
@@ -25,11 +26,17 @@ class ParentPage extends StatefulWidget{
   ParentPageState createState() => ParentPageState();
 }
 
+TextEditingController betAmountController = TextEditingController();
+
 class ParentPageState extends State<ParentPage>{
+
+  User user = User.defUser();
 
   final getLeaguesWithEventsUrl = 'http://192.168.43.17:8080/betCoreServer/betServer/getLeagues';
 
   final placeBetUrl = 'http://192.168.43.17:8080/betCoreServer/betServer/placeBet';
+
+  final getUserUrl = 'http://192.168.43.17:8080/betCoreServer/betServer/getUser/USER_ID';
 
   HashMap eventsPerIdMap = new HashMap<String, MatchEvent>();
 
@@ -37,7 +44,7 @@ class ParentPageState extends State<ParentPage>{
 
   bool showOdds = false;
 
-  List<Odd> _selectedOdds = <Odd>[];
+  List<UserPrediction> _selectedOdds = <UserPrediction>[];
 
   double _bettingAmount = 0;
 
@@ -48,6 +55,7 @@ class ParentPageState extends State<ParentPage>{
   @override
   void initState() {
     getLeagues();
+    getUser();
     super.initState();
   }
 
@@ -65,12 +73,12 @@ class ParentPageState extends State<ParentPage>{
           setState(
                   () => _selectedOdds = selectedOdds)));
       pagesList.add(LeaderBoardPage());
-      pagesList.add(MyBetsPage());
+      pagesList.add(MyBetsPage(user.userBets, eventsPerIdMap));
     }
 
     return Scaffold(
       appBar: AppBar(
-          title: _allLeagues.isEmpty ? Text('Loading...') : Text((pagesList[_selectedPage] as StatefulWidgetWithName).name),
+          title: _allLeagues.isEmpty ? Text('Loading...') : Text((pagesList[_selectedPage] as StatefulWidgetWithName).name + ' - ' + user.username + '('+user.balance.toStringAsFixed(2)+')'),
           actions: <Widget>[
             IconButton(icon: Icon(Icons.list), onPressed: null)]
       ),
@@ -123,6 +131,8 @@ class ParentPageState extends State<ParentPage>{
                             Flexible(
 
                               child: TextField(
+
+                                controller: betAmountController,
 
                                 onChanged:
                                     (text) {
@@ -198,9 +208,9 @@ class ParentPageState extends State<ParentPage>{
   }
 
 
-  Widget _buildBettingOddRow(Odd bettingOdd) {
+  Widget _buildBettingOddRow(UserPrediction bettingOdd) {
 
-    MatchEvent eventOfOdd = eventsPerIdMap[bettingOdd.matchId];
+    MatchEvent eventOfOdd = eventsPerIdMap[bettingOdd.eventId];
 
     return SelectedOddRow(event: eventOfOdd, odd: bettingOdd, callback: (odd) =>
         setState(
@@ -211,6 +221,22 @@ class ParentPageState extends State<ParentPage>{
                 }
         ));
 
+  }
+
+  void getUser() async{
+    String getUserUrlFinal = getUserUrl.replaceAll('USER_ID', user.mongoUserId);
+    try {
+      Response userResponse = await get(Uri.parse(getUserUrlFinal))
+          .timeout(const Duration(seconds: 10));
+      var responseDec = jsonDecode(userResponse.body);
+      User userFromServer = User.fromJson(responseDec);
+      setState(() {
+        user = userFromServer;
+      });
+
+    } catch (e) {
+      print(e);
+    }
   }
 
   void getLeagues() async {
@@ -248,15 +274,15 @@ class ParentPageState extends State<ParentPage>{
         List<MatchEvent> leagueEvents = <MatchEvent>[];
         for (var event in events) {
           var eventOdds = event["odd"];
-          MatchOdds odds = MatchOdds(odd1: Odd(matchId: event["match_id"],
+          MatchOdds odds = MatchOdds(odd1: UserPrediction(eventId: event["match_id"],
               betPredictionType: BetPredictionType.homeWin,
-              value: eventOdds["odd_1"].toString().replaceAll(',', '.')),
-              oddX: Odd(matchId: event["match_id"],
+              value: double.parse(eventOdds["odd_1"].replaceAll(',', '.'))),//.toString().replaceAll(',', '.')),
+              oddX: UserPrediction(eventId: event["match_id"],
                   betPredictionType: BetPredictionType.draw,
-                  value: eventOdds["odd_x"].toString().replaceAll(',', '.')),
-              odd2: Odd(matchId: event["match_id"],
+                  value:  double.parse(eventOdds["odd_x"].replaceAll(',', '.'))),//.toString().replaceAll(',', '.')),
+              odd2: UserPrediction(eventId: event["match_id"],
                   betPredictionType: BetPredictionType.awayWin,
-                  value: eventOdds["odd_2"].toString().replaceAll(',', '.')));
+                  value: double.parse(eventOdds["odd_2"].replaceAll(',', '.'))));//.toString().replaceAll(',', '.')));
           var match = MatchEvent(eventId: event["match_id"],
               homeTeam: event["match_hometeam_name"],
               awayTeam: event["match_awayteam_name"],
@@ -284,8 +310,8 @@ class ParentPageState extends State<ParentPage>{
 
   double finalOddValue() {
     double oddValue = 0;
-    for (Odd odd in _selectedOdds){
-      double oddCurrent = double.parse(odd.value);
+    for (UserPrediction odd in _selectedOdds){
+      double oddCurrent = odd.value;
       if (oddValue == 0){
         oddValue = oddCurrent;
         continue;
@@ -301,8 +327,8 @@ class ParentPageState extends State<ParentPage>{
         return;
     }
 
-    UserBet newBet = UserBet(userMongoId: 'testing', selectedOdds: _selectedOdds, betAmount: _bettingAmount);
-    var encodedBet = jsonEncode(newBet);
+    UserBet newBet = UserBet(userMongoId: user.mongoUserId, predictions: _selectedOdds, betAmount: _bettingAmount);
+    var encodedBet = jsonEncode(newBet.toJson());
 
     try {
       var response = await post(Uri.parse(placeBetUrl),
@@ -317,7 +343,7 @@ class ParentPageState extends State<ParentPage>{
           encoding: Encoding.getByName("utf-8")).timeout(
           const Duration(seconds: 20));
 
-      print(response.toString());
+      print(response.body.toString());
     }catch(e){
       print(e);
     }

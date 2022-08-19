@@ -1,4 +1,4 @@
-import 'Odd.dart';
+import 'UserPrediction.dart';
 
 class MatchOdds {
 
@@ -10,10 +10,10 @@ class MatchOdds {
 
 });
 
-  Odd odd1;
+  UserPrediction odd1;
 
-  Odd odd2;
+  UserPrediction odd2;
 
-  Odd oddX;
+  UserPrediction oddX;
 
 }

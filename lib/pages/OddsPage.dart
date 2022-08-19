@@ -7,7 +7,7 @@ import 'package:http/http.dart';
 
 import '../enums/BetPredictionType.dart';
 import '../utils/MockUtils.dart';
-import '../models/Odd.dart';
+import '../models/UserPrediction.dart';
 import '../models/league.dart';
 import '../models/match_event.dart';
 import '../models/match_odds.dart';
@@ -17,12 +17,12 @@ class OddsPage extends StatefulWidgetWithName {
 
   var leagues = <League>[];
 
-  Function(List<Odd>) callback = (selectedOdds)=>{ };
+  Function(List<UserPrediction>) callback = (selectedOdds)=>{ };
 
   @override
   OddsPageState createState() => OddsPageState(leagues, callback);
 
-  OddsPage(leagues, Function(List<Odd>) callback) {
+  OddsPage(leagues, Function(List<UserPrediction>) callback) {
     this.leagues = leagues;
     this.callback = callback;
     setName('Today\'s Odds');
@@ -34,14 +34,14 @@ class OddsPageState extends State<OddsPage>{
 
   var leagues = <League>[];
 
-  Function(List<Odd>) callback = (selectedOdds)=>{};
+  Function(List<UserPrediction>) callback = (selectedOdds)=>{};
 
-  OddsPageState(leagues, Function(List<Odd>) callback) {
+  OddsPageState(leagues, Function(List<UserPrediction>) callback) {
     this.leagues = leagues;
     this.callback = callback;
   }
 
-  static final _selectedOdds = <Odd>[];
+  static final _selectedOdds = <UserPrediction>[];
   static final _selectedGames = Set<String>();
 
   var _todayGamesList = <MatchEvent>[];
@@ -118,7 +118,7 @@ class OddsPageState extends State<OddsPage>{
                       color: _selectedOdds.contains(gameWithOdds.odds.odd1)
                           ? Colors.green
                           : Colors.white,
-                      child: Text('1: ' + gameWithOdds.odds.odd1.value)))),
+                      child: Text('1: ' + gameWithOdds.odds.odd1.value.toStringAsFixed(2))))),
 
 
               Expanded(flex: 1, child: GestureDetector(onTap: () {
@@ -143,7 +143,7 @@ class OddsPageState extends State<OddsPage>{
                       color: _selectedOdds.contains(gameWithOdds.odds.oddX)
                           ? Colors.green
                           : Colors.white,
-                      child: Text('X: ' + gameWithOdds.odds.oddX.value)))),
+                      child: Text('X: ' + gameWithOdds.odds.oddX.value.toStringAsFixed(2))))),
 
 
               Expanded(flex: 1, child: GestureDetector(
@@ -170,7 +170,7 @@ class OddsPageState extends State<OddsPage>{
                       color: _selectedOdds.contains(gameWithOdds.odds.odd2)
                           ? Colors.green
                           : Colors.white,
-                      child: Text('2: ' + gameWithOdds.odds.odd2.value)))),
+                      child: Text('2: ' + gameWithOdds.odds.odd2.value.toStringAsFixed(2))))),
             ],
 
           ),

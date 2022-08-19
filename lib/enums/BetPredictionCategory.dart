@@ -10,4 +10,13 @@ enum BetPredictionCategory{
     required this.categoryCode
   })  ;
 
+  static BetPredictionCategory? of(int code){
+    for (BetPredictionCategory category in BetPredictionCategory.values){
+      if (code == category.categoryCode){
+        return category;
+      }
+    }
+    return null;
+  }
+
 }
