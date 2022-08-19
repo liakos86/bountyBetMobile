@@ -21,7 +21,8 @@ class SelectedOddRow extends StatelessWidget{
     // TODO: implement build
     return Container(
         margin: EdgeInsets.all(4), // every row of list has margin of 4 across all directions
-        height: 60, // every row of list has height 150
+        height: 60,
+        // every row of list has height 150
         child: Stack( // the row will be drawn as items on top of each other
           children: [
 
@@ -31,6 +32,7 @@ class SelectedOddRow extends StatelessWidget{
                 left : 0,
                 child: Container(
                     height: 20,
+
                     decoration: BoxDecoration(
                         borderRadius: BorderRadius.only(
                             bottomLeft: Radius.circular(20),

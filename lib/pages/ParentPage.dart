@@ -6,6 +6,7 @@ import 'dart:ui';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_app/models/Odd.dart';
+import 'package:flutter_app/models/UserBet.dart';
 import 'package:flutter_app/models/league.dart';
 import 'package:flutter_app/pages/OddsPage.dart';
 import 'package:flutter_app/widgets/SelectedOddRow.dart';
@@ -26,7 +27,9 @@ class ParentPage extends StatefulWidget{
 
 class ParentPageState extends State<ParentPage>{
 
-  final getLeaguesWithEventsUrl = 'http://192.168.1.2:8080/betCoreServer/betServer/getLeagues';
+  final getLeaguesWithEventsUrl = 'http://192.168.43.17:8080/betCoreServer/betServer/getLeagues';
+
+  final placeBetUrl = 'http://192.168.43.17:8080/betCoreServer/betServer/placeBet';
 
   HashMap eventsPerIdMap = new HashMap<String, MatchEvent>();
 
@@ -90,7 +93,6 @@ class ParentPageState extends State<ParentPage>{
           showOdds&&_selectedOdds.isNotEmpty ?
 
           ConstrainedBox(
-
             constraints: BoxConstraints(
               minHeight: 300,
               maxHeight: 300,
@@ -159,6 +161,7 @@ class ParentPageState extends State<ParentPage>{
               ]
             ),
           )
+
       : null
       ,
 
@@ -224,7 +227,7 @@ class ParentPageState extends State<ParentPage>{
       List jsonLeaguesData = <String>[];
       try {
         Response leaguesResponse = await get(Uri.parse(getLeaguesWithEventsUrl))
-            .timeout(const Duration(seconds: 3));
+            .timeout(const Duration(seconds: 20));
         jsonLeaguesData = jsonDecode(leaguesResponse.body) as List;
       } catch (e) {
         print('ERROR REST');
@@ -247,13 +250,13 @@ class ParentPageState extends State<ParentPage>{
           var eventOdds = event["odd"];
           MatchOdds odds = MatchOdds(odd1: Odd(matchId: event["match_id"],
               betPredictionType: BetPredictionType.homeWin,
-              value: eventOdds["odd_1"]),
+              value: eventOdds["odd_1"].toString().replaceAll(',', '.')),
               oddX: Odd(matchId: event["match_id"],
                   betPredictionType: BetPredictionType.draw,
-                  value: eventOdds["odd_x"]),
+                  value: eventOdds["odd_x"].toString().replaceAll(',', '.')),
               odd2: Odd(matchId: event["match_id"],
                   betPredictionType: BetPredictionType.awayWin,
-                  value: eventOdds["odd_2"]));
+                  value: eventOdds["odd_2"].toString().replaceAll(',', '.')));
           var match = MatchEvent(eventId: event["match_id"],
               homeTeam: event["match_hometeam_name"],
               awayTeam: event["match_awayteam_name"],
@@ -293,10 +296,32 @@ class ParentPageState extends State<ParentPage>{
     return oddValue;
   }
 
-  void placeBet() {
-    if (_bettingAmount >= 0 || _selectedOdds.isEmpty){
+   void placeBet() async {
+    if (_bettingAmount <= 0 || _selectedOdds.isEmpty){
         return;
     }
+
+    UserBet newBet = UserBet(userMongoId: 'testing', selectedOdds: _selectedOdds, betAmount: _bettingAmount);
+    var encodedBet = jsonEncode(newBet);
+
+    try {
+      var response = await post(Uri.parse(placeBetUrl),
+          headers: {
+          "Accept": "application/json",
+          "Content-Type": "application/json"
+
+            // 'Accept': 'application/json',
+            // 'Content-Type': 'application/json; charset=UTF-8',
+          },
+          body: encodedBet,
+          encoding: Encoding.getByName("utf-8")).timeout(
+          const Duration(seconds: 20));
+
+      print(response.toString());
+    }catch(e){
+      print(e);
+    }
+
 
 
   }
