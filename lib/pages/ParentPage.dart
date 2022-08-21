@@ -227,7 +227,7 @@ class ParentPageState extends State<ParentPage>{
     String getUserUrlFinal = getUserUrl.replaceAll('USER_ID', user.mongoUserId);
     try {
       Response userResponse = await get(Uri.parse(getUserUrlFinal))
-          .timeout(const Duration(seconds: 10));
+          .timeout(const Duration(seconds: 2));
       var responseDec = jsonDecode(userResponse.body);
       User userFromServer = User.fromJson(responseDec);
       setState(() {
@@ -253,12 +253,14 @@ class ParentPageState extends State<ParentPage>{
       List jsonLeaguesData = <String>[];
       try {
         Response leaguesResponse = await get(Uri.parse(getLeaguesWithEventsUrl))
-            .timeout(const Duration(seconds: 20));
+            .timeout(const Duration(seconds: 2));
         jsonLeaguesData = jsonDecode(leaguesResponse.body) as List;
       } catch (e) {
         print('ERROR REST');
         validData = MockUtils().mockLeagues();
+        User mockUser = MockUtils().mockUser(validData);
         setState(() {
+          user = mockUser;
           _allLeagues = validData;
           for (League league in _allLeagues){
             for (MatchEvent event in league.getEvents()){
