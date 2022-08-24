@@ -1,3 +1,5 @@
+import 'dart:collection';
+import 'dart:collection';
 import 'dart:convert';
 
 import 'package:flutter/cupertino.dart';
@@ -11,20 +13,28 @@ import '../models/UserPrediction.dart';
 import '../models/league.dart';
 import '../models/match_event.dart';
 import '../models/match_odds.dart';
+import '../widgets/UpcomingMatchRow.dart';
 
 
 class OddsPage extends StatefulWidgetWithName {
+
+  static final selectedOdds = <UserPrediction>[];
+
+  static final selectedGames = Set<String>();
+
+  HashMap eventsPerDayMap = HashMap();
 
   var leagues = <League>[];
 
   Function(List<UserPrediction>) callback = (selectedOdds)=>{ };
 
   @override
-  OddsPageState createState() => OddsPageState(leagues, callback);
+  OddsPageState createState() => OddsPageState(leagues, eventsPerDayMap, callback);
 
-  OddsPage(leagues, Function(List<UserPrediction>) callback) {
+  OddsPage(leagues, eventsPerDayMap, Function(List<UserPrediction>) callback) {
     this.leagues = leagues;
     this.callback = callback;
+    this.eventsPerDayMap = eventsPerDayMap;
     setName('Today\'s Odds');
   }
 
@@ -34,22 +44,20 @@ class OddsPageState extends State<OddsPage>{
 
   var leagues = <League>[];
 
-  Function(List<UserPrediction>) callback = (selectedOdds)=>{};
+  HashMap eventsPerDayMap = HashMap();
 
-  OddsPageState(leagues, Function(List<UserPrediction>) callback) {
+  Function(List<UserPrediction>) ?callback;
+
+  OddsPageState(leagues, eventsPerDayMap, Function(List<UserPrediction>) callback) {
     this.leagues = leagues;
     this.callback = callback;
+    this.eventsPerDayMap = eventsPerDayMap;
   }
-
-  static final _selectedOdds = <UserPrediction>[];
-  static final _selectedGames = Set<String>();
 
   var _todayGamesList = <MatchEvent>[];
 
   @override
   Widget build(BuildContext context) {
-
-    print("SELECTED GAMES: " + _selectedGames.length.toString());
 
     print('LEagues: ' + leagues.length.toString());
     if (leagues.isEmpty){
@@ -57,6 +65,143 @@ class OddsPageState extends State<OddsPage>{
     }
 
     _todayGamesList = leagues.first.getEvents();
+
+    return DefaultTabController(
+      initialIndex: 7,
+
+      length: 15,
+      child: Scaffold(
+          appBar: AppBar(
+            toolbarHeight: 10,
+            bottom:
+
+              TabBar(
+
+                isScrollable: true,
+              indicatorColor: Colors.red,
+                unselectedLabelColor: Colors.white.withOpacity(0.3),
+
+              tabs: [
+                Tab(text: 'All'),
+                Tab(text: 'All'),
+                Tab(text: 'All'),
+                Tab(text: 'All'),
+                Tab(text: 'All'),
+                Tab(text: 'All'),
+                Tab(text: 'Yesterday'),
+                Tab(text: 'Today'),
+                Tab(text: 'Tomorrow'),
+                Tab(text: 'All'),
+                Tab(text: 'All'),
+                Tab(text: 'All'),
+                Tab(text: 'All'),
+                Tab(text: 'All'),
+                Tab(text: 'All'),
+              ],
+            ),
+
+
+      ),
+
+          body: TabBarView(
+            children: [
+              ListView.builder(
+                  padding: const EdgeInsets.all(8),
+                  itemCount: leagues.first.events.length,
+                  itemBuilder: (context, item) {
+                    return _buildRow(_todayGamesList[item]);
+                  }),
+
+              ListView.builder(
+                  padding: const EdgeInsets.all(8),
+                  itemCount: leagues.first.events.length,
+                  itemBuilder: (context, item) {
+                    return _buildRow(_todayGamesList[item]);
+                  }),
+              ListView.builder(
+                  padding: const EdgeInsets.all(8),
+                  itemCount: leagues.first.events.length,
+                  itemBuilder: (context, item) {
+                    return _buildRow(_todayGamesList[item]);
+                  }),
+              ListView.builder(
+                  padding: const EdgeInsets.all(8),
+                  itemCount: leagues.first.events.length,
+                  itemBuilder: (context, item) {
+                    return _buildRow(_todayGamesList[item]);
+                  }),
+              ListView.builder(
+                  padding: const EdgeInsets.all(8),
+                  itemCount: leagues.first.events.length,
+                  itemBuilder: (context, item) {
+                    return _buildRow(_todayGamesList[item]);
+                  }),
+              ListView.builder(
+                  padding: const EdgeInsets.all(8),
+                  itemCount: leagues.first.events.length,
+                  itemBuilder: (context, item) {
+                    return _buildRow(_todayGamesList[item]);
+                  }),
+              ListView.builder(
+                  padding: const EdgeInsets.all(8),
+                  itemCount: leagues.first.events.length,
+                  itemBuilder: (context, item) {
+                    return _buildRow(_todayGamesList[item]);
+                  }),
+              ListView.builder(
+                  padding: const EdgeInsets.all(8),
+                  itemCount: leagues.first.events.length,
+                  itemBuilder: (context, item) {
+                    return _buildRow(_todayGamesList[item]);
+                  }),
+              ListView.builder(
+                  padding: const EdgeInsets.all(8),
+                  itemCount: leagues.first.events.length,
+                  itemBuilder: (context, item) {
+                    return _buildRow(_todayGamesList[item]);
+                  }),
+              ListView.builder(
+                  padding: const EdgeInsets.all(8),
+                  itemCount: leagues.first.events.length,
+                  itemBuilder: (context, item) {
+                    return _buildRow(_todayGamesList[item]);
+                  }),
+              ListView.builder(
+                  padding: const EdgeInsets.all(8),
+                  itemCount: leagues.first.events.length,
+                  itemBuilder: (context, item) {
+                    return _buildRow(_todayGamesList[item]);
+                  }),
+
+              ListView.builder(
+                  padding: const EdgeInsets.all(8),
+                  itemCount: leagues.first.events.length,
+                  itemBuilder: (context, item) {
+                    return _buildRow(_todayGamesList[item]);
+                  }),
+              ListView.builder(
+                  padding: const EdgeInsets.all(8),
+                  itemCount: leagues.first.events.length,
+                  itemBuilder: (context, item) {
+                    return _buildRow(_todayGamesList[item]);
+                  }),
+              ListView.builder(
+                  padding: const EdgeInsets.all(8),
+                  itemCount: leagues.first.events.length,
+                  itemBuilder: (context, item) {
+                    return _buildRow(_todayGamesList[item]);
+                  }),
+              ListView.builder(
+                  padding: const EdgeInsets.all(8),
+                  itemCount: leagues.first.events.length,
+                  itemBuilder: (context, item) {
+                    return _buildRow(_todayGamesList[item]);
+                  }),
+
+            ],)
+
+      ),
+    );
 
     return Container(
         width: 700,
@@ -90,91 +235,9 @@ class OddsPageState extends State<OddsPage>{
 
   Widget _buildRow(MatchEvent gameWithOdds) {
 
-    return Container(padding: EdgeInsets.all(20),
-        child: ListTile(title: Text(
-            gameWithOdds.homeTeam + ' - ' + gameWithOdds.awayTeam,
-            style: TextStyle(fontSize: 18.0)),
-          leading: Column(
-
-            children: [
-              Expanded(flex: 1, child: GestureDetector(onTap: () {
-                if (_selectedOdds.contains(gameWithOdds.odds.odd1)) {
-                  setState(() {
-                    _selectedGames.remove(gameWithOdds.eventId);
-                    _selectedOdds.remove(gameWithOdds.odds.odd1);
-                  });
-                } else {
-                  setState(() {
-                    _selectedGames.add(gameWithOdds.eventId);
-                    _selectedOdds.add(gameWithOdds.odds.odd1);
-                    _selectedOdds.remove(gameWithOdds.odds.oddX);
-                    _selectedOdds.remove(gameWithOdds.odds.odd2);
-                  });
-                }
-
-                callback.call(_selectedOdds);
-              },
-                  child: Container(
-                      color: _selectedOdds.contains(gameWithOdds.odds.odd1)
-                          ? Colors.green
-                          : Colors.white,
-                      child: Text('1: ' + gameWithOdds.odds.odd1.value.toStringAsFixed(2))))),
+    return UpcomingMatchRow(gameWithOdds: gameWithOdds, callback: callback);
 
 
-              Expanded(flex: 1, child: GestureDetector(onTap: () {
-                if (_selectedOdds.contains(gameWithOdds.odds.oddX)) {
-                  setState(() {
-                    _selectedGames.remove(gameWithOdds.eventId);
-                    _selectedOdds.remove(gameWithOdds.odds.oddX);
-                  });
-                } else {
-                  setState(() {
-                    _selectedGames.add(gameWithOdds.eventId);
-                    _selectedOdds.add(gameWithOdds.odds.oddX);
-                    _selectedOdds.remove(gameWithOdds.odds.odd1);
-                    _selectedOdds.remove(gameWithOdds.odds.odd2);
-                  });
-                }
-
-                callback.call(_selectedOdds);
-              },
-
-                  child: Container(
-                      color: _selectedOdds.contains(gameWithOdds.odds.oddX)
-                          ? Colors.green
-                          : Colors.white,
-                      child: Text('X: ' + gameWithOdds.odds.oddX.value.toStringAsFixed(2))))),
-
-
-              Expanded(flex: 1, child: GestureDetector(
-                  onTap: () {
-                    if (_selectedOdds.contains(gameWithOdds.odds.odd2)) {
-                      setState(() {
-                        _selectedGames.remove(gameWithOdds.eventId);
-                        _selectedOdds.remove(gameWithOdds.odds.odd2);
-                      });
-                    } else {
-                      setState(() {
-                        _selectedGames.add(gameWithOdds.eventId);
-                        _selectedOdds.add(gameWithOdds.odds.odd2);
-                        _selectedOdds.remove(gameWithOdds.odds.oddX);
-                        _selectedOdds.remove(gameWithOdds.odds.odd1);
-                      });
-                    }
-
-                    callback.call(_selectedOdds);
-                  },
-
-
-                  child: Container(
-                      color: _selectedOdds.contains(gameWithOdds.odds.odd2)
-                          ? Colors.green
-                          : Colors.white,
-                      child: Text('2: ' + gameWithOdds.odds.odd2.value.toStringAsFixed(2))))),
-            ],
-
-          ),
-          ));
   }
 
 }

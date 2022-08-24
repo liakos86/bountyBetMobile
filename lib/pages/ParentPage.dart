@@ -40,6 +40,8 @@ class ParentPageState extends State<ParentPage>{
 
   HashMap eventsPerIdMap = new HashMap<String, MatchEvent>();
 
+  HashMap eventsPerDayMap = new HashMap<int, List<MatchEvent>>();
+
   var _allLeagues = <League>[];
 
   bool showOdds = false;
@@ -69,7 +71,7 @@ class ParentPageState extends State<ParentPage>{
       pagesList.add(CircularProgressIndicator());
       pagesList.add(CircularProgressIndicator());
     }else {
-      pagesList.add(OddsPage(_allLeagues, (selectedOdds) =>
+      pagesList.add(OddsPage(_allLeagues, eventsPerDayMap, (selectedOdds) =>
           setState(
                   () => _selectedOdds = selectedOdds)));
       pagesList.add(LeaderBoardPage());
@@ -248,6 +250,7 @@ class ParentPageState extends State<ParentPage>{
       }
 
       eventsPerIdMap.clear();
+      eventsPerDayMap.clear();
 
       print(getLeaguesWithEventsUrl);
       List jsonLeaguesData = <String>[];
@@ -265,6 +268,9 @@ class ParentPageState extends State<ParentPage>{
           for (League league in _allLeagues){
             for (MatchEvent event in league.getEvents()){
               eventsPerIdMap.putIfAbsent(event.eventId, () => event);
+
+              int eventDay = dayOfEvent(event);
+
             }
           }
         });
@@ -276,19 +282,28 @@ class ParentPageState extends State<ParentPage>{
         List<MatchEvent> leagueEvents = <MatchEvent>[];
         for (var event in events) {
           var eventOdds = event["odd"];
-          MatchOdds odds = MatchOdds(odd1: UserPrediction(eventId: event["match_id"],
-              betPredictionType: BetPredictionType.homeWin,
-              value: double.parse(eventOdds["odd_1"].replaceAll(',', '.'))),//.toString().replaceAll(',', '.')),
+          MatchOdds odds = MatchOdds(
+              oddO25: UserPrediction(eventId: event["match_id"],
+                  betPredictionType: BetPredictionType.OVER_25,
+                  value: double.parse(eventOdds["odd_1"].replaceAll(',', '.'))),
+              oddU25: UserPrediction(eventId: event["match_id"],
+                  betPredictionType: BetPredictionType.UNDER_25,
+                  value: double.parse(eventOdds["odd_1"].replaceAll(',', '.'))),
+              odd1: UserPrediction(eventId: event["match_id"],
+                  betPredictionType: BetPredictionType.HOME_WIN,
+                  value: double.parse(eventOdds["odd_1"].replaceAll(',', '.'))),//.toString().replaceAll(',', '.')),
               oddX: UserPrediction(eventId: event["match_id"],
-                  betPredictionType: BetPredictionType.draw,
+                  betPredictionType: BetPredictionType.DRAW,
                   value:  double.parse(eventOdds["odd_x"].replaceAll(',', '.'))),//.toString().replaceAll(',', '.')),
               odd2: UserPrediction(eventId: event["match_id"],
-                  betPredictionType: BetPredictionType.awayWin,
+                  betPredictionType: BetPredictionType.AWAY_WIN,
                   value: double.parse(eventOdds["odd_2"].replaceAll(',', '.'))));//.toString().replaceAll(',', '.')));
           var match = MatchEvent(eventId: event["match_id"],
               homeTeam: event["match_hometeam_name"],
               awayTeam: event["match_awayteam_name"],
               odds: odds);
+          match.eventDate = event["match_date"];
+          match.eventTime = eventsPerDayMap["match_time"];
           leagueEvents.add(match);
 
           eventsPerIdMap.putIfAbsent(match.eventId, () => match);//TODO: If it is already there? we need to clear map.
@@ -351,6 +366,11 @@ class ParentPageState extends State<ParentPage>{
     }
 
 
+
+  }
+
+  int dayOfEvent(MatchEvent event) {
+    return 1;
 
   }
 

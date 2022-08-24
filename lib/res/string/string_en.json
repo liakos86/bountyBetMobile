@@ -1,0 +1,13 @@
+{
+
+  "HOME_WIN" : "1: ",
+
+  "AWAY_WIN" : "X: ",
+
+  "DRAW" : "2: ",
+
+  "OVER_25" : "Over 2.5: ",
+
+  "UNDER_25" : "Under 2.5: "
+
+}

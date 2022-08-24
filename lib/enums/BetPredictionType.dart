@@ -1,9 +1,11 @@
 import 'package:flutter_app/enums/BetPredictionCategory.dart';
 
 enum BetPredictionType {
-  homeWin(betPredictionCategory: BetPredictionCategory.FINAL_RESULT, betPredictionCode: 1),
-  awayWin(betPredictionCategory: BetPredictionCategory.FINAL_RESULT, betPredictionCode: 2),
-  draw(betPredictionCategory: BetPredictionCategory.FINAL_RESULT, betPredictionCode: 3);
+  HOME_WIN(betPredictionCategory: BetPredictionCategory.FINAL_RESULT, betPredictionCode: 1),
+  AWAY_WIN(betPredictionCategory: BetPredictionCategory.FINAL_RESULT, betPredictionCode: 2),
+  DRAW(betPredictionCategory: BetPredictionCategory.FINAL_RESULT, betPredictionCode: 3),
+  OVER_25(betPredictionCategory: BetPredictionCategory.OVER_UNDER, betPredictionCode: 4),
+  UNDER_25(betPredictionCategory: BetPredictionCategory.OVER_UNDER, betPredictionCode: 5);
 
   final BetPredictionCategory betPredictionCategory;
 

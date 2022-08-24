@@ -11,6 +11,10 @@ class MatchEvent{
 
   String eventId;
 
+  String ?eventDate;
+
+  String ?eventTime;
+
   String homeTeam ;
 
   String awayTeam;
