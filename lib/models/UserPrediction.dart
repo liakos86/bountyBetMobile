@@ -10,9 +10,11 @@ class UserPrediction{
 
   BetPredictionStatus betPredictionStatus = BetPredictionStatus.PENDING;
 
-  String eventId;
+  int eventId;
 
   double value;
+
+  //UserPrediction.ofNull(this.eventId, this.value);
 
   UserPrediction({
     required this.betPredictionType,
@@ -42,7 +44,7 @@ class UserPrediction{
   }
 
   static UserPrediction fromJson(Map<String, dynamic> parsedJson){
-    return UserPrediction(eventId: parsedJson['eventId'].toString(),
+    return UserPrediction(eventId: parsedJson['eventId'],
         value: parsedJson['oddValue'] as double,
         betPredictionType:  BetPredictionType.of(int.parse(parsedJson['predictionCategory']), int.parse(parsedJson['predictionType'])));
   }

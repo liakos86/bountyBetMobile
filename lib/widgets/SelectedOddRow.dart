@@ -62,7 +62,7 @@ class SelectedOddRow extends StatelessWidget{
                       crossAxisAlignment: CrossAxisAlignment.start,
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: [
-                        Text(event.homeTeam + ' - ' + event.awayTeam,
+                        Text(event.homeTeam.name + ' - ' + event.awayTeam.name,
                           style: TextStyle(fontSize: 15, color: Colors.black),),
                         Text(odd.betPredictionType.toString() + ' @ ' + odd.value.toStringAsFixed(2),
                           style: TextStyle(fontSize: 18, color: Colors.green[700]),)

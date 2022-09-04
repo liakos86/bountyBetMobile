@@ -1,5 +1,7 @@
 import 'package:flutter_app/models/match_odds.dart';
 
+import 'Team.dart';
+
 class MatchEvent{
 
   MatchEvent({
@@ -9,15 +11,15 @@ class MatchEvent{
     required this.odds
   } );
 
-  String eventId;
+  int eventId;
 
   String ?eventDate;
 
   String ?eventTime;
 
-  String homeTeam ;
+  Team homeTeam ;
 
-  String awayTeam;
+  Team awayTeam;
 
   MatchOdds odds;
   //

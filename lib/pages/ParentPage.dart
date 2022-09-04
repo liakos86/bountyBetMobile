@@ -13,6 +13,7 @@ import 'package:flutter_app/widgets/SelectedOddRow.dart';
 import 'package:http/http.dart';
 
 import '../enums/BetPredictionType.dart';
+import '../models/Team.dart';
 import '../models/User.dart';
 import '../models/match_event.dart';
 import '../models/match_odds.dart';
@@ -32,17 +33,17 @@ class ParentPageState extends State<ParentPage>{
 
   User user = User.defUser();
 
-  final getLeaguesWithEventsUrl = 'http://192.168.43.17:8080/betCoreServer/betServer/getLeagues';
+  final getLeaguesWithEventsUrl = 'http://192.168.1.2:8080/betCoreServer/betServer/getLeagues';
 
-  final placeBetUrl = 'http://192.168.43.17:8080/betCoreServer/betServer/placeBet';
+  final placeBetUrl = 'http://192.168.1.2:8080/betCoreServer/betServer/placeBet';
 
-  final getUserUrl = 'http://192.168.43.17:8080/betCoreServer/betServer/getUser/USER_ID';
+  final getUserUrl = 'http://192.168.1.2:8080/betCoreServer/betServer/getUser/USER_ID';
 
-  HashMap eventsPerIdMap = new HashMap<String, MatchEvent>();
+  HashMap eventsPerIdMap = new HashMap<int, MatchEvent>();
 
   HashMap eventsPerDayMap = new HashMap<int, List<MatchEvent>>();
 
-  var _allLeagues = <League>[];
+  var _allLeagues = <MatchEvent>[];
 
   bool showOdds = false;
 
@@ -64,7 +65,7 @@ class ParentPageState extends State<ParentPage>{
   @override
   Widget build(BuildContext context) {
 
-    print ('ALL LEAGUES in build parent ' + _allLeagues.length.toString());
+    print ('ALL events in build parent ' + _allLeagues.length.toString());
     pagesList.clear();
     if (_allLeagues.isEmpty) {
       pagesList.add(CircularProgressIndicator());
@@ -234,6 +235,7 @@ class ParentPageState extends State<ParentPage>{
       User userFromServer = User.fromJson(responseDec);
       setState(() {
         user = userFromServer;
+        print ('got USRR');
       });
 
     } catch (e) {
@@ -242,7 +244,7 @@ class ParentPageState extends State<ParentPage>{
   }
 
   void getLeagues() async {
-    var validData = <League>[];
+    var validData = <MatchEvent>[];
 
     try {
       if (_allLeagues.isNotEmpty) {
@@ -256,7 +258,7 @@ class ParentPageState extends State<ParentPage>{
       List jsonLeaguesData = <String>[];
       try {
         Response leaguesResponse = await get(Uri.parse(getLeaguesWithEventsUrl))
-            .timeout(const Duration(seconds: 2));
+            .timeout(const Duration(seconds: 4));
         jsonLeaguesData = jsonDecode(leaguesResponse.body) as List;
       } catch (e) {
         print('ERROR REST');
@@ -265,56 +267,97 @@ class ParentPageState extends State<ParentPage>{
         setState(() {
           user = mockUser;
           _allLeagues = validData;
-          for (League league in _allLeagues){
-            for (MatchEvent event in league.getEvents()){
+         // for (League league in _allLeagues){
+            for (MatchEvent event in _allLeagues){
               eventsPerIdMap.putIfAbsent(event.eventId, () => event);
 
               int eventDay = dayOfEvent(event);
 
             }
-          }
+        //  }
         });
         return;
       }
 
-      for (var leagueElement in jsonLeaguesData) {
-        List events = leagueElement['events'];
-        List<MatchEvent> leagueEvents = <MatchEvent>[];
-        for (var event in events) {
-          var eventOdds = event["odd"];
-          MatchOdds odds = MatchOdds(
-              oddO25: UserPrediction(eventId: event["match_id"],
-                  betPredictionType: BetPredictionType.OVER_25,
-                  value: double.parse(eventOdds["odd_1"].replaceAll(',', '.'))),
-              oddU25: UserPrediction(eventId: event["match_id"],
-                  betPredictionType: BetPredictionType.UNDER_25,
-                  value: double.parse(eventOdds["odd_1"].replaceAll(',', '.'))),
-              odd1: UserPrediction(eventId: event["match_id"],
-                  betPredictionType: BetPredictionType.HOME_WIN,
-                  value: double.parse(eventOdds["odd_1"].replaceAll(',', '.'))),//.toString().replaceAll(',', '.')),
-              oddX: UserPrediction(eventId: event["match_id"],
-                  betPredictionType: BetPredictionType.DRAW,
-                  value:  double.parse(eventOdds["odd_x"].replaceAll(',', '.'))),//.toString().replaceAll(',', '.')),
-              odd2: UserPrediction(eventId: event["match_id"],
-                  betPredictionType: BetPredictionType.AWAY_WIN,
-                  value: double.parse(eventOdds["odd_2"].replaceAll(',', '.'))));//.toString().replaceAll(',', '.')));
-          var match = MatchEvent(eventId: event["match_id"],
-              homeTeam: event["match_hometeam_name"],
-              awayTeam: event["match_awayteam_name"],
+
+//      List<MatchEvent> leagueEvents = <MatchEvent>[];
+      for (var event in jsonLeaguesData) {
+        //List events = leagueElement['events'];
+
+       // for (var event in events) {
+        MatchOdds odds ;
+
+        var eventOdds = event["main_odds"];
+
+          if (eventOdds != null) {
+            var outcome1 = eventOdds["outcome_1"];
+            var outcome1Value = outcome1["value"];
+
+            var outcomeX = eventOdds["outcome_X"];
+            var outcomeXValue = outcomeX["value"];
+
+            var outcome2 = eventOdds["outcome_2"];
+            var outcome2Value = outcome2["value"];
+
+            odds = MatchOdds(
+                oddO25: UserPrediction(eventId: event["id"],
+                    betPredictionType: BetPredictionType.OVER_25,
+                    value: outcome1Value),
+                oddU25: UserPrediction(eventId: event["id"],
+                    betPredictionType: BetPredictionType.UNDER_25,
+                    value: outcome1Value),
+                odd1: UserPrediction(eventId: event["id"],
+                    betPredictionType: BetPredictionType.HOME_WIN,
+                    value: outcome1Value),
+                //.toString().replaceAll(',', '.')),
+                oddX: UserPrediction(eventId: event["id"],
+                    betPredictionType: BetPredictionType.DRAW,
+                    value: outcomeXValue),
+                //.toString().replaceAll(',', '.')),
+                odd2: UserPrediction(eventId: event["id"],
+                    betPredictionType: BetPredictionType.AWAY_WIN,
+                    value: outcome2Value)); //.toString().replaceAll(',', '.')));
+          }else{
+            odds = MatchOdds(
+                oddO25: UserPrediction(eventId: event["id"],
+                    betPredictionType: BetPredictionType.OVER_25,
+                    value: -1),
+                oddU25: UserPrediction(eventId: event["id"],
+                    betPredictionType: BetPredictionType.UNDER_25,
+                    value: -1),
+                odd1: UserPrediction(eventId: event["id"],
+                    betPredictionType: BetPredictionType.HOME_WIN,
+                    value: -1),
+                //.toString().replaceAll(',', '.')),
+                oddX: UserPrediction(eventId: event["id"],
+                    betPredictionType: BetPredictionType.DRAW,
+                    value: -1),
+                //.toString().replaceAll(',', '.')),
+                odd2: UserPrediction(eventId: event["id"],
+                    betPredictionType: BetPredictionType.AWAY_WIN,
+                    value: -1));
+          }
+
+          var homeTeam = event["home_team"];
+          var awayTeam = event["away_team"];
+          var match = MatchEvent(eventId: event["id"],
+              homeTeam: Team(homeTeam["id"], homeTeam["name"]),
+              awayTeam: Team(awayTeam["id"], awayTeam["name"]),
               odds: odds);
-          match.eventDate = event["match_date"];
-          match.eventTime = eventsPerDayMap["match_time"];
-          leagueEvents.add(match);
+
+          //match.eventDate = event["time_details"];
+         // match.eventTime = eventsPerDayMap["match_time"];
+          validData.add(match);
 
           eventsPerIdMap.putIfAbsent(match.eventId, () => match);//TODO: If it is already there? we need to clear map.
-        }
+      //  }
 
-        var league = League(country_id: leagueElement['country_id'],
-            country_name: leagueElement['country_name'],
-            league_id: leagueElement['league_id'],
-            league_name: leagueElement['league_name'],
-            events: leagueEvents);
-        validData.add(league);
+        // var league = League(country_id: leagueElement['country_id'],
+        //     country_name: leagueElement['country_name'],
+        //     league_id: leagueElement['league_id'],
+        //     league_name: leagueElement['league_name'],
+        //     events: leagueEvents);
+        // validData.add(league);
       }
 
       setState(() {

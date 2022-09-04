@@ -9,9 +9,9 @@ import '../models/match_event.dart';
 
 class GestureDetectorForOdds extends StatefulWidget {
 
-  String eventId;
+  int eventId;
 
-  UserPrediction prediction;
+  UserPrediction ?prediction;
 
   List<UserPrediction> toRemove;
 
@@ -35,11 +35,11 @@ class GestureDetectorForOddsState extends State<GestureDetectorForOdds>{
 
   TextAlign align;
 
-  String eventId;
+  int eventId;
 
   Function(List<UserPrediction>) ?callback;
 
-  UserPrediction prediction;
+  UserPrediction ?prediction;
 
   List<UserPrediction> toRemove;
 
@@ -64,7 +64,7 @@ class GestureDetectorForOddsState extends State<GestureDetectorForOdds>{
                       } else {
                         setState(() {
                           OddsPage.selectedGames.add(eventId);
-                          OddsPage.selectedOdds.add(prediction);
+                          OddsPage.selectedOdds.add(prediction!);
 
                           for (UserPrediction unwanted in toRemove) {
                             OddsPage.selectedOdds.remove(unwanted);
@@ -77,6 +77,7 @@ class GestureDetectorForOddsState extends State<GestureDetectorForOdds>{
 
                       child: Container(
 
+                        height: 40,
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.all(Radius.circular(4)),
 
@@ -86,9 +87,9 @@ class GestureDetectorForOddsState extends State<GestureDetectorForOdds>{
                         ),
 
 
-                          child: Padding(padding: EdgeInsets.all(4) , child: Text(prediction.value.toStringAsFixed(2), style: TextStyle(fontWeight:FontWeight.bold, fontSize: 16, color: OddsPage.selectedOdds.contains(prediction)
+                          child: Padding(padding: EdgeInsets.all(4), child: Align(alignment: Alignment.center, child : Text(  (prediction!.value.toStringAsFixed(2)), style: TextStyle(fontWeight:FontWeight.bold, fontSize: 16, color: OddsPage.selectedOdds.contains(prediction)
                               ? Colors.white
-                              : Colors.blueAccent), textAlign: align)))
+                              : Colors.blueAccent), textAlign: TextAlign.center))))
     );
 
   }

@@ -41,9 +41,9 @@ class UpcomingMatchRow extends StatefulWidget {
         Row(mainAxisSize: MainAxisSize.max,
 
         children: [
-          Expanded( flex : 3, child: Padding(padding: EdgeInsets.all(8), child :Text(gameWithOdds.homeTeam, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14), textAlign: TextAlign.right))),
+          Expanded( flex : 3, child: Padding(padding: EdgeInsets.all(8), child :Text(gameWithOdds.homeTeam.name, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14), textAlign: TextAlign.right))),
           Expanded( flex : 1, child: Padding(padding: EdgeInsets.all(8), child : Text("-", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14), textAlign: TextAlign.center))),
-          Expanded( flex : 3, child: Padding(padding: EdgeInsets.all(8), child : Text(gameWithOdds.awayTeam, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14), textAlign: TextAlign.left))),
+          Expanded( flex : 3, child: Padding(padding: EdgeInsets.all(8), child : Text(gameWithOdds.awayTeam.name, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14), textAlign: TextAlign.left))),
 
 
         ],),
@@ -73,94 +73,6 @@ class UpcomingMatchRow extends StatefulWidget {
 
     );
 
-
-
-
-  return Container(padding: EdgeInsets.all(20),
-  child: ListTile(title: Text(
-  gameWithOdds.homeTeam + ' - ' + gameWithOdds.awayTeam,
-  style: TextStyle(fontSize: 18.0)),
-  leading: Column(
-
-  children: [
-  Expanded(flex: 1, child: GestureDetector(onTap: () {
-  if (OddsPage.selectedOdds.contains(gameWithOdds.odds.odd1)) {
-  setState(() {
-  OddsPage.selectedGames.remove(gameWithOdds.eventId);
-  OddsPage.selectedOdds.remove(gameWithOdds.odds.odd1);
-  });
-  } else {
-  setState(() {
-  OddsPage.selectedGames.add(gameWithOdds.eventId);
-  OddsPage.selectedOdds.add(gameWithOdds.odds.odd1);
-  OddsPage.selectedOdds.remove(gameWithOdds.odds.oddX);
-  OddsPage.selectedOdds.remove(gameWithOdds.odds.odd2);
-  });
-  }
-
-  callback?.call(OddsPage.selectedOdds);
-  },
-  child: Container(
-  color: OddsPage.selectedOdds.contains(gameWithOdds.odds.odd1)
-  ? Colors.green
-      : Colors.white,
-  child: Text('1: ' + gameWithOdds.odds.odd1.value.toStringAsFixed(2))))),
-
-
-  Expanded(flex: 1, child: GestureDetector(onTap: () {
-  if (OddsPage.selectedOdds.contains(gameWithOdds.odds.oddX)) {
-  setState(() {
-  OddsPage.selectedGames.remove(gameWithOdds.eventId);
-  OddsPage.selectedOdds.remove(gameWithOdds.odds.oddX);
-  });
-  } else {
-  setState(() {
-  OddsPage.selectedGames.add(gameWithOdds.eventId);
-  OddsPage.selectedOdds.add(gameWithOdds.odds.oddX);
-  OddsPage.selectedOdds.remove(gameWithOdds.odds.odd1);
-  OddsPage.selectedOdds.remove(gameWithOdds.odds.odd2);
-  });
-  }
-
-  callback?.call(OddsPage.selectedOdds);
-  },
-
-  child: Container(
-  color: OddsPage.selectedOdds.contains(gameWithOdds.odds.oddX)
-  ? Colors.green
-      : Colors.white,
-  child: Text('X: ' + gameWithOdds.odds.oddX.value.toStringAsFixed(2))))),
-
-
-  Expanded(flex: 1, child: GestureDetector(
-  onTap: () {
-  if (OddsPage.selectedOdds.contains(gameWithOdds.odds.odd2)) {
-  setState(() {
-  OddsPage.selectedGames.remove(gameWithOdds.eventId);
-  OddsPage.selectedOdds.remove(gameWithOdds.odds.odd2);
-  });
-  } else {
-  setState(() {
-  OddsPage.selectedGames.add(gameWithOdds.eventId);
-  OddsPage.selectedOdds.add(gameWithOdds.odds.odd2);
-  OddsPage.selectedOdds.remove(gameWithOdds.odds.oddX);
-  OddsPage.selectedOdds.remove(gameWithOdds.odds.odd1);
-  });
-  }
-
-  callback?.call(OddsPage.selectedOdds);
-  },
-
-
-  child: Container(
-  color: OddsPage.selectedOdds.contains(gameWithOdds.odds.odd2)
-  ? Colors.green
-      : Colors.white,
-  child: Text('2: ' + gameWithOdds.odds.odd2.value.toStringAsFixed(2))))),
-  ],
-
-  ),
-  ));
   }
 
 
