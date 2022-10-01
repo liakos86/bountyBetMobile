@@ -1,5 +1,7 @@
 import 'package:flutter_app/models/match_odds.dart';
 
+import '../enums/ChangeEvent.dart';
+import 'Score.dart';
 import 'Team.dart';
 
 class MatchEvent{
@@ -8,10 +10,17 @@ class MatchEvent{
     required this.eventId,
     required this.homeTeam,
     required this.awayTeam,
-    required this.odds
+    required this.odds,
+    required this.status
   } );
 
   int eventId;
+
+  String ?status_for_client;
+
+  String status;
+
+  String ?status_more;
 
   String ?eventDate;
 
@@ -19,21 +28,14 @@ class MatchEvent{
 
   Team homeTeam ;
 
+  Score ?homeTeamScore;
+
   Team awayTeam;
 
+  Score ?awayTeamScore;
+
   MatchOdds odds;
-  //
-  //
-  // String getHomeTeam(){
-  //   return homeTeam;
-  // }
-  //
-  // String getAwayTeam(){
-  //   return awayTeam;
-  // }
-  //
-  // MatchOdds getMatchOdds(){
-  //   return odds;
-  // }
+
+  ChangeEvent ?changeEvent;
 
 }

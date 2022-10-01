@@ -12,10 +12,12 @@ class UpcomingMatchRow extends StatefulWidget {
 
   Function(List<UserPrediction>) ?callback;
 
-  UpcomingMatchRow({
-    required this.gameWithOdds,
-    required this.callback
-  });
+  UpcomingMatchRow({Key ?key, required this.gameWithOdds}) : super(key: key);
+
+  // UpcomingMatchRow({
+  //   required this.gameWithOdds,
+  //   required this.callback
+  // });
 
   @override
   UpcomingMatchRowState createState() => UpcomingMatchRowState(gameWithOdds: gameWithOdds, callback: callback);
@@ -38,12 +40,58 @@ class UpcomingMatchRow extends StatefulWidget {
 
     return Column(
       children: [
+
         Row(mainAxisSize: MainAxisSize.max,
 
         children: [
-          Expanded( flex : 3, child: Padding(padding: EdgeInsets.all(8), child :Text(gameWithOdds.homeTeam.name, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14), textAlign: TextAlign.right))),
+          Expanded( flex : 3, child: Padding(padding: EdgeInsets.all(8), child :
+
+    Text.rich(
+      TextSpan(
+        children: [
+          WidgetSpan(child: Image.network(
+            gameWithOdds.homeTeam.logo,
+            height: 24,
+            width: 24,
+          )),
+          TextSpan(text: gameWithOdds.homeTeam.name, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
+
+
+        ],
+      ),
+    )
+
+          //Text(gameWithOdds.homeTeam.name, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14), textAlign: TextAlign.right)
+
+
+
+          )),
           Expanded( flex : 1, child: Padding(padding: EdgeInsets.all(8), child : Text("-", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14), textAlign: TextAlign.center))),
-          Expanded( flex : 3, child: Padding(padding: EdgeInsets.all(8), child : Text(gameWithOdds.awayTeam.name, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14), textAlign: TextAlign.left))),
+
+
+          Expanded( flex : 3, child: Padding(padding: EdgeInsets.all(8), child :
+
+    Text.rich(
+    TextSpan(
+    children: [
+      TextSpan(text: gameWithOdds.awayTeam.name, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
+    WidgetSpan(child: Image.network(
+    gameWithOdds.awayTeam.logo,
+    height: 24,
+    width: 24,
+    )),
+
+
+
+    ],
+    ),
+    )
+
+     //     Text(gameWithOdds.awayTeam.name, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14), textAlign: TextAlign.left)
+
+
+
+          )),
 
 
         ],),

@@ -18,7 +18,9 @@ class Team{
 
   String ?name_full;
 
-  Team(this.id, this.name);
+  String logo;
+
+  Team(this.id, this.name, this.logo);
 
 
 }

@@ -7,12 +7,16 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_app/models/UserPrediction.dart';
 import 'package:flutter_app/models/UserBet.dart';
+import 'package:flutter_app/models/constants/MatchConstants.dart';
+import 'package:flutter_app/models/constants/UrlConstants.dart';
 import 'package:flutter_app/models/league.dart';
 import 'package:flutter_app/pages/OddsPage.dart';
 import 'package:flutter_app/widgets/SelectedOddRow.dart';
 import 'package:http/http.dart';
 
 import '../enums/BetPredictionType.dart';
+import '../helper/JsonHelper.dart';
+import '../models/Score.dart';
 import '../models/Team.dart';
 import '../models/User.dart';
 import '../models/match_event.dart';
@@ -20,6 +24,8 @@ import '../models/match_odds.dart';
 import '../utils/MockUtils.dart';
 import '../models/interfaces/StatefulWidgetWithName.dart';
 import 'LeaderBoardPage.dart';
+import 'LivePage.dart';
+import 'LivePage2.dart';
 import 'MyBetsPage.dart';
 
 class ParentPage extends StatefulWidget{
@@ -33,8 +39,6 @@ class ParentPageState extends State<ParentPage>{
 
   User user = User.defUser();
 
-  final getLeaguesWithEventsUrl = 'http://192.168.1.2:8080/betCoreServer/betServer/getLeagues';
-
   final placeBetUrl = 'http://192.168.1.2:8080/betCoreServer/betServer/placeBet';
 
   final getUserUrl = 'http://192.168.1.2:8080/betCoreServer/betServer/getUser/USER_ID';
@@ -43,7 +47,7 @@ class ParentPageState extends State<ParentPage>{
 
   HashMap eventsPerDayMap = new HashMap<int, List<MatchEvent>>();
 
-  var _allLeagues = <MatchEvent>[];
+  List<League> _allLeagues = <League>[];
 
   bool showOdds = false;
 
@@ -65,9 +69,10 @@ class ParentPageState extends State<ParentPage>{
   @override
   Widget build(BuildContext context) {
 
-    print ('ALL events in build parent ' + _allLeagues.length.toString());
+
     pagesList.clear();
     if (_allLeagues.isEmpty) {
+      pagesList.add(CircularProgressIndicator());
       pagesList.add(CircularProgressIndicator());
       pagesList.add(CircularProgressIndicator());
       pagesList.add(CircularProgressIndicator());
@@ -75,6 +80,12 @@ class ParentPageState extends State<ParentPage>{
       pagesList.add(OddsPage(_allLeagues, eventsPerDayMap, (selectedOdds) =>
           setState(
                   () => _selectedOdds = selectedOdds)));
+      var liveMatches = <MatchEvent>[];
+      liveMatches.addAll(liveMatches);
+
+      // pagesList.add(LivePage(liveMatches, getLiveEvents));
+
+      pagesList.add(LivePage2());
       pagesList.add(LeaderBoardPage());
       pagesList.add(MyBetsPage(user.userBets, eventsPerIdMap));
     }
@@ -181,6 +192,7 @@ class ParentPageState extends State<ParentPage>{
       bottomNavigationBar: BottomNavigationBar(
         selectedFontSize: 20,
         unselectedFontSize: 15,
+        type: BottomNavigationBarType.fixed,
         backgroundColor: Colors.blueAccent,
         fixedColor: Colors.white,
         currentIndex: _selectedPage,
@@ -188,6 +200,10 @@ class ParentPageState extends State<ParentPage>{
           BottomNavigationBarItem(
             icon: Icon(Icons.home),
             label: 'Odds'
+          ),
+          BottomNavigationBarItem(
+              icon: Icon(Icons.live_help),
+              label: 'Live'
           ),
           BottomNavigationBarItem(
               icon: Icon(Icons.favorite),
@@ -235,7 +251,6 @@ class ParentPageState extends State<ParentPage>{
       User userFromServer = User.fromJson(responseDec);
       setState(() {
         user = userFromServer;
-        print ('got USRR');
       });
 
     } catch (e) {
@@ -244,7 +259,8 @@ class ParentPageState extends State<ParentPage>{
   }
 
   void getLeagues() async {
-    var validData = <MatchEvent>[];
+
+    List<League> validData = <League>[];
 
     try {
       if (_allLeagues.isNotEmpty) {
@@ -254,111 +270,34 @@ class ParentPageState extends State<ParentPage>{
       eventsPerIdMap.clear();
       eventsPerDayMap.clear();
 
-      print(getLeaguesWithEventsUrl);
       List jsonLeaguesData = <String>[];
       try {
-        Response leaguesResponse = await get(Uri.parse(getLeaguesWithEventsUrl))
+        Response leaguesResponse = await get(Uri.parse(UrlConstants.GET_LEAGUES))
             .timeout(const Duration(seconds: 4));
         jsonLeaguesData = jsonDecode(leaguesResponse.body) as List;
       } catch (e) {
         print('ERROR REST');
-        validData = MockUtils().mockLeagues();
+        validData = MockUtils().mockLeagues(false);
         User mockUser = MockUtils().mockUser(validData);
         setState(() {
           user = mockUser;
           _allLeagues = validData;
-         // for (League league in _allLeagues){
-            for (MatchEvent event in _allLeagues){
+         for (League league in _allLeagues){
+            for (MatchEvent event in league.events){
               eventsPerIdMap.putIfAbsent(event.eventId, () => event);
-
-              int eventDay = dayOfEvent(event);
-
+              }
             }
-        //  }
         });
         return;
       }
 
-
-//      List<MatchEvent> leagueEvents = <MatchEvent>[];
-      for (var event in jsonLeaguesData) {
-        //List events = leagueElement['events'];
-
-       // for (var event in events) {
-        MatchOdds odds ;
-
-        var eventOdds = event["main_odds"];
-
-          if (eventOdds != null) {
-            var outcome1 = eventOdds["outcome_1"];
-            var outcome1Value = outcome1["value"];
-
-            var outcomeX = eventOdds["outcome_X"];
-            var outcomeXValue = outcomeX["value"];
-
-            var outcome2 = eventOdds["outcome_2"];
-            var outcome2Value = outcome2["value"];
-
-            odds = MatchOdds(
-                oddO25: UserPrediction(eventId: event["id"],
-                    betPredictionType: BetPredictionType.OVER_25,
-                    value: outcome1Value),
-                oddU25: UserPrediction(eventId: event["id"],
-                    betPredictionType: BetPredictionType.UNDER_25,
-                    value: outcome1Value),
-                odd1: UserPrediction(eventId: event["id"],
-                    betPredictionType: BetPredictionType.HOME_WIN,
-                    value: outcome1Value),
-                //.toString().replaceAll(',', '.')),
-                oddX: UserPrediction(eventId: event["id"],
-                    betPredictionType: BetPredictionType.DRAW,
-                    value: outcomeXValue),
-                //.toString().replaceAll(',', '.')),
-                odd2: UserPrediction(eventId: event["id"],
-                    betPredictionType: BetPredictionType.AWAY_WIN,
-                    value: outcome2Value)); //.toString().replaceAll(',', '.')));
-          }else{
-            odds = MatchOdds(
-                oddO25: UserPrediction(eventId: event["id"],
-                    betPredictionType: BetPredictionType.OVER_25,
-                    value: -1),
-                oddU25: UserPrediction(eventId: event["id"],
-                    betPredictionType: BetPredictionType.UNDER_25,
-                    value: -1),
-                odd1: UserPrediction(eventId: event["id"],
-                    betPredictionType: BetPredictionType.HOME_WIN,
-                    value: -1),
-                //.toString().replaceAll(',', '.')),
-                oddX: UserPrediction(eventId: event["id"],
-                    betPredictionType: BetPredictionType.DRAW,
-                    value: -1),
-                //.toString().replaceAll(',', '.')),
-                odd2: UserPrediction(eventId: event["id"],
-                    betPredictionType: BetPredictionType.AWAY_WIN,
-                    value: -1));
+      for (var league in jsonLeaguesData) {
+        League leagueObj = JsonHelper.leagueFromJson(league);
+          validData.add(leagueObj);
+          for (MatchEvent match in leagueObj.events) {
+            eventsPerIdMap.putIfAbsent(match.eventId, () => match); //TODO: If it is already there? we need to clear map.
           }
-
-          var homeTeam = event["home_team"];
-          var awayTeam = event["away_team"];
-          var match = MatchEvent(eventId: event["id"],
-              homeTeam: Team(homeTeam["id"], homeTeam["name"]),
-              awayTeam: Team(awayTeam["id"], awayTeam["name"]),
-              odds: odds);
-
-          //match.eventDate = event["time_details"];
-         // match.eventTime = eventsPerDayMap["match_time"];
-          validData.add(match);
-
-          eventsPerIdMap.putIfAbsent(match.eventId, () => match);//TODO: If it is already there? we need to clear map.
-      //  }
-
-        // var league = League(country_id: leagueElement['country_id'],
-        //     country_name: leagueElement['country_name'],
-        //     league_id: leagueElement['league_id'],
-        //     league_name: leagueElement['league_name'],
-        //     events: leagueEvents);
-        // validData.add(league);
-      }
+          }
 
       setState(() {
         _allLeagues = validData;
@@ -403,7 +342,6 @@ class ParentPageState extends State<ParentPage>{
           encoding: Encoding.getByName("utf-8")).timeout(
           const Duration(seconds: 20));
 
-      print(response.body.toString());
     }catch(e){
       print(e);
     }
@@ -415,6 +353,13 @@ class ParentPageState extends State<ParentPage>{
   int dayOfEvent(MatchEvent event) {
     return 1;
 
+  }
+
+  getLiveEvents() {
+    var liveList = <MatchEvent>[];
+    // liveList.addAll(_liveEvents);
+    // print("SENDING LIVE");
+    return liveList;
   }
 
 

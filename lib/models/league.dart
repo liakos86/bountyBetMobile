@@ -3,20 +3,19 @@ import 'package:flutter_app/models/match_event.dart';
 class League{
 
   League({
-    required this.country_name,
-    required this.league_name,
+    required this.name,
     required this.league_id,
-    required this.country_id,
+    required this.has_logo,
     required this.events
   } );
 
-  String country_id ;
+  bool has_logo ;
 
-  String country_name ;
+  String name ;
 
-  String league_id;
+  int league_id;
 
-  String league_name ;
+  String ?logo ;
 
   List<MatchEvent> events ;
 

@@ -5,6 +5,7 @@ import 'dart:convert';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_app/models/interfaces/StatefulWidgetWithName.dart';
+import 'package:flutter_app/widgets/LeagueMatchesRow.dart';
 import 'package:http/http.dart';
 
 import '../enums/BetPredictionType.dart';
@@ -24,15 +25,15 @@ class OddsPage extends StatefulWidgetWithName {
 
   HashMap eventsPerDayMap = HashMap();
 
-  var leagues = <MatchEvent>[];
+  List<League> allLeagues = <League>[];
 
   Function(List<UserPrediction>) callback = (selectedOdds)=>{ };
 
   @override
-  OddsPageState createState() => OddsPageState(leagues, eventsPerDayMap, callback);
+  OddsPageState createState() => OddsPageState(allLeagues, eventsPerDayMap, callback);
 
-  OddsPage(leagues, eventsPerDayMap, Function(List<UserPrediction>) callback) {
-    this.leagues = leagues;
+  OddsPage(allMatches, eventsPerDayMap, Function(List<UserPrediction>) callback) {
+    this.allLeagues = allMatches;
     this.callback = callback;
     this.eventsPerDayMap = eventsPerDayMap;
     setName('Today\'s Odds');
@@ -42,37 +43,39 @@ class OddsPage extends StatefulWidgetWithName {
 
 class OddsPageState extends State<OddsPage>{
 
-  var leagues = <MatchEvent>[];
+  List<League> allLeagues = <League>[];
 
   HashMap eventsPerDayMap = HashMap();
 
   Function(List<UserPrediction>) ?callback;
 
-  OddsPageState(leagues, eventsPerDayMap, Function(List<UserPrediction>) callback) {
-    this.leagues = leagues;
+  OddsPageState(allMatches, eventsPerDayMap, Function(List<UserPrediction>) callback) {
+    this.allLeagues = allMatches;
     this.callback = callback;
     this.eventsPerDayMap = eventsPerDayMap;
   }
 
-  var _todayGamesList = <MatchEvent>[];
+  // var _todayGamesList = <MatchEvent>[];
 
   @override
   Widget build(BuildContext context) {
 
-    print('LEagues: ' + leagues.length.toString());
-    if (leagues.isEmpty){
+   // print('LEagues: ' + allMatches.length.toString());
+    if (allLeagues.isEmpty){
       return Text('No games yet..');
     }
 
-    _todayGamesList = leagues;
+   // _todayGamesList.addAll(allLeagues);
 
     return DefaultTabController(
       initialIndex: 7,
-
       length: 15,
+
       child: Scaffold(
+
           appBar: AppBar(
             toolbarHeight: 10,
+
             bottom:
 
               TabBar(
@@ -107,137 +110,106 @@ class OddsPageState extends State<OddsPage>{
             children: [
               ListView.builder(
                   padding: const EdgeInsets.all(8),
-                  itemCount: leagues.length,
+                  itemCount: allLeagues.length,
                   itemBuilder: (context, item) {
-                    return _buildRow(_todayGamesList[item]);
+                    return _buildRow(allLeagues[item]);
                   }),
 
               ListView.builder(
                   padding: const EdgeInsets.all(8),
-                  itemCount: leagues.length,
+                  itemCount: allLeagues.length,
                   itemBuilder: (context, item) {
-                    return _buildRow(_todayGamesList[item]);
+                    return _buildRow(allLeagues[item]);
                   }),
               ListView.builder(
                   padding: const EdgeInsets.all(8),
-                  itemCount: leagues.length,
+                  itemCount: allLeagues.length,
                   itemBuilder: (context, item) {
-                    return _buildRow(_todayGamesList[item]);
+                    return _buildRow(allLeagues[item]);
                   }),
               ListView.builder(
                   padding: const EdgeInsets.all(8),
-                  itemCount: leagues.length,
+                  itemCount: allLeagues.length,
                   itemBuilder: (context, item) {
-                    return _buildRow(_todayGamesList[item]);
+                    return _buildRow(allLeagues[item]);
                   }),
               ListView.builder(
                   padding: const EdgeInsets.all(8),
-                  itemCount: leagues.length,
+                  itemCount: allLeagues.length,
                   itemBuilder: (context, item) {
-                    return _buildRow(_todayGamesList[item]);
+                    return _buildRow(allLeagues[item]);
                   }),
               ListView.builder(
                   padding: const EdgeInsets.all(8),
-                  itemCount: leagues.length,
+                  itemCount: allLeagues.length,
                   itemBuilder: (context, item) {
-                    return _buildRow(_todayGamesList[item]);
+                    return _buildRow(allLeagues[item]);
                   }),
               ListView.builder(
                   padding: const EdgeInsets.all(8),
-                  itemCount: leagues.length,
+                  itemCount: allLeagues.length,
                   itemBuilder: (context, item) {
-                    return _buildRow(_todayGamesList[item]);
+                    return _buildRow(allLeagues[item]);
                   }),
               ListView.builder(
                   padding: const EdgeInsets.all(8),
-                  itemCount: leagues.length,
+                  itemCount: allLeagues.length,
                   itemBuilder: (context, item) {
-                    return _buildRow(_todayGamesList[item]);
+                    return _buildRow(allLeagues[item]);
                   }),
               ListView.builder(
                   padding: const EdgeInsets.all(8),
-                  itemCount: leagues.length,
+                  itemCount: allLeagues.length,
                   itemBuilder: (context, item) {
-                    return _buildRow(_todayGamesList[item]);
+                    return _buildRow(allLeagues[item]);
                   }),
               ListView.builder(
                   padding: const EdgeInsets.all(8),
-                  itemCount: leagues.length,
+                  itemCount: allLeagues.length,
                   itemBuilder: (context, item) {
-                    return _buildRow(_todayGamesList[item]);
+                    return _buildRow(allLeagues[item]);
                   }),
               ListView.builder(
                   padding: const EdgeInsets.all(8),
-                  itemCount: leagues.length,
+                  itemCount: allLeagues.length,
                   itemBuilder: (context, item) {
-                    return _buildRow(_todayGamesList[item]);
+                    return _buildRow(allLeagues[item]);
                   }),
 
               ListView.builder(
                   padding: const EdgeInsets.all(8),
-                  itemCount: leagues.length,
+                  itemCount: allLeagues.length,
                   itemBuilder: (context, item) {
-                    return _buildRow(_todayGamesList[item]);
+                    return _buildRow(allLeagues[item]);
                   }),
               ListView.builder(
                   padding: const EdgeInsets.all(8),
-                  itemCount: leagues.length,
+                  itemCount: allLeagues.length,
                   itemBuilder: (context, item) {
-                    return _buildRow(_todayGamesList[item]);
+                    return _buildRow(allLeagues[item]);
                   }),
               ListView.builder(
                   padding: const EdgeInsets.all(8),
-                  itemCount: leagues.length,
+                  itemCount: allLeagues.length,
                   itemBuilder: (context, item) {
-                    return _buildRow(_todayGamesList[item]);
+                    return _buildRow(allLeagues[item]);
                   }),
               ListView.builder(
                   padding: const EdgeInsets.all(8),
-                  itemCount: leagues.length,
+                  itemCount: allLeagues.length,
                   itemBuilder: (context, item) {
-                    return _buildRow(_todayGamesList[item]);
+                    return _buildRow(allLeagues[item]);
                   }),
 
             ],)
 
       ),
     );
-
-    return Container(
-        width: 700,
-        height: 700,
-        color: Colors.amber[200],
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Expanded(flex: 1, child:
-            Container(
-              height: 20,
-              width: 700,
-              color: Colors.red[300],
-              child:
-              Row(children: [Text('This will be a list of the +-7 days in order to select')]),)),
-
-            Expanded(
-                flex: 6,
-                child: ListView.builder(
-                    padding: const EdgeInsets.all(16),
-                    itemCount: _todayGamesList.length,
-                    itemBuilder: (context, item) {
-                      return _buildRow(_todayGamesList[item]);
-                    })
-            )
-          ],
-        )
-    );
-
   }
 
-  Widget _buildRow(MatchEvent gameWithOdds) {
-
-    return UpcomingMatchRow(gameWithOdds: gameWithOdds, callback: callback);
-
-
+  Widget _buildRow(League league) {
+    return LeagueMatchesRow(key: UniqueKey(), league: league);
+   // return UpcomingMatchRow(gameWithOdds: gameWithOdds, callback: callback);
   }
 
 }
