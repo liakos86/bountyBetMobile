@@ -1,18 +1,12 @@
-import 'dart:collection';
 import 'dart:ui';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_app/enums/BetStatus.dart';
 import 'package:flutter_app/models/match_event.dart';
 import 'package:flutter_app/widgets/LiveMatchRow.dart';
 
-import '../models/UserPrediction.dart';
-import '../models/UserBet.dart';
 import '../models/league.dart';
-import '../utils/MockUtils.dart';
 import 'UpcomingMatchRow.dart';
-import 'UserBetPredictionRow.dart';
 
 class LeagueMatchesRow extends StatelessWidget{
 
@@ -26,9 +20,9 @@ class LeagueMatchesRow extends StatelessWidget{
       initiallyExpanded: true,
       tilePadding: EdgeInsets.all(8),
       backgroundColor: Colors.grey[300],
-      subtitle: Text(league.name),
+      subtitle: Text(league.section!.name),
       leading: Image.network(
-        league.logo ?? "https://tipsscore.com/resb/team/southampton.png",
+        league.logo ?? "https://tipsscore.com/resb/no-league.png",
         height: 36,
         width: 36,
       ),

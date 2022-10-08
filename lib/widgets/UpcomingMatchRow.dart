@@ -14,11 +14,6 @@ class UpcomingMatchRow extends StatefulWidget {
 
   UpcomingMatchRow({Key ?key, required this.gameWithOdds}) : super(key: key);
 
-  // UpcomingMatchRow({
-  //   required this.gameWithOdds,
-  //   required this.callback
-  // });
-
   @override
   UpcomingMatchRowState createState() => UpcomingMatchRowState(gameWithOdds: gameWithOdds, callback: callback);
 }

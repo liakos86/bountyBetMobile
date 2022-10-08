@@ -4,6 +4,7 @@ import 'package:flutter_app/models/match_event.dart';
 
 import '../enums/BetPredictionType.dart';
 import '../models/Score.dart';
+import '../models/Section.dart';
 import '../models/Team.dart';
 import '../models/UserPrediction.dart';
 import '../models/match_odds.dart';
@@ -81,6 +82,7 @@ class JsonHelper{
     );
     //print(_changeEvent);
    match.changeEvent = ChangeEvent.ofCode(_changeEvent);
+
     match.status_more = event["status_more"];
     match.status_for_client = event["status_for_client"];
     if (homeTeamScore != null){
@@ -105,7 +107,7 @@ class JsonHelper{
       matches.add(match);
     }
 
-    print('GOT EVENTS');
+
     League l = League(
         name: league['name'],
         league_id: league['id'],
@@ -113,6 +115,18 @@ class JsonHelper{
         events: matches);
 
     l.logo = league['logo'];
+
+    var sectionJson = league['section'];
+    print(l.name);
+    print(sectionJson);
+   // if (section) {
+      Section section = Section(sectionJson['name']);
+      l.section = section;
+   // }
+
+    if (l.events.isEmpty){
+      print('EMPTY LEAGUE EVENTS ' + l.name);
+    }
 
     return l;
   }

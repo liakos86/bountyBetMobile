@@ -1,5 +1,7 @@
 import 'package:flutter_app/models/match_event.dart';
 
+import 'Section.dart';
+
 class League{
 
   League({
@@ -8,6 +10,8 @@ class League{
     required this.has_logo,
     required this.events
   } );
+
+  Section ?section;
 
   bool has_logo ;
 
