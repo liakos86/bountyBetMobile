@@ -355,7 +355,7 @@ class ParentPageState extends State<ParentPage>{
 
   }
 
-  getLiveEvents() {
+  getLiveEventsCallBack() {
     var liveList = <MatchEvent>[];
     // liveList.addAll(_liveEvents);
     // print("SENDING LIVE");

@@ -55,17 +55,12 @@ class OddsPageState extends State<OddsPage>{
     this.eventsPerDayMap = eventsPerDayMap;
   }
 
-  // var _todayGamesList = <MatchEvent>[];
-
   @override
   Widget build(BuildContext context) {
 
-   // print('LEagues: ' + allMatches.length.toString());
     if (allLeagues.isEmpty){
       return Text('No games yet..');
     }
-
-   // _todayGamesList.addAll(allLeagues);
 
     return DefaultTabController(
       initialIndex: 7,

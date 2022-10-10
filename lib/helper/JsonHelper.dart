@@ -70,6 +70,8 @@ class JsonHelper{
     var homeTeamScore = event["home_score"];
     var awayTeamScore = event["away_score"];
     var _changeEvent = event["changeEvent"];
+    var startHour = event["start_hour"];
+    var startMinute = event["start_minute"];
 
     MatchEvent match = MatchEvent(eventId: event["id"],
         status: event["status"],
@@ -82,6 +84,8 @@ class JsonHelper{
     );
     //print(_changeEvent);
    match.changeEvent = ChangeEvent.ofCode(_changeEvent);
+   match.startHour = startHour;
+   match.startMinute = startMinute;
 
     match.status_more = event["status_more"];
     match.status_for_client = event["status_for_client"];

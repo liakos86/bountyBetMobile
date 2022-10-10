@@ -22,9 +22,9 @@ class MatchEvent{
 
   String ?status_more;
 
-  String ?eventDate;
+  int ?startHour;
 
-  String ?eventTime;
+  int ?startMinute;
 
   Team homeTeam ;
 

@@ -37,6 +37,7 @@ class LivePageState2 extends State<LivePage2>{
 
   @override
   void initState(){
+    print('SETTING');
     Timer.periodic(Duration(seconds: 5), (timer) {
       getLive();
     });
@@ -88,7 +89,6 @@ class LivePageState2 extends State<LivePage2>{
       }
 
       for (var league in jsonLeaguesData) {
-        print('decoding ' + league['name']);
         League liveLeague = JsonHelper.leagueFromJson(league);
         validData.add(liveLeague);
       }
