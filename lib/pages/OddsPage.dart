@@ -5,7 +5,7 @@ import 'dart:convert';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_app/models/interfaces/StatefulWidgetWithName.dart';
-import 'package:flutter_app/widgets/LeagueMatchesRow.dart';
+import 'package:flutter_app/widgets/LeagueExpandableTile.dart';
 import 'package:http/http.dart';
 
 import '../enums/BetPredictionType.dart';

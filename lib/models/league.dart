@@ -1,5 +1,6 @@
 import 'package:flutter_app/models/match_event.dart';
 
+import 'Season.dart';
 import 'Section.dart';
 
 class League{
@@ -11,17 +12,23 @@ class League{
     required this.events
   } );
 
+  League.defLeague();
+
+  Map<String, String> ?translations;
+
   Section ?section;
 
-  bool has_logo ;
+  List<Season> seasons = <Season>[];
 
-  String name ;
+  bool has_logo = false;
 
-  int league_id;
+  String name = '';
+
+  int league_id = 0;
 
   String ?logo ;
 
-  List<MatchEvent> events ;
+  List<MatchEvent> events = <MatchEvent>[];
 
   List<MatchEvent> getEvents(){
     return events;

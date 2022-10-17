@@ -14,6 +14,8 @@ class MatchEvent{
     required this.status
   } );
 
+  Map<String, String> ?translations;
+
   int eventId;
 
   String ?status_for_client;

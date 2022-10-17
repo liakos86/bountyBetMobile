@@ -3,20 +3,18 @@ import 'package:flutter/material.dart';
 
 import '../enums/ChangeEvent.dart';
 import '../models/Team.dart';
+import '../models/league.dart';
 
-class LogoWithTeam extends StatelessWidget{
+class LogoWithLeague extends StatelessWidget{
 
-  Team team;
+  League league;
 
-  LogoWithTeam({Key ?key, required this.team}) : super(key: key);
+  LogoWithLeague({Key ?key, required this.league}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return
-    //   DecoratedBox(//first child
-    //     decoration: BoxDecoration(color: Colors.yellow),
-    // child:
-
+   
       Wrap(//mainAxisSize: MainAxisSize.min,// HOME TEAM NAME ROW
 
         children: [
@@ -28,12 +26,12 @@ class LogoWithTeam extends StatelessWidget{
               children: [
                 WidgetSpan(
                     child: Image.network(
-                        team.logo,
+                        league.logo ?? "https://tipsscore.com/resb/no-league.png",
                         height: 24,
                         width: 24
                     )),
                 WidgetSpan(child: SizedBox(width: 10)),
-                TextSpan(text: team.name,
+                TextSpan(text: league.name,
                     style: TextStyle(
                         fontWeight: FontWeight.bold, fontSize: 12, color: Colors.black)),
               ],

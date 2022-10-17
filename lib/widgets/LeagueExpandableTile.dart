@@ -17,9 +17,10 @@ class LeagueMatchesRow extends StatelessWidget{
   @override
   Widget build(BuildContext context) {
     return ExpansionTile(
+
       initiallyExpanded: true,
-      tilePadding: EdgeInsets.all(8),
-      backgroundColor: Colors.grey[300],
+      tilePadding: EdgeInsets.all(2),
+      backgroundColor: Colors.yellow[100],
       subtitle: Text(league.section!.name),
       leading: Image.network(
         league.logo ?? "https://tipsscore.com/resb/no-league.png",

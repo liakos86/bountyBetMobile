@@ -6,6 +6,7 @@ import 'package:flutter_app/enums/BetPredictionStatus.dart';
 import 'package:flutter_app/enums/BetPredictionType.dart';
 import 'package:flutter_app/enums/BetStatus.dart';
 import 'package:flutter_app/enums/ChangeEvent.dart';
+import 'package:flutter_app/models/Section.dart';
 import 'package:flutter_app/models/Team.dart';
 import 'package:flutter_app/models/User.dart';
 import 'package:flutter_app/models/UserBet.dart';
@@ -37,6 +38,10 @@ class MockUtils {
 
     League league = League(events: events,  has_logo: true, name: "Mock country", league_id: 2);
     league.logo = LOGO ;
+
+    Section section = Section("Section name");
+    league.section = section;
+
     leagues.add(league);
 
     return leagues;
@@ -65,13 +70,13 @@ class MockUtils {
 
   MatchEvent mockEvent(eventId, odd1, oddx, odd2, oddO25, oddU25, _status, _status_more, _changeEvent){
     MatchOdds mockOdds1 = mockOdds(eventId, odd1, oddx, odd2, oddO25, oddU25);
-    print('ODDS ok');
+
     MatchEvent event = MatchEvent(eventId: eventId, homeTeam: Team(eventId, ("home team"+ eventId.toString()), LOGO) ,
         awayTeam : Team(eventId, ("away team"+ eventId.toString()), LOGO), odds: mockOdds1,
         status: _status);
     event.changeEvent = _changeEvent;
     event.status_more = _status_more;
-    event.status_for_client = "33";
+    event.status_for_client = "33'";
     event.homeTeamScore = Score(1, 1, eventId, eventId, eventId);
     event.awayTeamScore = Score(1, 1, eventId, eventId, eventId);
 

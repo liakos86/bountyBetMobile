@@ -35,31 +35,39 @@ class LiveMatchRowState extends State<LiveMatchRow> {
 
       DecoratedBox(
 
-          decoration: BoxDecoration(color: gameWithOdds.changeEvent == ChangeEvent.NONE ? Colors.white : Colors.greenAccent),
+          decoration: BoxDecoration(color: gameWithOdds.changeEvent == ChangeEvent.NONE ? Colors.white : Colors.green[200],
+            //  borderRadius: BorderRadius.only(topLeft:  Radius.circular(2), topRight:  Radius.circular(2)),
+              border: Border(
+              top: BorderSide(width: 0.3, color: Colors.grey.shade600),
+              left: BorderSide(width: 0, color: Colors.transparent),
+                right: BorderSide(width: 0, color: Colors.transparent),
+                bottom: BorderSide(width: 0.3, color: Colors.grey.shade600),
+                ), ),
           child:
           Row(//top father
               mainAxisSize: MainAxisSize.max,
               children: [
                 // OLA TA CHILDREN PREPEI NA GINOUN EXPANDED!!!!!!!!!!!!!!!
                 Expanded(//first column
-                    flex: 6,
-                    child:
-
-                        Align(
-                    alignment: Alignment.centerLeft,
+                    flex: 10,
                     child:
 
                     Column(
 
                     children: [
-
+                        Align(
+                        alignment: Alignment.centerLeft,
+                        child:
                       LogoWithTeam(key: UniqueKey(), team: gameWithOdds.homeTeam),
-
+                        ),
+                            Align(
+                                alignment: Alignment.centerLeft,
+                                child:
                       LogoWithTeam(key: UniqueKey(), team: gameWithOdds.awayTeam),
-
+                            )
                     ]
-
-                ))), // FIRST COLUMN END
+                )),
+      //), // FIRST COLUMN END
 
                 Expanded(
                     flex: 2,
@@ -94,8 +102,7 @@ class LiveMatchRowState extends State<LiveMatchRow> {
                           fontWeight: FontWeight.bold,
                           color: Colors.redAccent),))
                     ]
-                ))//THIRD COLUMN END
-
+                )), //THIRD COLUMN END
 
               ])//parent column end
 

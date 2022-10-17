@@ -1,17 +1,22 @@
+
+import 'package:flutter/material.dart';
 import 'package:flutter_app/enums/ChangeEvent.dart';
+import 'package:flutter_app/models/StandingRow.dart';
 import 'package:flutter_app/models/league.dart';
 import 'package:flutter_app/models/match_event.dart';
 
 import '../enums/BetPredictionType.dart';
 import '../models/Score.dart';
+import '../models/Season.dart';
 import '../models/Section.dart';
+import '../models/Standing.dart';
 import '../models/Team.dart';
 import '../models/UserPrediction.dart';
 import '../models/match_odds.dart';
 
 class JsonHelper{
 
-  static MatchEvent eventFromJson(var event){
+  static MatchEvent eventFromJson(var event, BuildContext context){
     MatchOdds odds ;
 
     var eventOdds = event["main_odds"];
@@ -73,22 +78,34 @@ class JsonHelper{
     var startHour = event["start_hour"];
     var startMinute = event["start_minute"];
 
-    MatchEvent match = MatchEvent(eventId: event["id"],
-        status: event["status"],
 
-        homeTeam: Team(homeTeam["id"], homeTeam["name"], homeTeam["logo"]),
-        awayTeam: Team(awayTeam["id"], awayTeam["name"], awayTeam["logo"]),
+    var homeTranslations = homeTeam['name_translations'];
+    var awayTranslations = awayTeam['name_translations'];
+    String langCode = Localizations.localeOf(context).languageCode;
 
-        odds: odds,
+    Team hTeam = Team(homeTeam["id"], homeTeam["name"], homeTeam["logo"]);
+    Team aTeam = Team(awayTeam["id"], awayTeam["name"], awayTeam["logo"]);
 
-    );
-    //print(_changeEvent);
+    if (homeTranslations !=null && homeTranslations[langCode] != null){
+      hTeam.name = homeTranslations[langCode];
+    }
+
+    if (awayTranslations != null && awayTranslations[langCode] != null){
+      aTeam.name = awayTranslations[langCode];
+    }
+
+    MatchEvent match = MatchEvent(eventId: event["id"], status: event["status"], homeTeam: hTeam, awayTeam: aTeam, odds: odds);
+
+
    match.changeEvent = ChangeEvent.ofCode(_changeEvent);
    match.startHour = startHour;
    match.startMinute = startMinute;
 
+
     match.status_more = event["status_more"];
     match.status_for_client = event["status_for_client"];
+
+
     if (homeTeamScore != null){
       match.homeTeamScore = Score(homeTeamScore["current"], homeTeamScore["display"], homeTeamScore["normal_time"],
           homeTeamScore["period_1"], homeTeamScore["period_2"]);
@@ -103,14 +120,14 @@ class JsonHelper{
     return match;
   }
 
-  static League leagueFromJson(league) {
+  static League leagueFromJson(league, BuildContext context) {
     List<MatchEvent> matches = <MatchEvent>[];
+
     var jsonLeagueEvents = league["liveMatchEvents"];
     for (var jsonEvent in jsonLeagueEvents){
-      MatchEvent match = eventFromJson(jsonEvent);
+      MatchEvent match = eventFromJson(jsonEvent, context);
       matches.add(match);
     }
-
 
     League l = League(
         name: league['name'],
@@ -119,20 +136,65 @@ class JsonHelper{
         events: matches);
 
     l.logo = league['logo'];
-
     var sectionJson = league['section'];
-    print(l.name);
-    print(sectionJson);
-   // if (section) {
-      Section section = Section(sectionJson['name']);
-      l.section = section;
-   // }
 
-    if (l.events.isEmpty){
-      print('EMPTY LEAGUE EVENTS ' + l.name);
+    Section section = Section(sectionJson['name']);
+    var sectionTranslations = sectionJson['name_translations'];
+    String langCode = Localizations.localeOf(context).languageCode;
+    if (sectionTranslations != null && sectionTranslations[langCode] != null){
+      section.name = sectionTranslations[langCode];
+    }
+
+    l.section = section;
+
+    var translations = league['name_translations'];
+    if (translations != null && translations[langCode] != null){
+      l.name = translations[langCode];
+    }
+
+
+    var seasonsJson = league['seasons'];
+
+    if (seasonsJson == null ){
+
+    }else {
+      for (var seasonJson in seasonsJson) {
+        Season season = seasonFromJson(seasonJson);
+        l.seasons.add(season);
+      }
     }
 
     return l;
   }
+
+  static seasonFromJson(seasonJson) {
+
+    Standing st = standingFromJson(seasonJson['standing']);
+
+    Season s = Season(year_start: seasonJson['year_start'], year_end: seasonJson['year_end'], standing: st);
+    return s;
+
+  }
+
+  static Standing standingFromJson(standing) {
+    List<StandingRow> rows = <StandingRow>[];
+
+    //var standing = seasonJson['standing'];
+
+    var stRows = standing['standings_rows'];
+    for (var stRow in stRows){
+      var teamJson = stRow['team'];
+      Team hTeam = Team(teamJson["id"], teamJson["name"], teamJson["logo"]);
+      StandingRow row = StandingRow(team: hTeam);
+      row.away_points = stRow['away_points'];
+      row.home_points = stRow['home_points'];
+      row.position = stRow['position'];
+      rows.add(row);
+    }
+
+    return Standing(standingRows: rows);
+
+  }
+
 
 }

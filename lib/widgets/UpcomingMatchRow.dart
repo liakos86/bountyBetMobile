@@ -40,7 +40,6 @@ class UpcomingMatchRow extends StatefulWidget {
         children: [
 
         DecoratedBox(//first child
-
             decoration: BoxDecoration(color: Colors.white),
             child:
             Row( //top father
@@ -48,26 +47,24 @@ class UpcomingMatchRow extends StatefulWidget {
                 children: [
                   // OLA TA CHILDREN PREPEI NA GINOUN EXPANDED!!!!!!!!!!!!!!!
                   Expanded( //first column
-                      flex: 6,
+                      flex: 10,
                       child:
 
+                          Column(
+                              children: [
+                              Align(
+                              alignment: Alignment.centerLeft,
+                              child:
+                                LogoWithTeam(key: UniqueKey(),
+                                    team: gameWithOdds.homeTeam)),
                       Align(
                           alignment: Alignment.centerLeft,
                           child:
 
-                          Column(
-
-                              children: [
-
                                 LogoWithTeam(key: UniqueKey(),
-                                    team: gameWithOdds.homeTeam),
-
-                                LogoWithTeam(key: UniqueKey(),
-                                    team: gameWithOdds.awayTeam),
-
+                                    team: gameWithOdds.awayTeam)),
                               ]
-
-                          ))), // FIRST COLUMN END
+                          )), // FIRST COLUMN END
 
                   Expanded(
                       flex: 2,

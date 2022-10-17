@@ -10,6 +10,7 @@ import 'package:flutter_app/models/UserBet.dart';
 import 'package:flutter_app/models/constants/MatchConstants.dart';
 import 'package:flutter_app/models/constants/UrlConstants.dart';
 import 'package:flutter_app/models/league.dart';
+import 'package:flutter_app/pages/LeaguesInfoPage.dart';
 import 'package:flutter_app/pages/OddsPage.dart';
 import 'package:flutter_app/widgets/SelectedOddRow.dart';
 import 'package:http/http.dart';
@@ -20,11 +21,9 @@ import '../models/Score.dart';
 import '../models/Team.dart';
 import '../models/User.dart';
 import '../models/match_event.dart';
-import '../models/match_odds.dart';
 import '../utils/MockUtils.dart';
 import '../models/interfaces/StatefulWidgetWithName.dart';
 import 'LeaderBoardPage.dart';
-import 'LivePage.dart';
 import 'LivePage2.dart';
 import 'MyBetsPage.dart';
 
@@ -34,6 +33,8 @@ class ParentPage extends StatefulWidget{
 }
 
 TextEditingController betAmountController = TextEditingController();
+
+List<League> liveMatchesPerLeague = <League>[];
 
 class ParentPageState extends State<ParentPage>{
 
@@ -63,6 +64,11 @@ class ParentPageState extends State<ParentPage>{
   void initState() {
     getLeagues();
     getUser();
+
+    Timer.periodic(Duration(seconds: 5), (timer) {
+      getLive();
+    });
+
     super.initState();
   }
 
@@ -76,18 +82,15 @@ class ParentPageState extends State<ParentPage>{
       pagesList.add(CircularProgressIndicator());
       pagesList.add(CircularProgressIndicator());
       pagesList.add(CircularProgressIndicator());
+      pagesList.add(CircularProgressIndicator());
     }else {
       pagesList.add(OddsPage(_allLeagues, eventsPerDayMap, (selectedOdds) =>
           setState(
                   () => _selectedOdds = selectedOdds)));
-      var liveMatches = <MatchEvent>[];
-      liveMatches.addAll(liveMatches);
-
-      // pagesList.add(LivePage(liveMatches, getLiveEvents));
-
-      pagesList.add(LivePage2());
+      pagesList.add(LivePage2(liveMatchesPerLeague, getLiveEventsCallBack));
       pagesList.add(LeaderBoardPage());
       pagesList.add(MyBetsPage(user.userBets, eventsPerIdMap));
+      pagesList.add(LeaguesInfoPage(_allLeagues));
     }
 
     return Scaffold(
@@ -213,6 +216,10 @@ class ParentPageState extends State<ParentPage>{
               icon: Icon(Icons.my_library_music),
               label: 'My bets'
           ),
+          BottomNavigationBarItem(
+              icon: Icon(Icons.leaderboard),
+              label: 'Leagues'
+          ),
         ],
 
         onTap: (index){
@@ -292,7 +299,7 @@ class ParentPageState extends State<ParentPage>{
       }
 
       for (var league in jsonLeaguesData) {
-        League leagueObj = JsonHelper.leagueFromJson(league);
+        League leagueObj = JsonHelper.leagueFromJson(league, context);
           validData.add(leagueObj);
           for (MatchEvent match in leagueObj.events) {
             eventsPerIdMap.putIfAbsent(match.eventId, () => match); //TODO: If it is already there? we need to clear map.
@@ -350,16 +357,44 @@ class ParentPageState extends State<ParentPage>{
 
   }
 
-  int dayOfEvent(MatchEvent event) {
-    return 1;
 
+
+
+  void getLive() async {
+    var validData = <League>[];
+
+    try {
+
+      List jsonLeaguesData = [];
+      try {
+        Response leaguesResponse = await get(Uri.parse(UrlConstants.GET_LIVE))
+            .timeout(const Duration(seconds: 4));
+        jsonLeaguesData = jsonDecode(leaguesResponse.body) as List;
+      } catch (e) {
+        print(e);
+        List<League> leagues = MockUtils().mockLeagues(true);
+        setState(() {
+          liveMatchesPerLeague = leagues;
+        });
+        return;
+      }
+
+      for (var league in jsonLeaguesData) {
+        League liveLeague = JsonHelper.leagueFromJson(league, context);
+        validData.add(liveLeague);
+      }
+
+  //    setState(() {
+        liveMatchesPerLeague = validData;
+    //  });
+    } catch (err) {
+      print(err);
+    }
   }
 
   getLiveEventsCallBack() {
-    var liveList = <MatchEvent>[];
-    // liveList.addAll(_liveEvents);
-    // print("SENDING LIVE");
-    return liveList;
+
+    return liveMatchesPerLeague;
   }
 
 

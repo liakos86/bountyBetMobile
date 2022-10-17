@@ -17,7 +17,7 @@ import '../models/UserPrediction.dart';
 import '../models/league.dart';
 import '../models/match_event.dart';
 import '../models/match_odds.dart';
-import '../widgets/LeagueMatchesRow.dart';
+import '../widgets/LeagueExpandableTile.dart';
 import '../widgets/LiveMatchRow.dart';
 import '../widgets/UpcomingMatchRow.dart';
 
@@ -25,9 +25,15 @@ import '../widgets/UpcomingMatchRow.dart';
 class LivePage2 extends StatefulWidgetWithName {
 
   @override
-  LivePageState2 createState() => LivePageState2();
+  LivePageState2 createState() => LivePageState2(liveMatchesPerLeague, functionReloadLiveLeagues);
 
-  LivePage2() {
+  List<League> liveMatchesPerLeague = <League>[];
+
+  Function functionReloadLiveLeagues = ()=>{};
+
+  LivePage2(List<League> _liveMatchesPerLeague, getLiveEventsCallBack) {
+    this.liveMatchesPerLeague = _liveMatchesPerLeague;
+    this.functionReloadLiveLeagues = getLiveEventsCallBack;
     setName('Live');
   }
 
@@ -37,20 +43,27 @@ class LivePageState2 extends State<LivePage2>{
 
   @override
   void initState(){
-    print('SETTING');
-    Timer.periodic(Duration(seconds: 5), (timer) {
-      getLive();
-    });
 
     super.initState();
   }
 
   List<League> liveMatchesPerLeague = <League>[];
-  
-  LivePageState() {  }
+
+  Function functionReloadLiveLeagues = ()=>{};
+
+  LivePageState2(liveMatches, functionEvents) {
+    this.liveMatchesPerLeague = liveMatches;
+    this.functionReloadLiveLeagues = functionEvents;
+  }
 
   @override
   Widget build(BuildContext context) {
+
+
+    Timer.periodic(Duration(seconds: 5), (timer) {
+      updateLiveFromParent();
+    });
+
 
     if (liveMatchesPerLeague.isEmpty){
       return Text('No games yet..');
@@ -69,36 +82,48 @@ class LivePageState2 extends State<LivePage2>{
     return LeagueMatchesRow(key: UniqueKey(), league: league);
   }
 
-  void getLive() async {
-    var validData = <League>[];
+  void updateLiveFromParent() {
 
-    try {
+    var leagues = functionReloadLiveLeagues.call();
 
-      List jsonLeaguesData = [];
-      try {
-        Response leaguesResponse = await get(Uri.parse(UrlConstants.GET_LIVE))
-            .timeout(const Duration(seconds: 4));
-        jsonLeaguesData = jsonDecode(leaguesResponse.body) as List;
-      } catch (e) {
-        print(e);
-        List<League> leagues = MockUtils().mockLeagues(true);
-        setState(() {
-          liveMatchesPerLeague = leagues;
-        });
-        return;
-      }
-
-      for (var league in jsonLeaguesData) {
-        League liveLeague = JsonHelper.leagueFromJson(league);
-        validData.add(liveLeague);
-      }
-
+    if (this.mounted) {
       setState(() {
-        liveMatchesPerLeague = validData;
+        this.liveMatchesPerLeague = leagues;
       });
-    } catch (err) {
-      print(err);
     }
+
   }
+
+  // void getLive() async {
+  //   var validData = <League>[];
+  //
+  //   try {
+  //
+  //     List jsonLeaguesData = [];
+  //     try {
+  //       Response leaguesResponse = await get(Uri.parse(UrlConstants.GET_LIVE))
+  //           .timeout(const Duration(seconds: 4));
+  //       jsonLeaguesData = jsonDecode(leaguesResponse.body) as List;
+  //     } catch (e) {
+  //       print(e);
+  //       List<League> leagues = MockUtils().mockLeagues(true);
+  //       setState(() {
+  //         liveMatchesPerLeague = leagues;
+  //       });
+  //       return;
+  //     }
+  //
+  //     for (var league in jsonLeaguesData) {
+  //       League liveLeague = JsonHelper.leagueFromJson(league);
+  //       validData.add(liveLeague);
+  //     }
+  //
+  //     setState(() {
+  //       liveMatchesPerLeague = validData;
+  //     });
+  //   } catch (err) {
+  //     print(err);
+  //   }
+  // }
 
 }
