@@ -6,33 +6,53 @@ import 'package:flutter_app/widgets/GestureDetectorForOdds.dart';
 import '../models/UserPrediction.dart';
 import '../models/match_event.dart';
 import 'LogoWithTeam.dart';
+import 'LogoWithTeamName.dart';
 
 class UpcomingMatchRow extends StatefulWidget {
 
+  //UserPrediction? selectedPrediction;
+
+  //List<UserPrediction> selectedOdds = <UserPrediction>[];
+
   MatchEvent gameWithOdds;
 
-  Function(List<UserPrediction>) ?callback;
+  Function( int, UserPrediction?) ?callbackForOdds;
 
-  UpcomingMatchRow({Key ?key, required this.gameWithOdds}) : super(key: key);
+  // Function ?callbackForEvents;
+
+  UpcomingMatchRow({Key ?key, required this.gameWithOdds, required this.callbackForOdds}) : super(key: key);
 
   @override
-  UpcomingMatchRowState createState() => UpcomingMatchRowState(gameWithOdds: gameWithOdds, callback: callback);
+  UpcomingMatchRowState createState() => UpcomingMatchRowState(gameWithOdds: gameWithOdds, callbackForOdds: callbackForOdds);
 }
 
   class UpcomingMatchRowState extends State<UpcomingMatchRow> {
 
-    Function(List<UserPrediction>) ?callback;
+    UserPrediction? selectedPrediction;
+
+    // List<UserPrediction> selectedOdds = <UserPrediction>[];
+
+    Function( int, UserPrediction?) ?callbackForOdds;
+
+    // Function ?callbackForEvents;
 
     MatchEvent gameWithOdds;
 
     UpcomingMatchRowState({
+      // required this.selectedOdds,
       required this.gameWithOdds,
-      required this.callback
+      // required this.callbackForEvents,
+      required this.callbackForOdds
     });
 
 
     @override
     Widget build(BuildContext context) {
+
+      if (gameWithOdds.homeTeam.name.contains("Arsenal")) {
+        print('ARSENAL BUILDING MATCH ROW');
+      }
+
       return
 
       Wrap(//top parent
@@ -55,13 +75,13 @@ class UpcomingMatchRow extends StatefulWidget {
                               Align(
                               alignment: Alignment.centerLeft,
                               child:
-                                LogoWithTeam(key: UniqueKey(),
+                                LogoWithTeamName(key: UniqueKey(),
                                     team: gameWithOdds.homeTeam)),
                       Align(
                           alignment: Alignment.centerLeft,
                           child:
 
-                                LogoWithTeam(key: UniqueKey(),
+                                LogoWithTeamName(key: UniqueKey(),
                                     team: gameWithOdds.awayTeam)),
                               ]
                           )), // FIRST COLUMN END
@@ -73,8 +93,8 @@ class UpcomingMatchRow extends StatefulWidget {
                       Column( //second column
                           children: [
                             Padding(padding: EdgeInsets.all(6), child:
-                            Text((gameWithOdds.startHour!.toString() + ':' + (gameWithOdds.startMinute! < 10 ? '0' : '')  +
-                                gameWithOdds.startMinute!.toString()),
+                            Text( (gameWithOdds.startHour! < 10 ? '0' : '' ) + gameWithOdds.startHour!.toString()  +
+                                (gameWithOdds.startMinute! < 10 ? '0' : '' ) + gameWithOdds.startMinute!.toString() ,
                               style: TextStyle(
                                   fontSize: 12,
                                   fontWeight: FontWeight.bold,
@@ -89,38 +109,44 @@ class UpcomingMatchRow extends StatefulWidget {
 
           //ODDS ROW
 
-     if (gameWithOdds.odds.odd1.value > -1) DecoratedBox(//second child
-
-      decoration: BoxDecoration(color: Colors.yellow[200]),
-      child:
+     if (gameWithOdds.odds.odd1.value > -1)
           Row(mainAxisSize: MainAxisSize.max,
 
             children: [
               Expanded(flex: 5,
-                  child: Padding(padding: EdgeInsets.all(8),
-                      child: GestureDetectorForOdds(align: TextAlign.right,
+                  child: Padding(padding: EdgeInsets.all(4),
+                      child: GestureDetectorForOdds(
+                        key: UniqueKey(),
+                        selected: selectedPrediction,
                         eventId: gameWithOdds.eventId,
-                        callback: callback,
+                        predictionText: '1:',
+                        callbackForOdds: update,
                         prediction: gameWithOdds.odds.odd1,
                         toRemove: [
                           gameWithOdds.odds.odd2,
                           gameWithOdds.odds.oddX
                         ],))),
-              Expanded(flex: 2,
-                  child: Padding(padding: EdgeInsets.all(8),
-                      child: GestureDetectorForOdds(align: TextAlign.center,
+              Expanded(flex: 4,
+                  child: Padding(padding: EdgeInsets.all(4),
+                      child: GestureDetectorForOdds(
+                        key: UniqueKey(),
+                        selected: selectedPrediction,
                         eventId: gameWithOdds.eventId,
-                        callback: callback,
+                        predictionText: 'X:',
+                        callbackForOdds: update,
                         prediction: gameWithOdds.odds.oddX,
                         toRemove: [
                           gameWithOdds.odds.odd2,
                           gameWithOdds.odds.odd1
                         ],))),
               Expanded(flex: 5,
-                  child: Padding(padding: EdgeInsets.all(8),
-                      child: GestureDetectorForOdds(align: TextAlign.left,
+                  child: Padding(padding: EdgeInsets.all(4),
+                      child: GestureDetectorForOdds(
+                        key: UniqueKey(),
+                        selected: selectedPrediction,
                         eventId: gameWithOdds.eventId,
-                        callback: callback,
+                        predictionText: '2:',
+                        callbackForOdds: update,
                         prediction: gameWithOdds.odds.odd2,
                         toRemove: [
                           gameWithOdds.odds.odd1,
@@ -129,141 +155,17 @@ class UpcomingMatchRow extends StatefulWidget {
             ],
           ),
 
-
-        )
         ]
-      )
-
-        ;
-
-
-      return Column(
-          children: [
-
-            Row(mainAxisSize: MainAxisSize.max,
-
-              children: [
-                Expanded(
-                    flex: 3, child: Padding(padding: EdgeInsets.all(8), child:
-
-                Text.rich(
-                  TextSpan(
-                    children: [
-                      WidgetSpan(child: Image.network(
-                        gameWithOdds.homeTeam.logo,
-                        height: 24,
-                        width: 24,
-                      )),
-                      TextSpan(text: gameWithOdds.homeTeam.name,
-                          style: TextStyle(
-                              fontWeight: FontWeight.bold, fontSize: 14)),
-
-
-                    ],
-                  ),
-                )
-
-                  //Text(gameWithOdds.homeTeam.name, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14), textAlign: TextAlign.right)
-
-
-                )),
-                Expanded(flex: 1,
-                    child: Padding(padding: EdgeInsets.all(8),
-                        child: Text("-", style: TextStyle(
-                            fontWeight: FontWeight.bold, fontSize: 14),
-                            textAlign: TextAlign.center))),
-
-
-                Expanded(
-                    flex: 3, child: Padding(padding: EdgeInsets.all(8), child:
-
-                Text.rich(
-                  TextSpan(
-                    children: [
-                      TextSpan(text: gameWithOdds.awayTeam.name,
-                          style: TextStyle(
-                              fontWeight: FontWeight.bold, fontSize: 14)),
-                      WidgetSpan(child: Image.network(
-                        gameWithOdds.awayTeam.logo,
-                        height: 24,
-                        width: 24,
-                      )),
-
-
-                    ],
-                  ),
-                )
-
-                  //     Text(gameWithOdds.awayTeam.name, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14), textAlign: TextAlign.left)
-
-
-                )),
-
-
-              ],),
-
-            Row(mainAxisSize: MainAxisSize.max,
-
-              children: [
-                Expanded(flex: 5,
-                    child: Padding(padding: EdgeInsets.all(8),
-                        child: GestureDetectorForOdds(align: TextAlign.right,
-                          eventId: gameWithOdds.eventId,
-                          callback: callback,
-                          prediction: gameWithOdds.odds.odd1,
-                          toRemove: [
-                            gameWithOdds.odds.odd2,
-                            gameWithOdds.odds.oddX
-                          ],))),
-                Expanded(flex: 2,
-                    child: Padding(padding: EdgeInsets.all(8),
-                        child: GestureDetectorForOdds(align: TextAlign.center,
-                          eventId: gameWithOdds.eventId,
-                          callback: callback,
-                          prediction: gameWithOdds.odds.oddX,
-                          toRemove: [
-                            gameWithOdds.odds.odd2,
-                            gameWithOdds.odds.odd1
-                          ],))),
-                Expanded(flex: 5,
-                    child: Padding(padding: EdgeInsets.all(8),
-                        child: GestureDetectorForOdds(align: TextAlign.left,
-                          eventId: gameWithOdds.eventId,
-                          callback: callback,
-                          prediction: gameWithOdds.odds.odd2,
-                          toRemove: [
-                            gameWithOdds.odds.odd1,
-                            gameWithOdds.odds.oddX
-                          ],)))
-              ],),
-
-
-            Row(mainAxisSize: MainAxisSize.max,
-
-              children: [
-                Expanded(flex: 1,
-                    child: Padding(padding: EdgeInsets.all(8),
-                        child: GestureDetectorForOdds(align: TextAlign.right,
-                          eventId: gameWithOdds.eventId,
-                          callback: callback,
-                          prediction: gameWithOdds.odds.oddO25,
-                          toRemove: [gameWithOdds.odds.oddU25],))),
-                Expanded(flex: 1,
-                    child: Padding(padding: EdgeInsets.all(8),
-                        child: GestureDetectorForOdds(align: TextAlign.left,
-                          eventId: gameWithOdds.eventId,
-                          callback: callback,
-                          prediction: gameWithOdds.odds.oddU25,
-                          toRemove: [gameWithOdds.odds.oddO25],))),
-
-
-              ],),
-
-            Divider(color: Colors.blueAccent, height: 4, thickness: 0.5,),
-
-
-          ]
-
       );
+
     }
+
+    update(UserPrediction? prediction){
+      callbackForOdds?.call(gameWithOdds.eventId, prediction);
+
+      setState(() {
+         selectedPrediction = prediction;
+      });
+    }
+
   }

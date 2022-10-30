@@ -53,27 +53,39 @@ class LeagueStandingPageState extends State<LeagueStandingPage>{
 
     return
 
+    Scaffold(
+      appBar: AppBar(title: Text(league.name)),
+      body:
       Column(
       children: [
-
         Expanded(
           flex: 1,
-          child: Text('efef'),
+          child: Row(
 
+            children: [
 
-      ),
+               Image.network(
+                  league.logo ?? "https://tipsscore.com/resb/no-league.png",
+                  height: 124,
+                  width: 124
+              )
 
-      Expanded(
-      flex: 4,
-      child:
-      ListView.builder(
-                  padding: const EdgeInsets.all(8),
-                  itemCount: league.seasons.first.standing.standingRows.length,
-                  itemBuilder: (context, item) {
-                    return _buildRow(league.seasons.first.standing.standingRows[item]);
-                  })
-      )
-    ] );
+            ],
+
+          ),
+        ),
+
+        Expanded(
+        flex: 4,
+        child:
+        ListView.builder(
+                    padding: const EdgeInsets.all(8),
+                    itemCount: league.seasons.first.standing.standingRows.length,
+                    itemBuilder: (context, item) {
+                      return _buildRow(league.seasons.first.standing.standingRows[item]);
+                    })
+        )
+    ] ));
 
   }
 

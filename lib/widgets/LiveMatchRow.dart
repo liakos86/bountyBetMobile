@@ -8,6 +8,7 @@ import 'package:flutter_app/models/constants/MatchConstants.dart';
 import 'package:flutter_app/widgets/LogoWithTeam.dart';
 import '../models/Score.dart';
 import '../models/match_event.dart';
+import 'LogoWithTeamName.dart';
 
 class LiveMatchRow extends StatefulWidget {
 
@@ -44,6 +45,10 @@ class LiveMatchRowState extends State<LiveMatchRow> {
                 bottom: BorderSide(width: 0.3, color: Colors.grey.shade600),
                 ), ),
           child:
+
+              Padding(
+    padding: EdgeInsets.all(6),
+              child:
           Row(//top father
               mainAxisSize: MainAxisSize.max,
               children: [
@@ -58,19 +63,19 @@ class LiveMatchRowState extends State<LiveMatchRow> {
                         Align(
                         alignment: Alignment.centerLeft,
                         child:
-                      LogoWithTeam(key: UniqueKey(), team: gameWithOdds.homeTeam),
+                      LogoWithTeamName(key: UniqueKey(), team: gameWithOdds.homeTeam),
                         ),
                             Align(
                                 alignment: Alignment.centerLeft,
                                 child:
-                      LogoWithTeam(key: UniqueKey(), team: gameWithOdds.awayTeam),
+                      LogoWithTeamName(key: UniqueKey(), team: gameWithOdds.awayTeam),
                             )
                     ]
                 )),
       //), // FIRST COLUMN END
 
                 Expanded(
-                    flex: 2,
+                    flex: 4,
                     child:
 
                 Column(//second column
@@ -106,7 +111,7 @@ class LiveMatchRowState extends State<LiveMatchRow> {
 
               ])//parent column end
 
-      );
+      ));
   }
 
   String textFrom(String? status_more) {

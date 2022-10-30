@@ -24,7 +24,7 @@ import '../models/match_event.dart';
 import '../utils/MockUtils.dart';
 import '../models/interfaces/StatefulWidgetWithName.dart';
 import 'LeaderBoardPage.dart';
-import 'LivePage2.dart';
+import 'LivePage.dart';
 import 'MyBetsPage.dart';
 
 class ParentPage extends StatefulWidget{
@@ -35,6 +35,8 @@ class ParentPage extends StatefulWidget{
 TextEditingController betAmountController = TextEditingController();
 
 List<League> liveMatchesPerLeague = <League>[];
+
+List<League> _allLeagues = <League>[];
 
 class ParentPageState extends State<ParentPage>{
 
@@ -48,8 +50,6 @@ class ParentPageState extends State<ParentPage>{
 
   HashMap eventsPerDayMap = new HashMap<int, List<MatchEvent>>();
 
-  List<League> _allLeagues = <League>[];
-
   bool showOdds = false;
 
   List<UserPrediction> _selectedOdds = <UserPrediction>[];
@@ -62,7 +62,7 @@ class ParentPageState extends State<ParentPage>{
 
   @override
   void initState() {
-    getLeagues();
+   getLeagues();
     getUser();
 
     Timer.periodic(Duration(seconds: 5), (timer) {
@@ -75,23 +75,32 @@ class ParentPageState extends State<ParentPage>{
   @override
   Widget build(BuildContext context) {
 
+      pagesList.add(OddsPage(getAllLeaguesCallBack, eventsPerDayMap, (eventId, selectedOdd) =>
 
-    pagesList.clear();
-    if (_allLeagues.isEmpty) {
-      pagesList.add(CircularProgressIndicator());
-      pagesList.add(CircularProgressIndicator());
-      pagesList.add(CircularProgressIndicator());
-      pagesList.add(CircularProgressIndicator());
-      pagesList.add(CircularProgressIndicator());
-    }else {
-      pagesList.add(OddsPage(_allLeagues, eventsPerDayMap, (selectedOdds) =>
           setState(
-                  () => _selectedOdds = selectedOdds)));
-      pagesList.add(LivePage2(liveMatchesPerLeague, getLiveEventsCallBack));
+                  () => {
+
+                    for (UserPrediction up in new List.of(_selectedOdds)){
+                      if (eventId == up.eventId){
+                        _selectedOdds.remove(up)
+                      }
+                    },
+
+                    if (selectedOdd != null){
+                      _selectedOdds.add(selectedOdd)
+                    }
+
+                  }
+
+                  ))
+
+
+      );
+      pagesList.add(LivePage(liveMatchesPerLeague, getLiveEventsCallBack));
       pagesList.add(LeaderBoardPage());
       pagesList.add(MyBetsPage(user.userBets, eventsPerIdMap));
-      pagesList.add(LeaguesInfoPage(_allLeagues));
-    }
+      pagesList.add(LeaguesInfoPage(getAllLeaguesCallBack));
+    // }
 
     return Scaffold(
       appBar: AppBar(
@@ -99,7 +108,9 @@ class ParentPageState extends State<ParentPage>{
           actions: <Widget>[
             IconButton(icon: Icon(Icons.list), onPressed: null)]
       ),
-      body: pagesList[_selectedPage],
+      body: IndexedStack(
+        index: _selectedPage,
+    children: [pagesList[0], pagesList[1], pagesList[2], pagesList[3], pagesList[4]],),
 
       floatingActionButton: FloatingActionButton(
         onPressed: ()=> setState(() {
@@ -299,6 +310,7 @@ class ParentPageState extends State<ParentPage>{
       }
 
       for (var league in jsonLeaguesData) {
+
         League leagueObj = JsonHelper.leagueFromJson(league, context);
           validData.add(leagueObj);
           for (MatchEvent match in leagueObj.events) {
@@ -373,9 +385,9 @@ class ParentPageState extends State<ParentPage>{
       } catch (e) {
         print(e);
         List<League> leagues = MockUtils().mockLeagues(true);
-        setState(() {
+      //  setState(() {
           liveMatchesPerLeague = leagues;
-        });
+        //});
         return;
       }
 
@@ -393,8 +405,11 @@ class ParentPageState extends State<ParentPage>{
   }
 
   getLiveEventsCallBack() {
-
     return liveMatchesPerLeague;
+  }
+
+  getAllLeaguesCallBack(){
+    return _allLeagues;
   }
 
 

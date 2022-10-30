@@ -1,40 +1,31 @@
+import 'dart:async';
 import 'dart:collection';
-import 'dart:collection';
-import 'dart:convert';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_app/models/interfaces/StatefulWidgetWithName.dart';
 import 'package:flutter_app/widgets/LeagueExpandableTile.dart';
-import 'package:http/http.dart';
 
-import '../enums/BetPredictionType.dart';
-import '../utils/MockUtils.dart';
 import '../models/UserPrediction.dart';
 import '../models/league.dart';
-import '../models/match_event.dart';
-import '../models/match_odds.dart';
-import '../widgets/UpcomingMatchRow.dart';
 
 
 class OddsPage extends StatefulWidgetWithName {
 
-  static final selectedOdds = <UserPrediction>[];
-
-  static final selectedGames = Set<int>();
+  //List<UserPrediction> selectedOdds = <UserPrediction>[];
 
   HashMap eventsPerDayMap = HashMap();
 
-  List<League> allLeagues = <League>[];
+  Function loadLeagues = ()=>{ };
 
-  Function(List<UserPrediction>) callback = (selectedOdds)=>{ };
+  Function(int, UserPrediction?) callbackForOdds = (eventId, selectedOdd)=>{ };
 
   @override
-  OddsPageState createState() => OddsPageState(allLeagues, eventsPerDayMap, callback);
+  OddsPageState createState() => OddsPageState(loadLeagues, eventsPerDayMap, callbackForOdds);
 
-  OddsPage(allMatches, eventsPerDayMap, Function(List<UserPrediction>) callback) {
-    this.allLeagues = allMatches;
-    this.callback = callback;
+  OddsPage(loadLeagues, eventsPerDayMap, Function(int, UserPrediction?) callback) {
+    this.loadLeagues = loadLeagues;
+    this.callbackForOdds = callback;
     this.eventsPerDayMap = eventsPerDayMap;
     setName('Today\'s Odds');
   }
@@ -43,24 +34,34 @@ class OddsPage extends StatefulWidgetWithName {
 
 class OddsPageState extends State<OddsPage>{
 
+  //List<UserPrediction> selectedOdds = <UserPrediction>[];
+
   List<League> allLeagues = <League>[];
 
   HashMap eventsPerDayMap = HashMap();
 
-  Function(List<UserPrediction>) ?callback;
+  Function functionLoadLeagues = ()=>{};
 
-  OddsPageState(allMatches, eventsPerDayMap, Function(List<UserPrediction>) callback) {
-    this.allLeagues = allMatches;
-    this.callback = callback;
+  Function(int, UserPrediction?) ?callbackForOdds;
+
+  OddsPageState(loadLeagues, eventsPerDayMap, Function(int, UserPrediction?) callback) {
+    functionLoadLeagues = loadLeagues;
+    // this.selectedOdds = selectedOdds;
+    this.callbackForOdds = callback;
     this.eventsPerDayMap = eventsPerDayMap;
   }
 
   @override
-  Widget build(BuildContext context) {
+  void initState() {
+    Timer.periodic(Duration(seconds: 5), (timer) {
+      updateLeaguesFromParent(timer);
+    });
 
-    if (allLeagues.isEmpty){
-      return Text('No games yet..');
-    }
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
 
     return DefaultTabController(
       initialIndex: 7,
@@ -203,8 +204,22 @@ class OddsPageState extends State<OddsPage>{
   }
 
   Widget _buildRow(League league) {
-    return LeagueMatchesRow(key: UniqueKey(), league: league);
-   // return UpcomingMatchRow(gameWithOdds: gameWithOdds, callback: callback);
+    // return LeagueRow(key: UniqueKey(), league: league);
+   return LeagueMatchesRow(key: UniqueKey(), league: league, callbackForOdds: callbackForOdds);
+  }
+
+  void updateLeaguesFromParent(Timer timer) {
+    List<League> leagues = functionLoadLeagues.call();
+    if (mounted && leagues.isNotEmpty){
+      timer.cancel();
+      setState(() {
+        allLeagues = leagues;
+      });
+    }
+  }
+
+  getEventsPerDay(){
+    return eventsPerDayMap;
   }
 
 }

@@ -136,16 +136,23 @@ class JsonHelper{
         events: matches);
 
     l.logo = league['logo'];
+
+
+    String langCode = Localizations
+        .localeOf(context)
+        .languageCode;
     var sectionJson = league['section'];
+    if (sectionJson != null) {
+      Section section = Section(sectionJson['name']);
+      var sectionTranslations = sectionJson['name_translations'];
 
-    Section section = Section(sectionJson['name']);
-    var sectionTranslations = sectionJson['name_translations'];
-    String langCode = Localizations.localeOf(context).languageCode;
-    if (sectionTranslations != null && sectionTranslations[langCode] != null){
-      section.name = sectionTranslations[langCode];
+      if (sectionTranslations != null &&
+          sectionTranslations[langCode] != null) {
+        section.name = sectionTranslations[langCode];
+      }
+
+      l.section = section;
     }
-
-    l.section = section;
 
     var translations = league['name_translations'];
     if (translations != null && translations[langCode] != null){

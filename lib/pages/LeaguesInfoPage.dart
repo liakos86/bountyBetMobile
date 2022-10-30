@@ -26,12 +26,12 @@ import '../widgets/UpcomingMatchRow.dart';
 class LeaguesInfoPage extends StatefulWidgetWithName {
 
   @override
-  LeaguesInfoPageState createState() => LeaguesInfoPageState(allLeagues);
+  LeaguesInfoPageState createState() => LeaguesInfoPageState(allLeaguesFunction);
 
-  List<League> allLeagues = <League>[];
+  Function allLeaguesFunction = ()=>{};
 
-  LeaguesInfoPage(List<League> _allLeagues) {
-    this.allLeagues = _allLeagues;
+  LeaguesInfoPage(allLeaguesFunction) {
+    this.allLeaguesFunction = allLeaguesFunction;
     setName('Leagues Information');
   }
 
@@ -41,19 +41,25 @@ class LeaguesInfoPageState extends State<LeaguesInfoPage>{
 
   List<League> allLeagues = <League>[];
 
+  Function leaguesFunction = ()=>{};
 
   LeaguesInfoPageState(leagues) {
-    this.allLeagues = leagues;
+    this.leaguesFunction = leagues;
   }
 
   @override
   Widget build(BuildContext context) {
 
+    Timer.periodic(Duration(seconds: 5), (timer) {
+      updateLeaguesFromParent();
+    });
+
     if (allLeagues.isEmpty){
       return Text('Loading..');
     }
 
-    return ListView.builder(
+    return
+      ListView.builder(
       padding: const EdgeInsets.all(8),
       itemCount: allLeagues.length,
       itemBuilder: (context, item) {
@@ -63,6 +69,19 @@ class LeaguesInfoPageState extends State<LeaguesInfoPage>{
 
   Widget _buildRow(League league) {
     return SimpleLeagueRow(key: UniqueKey(), league: league);
+  }
+
+  void updateLeaguesFromParent() {
+    List<League> leagues = leaguesFunction.call();
+    if (leagues.isNotEmpty){
+
+      if (!mounted){
+        return;
+      }
+      setState(() {
+        allLeagues = leagues;
+      });
+    }
   }
 
 }

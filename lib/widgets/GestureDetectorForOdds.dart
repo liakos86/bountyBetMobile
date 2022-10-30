@@ -2,6 +2,7 @@ import 'dart:ui';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_app/pages/OddsPage.dart';
 
 import '../models/UserPrediction.dart';
@@ -9,87 +10,111 @@ import '../models/match_event.dart';
 
 class GestureDetectorForOdds extends StatefulWidget {
 
+//  List<UserPrediction> selectedOdds = <UserPrediction>[];
+
+  UserPrediction? selected;
+
   int eventId;
 
-  UserPrediction ?prediction;
+  String predictionText;
+
+  UserPrediction prediction;
 
   List<UserPrediction> toRemove;
 
-  Function(List<UserPrediction>) ?callback;
-
-  TextAlign align;
+  Function( UserPrediction?) ?callbackForOdds;
 
   GestureDetectorForOdds({
+    Key ?key,
+    required this.selected,
+    //required this.selectedOdds,
     required this.prediction,
-    required this.callback,
+    required this.predictionText,
+    required this.callbackForOdds,
     required this.toRemove,
     required this.eventId,
-    required this.align
-  });
+  }): super(key: key);
 
   @override
-  GestureDetectorForOddsState createState() => GestureDetectorForOddsState(align: align, prediction: prediction, eventId: eventId, toRemove: toRemove, callback: callback);
+  GestureDetectorForOddsState createState() => GestureDetectorForOddsState(selected: selected, prediction: prediction, predictionText: predictionText, eventId: eventId, toRemove: toRemove, callbackForOdds: callbackForOdds);
 }
 
 class GestureDetectorForOddsState extends State<GestureDetectorForOdds>{
 
-  TextAlign align;
-
   int eventId;
 
-  Function(List<UserPrediction>) ?callback;
+  UserPrediction? selected;
 
-  UserPrediction ?prediction;
+  //List<UserPrediction> selectedOdds = <UserPrediction>[];
+
+  Function( UserPrediction?) ?callbackForOdds;
+
+  UserPrediction prediction;
+
+  String predictionText;
 
   List<UserPrediction> toRemove;
 
   GestureDetectorForOddsState({
+    required this.selected,
+    //required this.selectedOdds,
     required this.prediction,
-    required this.callback,
+    required this.predictionText,
+    required this.callbackForOdds,
     required this.toRemove,
-    required this.eventId,
-    required this.align
+    required this.eventId
   });
 
 
   @override
   Widget build(BuildContext context) {
 
+
+    if (eventId==1381702 && selected!=null) {
+      print('ARSENAL BUILDING GESTURE ROW ' + selected!.betPredictionType!.text);
+    }
+    
     return GestureDetector(
-                      onTap: () {if (OddsPage.selectedOdds.contains(prediction)) {
-                        setState(() {
-                          OddsPage.selectedGames.remove(eventId);
-                          OddsPage.selectedOdds.remove(prediction);
-                        });
-                      } else {
-                        setState(() {
-                          OddsPage.selectedGames.add(eventId);
-                          OddsPage.selectedOdds.add(prediction!);
+                      onTap: () {
 
-                          for (UserPrediction unwanted in toRemove) {
-                            OddsPage.selectedOdds.remove(unwanted);
+                          if (prediction==selected) {
+                            callbackForOdds?.call(null);
+                          }else{
+                            callbackForOdds?.call(prediction);
                           }
-                        });
-                      }
 
-                      callback?.call(OddsPage.selectedOdds);
+
                       },
 
-                      child: Container(
+                      child:
 
-                        height: 40,
+                      Container(
+                        height: 36,
+                        padding: EdgeInsets.all(4),
                         decoration: BoxDecoration(
-                          borderRadius: BorderRadius.all(Radius.circular(4)),
-
-                          color: OddsPage.selectedOdds.contains(prediction)
+                          border: Border.all(width: 1.5, color: Colors.grey),
+                          borderRadius: BorderRadius.all(Radius.circular(8)),
+                          color: selected == prediction
                               ? Colors.blueAccent
-                              : Colors.grey[200],
+                              : Colors.grey[100],
                         ),
 
+                          child:
+                          Row(
 
-                          child: Padding(padding: EdgeInsets.all(4), child: Align(alignment: Alignment.center, child : Text(  (prediction!.value.toStringAsFixed(2)), style: TextStyle(fontWeight:FontWeight.bold, fontSize: 16, color: OddsPage.selectedOdds.contains(prediction)
-                              ? Colors.white
-                              : Colors.blueAccent), textAlign: TextAlign.center))))
+                              children:[
+
+                                Expanded(flex: 1, child:
+                                Align(alignment: Alignment.centerLeft,  child : Text(  predictionText, style: TextStyle(fontWeight:FontWeight.bold, fontSize: 12, color: selected == prediction
+                                    ? Colors.white : Colors.grey[700]), textAlign: TextAlign.left)),
+                                ),
+
+                          Expanded(flex: 1, child:
+                                Align(alignment: Alignment.centerRight,  child : Text(  (prediction.value.toStringAsFixed(2)), style: TextStyle(fontWeight:FontWeight.bold, fontSize: 12, color: selected == prediction
+                                    ? Colors.white : Colors.grey[700]), textAlign: TextAlign.right))
+                          )
+                              ])
+                      )
     );
 
   }

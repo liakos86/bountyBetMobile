@@ -34,16 +34,10 @@ class LeagueStandingRowState extends State<LeagueStandingRow> {
   Widget build(BuildContext context) {
     return
 
-      DecoratedBox(
+      SizedBox(
 
-          decoration: BoxDecoration(color: Colors.white,
-            //  borderRadius: BorderRadius.only(topLeft:  Radius.circular(2), topRight:  Radius.circular(2)),
-              border: Border(
-              top: BorderSide(width: 0.3, color: Colors.grey.shade600),
-              left: BorderSide(width: 0, color: Colors.transparent),
-                right: BorderSide(width: 0, color: Colors.transparent),
-                bottom: BorderSide(width: 0.3, color: Colors.grey.shade600),
-                ), ),
+          height: 48,
+
           child:
           Row(//top father
               mainAxisSize: MainAxisSize.max,
@@ -64,11 +58,9 @@ class LeagueStandingRowState extends State<LeagueStandingRow> {
                     ]
                 )),
       //), // FIRST COLUMN END
-
                 Expanded(
                     flex: 2,
                     child:
-
                 Column(//second column
                     children: [
                      Padding(padding: EdgeInsets.all(6), child:
@@ -78,14 +70,9 @@ class LeagueStandingRowState extends State<LeagueStandingRow> {
                           color: Colors.redAccent),))
                     ]
                 )),//SECOND COLUMN END
-
-
               ])//parent column end
-
       );
   }
-
-
 }
 
 

@@ -13,9 +13,6 @@ class LogoWithTeam extends StatelessWidget{
   @override
   Widget build(BuildContext context) {
     return
-    //   DecoratedBox(//first child
-    //     decoration: BoxDecoration(color: Colors.yellow),
-    // child:
 
       Wrap(//mainAxisSize: MainAxisSize.min,// HOME TEAM NAME ROW
 

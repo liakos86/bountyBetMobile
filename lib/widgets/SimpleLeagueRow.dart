@@ -47,7 +47,7 @@ class SimpleLeagueRowState extends State<SimpleLeagueRow> {
             context,
             MaterialPageRoute(builder: (context) => LeagueStandingPage(league)),
           );
-      print("onTap called.");
+
     },
     child:
       DecoratedBox(
