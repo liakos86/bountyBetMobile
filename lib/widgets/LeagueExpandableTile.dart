@@ -14,21 +14,20 @@ class LeagueMatchesRow extends StatefulWidget {
 
   League league;
 
- // List<UserPrediction> selectedOdds = <UserPrediction>[];
+ List<UserPrediction> selectedOdds = <UserPrediction>[];
 
-  Function( int, UserPrediction?) ?callbackForOdds;
+  Function(UserPrediction) callbackForOdds;
 
  // Function ?callbackForEvents;
 
   LeagueMatchesRow(
-      {Key ?key, required this.league, required this.callbackForOdds})
+      {Key ?key, required this.league, required this.selectedOdds, required this.callbackForOdds})
       : super(key: key);
-
-
 
   @override
   LeagueMatchesRowState createState() =>
       LeagueMatchesRowState(league: league,
+          selectedOdds: selectedOdds,
           callbackForOdds: callbackForOdds);
 }
 
@@ -36,9 +35,11 @@ class LeagueMatchesRow extends StatefulWidget {
 
     League league;
 
-    Function( int, UserPrediction?) ?callbackForOdds;
+    List<UserPrediction> selectedOdds = <UserPrediction>[];
 
-    LeagueMatchesRowState({required this.league, required this.callbackForOdds});
+    Function(UserPrediction) callbackForOdds;
+
+    LeagueMatchesRowState({required this.league, required this.selectedOdds, required this.callbackForOdds});
 
   @override
   Widget build(BuildContext context) {
@@ -65,7 +66,7 @@ class LeagueMatchesRow extends StatefulWidget {
       return LiveMatchRow(key: UniqueKey(), gameWithOdds: event);
     }
 
-    return UpcomingMatchRow(key: UniqueKey(), gameWithOdds: event, callbackForOdds: callbackForOdds);
+    return UpcomingMatchRow(key: UniqueKey(), gameWithOdds: event, selectedOdds: selectedOdds, callbackForOdds: callbackForOdds);
   }
 
 }

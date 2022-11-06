@@ -10,9 +10,9 @@ import '../models/match_event.dart';
 
 class GestureDetectorForOdds extends StatefulWidget {
 
-//  List<UserPrediction> selectedOdds = <UserPrediction>[];
+ List<UserPrediction> selectedOdds = <UserPrediction>[];
 
-  UserPrediction? selected;
+  // UserPrediction? selected;
 
   int eventId;
 
@@ -22,12 +22,12 @@ class GestureDetectorForOdds extends StatefulWidget {
 
   List<UserPrediction> toRemove;
 
-  Function( UserPrediction?) ?callbackForOdds;
+  Function( UserPrediction) callbackForOdds;
 
   GestureDetectorForOdds({
     Key ?key,
-    required this.selected,
-    //required this.selectedOdds,
+    // required this.selected,
+    required this.selectedOdds,
     required this.prediction,
     required this.predictionText,
     required this.callbackForOdds,
@@ -36,18 +36,18 @@ class GestureDetectorForOdds extends StatefulWidget {
   }): super(key: key);
 
   @override
-  GestureDetectorForOddsState createState() => GestureDetectorForOddsState(selected: selected, prediction: prediction, predictionText: predictionText, eventId: eventId, toRemove: toRemove, callbackForOdds: callbackForOdds);
+  GestureDetectorForOddsState createState() => GestureDetectorForOddsState(selectedOdds: selectedOdds, prediction: prediction, predictionText: predictionText, eventId: eventId, toRemove: toRemove, callbackForOdds: callbackForOdds);
 }
 
 class GestureDetectorForOddsState extends State<GestureDetectorForOdds>{
 
   int eventId;
 
-  UserPrediction? selected;
+  // UserPrediction? selected;
 
-  //List<UserPrediction> selectedOdds = <UserPrediction>[];
+  List<UserPrediction> selectedOdds = <UserPrediction>[];
 
-  Function( UserPrediction?) ?callbackForOdds;
+  Function( UserPrediction) callbackForOdds;
 
   UserPrediction prediction;
 
@@ -56,8 +56,8 @@ class GestureDetectorForOddsState extends State<GestureDetectorForOdds>{
   List<UserPrediction> toRemove;
 
   GestureDetectorForOddsState({
-    required this.selected,
-    //required this.selectedOdds,
+    // required this.selected,
+    required this.selectedOdds,
     required this.prediction,
     required this.predictionText,
     required this.callbackForOdds,
@@ -69,21 +69,15 @@ class GestureDetectorForOddsState extends State<GestureDetectorForOdds>{
   @override
   Widget build(BuildContext context) {
 
-
-    if (eventId==1381702 && selected!=null) {
-      print('ARSENAL BUILDING GESTURE ROW ' + selected!.betPredictionType!.text);
-    }
-    
     return GestureDetector(
                       onTap: () {
+                        callbackForOdds.call(prediction);
 
-                          if (prediction==selected) {
-                            callbackForOdds?.call(null);
-                          }else{
-                            callbackForOdds?.call(prediction);
-                          }
-
-
+                          // if (prediction==selected) {
+                          //   callbackForOdds?.call(null);
+                          // }else{
+                          //   callbackForOdds?.call(prediction);
+                          // }
                       },
 
                       child:
@@ -94,7 +88,7 @@ class GestureDetectorForOddsState extends State<GestureDetectorForOdds>{
                         decoration: BoxDecoration(
                           border: Border.all(width: 1.5, color: Colors.grey),
                           borderRadius: BorderRadius.all(Radius.circular(8)),
-                          color: selected == prediction
+                          color: selectedOdds.contains(prediction)
                               ? Colors.blueAccent
                               : Colors.grey[100],
                         ),
@@ -105,12 +99,12 @@ class GestureDetectorForOddsState extends State<GestureDetectorForOdds>{
                               children:[
 
                                 Expanded(flex: 1, child:
-                                Align(alignment: Alignment.centerLeft,  child : Text(  predictionText, style: TextStyle(fontWeight:FontWeight.bold, fontSize: 12, color: selected == prediction
+                                Align(alignment: Alignment.centerLeft,  child : Text(  predictionText, style: TextStyle(fontWeight:FontWeight.bold, fontSize: 12, color: selectedOdds.contains(prediction)
                                     ? Colors.white : Colors.grey[700]), textAlign: TextAlign.left)),
                                 ),
 
                           Expanded(flex: 1, child:
-                                Align(alignment: Alignment.centerRight,  child : Text(  (prediction.value.toStringAsFixed(2)), style: TextStyle(fontWeight:FontWeight.bold, fontSize: 12, color: selected == prediction
+                                Align(alignment: Alignment.centerRight,  child : Text(  (prediction.value.toStringAsFixed(2)), style: TextStyle(fontWeight:FontWeight.bold, fontSize: 12, color: selectedOdds.contains(prediction)
                                     ? Colors.white : Colors.grey[700]), textAlign: TextAlign.right))
                           )
                               ])

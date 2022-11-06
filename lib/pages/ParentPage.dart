@@ -1,38 +1,29 @@
 import 'dart:async';
 import 'dart:collection';
 import 'dart:convert';
-import 'dart:ui';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_app/models/UserPrediction.dart';
-import 'package:flutter_app/models/UserBet.dart';
-import 'package:flutter_app/models/constants/MatchConstants.dart';
 import 'package:flutter_app/models/constants/UrlConstants.dart';
 import 'package:flutter_app/models/league.dart';
 import 'package:flutter_app/pages/LeaguesInfoPage.dart';
 import 'package:flutter_app/pages/OddsPage.dart';
-import 'package:flutter_app/widgets/SelectedOddRow.dart';
 import 'package:http/http.dart';
 
-import '../enums/BetPredictionType.dart';
 import '../helper/JsonHelper.dart';
-import '../models/Score.dart';
-import '../models/Team.dart';
 import '../models/User.dart';
 import '../models/match_event.dart';
 import '../utils/MockUtils.dart';
-import '../models/interfaces/StatefulWidgetWithName.dart';
 import 'LeaderBoardPage.dart';
 import 'LivePage.dart';
 import 'MyBetsPage.dart';
 
 class ParentPage extends StatefulWidget{
+
   @override
   ParentPageState createState() => ParentPageState();
 }
 
-TextEditingController betAmountController = TextEditingController();
 
 List<League> liveMatchesPerLeague = <League>[];
 
@@ -42,19 +33,9 @@ class ParentPageState extends State<ParentPage>{
 
   User user = User.defUser();
 
-  final placeBetUrl = 'http://192.168.1.2:8080/betCoreServer/betServer/placeBet';
-
-  final getUserUrl = 'http://192.168.1.2:8080/betCoreServer/betServer/getUser/USER_ID';
-
-  HashMap eventsPerIdMap = new HashMap<int, MatchEvent>();
+  static HashMap eventsPerIdMap = new HashMap<int, MatchEvent>();
 
   HashMap eventsPerDayMap = new HashMap<int, List<MatchEvent>>();
-
-  bool showOdds = false;
-
-  List<UserPrediction> _selectedOdds = <UserPrediction>[];
-
-  double _bettingAmount = 0;
 
   int _selectedPage = 0;
 
@@ -75,27 +56,7 @@ class ParentPageState extends State<ParentPage>{
   @override
   Widget build(BuildContext context) {
 
-      pagesList.add(OddsPage(getAllLeaguesCallBack, eventsPerDayMap, (eventId, selectedOdd) =>
-
-          setState(
-                  () => {
-
-                    for (UserPrediction up in new List.of(_selectedOdds)){
-                      if (eventId == up.eventId){
-                        _selectedOdds.remove(up)
-                      }
-                    },
-
-                    if (selectedOdd != null){
-                      _selectedOdds.add(selectedOdd)
-                    }
-
-                  }
-
-                  ))
-
-
-      );
+      pagesList.add(OddsPage(key: UniqueKey(), loadLeagues: getAllLeaguesCallBack, eventsPerDayMap: eventsPerDayMap));
       pagesList.add(LivePage(liveMatchesPerLeague, getLiveEventsCallBack));
       pagesList.add(LeaderBoardPage());
       pagesList.add(MyBetsPage(user.userBets, eventsPerIdMap));
@@ -104,104 +65,32 @@ class ParentPageState extends State<ParentPage>{
 
     return Scaffold(
       appBar: AppBar(
-          title: _allLeagues.isEmpty ? Text('Loading...') : Text((pagesList[_selectedPage] as StatefulWidgetWithName).name + ' - ' + user.username + '('+user.balance.toStringAsFixed(2)+')'),
+          title: _allLeagues.isEmpty ? Text('Loading...') : Text('FIX TITLE' + ' - ' + user.username + '('+user.balance.toStringAsFixed(2)+')'),
           actions: <Widget>[
             IconButton(icon: Icon(Icons.list), onPressed: null)]
       ),
-      body: IndexedStack(
-        index: _selectedPage,
-    children: [pagesList[0], pagesList[1], pagesList[2], pagesList[3], pagesList[4]],),
+      body:
+            IndexedStack(
+              index: _selectedPage,
+              children: [pagesList[0], pagesList[1], pagesList[2], pagesList[3], pagesList[4]],),
 
-      floatingActionButton: FloatingActionButton(
-        onPressed: ()=> setState(() {
-          if(!showOdds && _selectedOdds.isNotEmpty)
-            showOdds = true;
-          else
-            showOdds = false;
-        }),
+      // floatingActionButton: FloatingActionButton(
+      //   onPressed: ()=> setState(() {
+      //     if(!showOdds && selectedOdds.isNotEmpty) {
+      //       showOdds = true;
+      //     }else {
+      //       showOdds = false;
+      //     }
+      //   }),
+      //
+      //   backgroundColor: showOdds&&selectedOdds.isNotEmpty ? Colors.redAccent : Colors.blueAccent,
+      //
+      //   child: showOdds&&selectedOdds.isNotEmpty ? Icon(Icons.remove) : Text(BetUtils.finalOddOf(selectedOdds).toStringAsFixed(2), style: TextStyle(fontSize: (BetUtils.finalOddOf(selectedOdds )  < 100) ? 16 : (BetUtils.finalOddOf(selectedOdds )  < 1000) ? 15 : 12)),
+      // ),
 
-        backgroundColor: showOdds&&_selectedOdds.isNotEmpty ? Colors.redAccent : Colors.blueAccent,
-
-        child: showOdds&&_selectedOdds.isNotEmpty ? Icon(Icons.remove) : Text(finalOddValue().toStringAsFixed(2), style: TextStyle(fontSize: 16),),
-      ),
-
-      bottomSheet:
-          showOdds&&_selectedOdds.isNotEmpty ?
-
-          ConstrainedBox(
-            constraints: BoxConstraints(
-              minHeight: 300,
-              maxHeight: 300,
-              minWidth: double.infinity,
-              maxWidth: double.infinity
-            ),
-
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children : [
-                Expanded( flex:10 , child: ListView.builder(
-                  padding: const EdgeInsets.all(8),
-                  itemCount: _selectedOdds.length,
-                  itemBuilder: (context, item) {
-                    return _buildBettingOddRow(_selectedOdds[item]);
-                  })
-              ),
-
-                Expanded( flex:2 ,
-                    child: Container(margin: EdgeInsets.only(bottom: 8),
-                      child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                          children: [
-
-                            Text('To return: ' + (_bettingAmount * finalOddValue()).toStringAsFixed(2)),
-
-                            Flexible(
-
-                              child: TextField(
-
-                                controller: betAmountController,
-
-                                onChanged:
-                                    (text) {
-                                      setState(() {
-                                        try{
-                                          double.parse(text);
-                                        }catch(e){
-                                          _bettingAmount = 0;
-                                          return;
-                                        }
-
-                                        _bettingAmount = double.parse(text);
-                                      });
-                                },
-                              decoration: InputDecoration(
-                              border: OutlineInputBorder(),
-                              hintText: 'enter betting amount',
-                                ),
-                              ),
-                            ),
-
-                            TextButton(
-                              style: ButtonStyle(
-                                foregroundColor: MaterialStateProperty.all<Color>(Colors.white),
-                                backgroundColor: MaterialStateProperty.all<Color>(Colors.blueAccent)
-                              ),
-                              onPressed: () {
-                                placeBet();
-                              },
-                              child: Text('Place Bet'),
-                          )
-                  ],
-                ))
-                )
-
-              ]
-            ),
-          )
-
-      : null
-      ,
+      // bottomSheet:
+      //     BetSlipBottom(key: UniqueKey(), showOdds: showOdds, selectedOdds: selectedOdds, callbackForBetPlacement: placeBetCallback, callbackForBetRemoval: removeOddCallback,)
+      // ,
 
       bottomNavigationBar: BottomNavigationBar(
         selectedFontSize: 20,
@@ -244,24 +133,8 @@ class ParentPageState extends State<ParentPage>{
     );
   }
 
-
-  Widget _buildBettingOddRow(UserPrediction bettingOdd) {
-
-    MatchEvent eventOfOdd = eventsPerIdMap[bettingOdd.eventId];
-
-    return SelectedOddRow(event: eventOfOdd, odd: bettingOdd, callback: (odd) =>
-        setState(
-                () { _selectedOdds.remove(odd);
-                  if (_selectedOdds.isEmpty){
-                    showOdds = false;
-                  }
-                }
-        ));
-
-  }
-
   void getUser() async{
-    String getUserUrlFinal = getUserUrl.replaceAll('USER_ID', user.mongoUserId);
+    String getUserUrlFinal = UrlConstants.GET_USER_URL.replaceAll('USER_ID', user.mongoUserId);
     try {
       Response userResponse = await get(Uri.parse(getUserUrlFinal))
           .timeout(const Duration(seconds: 2));
@@ -326,51 +199,64 @@ class ParentPageState extends State<ParentPage>{
     }
   }
 
-  double finalOddValue() {
-    double oddValue = 0;
-    for (UserPrediction odd in _selectedOdds){
-      double oddCurrent = odd.value;
-      if (oddValue == 0){
-        oddValue = oddCurrent;
-        continue;
-      }
-      oddValue = oddValue * oddCurrent;
-    }
-
-    return oddValue;
-  }
-
-   void placeBet() async {
-    if (_bettingAmount <= 0 || _selectedOdds.isEmpty){
-        return;
-    }
-
-    UserBet newBet = UserBet(userMongoId: user.mongoUserId, predictions: _selectedOdds, betAmount: _bettingAmount);
-    var encodedBet = jsonEncode(newBet.toJson());
-
-    try {
-      var response = await post(Uri.parse(placeBetUrl),
-          headers: {
-          "Accept": "application/json",
-          "Content-Type": "application/json"
-
-            // 'Accept': 'application/json',
-            // 'Content-Type': 'application/json; charset=UTF-8',
-          },
-          body: encodedBet,
-          encoding: Encoding.getByName("utf-8")).timeout(
-          const Duration(seconds: 20));
-
-    }catch(e){
-      print(e);
-    }
-
-
-
-  }
-
-
-
+  //   void removeOddCallback(UserPrediction toRemove){
+  //
+  //     setState(() {
+  //       selectedOdds.remove(toRemove);
+  //       print('REMOVED ' + toRemove.toString());
+  //       if (selectedOdds.isEmpty){
+  //         showOdds = false;
+  //       }
+  //
+  //     });
+  //
+  //   }
+  //
+  //   void fixOddsCallback(int eventId, UserPrediction? selectedOdd) {
+  //
+  //     setState(() => {
+  //
+  //           for (UserPrediction up in new List.of(selectedOdds)){
+  //           if (eventId == up.eventId){
+  //           selectedOdds.remove(up)
+  //           }
+  //           },
+  //
+  //           if (selectedOdd != null){
+  //           selectedOdds.add(selectedOdd)
+  //           }
+  //
+  //           }
+  //
+  //     );
+  //
+  //   }
+  //
+  //  void placeBetCallback(double bettingAmount) async {
+  //   if (bettingAmount <= 0 || selectedOdds.isEmpty){
+  //       return;
+  //   }
+  //
+  //   UserBet newBet = UserBet(userMongoId: user.mongoUserId, predictions: selectedOdds, betAmount: bettingAmount);
+  //   var encodedBet = jsonEncode(newBet.toJson());
+  //
+  //   try {
+  //      await post(Uri.parse(UrlConstants.POST_PLACE_BET),
+  //         headers: {
+  //         "Accept": "application/json",
+  //         "Content-Type": "application/json"
+  //
+  //           // 'Accept': 'application/json',
+  //           // 'Content-Type': 'application/json; charset=UTF-8',
+  //         },
+  //         body: encodedBet,
+  //         encoding: Encoding.getByName("utf-8")).timeout(
+  //         const Duration(seconds: 20));
+  //
+  //   }catch(e){
+  //     print(e);
+  //   }
+  // }
 
   void getLive() async {
     var validData = <League>[];
@@ -380,7 +266,7 @@ class ParentPageState extends State<ParentPage>{
       List jsonLeaguesData = [];
       try {
         Response leaguesResponse = await get(Uri.parse(UrlConstants.GET_LIVE))
-            .timeout(const Duration(seconds: 4));
+            .timeout(const Duration(seconds: 5));
         jsonLeaguesData = jsonDecode(leaguesResponse.body) as List;
       } catch (e) {
         print(e);

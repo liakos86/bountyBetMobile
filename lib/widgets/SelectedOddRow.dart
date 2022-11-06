@@ -1,94 +1,124 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_app/enums/BetPredictionType.dart';
 import 'package:flutter_app/models/match_event.dart';
 
 import '../models/UserPrediction.dart';
+import 'LogoWithTeamName.dart';
 
 class SelectedOddRow extends StatelessWidget{
 
-  UserPrediction odd;
+  UserPrediction prediction;
   MatchEvent event;
   Function(UserPrediction) callback;
 
   SelectedOddRow({
+    Key? key,
     required this.event,
-    required this.odd,
+    required this.prediction,
     required this.callback
-  });
+  }) : super(key: key);
+
 
   @override
   Widget build(BuildContext context) {
-    // TODO: implement build
-    return Container(
-        margin: EdgeInsets.all(4), // every row of list has margin of 4 across all directions
-        height: 60,
-        // every row of list has height 150
-        child: Stack( // the row will be drawn as items on top of each other
-          children: [
+    return DecoratedBox(
 
-            Positioned(
-                bottom:0,
-                right: 0,
-                left : 0,
-                child: Container(
-                    height: 20,
+        decoration: BoxDecoration(color:  Colors.white,
+         // borderRadius: BorderRadius.all(Radius.circular(10)),
+          border: Border(
 
-                    decoration: BoxDecoration(
-                        borderRadius: BorderRadius.only(
-                            bottomLeft: Radius.circular(20),
-                            bottomRight: Radius.circular(20)
-                        ),
-                        gradient: LinearGradient(
-                            begin: Alignment.bottomCenter,
-                            end: Alignment.topCenter,
-                            colors: [
-                              Colors.black.withOpacity(0.1),
-                              Colors.transparent
-                            ]
+            bottom: BorderSide(width: 0.3, color: Colors.grey.shade600),
+          ),
+        ),
+
+        child:
+
+        Padding(
+            padding: EdgeInsets.all(4),
+            child:
+            Row(//top father
+                mainAxisSize: MainAxisSize.max,
+                children: [
+
+                  Expanded(//first column
+                      flex: 1,
+                      child:
+                      Column(
+                          children: [
+                            Align(
+                              alignment: Alignment.center,
+                              child:
+                               Wrap(
+                                  children:[
+                                 Icon(
+                                 Icons.sports_soccer_outlined,
+                                 color: Colors.grey[800],
+                               ),
+                          ]
+                      ))]
+                  )),
+
+                  Expanded(//first column
+                      flex: 8,
+                      child:
+                      Column(
+                          children: [
+                            Align(
+                              alignment: Alignment.centerLeft,
+                              child:
+                              LogoWithTeamName(key: UniqueKey(), team: event.homeTeam),
+                            ),
+                            Align(
+                              alignment: Alignment.centerLeft,
+                              child:
+                              LogoWithTeamName(key: UniqueKey(), team: event.awayTeam),
+                            )
+                          ]
+                      )),
+                  //), // FIRST COLUMN END
+
+                  Expanded(
+                      flex: 6,
+                      child:
+                      Column(// third column
+                          children: [
+                            Padding(padding: EdgeInsets.all(6), child:
+                            Text(textForPrediction(prediction), style: TextStyle(
+                                fontSize: 14,
+                                fontWeight:  FontWeight.w900,
+                                color: Colors.green[800]),)),
+                          ]
+                      )),
+
+            Expanded(
+                flex: 2,
+                child:
+            FloatingActionButton(
+                          mini: true,
+                          child: Icon(Icons.delete_forever_sharp),
+                          onPressed: () => { callParent() },//callback.call(odd),
+                          backgroundColor: Colors.white,
+                          foregroundColor: Colors.red[500],
                         )
                     )
-                )),
-            Positioned(bottom : 0,
-              child: Padding(
-                  padding: EdgeInsets.all(10),
-                  child: Row(children: [
-
-                    Icon(
-                      Icons.sports_basketball,
-                      color: Colors.deepOrangeAccent,
-                    ),
-                    SizedBox(width: 10),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: [
-                        Text(event.homeTeam.name + ' - ' + event.awayTeam.name,
-                          style: TextStyle(fontSize: 15, color: Colors.black),),
-                        Text(odd.betPredictionType.toString() + ' @ ' + odd.value.toStringAsFixed(2),
-                          style: TextStyle(fontSize: 18, color: Colors.green[700]),)
-                      ],
-                    ),
-
-                  ],)
-              ),
-            ),
-
-            Positioned(right : 0, child: FloatingActionButton(
-              mini: true,
-              child: Icon(Icons.delete),
-              onPressed: () => { callParent() },//callback.call(odd),
-              backgroundColor: Colors.red[800],
-            ),)
-
-
-          ],
-        )
-
-
-    );
+                ])//parent column end
+        ));
   }
 
   callParent() {
-    callback.call(odd);
+    callback.call(prediction);
   }
+
+  String textForPrediction(UserPrediction prediction) {
+    String prefix = "Draw";
+    if (prediction.betPredictionType == BetPredictionType.HOME_WIN){
+        prefix = event.homeTeam.name;
+    }else if (prediction.betPredictionType == BetPredictionType.AWAY_WIN){
+        prefix = event.awayTeam.name;
+    }
+
+    return '$prefix ${prediction.value}';
+  }
+
 }

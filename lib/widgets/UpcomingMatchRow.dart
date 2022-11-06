@@ -12,35 +12,40 @@ class UpcomingMatchRow extends StatefulWidget {
 
   //UserPrediction? selectedPrediction;
 
-  //List<UserPrediction> selectedOdds = <UserPrediction>[];
+ List<UserPrediction> selectedOdds = <UserPrediction>[];
+
+  //bool gameSelected;
 
   MatchEvent gameWithOdds;
 
-  Function( int, UserPrediction?) ?callbackForOdds;
+  Function(UserPrediction) callbackForOdds;
 
   // Function ?callbackForEvents;
 
-  UpcomingMatchRow({Key ?key, required this.gameWithOdds, required this.callbackForOdds}) : super(key: key);
+  UpcomingMatchRow({Key ?key, required this.gameWithOdds, required this.callbackForOdds, required this.selectedOdds}) : super(key: key);
 
   @override
-  UpcomingMatchRowState createState() => UpcomingMatchRowState(gameWithOdds: gameWithOdds, callbackForOdds: callbackForOdds);
+  UpcomingMatchRowState createState() => UpcomingMatchRowState(gameWithOdds: gameWithOdds, selectedOdds: selectedOdds, callbackForOdds: callbackForOdds);
 }
 
   class UpcomingMatchRowState extends State<UpcomingMatchRow> {
 
     UserPrediction? selectedPrediction;
 
-    // List<UserPrediction> selectedOdds = <UserPrediction>[];
+    List<UserPrediction> selectedOdds = <UserPrediction>[];
 
-    Function( int, UserPrediction?) ?callbackForOdds;
+    Function(UserPrediction) callbackForOdds;
+
+   // bool gameSelected;
 
     // Function ?callbackForEvents;
 
     MatchEvent gameWithOdds;
 
     UpcomingMatchRowState({
-      // required this.selectedOdds,
+      required this.selectedOdds,
       required this.gameWithOdds,
+     // required this.gameSelected,
       // required this.callbackForEvents,
       required this.callbackForOdds
     });
@@ -48,10 +53,6 @@ class UpcomingMatchRow extends StatefulWidget {
 
     @override
     Widget build(BuildContext context) {
-
-      if (gameWithOdds.homeTeam.name.contains("Arsenal")) {
-        print('ARSENAL BUILDING MATCH ROW');
-      }
 
       return
 
@@ -93,7 +94,7 @@ class UpcomingMatchRow extends StatefulWidget {
                       Column( //second column
                           children: [
                             Padding(padding: EdgeInsets.all(6), child:
-                            Text( (gameWithOdds.startHour! < 10 ? '0' : '' ) + gameWithOdds.startHour!.toString()  +
+                            Text( (gameWithOdds.startHour! < 10 ? '0' : '' ) + gameWithOdds.startHour!.toString()  + ':' +
                                 (gameWithOdds.startMinute! < 10 ? '0' : '' ) + gameWithOdds.startMinute!.toString() ,
                               style: TextStyle(
                                   fontSize: 12,
@@ -117,10 +118,10 @@ class UpcomingMatchRow extends StatefulWidget {
                   child: Padding(padding: EdgeInsets.all(4),
                       child: GestureDetectorForOdds(
                         key: UniqueKey(),
-                        selected: selectedPrediction,
+                        selectedOdds: selectedOdds,
                         eventId: gameWithOdds.eventId,
                         predictionText: '1:',
-                        callbackForOdds: update,
+                        callbackForOdds: callbackForOdds,
                         prediction: gameWithOdds.odds.odd1,
                         toRemove: [
                           gameWithOdds.odds.odd2,
@@ -130,10 +131,10 @@ class UpcomingMatchRow extends StatefulWidget {
                   child: Padding(padding: EdgeInsets.all(4),
                       child: GestureDetectorForOdds(
                         key: UniqueKey(),
-                        selected: selectedPrediction,
+                        selectedOdds: selectedOdds,
                         eventId: gameWithOdds.eventId,
                         predictionText: 'X:',
-                        callbackForOdds: update,
+                        callbackForOdds: callbackForOdds,
                         prediction: gameWithOdds.odds.oddX,
                         toRemove: [
                           gameWithOdds.odds.odd2,
@@ -143,10 +144,10 @@ class UpcomingMatchRow extends StatefulWidget {
                   child: Padding(padding: EdgeInsets.all(4),
                       child: GestureDetectorForOdds(
                         key: UniqueKey(),
-                        selected: selectedPrediction,
+                        selectedOdds: selectedOdds,
                         eventId: gameWithOdds.eventId,
                         predictionText: '2:',
-                        callbackForOdds: update,
+                        callbackForOdds: callbackForOdds,
                         prediction: gameWithOdds.odds.odd2,
                         toRemove: [
                           gameWithOdds.odds.odd1,
@@ -160,12 +161,12 @@ class UpcomingMatchRow extends StatefulWidget {
 
     }
 
-    update(UserPrediction? prediction){
-      callbackForOdds?.call(gameWithOdds.eventId, prediction);
-
-      setState(() {
-         selectedPrediction = prediction;
-      });
-    }
+    // update(UserPrediction? prediction){
+    //   callbackForOdds?.call(gameWithOdds.eventId, prediction);
+    //
+    //   setState(() {
+    //      selectedPrediction = prediction;
+    //   });
+    // }
 
   }

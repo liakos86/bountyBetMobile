@@ -1,5 +1,7 @@
 
 
+import 'dart:ui';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -36,7 +38,7 @@ class LiveMatchRowState extends State<LiveMatchRow> {
 
       DecoratedBox(
 
-          decoration: BoxDecoration(color: gameWithOdds.changeEvent == ChangeEvent.NONE ? Colors.white : Colors.green[200],
+          decoration: BoxDecoration(color: gameWithOdds.changeEvent == ChangeEvent.NONE ? Colors.white : Colors.green[100],
             //  borderRadius: BorderRadius.only(topLeft:  Radius.circular(2), topRight:  Radius.circular(2)),
               border: Border(
               top: BorderSide(width: 0.3, color: Colors.grey.shade600),
@@ -97,15 +99,15 @@ class LiveMatchRowState extends State<LiveMatchRow> {
                     children: [
                       Padding(padding: EdgeInsets.all(6), child:
                       Text(textScoreFrom(gameWithOdds.homeTeamScore), style: TextStyle(
-                          fontSize: 12,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.redAccent),)),
+                          fontSize: gameWithOdds.changeEvent == ChangeEvent.HOME_GOAL ? 13 : 12,
+                          fontWeight:  FontWeight.w900,
+                          color: gameWithOdds.changeEvent == ChangeEvent.HOME_GOAL ? Colors.redAccent : Colors.black87),)),
 
                       Padding(padding: EdgeInsets.all(8), child:
                       Text(textScoreFrom(gameWithOdds.awayTeamScore), style: TextStyle(
-                          fontSize: 12,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.redAccent),))
+                          fontSize: gameWithOdds.changeEvent == ChangeEvent.AWAY_GOAL ? 13 : 12,
+                          fontWeight: FontWeight.w900,
+                          color: gameWithOdds.changeEvent == ChangeEvent.AWAY_GOAL ? Colors.redAccent : Colors.black87),)),
                     ]
                 )), //THIRD COLUMN END
 

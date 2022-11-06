@@ -62,7 +62,7 @@ class LivePageState extends State<LivePage>{
   }
 
   Widget _buildRow(League league) {
-    return LeagueMatchesRow(key: UniqueKey(), league: league, callbackForOdds: null,);
+    return LeagueMatchesRow(key: UniqueKey(), league: league, selectedOdds: [], callbackForOdds: (a)=>{},);
   }
 
   void updateLiveFromParent() {
