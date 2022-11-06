@@ -64,76 +64,78 @@ class BetSlipBottomState extends State<BetSlipBottom>{
 
     return
       showOdds&&selectedOdds.isNotEmpty ?
-          Scaffold(
-            backgroundColor: Colors.grey[200],
-            body:
+      Scaffold(
 
-              Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children : [
-                  Expanded( flex:10 , child: ListView.builder(
+          backgroundColor: Colors.grey[200],
+          body:
+
+          Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children : [
+                Expanded( flex:9 , child: ListView.builder(
                     padding: const EdgeInsets.all(8),
                     itemCount: selectedOdds.length,
                     itemBuilder: (context, item) {
-                        return _buildBettingOddRow(selectedOdds[item]);
+                      return _buildBettingOddRow(selectedOdds[item]);
                     })
-                  ),
+                ),
 
-                  Expanded( flex:2 ,
-                      child:
-                                Row(
-                                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                                  children: [
-                                    Text('Return: ' + (bettingAmount * BetUtils.finalOddOf(selectedOdds)).toStringAsFixed(2)),
-                                    Flexible(
-                                      child: TextField(
-                                        controller: betAmountController,
-                                        onChanged:
-                                            (text) {
-                                          setState(() {
-                                            try{
-                                              double.parse(text);
-                                            }catch(e){
-                                              bettingAmount = 0;
-                                              return;
-                                            }
+                Expanded( flex:1 ,
+                    child:
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        Expanded(flex: 7, child: Align(alignment: Alignment.centerLeft, child: Text('Return: ' + (bettingAmount * BetUtils.finalOddOf(selectedOdds)).toStringAsFixed(2)))),
+                        Expanded(
+                          flex: 3,
+                          child: TextField(
+                            controller: betAmountController,
+                            onChanged:
+                                (text) {
+                              setState(() {
+                                try{
+                                  double.parse(text);
+                                }catch(e){
+                                  bettingAmount = 0;
+                                  return;
+                                }
 
-                                            bettingAmount = double.parse(text);
-                                          });
-                                        },
-                                        decoration: InputDecoration(
-                                          border: OutlineInputBorder(),
-                                          hintText: 'enter betting amount',
-                                        ),
-                                      ),
-                                    ),
-
-                                  ],
-                                )
-
-            ),
-
-                  Expanded( flex:1 ,
-                      child:
-
-                          TextButton(
-                            style: ButtonStyle(
-                                foregroundColor: MaterialStateProperty.all<Color>(Colors.white),
-                                backgroundColor: MaterialStateProperty.all<Color>(Colors.red.shade500)
-                            ),
-                            onPressed: () {
-                              callbackForBetPlacement.call(bettingAmount);
+                                bettingAmount = double.parse(text);
+                              });
                             },
-                            child: Text('Place Bet'),
-                          )
-                        ,
-                      )
+                            decoration: InputDecoration(
+                              border: OutlineInputBorder(),
+                              hintText: 'enter betting amount',
+                            ),
+                          ),
+                        ),
+
+                      ],
+                    )
+
+                ),
+
+                Expanded( flex:1 ,
+                  child:
+
+                  TextButton(
+                    style: ButtonStyle(
+                        foregroundColor: MaterialStateProperty.all<Color>(Colors.white),
+                        backgroundColor: MaterialStateProperty.all<Color>(Colors.red.shade500)
+                    ),
+                    onPressed: () {
+                      callbackForBetPlacement.call(bettingAmount);
+                    },
+                    child: Text('Place Bet'),
+                  )
+                  ,
+                )
 
 
-          ]
+              ]
 
-    ) ) :  ConstrainedBox(constraints: BoxConstraints(maxWidth: 0, maxHeight: 0));
+          ) ) :  ConstrainedBox(constraints: BoxConstraints(maxWidth: 0, maxHeight: 0));
   }
 
   Widget _buildBettingOddRow(UserPrediction bettingOdd) {
@@ -142,7 +144,7 @@ class BetSlipBottomState extends State<BetSlipBottom>{
 
     return SelectedOddRow(key: UniqueKey(), event: eventOfOdd, prediction: bettingOdd, callback: (odd) =>
         callbackForBetRemoval.call(odd)
-        );
+    );
 
   }
 
