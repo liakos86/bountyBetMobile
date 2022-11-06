@@ -83,10 +83,21 @@ class BetSlipBottomState extends State<BetSlipBottom>{
 
                 Expanded( flex:1 ,
                     child:
+                        Container(
+                            height: double.infinity,
+                            width: double.infinity,
+                           decoration: BoxDecoration( color: Colors.white, borderRadius: BorderRadius.all(Radius.circular(8))),
+
+                            child:
+
+
+
                     Row(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
-                        Expanded(flex: 7, child: Align(alignment: Alignment.centerLeft, child: Text('Return: ' + (bettingAmount * BetUtils.finalOddOf(selectedOdds)).toStringAsFixed(2)))),
+                        Expanded(flex: 5, child: Align(alignment: Alignment.centerLeft, child: Text('Return: ' + (bettingAmount * BetUtils.finalOddOf(selectedOdds)).toStringAsFixed(2)))),
+                        Expanded(flex: 2, child: Align(alignment: Alignment.centerRight, child: Text(BetUtils.finalOddOf(selectedOdds).toStringAsFixed(2)))),
+
                         Expanded(
                           flex: 3,
                           child: TextField(
@@ -112,7 +123,7 @@ class BetSlipBottomState extends State<BetSlipBottom>{
                         ),
 
                       ],
-                    )
+                    ))
 
                 ),
 
