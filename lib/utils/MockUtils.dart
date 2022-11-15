@@ -11,9 +11,11 @@ import 'package:flutter_app/models/Team.dart';
 import 'package:flutter_app/models/User.dart';
 import 'package:flutter_app/models/UserBet.dart';
 import 'package:flutter_app/models/constants/MatchConstants.dart';
+import 'package:flutter_app/models/matchEventStatisticsSoccer.dart';
 import 'package:flutter_app/models/match_event.dart';
 import 'package:flutter_app/models/match_odds.dart';
 
+import '../models/Player.dart';
 import '../models/Score.dart';
 import '../models/UserPrediction.dart';
 import '../models/league.dart';
@@ -101,6 +103,8 @@ class MockUtils {
       event.changeEvent = ChangeEvent.NONE;
     }
 
+    event.statistics = mockStats();
+
     return event;
   }
 
@@ -144,6 +148,25 @@ class MockUtils {
 
   pickTeam() {
     return mockTeams.removeLast();
+  }
+
+  List<MatchEventsStatisticsSoccer> mockStats() {
+    List<MatchEventsStatisticsSoccer> stats = <MatchEventsStatisticsSoccer>[];
+    stats.add(mockStat(23, "card", 1));
+    stats.add(mockStat(23, "goal", 2));
+    stats.add(mockStat(23, "substitution", 2));
+    stats.add(mockStat(23, "card", 1));
+    stats.add(mockStat(23, "card", 2));
+    return stats;
+  }
+
+  MatchEventsStatisticsSoccer mockStat(int time, String incident, int team) {
+    MatchEventsStatisticsSoccer stat = MatchEventsStatisticsSoccer(id: 1, event_id: 1, incident_type: incident, time: time, order: 1);
+    stat.player_team = team;
+    stat.player = Player(has_photo: true, photo: "https://tipsscore.com/resb/player/sebastien-mladen.png",
+    name: 'mockovic', id: 1, position: 'f', position_name: 'forward', sport_id: 1, name_short: 'mockovic');
+    return stat;
+
   }
 
 }

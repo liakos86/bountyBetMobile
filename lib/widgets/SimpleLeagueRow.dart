@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_app/enums/ChangeEvent.dart';
 import 'package:flutter_app/models/constants/MatchConstants.dart';
-import 'package:flutter_app/widgets/LogoWithTeam.dart';
+import 'package:flutter_app/widgets/LogoWithTeamLarge.dart';
 import '../models/Score.dart';
 import '../models/league.dart';
 import '../models/match_event.dart';

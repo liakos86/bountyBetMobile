@@ -1,3 +1,4 @@
+import 'package:flutter_app/models/matchEventStatisticsSoccer.dart';
 import 'package:flutter_app/models/match_odds.dart';
 
 import '../enums/ChangeEvent.dart';
@@ -13,6 +14,8 @@ class MatchEvent{
     required this.odds,
     required this.status
   } );
+
+  List<MatchEventsStatisticsSoccer> statistics = <MatchEventsStatisticsSoccer>[];
 
   Map<String, String> ?translations;
 

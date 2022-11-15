@@ -1,8 +1,10 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_app/enums/ChangeEvent.dart';
+import 'package:flutter_app/models/Player.dart';
 import 'package:flutter_app/models/StandingRow.dart';
 import 'package:flutter_app/models/league.dart';
+import 'package:flutter_app/models/matchEventStatisticsSoccer.dart';
 import 'package:flutter_app/models/match_event.dart';
 
 import '../enums/BetPredictionType.dart';
@@ -117,6 +119,11 @@ class JsonHelper{
           awayTeamScore["period_1"], awayTeamScore["period_2"]);
     }
 
+    var matchIncidents = event['incidents'];
+    if (matchIncidents != null){
+       match.statistics = incidentsFromJson(matchIncidents);
+    }
+
     return match;
   }
 
@@ -201,6 +208,52 @@ class JsonHelper{
 
     return Standing(standingRows: rows);
 
+  }
+
+  static List<MatchEventsStatisticsSoccer> incidentsFromJson(matchIncidentsWrapperJson) {
+    List<MatchEventsStatisticsSoccer> incidents = <MatchEventsStatisticsSoccer>[];
+
+    var matchIncidentsJson = matchIncidentsWrapperJson['data'];
+    for (var incidentJson in matchIncidentsJson){
+      MatchEventsStatisticsSoccer incident = MatchEventsStatisticsSoccer(
+          id: incidentJson['id'],
+          event_id: incidentJson['event_id'],
+          incident_type: incidentJson['incident_type'],
+          time: incidentJson['time'],
+          order: incidentJson['order'],
+          );
+
+      incident.text = incidentJson['text'];
+
+      incident.scoring_team = incidentJson['scoring_team'];
+      incident.reason = incidentJson['reason'];
+      incident.player_team = incidentJson['player_team'];
+      incident.scoring_team = incidentJson['scoring_team'];
+      incident.home_score = incidentJson['home_score'];
+      incident.away_score = incidentJson['away_score'];
+
+      incident.player = playerFromJson(incidentJson['player']);
+      incident.player_two_in = playerFromJson(incidentJson['player_two_in']);
+
+      incidents.add(incident);
+    }
+    return incidents;
+  }
+
+  static Player? playerFromJson(playerJson) {
+    if (playerJson == null){
+      return null;
+    }
+
+    Player player = Player(id: playerJson['id'],
+        sport_id: playerJson['sport_id'],
+        name: playerJson['name'],
+        name_short: playerJson['name_short'],
+        position: playerJson['position'],
+        has_photo: playerJson['has_photo'],
+        photo: playerJson['photo'],
+        position_name: playerJson['position_name']);
+    return player;
   }
 
 

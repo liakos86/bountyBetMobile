@@ -5,7 +5,7 @@ import 'package:flutter_app/widgets/GestureDetectorForOdds.dart';
 
 import '../models/UserPrediction.dart';
 import '../models/match_event.dart';
-import 'LogoWithTeam.dart';
+import 'LogoWithTeamLarge.dart';
 import 'LogoWithTeamName.dart';
 
 class UpcomingMatchRow extends StatefulWidget {

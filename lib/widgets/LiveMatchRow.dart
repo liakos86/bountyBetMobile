@@ -7,7 +7,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_app/enums/ChangeEvent.dart';
 import 'package:flutter_app/models/constants/MatchConstants.dart';
-import 'package:flutter_app/widgets/LogoWithTeam.dart';
+import 'package:flutter_app/widgets/LogoWithTeamLarge.dart';
+import 'package:flutter_app/pages/MatchInfoSoccerDetailsPage.dart';
 import '../models/Score.dart';
 import '../models/match_event.dart';
 import 'LogoWithTeamName.dart';
@@ -35,6 +36,16 @@ class LiveMatchRowState extends State<LiveMatchRow> {
   @override
   Widget build(BuildContext context) {
     return
+
+    GestureDetector(
+        onTap: () {
+
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => MatchInfoSoccerDetailsPage(event: gameWithOdds,)),
+          );
+        },
+    child:
 
       DecoratedBox(
 
@@ -113,7 +124,7 @@ class LiveMatchRowState extends State<LiveMatchRow> {
 
               ])//parent column end
 
-      ));
+      )));
   }
 
   String textFrom(String? status_more) {
