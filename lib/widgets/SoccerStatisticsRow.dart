@@ -40,13 +40,13 @@ class SoccerStatisticsRowState extends State<SoccerStatisticsRow> {
     return
       DecoratedBox(
 
-          decoration: BoxDecoration(color:  Colors.white70,
+          decoration: BoxDecoration(color:  Colors.transparent,
             //  borderRadius: BorderRadius.only(topLeft:  Radius.circular(2), topRight:  Radius.circular(2)),
               ),
           child:
 
               Padding(
-    padding: EdgeInsets.all(8),
+    padding: EdgeInsets.all(4),
               child:
           Row(//top father
 

@@ -1,6 +1,8 @@
+import 'package:flutter/cupertino.dart';
+
 import 'Player.dart';
 
-class MatchEventsStatisticsSoccer{
+class MatchEventsStatisticsSoccer implements Comparable{
 
   int id;
   int event_id ;
@@ -27,6 +29,18 @@ class MatchEventsStatisticsSoccer{
     required this.time,
     required this.order,
   }  );
+
+  @override
+  int compareTo(other) {
+    if (!(other is MatchEventsStatisticsSoccer)){
+      return 0;
+    }
+
+    MatchEventsStatisticsSoccer otherStat = other;
+    return this.order - otherStat.order;
+  }
+
+
 
 
 }

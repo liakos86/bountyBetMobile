@@ -43,4 +43,6 @@ class MatchEvent{
 
   ChangeEvent ?changeEvent;
 
+  static def() {}
+
 }

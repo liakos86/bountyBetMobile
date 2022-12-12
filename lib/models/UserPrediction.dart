@@ -1,6 +1,8 @@
 import 'dart:ui';
 
 import 'package:flutter_app/enums/BetPredictionType.dart';
+import 'package:flutter_app/helper/JsonHelper.dart';
+import 'package:flutter_app/models/match_event.dart';
 
 import '../enums/BetPredictionStatus.dart';
 
@@ -12,9 +14,9 @@ class UserPrediction{
 
   int eventId;
 
-  double value;
+  MatchEvent? event;
 
-  //UserPrediction.ofNull(this.eventId, this.value);
+  double value;
 
   UserPrediction({
     required this.betPredictionType,
@@ -44,9 +46,11 @@ class UserPrediction{
   }
 
   static UserPrediction fromJson(Map<String, dynamic> parsedJson){
-    return UserPrediction(eventId: parsedJson['eventId'],
+    UserPrediction prediction = UserPrediction(eventId: parsedJson['eventId'],
         value: parsedJson['oddValue'] as double,
         betPredictionType:  BetPredictionType.of(int.parse(parsedJson['predictionCategory']), int.parse(parsedJson['predictionType'])));
+    prediction.event = JsonHelper.eventFromJson(parsedJson['event']);
+    return prediction;
   }
 
 }

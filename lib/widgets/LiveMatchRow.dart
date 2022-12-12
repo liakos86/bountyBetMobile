@@ -7,7 +7,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_app/enums/ChangeEvent.dart';
 import 'package:flutter_app/models/constants/MatchConstants.dart';
-import 'package:flutter_app/widgets/LogoWithTeamLarge.dart';
 import 'package:flutter_app/pages/MatchInfoSoccerDetailsPage.dart';
 import '../models/Score.dart';
 import '../models/match_event.dart';
@@ -94,7 +93,7 @@ class LiveMatchRowState extends State<LiveMatchRow> {
                 Column(//second column
                     children: [
                      Padding(padding: EdgeInsets.all(6), child:
-                      Text(textFrom(gameWithOdds.status_for_client), style: TextStyle(
+                      Text(textFromStatus(gameWithOdds), style: TextStyle(
                           fontSize: 12,
                           fontWeight: FontWeight.bold,
                           color: Colors.redAccent),))
@@ -127,12 +126,13 @@ class LiveMatchRowState extends State<LiveMatchRow> {
       )));
   }
 
-  String textFrom(String? status_more) {
-    if (status_more != null) {
-      return status_more;
+  String textFromStatus(MatchEvent event) {
+
+    if (event.status_for_client != null) {
+      return event.status_for_client?? 'EEE';
     }
 
-    return MatchConstants.FT;
+    return event.status;
   }
 
   String textScoreFrom(Score ?score) {

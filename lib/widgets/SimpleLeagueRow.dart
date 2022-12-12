@@ -131,26 +131,6 @@ class SimpleLeagueRowState extends State<SimpleLeagueRow> {
       ));
   }
 
-  String textFrom(String? status_more) {
-    if (status_more != null) {
-      return status_more;
-    }
-
-    return MatchConstants.FT;
-  }
-
-  String textScoreFrom(Score ?score) {
-    if (score == null){
-      return '-';
-    }
-
-    if (score.current == null){
-      return '-';
-    }
-
-    return score.current.toString();
-
-  }
 }
 
 

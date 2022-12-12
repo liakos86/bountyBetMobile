@@ -1,4 +1,4 @@
-class MatchConstants{
+class MatchStatus{
 
    static const String NOT_STARTED = "notstarted";
 

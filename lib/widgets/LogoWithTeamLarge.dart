@@ -15,8 +15,17 @@ class LogoWithTeamLarge extends StatelessWidget{
   Widget build(BuildContext context) {
     return
 
-      Padding(padding: EdgeInsets.all(6), child:
+        Container(
+          padding: EdgeInsets.all(10),
+          width: 120,
+          decoration: BoxDecoration(
+            //shape: BoxShape.rectangle,
+            border: Border.all(width: 3, color: Colors.blue.shade200),
+              color: Colors.white, borderRadius: BorderRadius.all(Radius.circular(16))
+          ),
 
+
+        child:
       Column(//mainAxisSize: MainAxisSize.min,// HOME TEAM NAME ROW
 
         children: [
@@ -28,12 +37,14 @@ class LogoWithTeamLarge extends StatelessWidget{
 
                 Text(team.name,
                     style: TextStyle(
+                        overflow: TextOverflow.ellipsis,
                         fontWeight: FontWeight.bold, fontSize: 16, color: Colors.black)),
               ],
             ),
 
-
-      );
+      //)
+      // )
+    );
   }
 
 

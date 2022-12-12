@@ -5,41 +5,56 @@ import 'package:flutter/material.dart';
 import 'package:flutter_app/enums/BetStatus.dart';
 import 'package:flutter_app/models/UserBet.dart';
 
+import '../models/User.dart';
 import '../models/interfaces/StatefulWidgetWithName.dart';
 import '../widgets/UserBetRow.dart';
 
 
 class MyBetsPage extends StatefulWidgetWithName{
 
-  List<UserBet> userBets = <UserBet>[];
+  User? user;
 
-  HashMap eventsPerIdMap = HashMap();
+  //HashMap eventsPerIdMap = HashMap();
 
   @override
-  MyBetsPageState createState() => MyBetsPageState(userBets, eventsPerIdMap);
+  MyBetsPageState createState() => MyBetsPageState(user);
 
-  MyBetsPage(List<UserBet> userBets, HashMap<dynamic, dynamic> eventsPerIdMap){
-    this.userBets = userBets;
-    this.eventsPerIdMap = eventsPerIdMap;
-    setName('My Bets');
-  }
+  // MyBetsPage(User user, HashMap<dynamic, dynamic> eventsPerIdMap){
+  //   this.user = user;
+  //   this.eventsPerIdMap = eventsPerIdMap;
+  //   setName('My Bets');
+  // }
+
+  MyBetsPage({
+    Key? key,
+    required this.user,
+   // required this.eventsPerIdMap
+    //setName('Today\'s Odds')
+
+  } ) : super(key: key);
 
 }
 
 class MyBetsPageState extends State<MyBetsPage>{
 
-  List<UserBet> userBets = <UserBet>[];
+  User? user;
 
-  HashMap eventsPerIdMap = HashMap();
+  // eventsPerIdMap = HashMap();
 
-  MyBetsPageState(this.userBets, this.eventsPerIdMap);
+  MyBetsPageState(this.user);
 
 
   @override
   Widget build(BuildContext context) {
+    if (user == null){
+      return Text('Please login');
+    }
+
+    List<UserBet>? userBets = user?.userBets;
+
     List<UserBet> pendingBets = <UserBet>[];
     List<UserBet> settledBets = <UserBet>[];
-    for (UserBet bet in userBets){
+    for (UserBet bet in userBets!){
       if (BetStatus.PENDING == bet.betStatus){
         pendingBets.add(bet);
       }else{
@@ -92,7 +107,8 @@ class MyBetsPageState extends State<MyBetsPage>{
   }
 
   Widget _buildUserBetRow(UserBet bet) {
-    return UserBetRow(bet, eventsPerIdMap);
+
+    return UserBetRow(bet);
   }
 
 }

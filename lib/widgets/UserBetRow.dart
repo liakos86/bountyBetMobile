@@ -14,9 +14,9 @@ class UserBetRow extends StatelessWidget{
 
   UserBet bet;
 
-  HashMap eventsPerIdMap;
+  //HashMap eventsPerIdMap;
 
-  UserBetRow(this.bet, this.eventsPerIdMap);
+  UserBetRow(this.bet);
 
   @override
   Widget build(BuildContext context) {
@@ -28,12 +28,12 @@ class UserBetRow extends StatelessWidget{
       leading: Icon(Icons.sports, color: Colors.orangeAccent),
       title: Text('Possible earnings: ' + bet.toReturn().toStringAsFixed(2),
           style: TextStyle(fontSize: 18, color: Colors.black, fontWeight: FontWeight.bold)),
-      children: bet.predictions.map((item)=> _buildSelectedOddRow(item, eventsPerIdMap[item.eventId])).toList(),
+      children: bet.predictions.map((item)=> _buildSelectedOddRow(item)).toList()
     );
   }
 
-  Widget _buildSelectedOddRow(UserPrediction bettingOdd, MatchEvent event) {
-    return UserBetPredictionRow(event: event, prediction: bettingOdd);
+  Widget _buildSelectedOddRow(UserPrediction bettingOdd) {
+    return UserBetPredictionRow(prediction: bettingOdd);
   }
 
 }

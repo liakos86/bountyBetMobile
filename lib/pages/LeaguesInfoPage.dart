@@ -72,14 +72,18 @@ class LeaguesInfoPageState extends State<LeaguesInfoPage>{
   }
 
   void updateLeaguesFromParent() {
-    List<League> leagues = leaguesFunction.call();
+    Map<String, List<League>> leagues = leaguesFunction.call();
     if (leagues.isNotEmpty){
 
       if (!mounted){
         return;
       }
+
+      List<League> leaguesNew = <League>[];
+      leagues.forEach((key, value) {leaguesNew.addAll(value);});
       setState(() {
-        allLeagues = leagues;
+
+        allLeagues = leaguesNew;
       });
     }
   }

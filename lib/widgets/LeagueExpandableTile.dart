@@ -62,7 +62,8 @@ class LeagueMatchesRow extends StatefulWidget {
   }
 
   Widget _buildSelectedOddRow(MatchEvent event) {
-    if (event.status == MatchConstants.IN_PROGRESS || event.status == MatchConstants.FINISHED) {
+    if (event.status == MatchStatus.IN_PROGRESS || event.status == MatchStatus.FINISHED
+        || event.status == MatchStatus.POSTPONED || event.status == MatchStatus.CANCELLED) {
       return LiveMatchRow(key: UniqueKey(), gameWithOdds: event);
     }
 

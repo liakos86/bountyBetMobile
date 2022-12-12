@@ -18,7 +18,7 @@ import '../models/match_odds.dart';
 
 class JsonHelper{
 
-  static MatchEvent eventFromJson(var event, BuildContext context){
+  static MatchEvent eventFromJson(var event){
     MatchOdds odds ;
 
     var eventOdds = event["main_odds"];
@@ -80,35 +80,19 @@ class JsonHelper{
     var startHour = event["start_hour"];
     var startMinute = event["start_minute"];
 
-
-    var homeTranslations = homeTeam['name_translations'];
-    var awayTranslations = awayTeam['name_translations'];
-    String langCode = Localizations.localeOf(context).languageCode;
-
     Team hTeam = Team(homeTeam["id"], homeTeam["name"], homeTeam["logo"]);
     Team aTeam = Team(awayTeam["id"], awayTeam["name"], awayTeam["logo"]);
 
-    if (homeTranslations !=null && homeTranslations[langCode] != null){
-      hTeam.name = homeTranslations[langCode];
-    }
-
-    if (awayTranslations != null && awayTranslations[langCode] != null){
-      aTeam.name = awayTranslations[langCode];
-    }
-
     MatchEvent match = MatchEvent(eventId: event["id"], status: event["status"], homeTeam: hTeam, awayTeam: aTeam, odds: odds);
-
 
    match.changeEvent = ChangeEvent.ofCode(_changeEvent);
    match.startHour = startHour;
    match.startMinute = startMinute;
 
+   match.status_more = event["status_more"];
+   match.status_for_client = event["status_for_client"];
 
-    match.status_more = event["status_more"];
-    match.status_for_client = event["status_for_client"];
-
-
-    if (homeTeamScore != null){
+   if (homeTeamScore != null){
       match.homeTeamScore = Score(homeTeamScore["current"], homeTeamScore["display"], homeTeamScore["normal_time"],
           homeTeamScore["period_1"], homeTeamScore["period_2"]);
 
@@ -127,12 +111,12 @@ class JsonHelper{
     return match;
   }
 
-  static League leagueFromJson(league, BuildContext context) {
+  static League leagueFromJson(league) {
     List<MatchEvent> matches = <MatchEvent>[];
 
     var jsonLeagueEvents = league["liveMatchEvents"];
     for (var jsonEvent in jsonLeagueEvents){
-      MatchEvent match = eventFromJson(jsonEvent, context);
+      MatchEvent match = eventFromJson(jsonEvent);
       matches.add(match);
     }
 
@@ -145,26 +129,26 @@ class JsonHelper{
     l.logo = league['logo'];
 
 
-    String langCode = Localizations
-        .localeOf(context)
-        .languageCode;
+    // String langCode = Localizations
+    //     .localeOf(context)
+    //     .languageCode;
     var sectionJson = league['section'];
     if (sectionJson != null) {
       Section section = Section(sectionJson['name']);
       var sectionTranslations = sectionJson['name_translations'];
 
-      if (sectionTranslations != null &&
-          sectionTranslations[langCode] != null) {
-        section.name = sectionTranslations[langCode];
-      }
+      // if (sectionTranslations != null &&
+      //     sectionTranslations[langCode] != null) {
+      //   section.name = sectionTranslations[langCode];
+      // }
 
       l.section = section;
     }
 
-    var translations = league['name_translations'];
-    if (translations != null && translations[langCode] != null){
-      l.name = translations[langCode];
-    }
+    // var translations = league['name_translations'];
+    // if (translations != null && translations[langCode] != null){
+    //   l.name = translations[langCode];
+    // }
 
 
     var seasonsJson = league['seasons'];
@@ -237,6 +221,8 @@ class JsonHelper{
 
       incidents.add(incident);
     }
+
+    incidents.sort();
     return incidents;
   }
 

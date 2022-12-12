@@ -11,6 +11,7 @@ import 'package:flutter_app/models/Team.dart';
 import 'package:flutter_app/models/User.dart';
 import 'package:flutter_app/models/UserBet.dart';
 import 'package:flutter_app/models/constants/MatchConstants.dart';
+import 'package:flutter_app/models/constants/MatchStatsConstants.dart';
 import 'package:flutter_app/models/matchEventStatisticsSoccer.dart';
 import 'package:flutter_app/models/match_event.dart';
 import 'package:flutter_app/models/match_odds.dart';
@@ -31,6 +32,15 @@ class MockUtils {
 
   }
 
+  Map<String, List<League>> mockLeaguesMap(bool live){
+    Map<String, List<League>> mockLeaguesMap = new LinkedHashMap();
+    List<League> leagues = mockLeagues(live);
+    mockLeaguesMap.putIfAbsent("yesterday", () => leagues);
+    mockLeaguesMap.putIfAbsent("today", () => leagues);
+    mockLeaguesMap.putIfAbsent("tomorrow", () => leagues);
+    return mockLeaguesMap;
+  }
+
   List<League> mockLeagues(bool live){
     mockTeams.clear();
     mockTeams.add(newTeam('panathinaikos'));
@@ -48,7 +58,7 @@ class MockUtils {
     var events = <MatchEvent>[];
     Set<MatchEvent> eventsMock = mockEvents();
     for (MatchEvent event in eventsMock){
-     if (live && event.status == MatchConstants.IN_PROGRESS) {
+      if (live && event.status == MatchStatus.IN_PROGRESS) {
         events.add(event);
       }else if (!live){
         events.add(event);
@@ -62,21 +72,20 @@ class MockUtils {
     league.section = section;
 
     leagues.add(league);
-
     return leagues;
   }
 
   Set<MatchEvent> mockEvents() {
     Set<MatchEvent> mockEvents = LinkedHashSet();
-    MatchEvent mockEvent1 = mockEvent(1, 1.5, 3.4, 5.0, 1.95, 1.85, MatchConstants.IN_PROGRESS, "60", ChangeEvent.NONE);
+    MatchEvent mockEvent1 = mockEvent(1, 1.5, 3.4, 5.0, 1.95, 1.85, MatchStatus.IN_PROGRESS, "60", ChangeEvent.NONE);
     mockEvents.add(mockEvent1);
-    MatchEvent mockEvent2 = mockEvent(2, 1.58, 4.4, 5.76, 1.95, 1.85, MatchConstants.NOT_STARTED, "", ChangeEvent.NONE);
+    MatchEvent mockEvent2 = mockEvent(2, 1.58, 4.4, 5.76, 1.95, 1.85, MatchStatus.NOT_STARTED, "", ChangeEvent.NONE);
     mockEvents.add(mockEvent2);
-    MatchEvent mockEvent3 = mockEvent(3, 1.75, 3.1, 6.5, 1.95, 1.85, MatchConstants.IN_PROGRESS, "65", ChangeEvent.NONE);
+    MatchEvent mockEvent3 = mockEvent(3, 1.75, 3.1, 6.5, 1.95, 1.85, MatchStatus.IN_PROGRESS, "65", ChangeEvent.NONE);
     mockEvents.add(mockEvent3);
-    MatchEvent mockEvent4 = mockEvent(4, 1.75, 3.1, 6.5, 1.95, 1.85, MatchConstants.NOT_STARTED, "", ChangeEvent.NONE);
+    MatchEvent mockEvent4 = mockEvent(4, 1.75, 3.1, 6.5, 1.95, 1.85, MatchStatus.NOT_STARTED, "", ChangeEvent.NONE);
     mockEvents.add(mockEvent4);
-    MatchEvent mockEvent5 = mockEvent(5, 1.75, 3.1, 6.5, 1.95, 1.85, MatchConstants.IN_PROGRESS, "80", ChangeEvent.NONE);
+    MatchEvent mockEvent5 = mockEvent(5, 1.75, 3.1, 6.5, 1.95, 1.85, MatchStatus.IN_PROGRESS, "80", ChangeEvent.NONE);
     mockEvents.add(mockEvent5);
 
     return mockEvents;
@@ -117,8 +126,9 @@ class MockUtils {
         oddU25: UserPrediction(betPredictionType:BetPredictionType.UNDER_25, eventId: eventId,value: _oddU25));
   }
 
-  User mockUser(List<League> validData) {
-    var events = validData.first.getEvents();
+  User mockUser(Map<String, List<League>> validData) {
+    var events = validData.entries.first.value.first.events;
+    // var events = validData.first.getEvents();
     // League firstLeague = validData.first;
     List<UserBet> userBets = <UserBet>[];
 
@@ -152,19 +162,29 @@ class MockUtils {
 
   List<MatchEventsStatisticsSoccer> mockStats() {
     List<MatchEventsStatisticsSoccer> stats = <MatchEventsStatisticsSoccer>[];
-    stats.add(mockStat(23, "card", 1));
-    stats.add(mockStat(23, "goal", 2));
-    stats.add(mockStat(23, "substitution", 2));
-    stats.add(mockStat(23, "card", 1));
-    stats.add(mockStat(23, "card", 2));
+    stats.add(mockStat(1, 1, "card", 1, null));
+    stats.add(mockStat(4, 4, "goal", 2, null));
+    stats.add(mockStat(6, 6, "substitution", 2, null));
+    stats.add(mockStat(2, 2, "card", 1, null));
+    stats.add(mockStat(5, 5, "card", 2, null));
+
+    stats.add(mockStat(3, 45, MatchStatConstants.PERIOD, null, "HT 0 - 0"));
+
+
+    stats.sort();
     return stats;
   }
 
-  MatchEventsStatisticsSoccer mockStat(int time, String incident, int team) {
-    MatchEventsStatisticsSoccer stat = MatchEventsStatisticsSoccer(id: 1, event_id: 1, incident_type: incident, time: time, order: 1);
+  MatchEventsStatisticsSoccer mockStat(int order, int time, String incident, int? team, String? text) {
+    MatchEventsStatisticsSoccer stat = MatchEventsStatisticsSoccer(id: 1, event_id: 1, incident_type: incident, time: time, order: order);
     stat.player_team = team;
     stat.player = Player(has_photo: true, photo: "https://tipsscore.com/resb/player/sebastien-mladen.png",
     name: 'mockovic', id: 1, position: 'f', position_name: 'forward', sport_id: 1, name_short: 'mockovic');
+
+    stat.player_two_in = Player(has_photo: true, photo: "https://tipsscore.com/resb/player/neymar.png",
+        name: 'mockovic out ', id: 1, position: 'f', position_name: 'forward', sport_id: 1, name_short: 'mockovic out');
+
+    stat.text = text;
     return stat;
 
   }

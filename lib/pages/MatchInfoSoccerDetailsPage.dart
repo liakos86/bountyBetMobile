@@ -1,11 +1,14 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_app/models/constants/MatchStatsConstants.dart';
 import 'package:flutter_app/models/matchEventStatisticsSoccer.dart';
 import 'package:flutter_app/widgets/LiveMatchRow.dart';
 import 'package:flutter_app/widgets/LogoWithTeamLarge.dart';
 import 'package:flutter_app/widgets/LogoWithTeamName.dart';
 
 import '../models/match_event.dart';
+import '../widgets/MatchScoreMiddleText.dart';
+import '../widgets/SoccerStatPeriodRow.dart';
 import '../widgets/SoccerStatisticsRow.dart';
 
 class MatchInfoSoccerDetailsPage extends StatefulWidget{
@@ -32,7 +35,7 @@ class MatchInfoSoccerDetailsPageState extends State<MatchInfoSoccerDetailsPage>{
     return
 
       Scaffold(
-      appBar: AppBar(title: Text('Match info')),
+      appBar: AppBar(title: Text(event.homeTeam.name + '-' + event.awayTeam.name)),
     body:
       Column(
 
@@ -41,29 +44,24 @@ class MatchInfoSoccerDetailsPageState extends State<MatchInfoSoccerDetailsPage>{
         Expanded(flex:2,
             child:
 
-        Row(
+                Container(
+                  color:Colors.grey[100],
+                child:
 
+                Padding(
+              padding: EdgeInsets.only(top: 12, bottom: 12),
+                  child:
+        Row(
           mainAxisSize: MainAxisSize.max,
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
+            LogoWithTeamLarge(team: event.homeTeam),
+            MatchScoreMiddleText(event: event),
+            LogoWithTeamLarge(team: event.awayTeam)
+                    ],
+        ))
 
-         Align(alignment: Alignment.center, child:
-          LogoWithTeamLarge(team: event.homeTeam),
-          ),
-
-          // Align(alignment: Alignment.center, child:
-          Text('0-0', style: TextStyle(fontWeight: FontWeight.w500, fontSize: 40),),
-            // ,),
-
-          // Align(alignment: Alignment.centerRight, child:
-          LogoWithTeamLarge(team: event.awayTeam)
-        // ,)
-
-
-        ],)
-
-        ),
-
+        )),
 
         Expanded(flex:7, child:
 
@@ -71,15 +69,20 @@ class MatchInfoSoccerDetailsPageState extends State<MatchInfoSoccerDetailsPage>{
         DefaultTabController(
           length: 3,
           child: Scaffold(
+            backgroundColor: Colors.white,
               appBar: AppBar(
                 toolbarHeight: 0,
+                backgroundColor: Colors.grey[100],
                 bottom: TabBar(
-                  labelColor: Colors.white,
+                  labelColor: Colors.black,
+                  unselectedLabelColor: Colors.grey[600],
+                  indicatorColor: Colors.blue[500],
+                  indicatorWeight: 3,
 
                   tabs: [
-                    Tab(text: 'Statistics'),
-                    Tab(text: 'Odds',),
-                    Tab(text: 'News',),
+                   Tab(text: 'Statistics'),
+                   Tab(text: 'Odds',),
+                   Tab(text: 'News',),
                   ],
                 ),
               ),
@@ -106,14 +109,6 @@ class MatchInfoSoccerDetailsPageState extends State<MatchInfoSoccerDetailsPage>{
           ),
         )
 
-
-
-        // ListView.builder(
-        // itemCount: event.statistics.length,
-        //     itemBuilder: (context, item) {
-        //       return _buildRow(event.statistics[item]);
-        //     })
-
         )
 
       ],
@@ -123,8 +118,13 @@ class MatchInfoSoccerDetailsPageState extends State<MatchInfoSoccerDetailsPage>{
   }
 
   Widget _buildRow(MatchEventsStatisticsSoccer stat) {
+    if (MatchStatConstants.PERIOD == stat.incident_type){
+      return SoccerStatPeriodRow(key: UniqueKey(), statistic: stat);
+    }
+
     return SoccerStatisticsRow(key: UniqueKey(), statistic: stat);
-    // return LiveMatchRow(key: UniqueKey(), gameWithOdds: event,);
   }
+
+
 
 }

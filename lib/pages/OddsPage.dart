@@ -4,6 +4,8 @@ import 'dart:convert';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_app/models/User.dart';
+import 'package:flutter_app/pages/ParentPage.dart';
 import 'package:flutter_app/widgets/LeagueExpandableTile.dart';
 import 'package:http/http.dart';
 
@@ -17,17 +19,20 @@ import '../widgets/BetSlipBottom.dart';
 
 class OddsPage extends StatefulWidget {
 
-  HashMap eventsPerDayMap = HashMap();
+  Map eventsPerDayMap = LinkedHashMap();
 
   Function loadLeagues = ()=>{ };
 
+  Function updateUserCallback = ()=>{ };
+
   @override
-  OddsPageState createState() => OddsPageState(loadLeagues, eventsPerDayMap);
+  OddsPageState createState() => OddsPageState(loadLeagues, eventsPerDayMap, updateUserCallback);
 
   OddsPage({
     Key? key,
     required this.loadLeagues,
-  required this.eventsPerDayMap,
+    required this.updateUserCallback,
+    required this.eventsPerDayMap,
     //setName('Today\'s Odds')
 
   } ) : super(key: key);
@@ -47,14 +52,17 @@ class OddsPageState extends State<OddsPage>{
    */
   bool showOdds = false;
 
-  List<League> allLeagues = <League>[];
+  //List<League> allLeagues = <League>[];
 
-  HashMap eventsPerDayMap = HashMap();
+  Map eventsPerDayMap = LinkedHashMap();
 
   Function functionLoadLeagues = ()=>{};
 
-  OddsPageState(loadLeagues, eventsPerDayMap) {
+  Function updateUserCallback = ()=>{ };
+
+  OddsPageState(loadLeagues, eventsPerDayMap, userCallback) {
     functionLoadLeagues = loadLeagues;
+    updateUserCallback = userCallback;
     this.eventsPerDayMap = eventsPerDayMap;
   }
 
@@ -72,9 +80,14 @@ class OddsPageState extends State<OddsPage>{
 
     print('***********************BUILDING ODDS');
 
+
+    if (eventsPerDayMap.isEmpty){
+      return CircularProgressIndicator();
+    }
+
     return DefaultTabController(
-      initialIndex: 7,
-      length: 15,
+      initialIndex: 1,
+      length: 3,
 
       child:
 
@@ -92,21 +105,21 @@ class OddsPageState extends State<OddsPage>{
                 unselectedLabelColor: Colors.white.withOpacity(0.3),
 
               tabs: [
-                Tab(text: 'All'),
-                Tab(text: 'All'),
-                Tab(text: 'All'),
-                Tab(text: 'All'),
-                Tab(text: 'All'),
-                Tab(text: 'All'),
-                Tab(text: 'Yesterday'),
-                Tab(text: 'Today'),
-                Tab(text: 'Tomorrow'),
-                Tab(text: 'All'),
-                Tab(text: 'All'),
-                Tab(text: 'All'),
-                Tab(text: 'All'),
-                Tab(text: 'All'),
-                Tab(text: 'All'),
+                // Tab(text: 'All'),
+                // Tab(text: 'All'),
+                // Tab(text: 'All'),
+                // Tab(text: 'All'),
+                // Tab(text: 'All'),
+                // Tab(text: 'All'),
+                Tab(text: eventsPerDayMap.entries.elementAt(0).key),
+                Tab(text: eventsPerDayMap.entries.elementAt(1).key),
+                Tab(text: eventsPerDayMap.entries.elementAt(2).key),
+                // Tab(text: 'All'),
+                // Tab(text: 'All'),
+                // Tab(text: 'All'),
+                // Tab(text: 'All'),
+                // Tab(text: 'All'),
+                // Tab(text: 'All'),
               ],
             ),
 
@@ -117,96 +130,24 @@ class OddsPageState extends State<OddsPage>{
             children: [
               ListView.builder(
                   padding: const EdgeInsets.all(8),
-                  itemCount: allLeagues.length,
+                  itemCount: eventsPerDayMap.entries.elementAt(0).value.length,
                   itemBuilder: (context, item) {
-                    return _buildRow(allLeagues[item]);
+                    return _buildRow(eventsPerDayMap.entries.elementAt(0).value[item]);
                   }),
 
               ListView.builder(
                   padding: const EdgeInsets.all(8),
-                  itemCount: allLeagues.length,
+                  itemCount: eventsPerDayMap.entries.elementAt(1).value.length,
                   itemBuilder: (context, item) {
-                    return _buildRow(allLeagues[item]);
+                    return _buildRow(eventsPerDayMap.entries.elementAt(1).value[item]);
                   }),
               ListView.builder(
                   padding: const EdgeInsets.all(8),
-                  itemCount: allLeagues.length,
+                  itemCount: eventsPerDayMap.entries.elementAt(2).value.length,
                   itemBuilder: (context, item) {
-                    return _buildRow(allLeagues[item]);
-                  }),
-              ListView.builder(
-                  padding: const EdgeInsets.all(8),
-                  itemCount: allLeagues.length,
-                  itemBuilder: (context, item) {
-                    return _buildRow(allLeagues[item]);
-                  }),
-              ListView.builder(
-                  padding: const EdgeInsets.all(8),
-                  itemCount: allLeagues.length,
-                  itemBuilder: (context, item) {
-                    return _buildRow(allLeagues[item]);
-                  }),
-              ListView.builder(
-                  padding: const EdgeInsets.all(8),
-                  itemCount: allLeagues.length,
-                  itemBuilder: (context, item) {
-                    return _buildRow(allLeagues[item]);
-                  }),
-              ListView.builder(
-                  padding: const EdgeInsets.all(8),
-                  itemCount: allLeagues.length,
-                  itemBuilder: (context, item) {
-                    return _buildRow(allLeagues[item]);
-                  }),
-              ListView.builder(
-                  padding: const EdgeInsets.all(8),
-                  itemCount: allLeagues.length,
-                  itemBuilder: (context, item) {
-                    return _buildRow(allLeagues[item]);
-                  }),
-              ListView.builder(
-                  padding: const EdgeInsets.all(8),
-                  itemCount: allLeagues.length,
-                  itemBuilder: (context, item) {
-                    return _buildRow(allLeagues[item]);
-                  }),
-              ListView.builder(
-                  padding: const EdgeInsets.all(8),
-                  itemCount: allLeagues.length,
-                  itemBuilder: (context, item) {
-                    return _buildRow(allLeagues[item]);
-                  }),
-              ListView.builder(
-                  padding: const EdgeInsets.all(8),
-                  itemCount: allLeagues.length,
-                  itemBuilder: (context, item) {
-                    return _buildRow(allLeagues[item]);
+                    return _buildRow(eventsPerDayMap.entries.elementAt(2).value[item]);
                   }),
 
-              ListView.builder(
-                  padding: const EdgeInsets.all(8),
-                  itemCount: allLeagues.length,
-                  itemBuilder: (context, item) {
-                    return _buildRow(allLeagues[item]);
-                  }),
-              ListView.builder(
-                  padding: const EdgeInsets.all(8),
-                  itemCount: allLeagues.length,
-                  itemBuilder: (context, item) {
-                    return _buildRow(allLeagues[item]);
-                  }),
-              ListView.builder(
-                  padding: const EdgeInsets.all(8),
-                  itemCount: allLeagues.length,
-                  itemBuilder: (context, item) {
-                    return _buildRow(allLeagues[item]);
-                  }),
-              ListView.builder(
-                  padding: const EdgeInsets.all(8),
-                  itemCount: allLeagues.length,
-                  itemBuilder: (context, item) {
-                    return _buildRow(allLeagues[item]);
-                  }),
 
             ],),
 
@@ -238,11 +179,11 @@ class OddsPageState extends State<OddsPage>{
   }
 
   void updateLeaguesFromParent(Timer timer) {
-    List<League> leagues = functionLoadLeagues.call();
+    Map<String, List<League>> leagues = functionLoadLeagues.call();
     if (mounted && leagues.isNotEmpty){
       timer.cancel();
       setState(() {
-        allLeagues = leagues;
+        eventsPerDayMap = leagues;
       });
     }
   }
@@ -287,21 +228,41 @@ class OddsPageState extends State<OddsPage>{
       return;
     }
 
-    UserBet newBet = UserBet(userMongoId: '', predictions: selectedOdds, betAmount: bettingAmount);
+    String mongoUserId = '';
+    if (ParentPageState.user.mongoUserId != null){
+     mongoUserId = ParentPageState.user.mongoUserId!;
+    }else{
+      return;
+    }
+
+    UserBet newBet = UserBet(userMongoId: mongoUserId , predictions: selectedOdds, betAmount: bettingAmount);
     var encodedBet = jsonEncode(newBet.toJson());
 
     try {
-      await post(Uri.parse(UrlConstants.POST_PLACE_BET),
+      var userResponse = await post(Uri.parse(UrlConstants.POST_PLACE_BET),
           headers: {
             "Accept": "application/json",
             "Content-Type": "application/json"
-
-            // 'Accept': 'application/json',
-            // 'Content-Type': 'application/json; charset=UTF-8',
           },
           body: encodedBet,
           encoding: Encoding.getByName("utf-8")).timeout(
           const Duration(seconds: 20));
+
+
+      var responseDec = jsonDecode(userResponse.body);
+      User userFromServer = User.fromJson(responseDec);
+
+
+      updateUserCallback.call(userFromServer, newBet);
+
+      setState(() {
+        bettingAmount = 0;
+        showOdds = false;
+        selectedOdds.clear();
+      });
+
+
+
 
     }catch(e){
       print(e);

@@ -10,6 +10,7 @@ import 'package:flutter_app/widgets/LiveMatchRow.dart';
 import '../models/Team.dart';
 import '../models/league.dart';
 import '../pages/LeagueGamesPage.dart';
+import 'StatPictureInPicture.dart';
 import 'UpcomingMatchRow.dart';
 
 class SoccerStatisticBox extends StatelessWidget{
@@ -20,20 +21,20 @@ class SoccerStatisticBox extends StatelessWidget{
 
   @override
   Widget build(BuildContext context) {
+    bool isHomeTeam = homeTeamStat(statistic);
     return
 
       Align(
-          alignment: homeTeamStat(statistic)  ? Alignment.centerLeft : Alignment.centerRight,
+          alignment: isHomeTeam  ? Alignment.centerLeft : Alignment.centerRight,
         child:
       Row(
 
         children: [
-
-          imageFromStatistic(),
-
-          SizedBox(width: 8,),
-
-          Text(textFor(statistic), overflow: TextOverflow.ellipsis, textAlign: TextAlign.left,  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12),)
+          !isHomeTeam ?  Text(textFor(statistic), maxLines: 2, overflow: TextOverflow.ellipsis, textAlign: TextAlign.right,  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12),) : SizedBox(width: 0,),
+          SizedBox(width: 4,),
+          StatPictureInPicture(statistic : statistic),
+          SizedBox(width: 4,),
+          isHomeTeam ? Text(textFor(statistic), maxLines: 2, overflow: TextOverflow.ellipsis, textAlign: TextAlign.left,  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12),) : SizedBox(width: 0,)
 
         ],
 
@@ -79,10 +80,10 @@ class SoccerStatisticBox extends StatelessWidget{
   String textFor(MatchEventsStatisticsSoccer statistic) {
     String incident_type = statistic.incident_type;
     if ("substitution" == incident_type){
-      return '${statistic.player?.name_short}(${statistic.player_two_in?.name_short})';
+      return '${statistic.time}\' ${statistic.player?.name_short}\n(${statistic.player_two_in?.name_short})';
     }
 
-    return '${statistic.time} ' ' ${statistic.incident_type}';
+    return '${statistic.time}\' ${statistic.player?.name_short}';
   }
 
   homeTeamStat(MatchEventsStatisticsSoccer statistic) {
