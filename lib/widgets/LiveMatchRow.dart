@@ -16,19 +16,23 @@ class LiveMatchRow extends StatefulWidget {
 
   final MatchEvent gameWithOdds;
 
+  bool blink;
 
-  LiveMatchRow({Key ?key, required this.gameWithOdds}) : super(key: key);
+  LiveMatchRow({Key ?key, required this.gameWithOdds, required this.blink}) : super(key: key);
 
   @override
-  LiveMatchRowState createState() => LiveMatchRowState(gameWithOdds: gameWithOdds);
+  LiveMatchRowState createState() => LiveMatchRowState(gameWithOdds: gameWithOdds, blink: blink);
 }
 
 class LiveMatchRowState extends State<LiveMatchRow> {
 
   MatchEvent gameWithOdds;
 
+  bool blink;
+
   LiveMatchRowState({
-    required this.gameWithOdds
+    required this.gameWithOdds,
+    required this.blink
   });
 
 
@@ -129,7 +133,8 @@ class LiveMatchRowState extends State<LiveMatchRow> {
   String textFromStatus(MatchEvent event) {
 
     if (event.status_for_client != null) {
-      return event.status_for_client?? 'EEE';
+      String status = event.status_for_client! + (blink ? "'" : "");
+      return status;
     }
 
     return event.status;

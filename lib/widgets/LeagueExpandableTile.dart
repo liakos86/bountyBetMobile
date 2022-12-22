@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:ui';
 
 import 'package:flutter/cupertino.dart';
@@ -29,9 +30,11 @@ class LeagueMatchesRow extends StatefulWidget {
       LeagueMatchesRowState(league: league,
           selectedOdds: selectedOdds,
           callbackForOdds: callbackForOdds);
-}
+  }
 
   class LeagueMatchesRowState extends State<LeagueMatchesRow>{
+
+    bool blink = false;
 
     League league;
 
@@ -40,6 +43,15 @@ class LeagueMatchesRow extends StatefulWidget {
     Function(UserPrediction) callbackForOdds;
 
     LeagueMatchesRowState({required this.league, required this.selectedOdds, required this.callbackForOdds});
+
+    @override
+  void initState() {
+    super.initState();
+
+    Timer.periodic(Duration(milliseconds: 3000), (timer) {
+      doBlink();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -64,10 +76,21 @@ class LeagueMatchesRow extends StatefulWidget {
   Widget _buildSelectedOddRow(MatchEvent event) {
     if (event.status == MatchStatus.IN_PROGRESS || event.status == MatchStatus.FINISHED
         || event.status == MatchStatus.POSTPONED || event.status == MatchStatus.CANCELLED) {
-      return LiveMatchRow(key: UniqueKey(), gameWithOdds: event);
+      return LiveMatchRow(key: UniqueKey(), gameWithOdds: event, blink: blink);
     }
 
     return UpcomingMatchRow(key: UniqueKey(), gameWithOdds: event, selectedOdds: selectedOdds, callbackForOdds: callbackForOdds);
+  }
+
+  void doBlink() {
+
+      if (!mounted){
+        return;
+      }
+
+      setState(() {
+        blink = !blink;
+      });
   }
 
 }

@@ -12,15 +12,13 @@ class GestureDetectorForOdds extends StatefulWidget {
 
  List<UserPrediction> selectedOdds = <UserPrediction>[];
 
-  // UserPrediction? selected;
-
   int eventId;
 
   String predictionText;
 
-  UserPrediction prediction;
+  UserPrediction? prediction;
 
-  List<UserPrediction> toRemove;
+  List<UserPrediction?>? toRemove;
 
   Function( UserPrediction) callbackForOdds;
 
@@ -49,11 +47,11 @@ class GestureDetectorForOddsState extends State<GestureDetectorForOdds>{
 
   Function( UserPrediction) callbackForOdds;
 
-  UserPrediction prediction;
+  UserPrediction? prediction;
 
   String predictionText;
 
-  List<UserPrediction> toRemove;
+  List<UserPrediction?>? toRemove;
 
   GestureDetectorForOddsState({
     // required this.selected,
@@ -71,7 +69,7 @@ class GestureDetectorForOddsState extends State<GestureDetectorForOdds>{
 
     return GestureDetector(
                       onTap: () {
-                        callbackForOdds.call(prediction);
+                        callbackForOdds.call(prediction!);
 
                           // if (prediction==selected) {
                           //   callbackForOdds?.call(null);
@@ -104,7 +102,7 @@ class GestureDetectorForOddsState extends State<GestureDetectorForOdds>{
                                 ),
 
                           Expanded(flex: 1, child:
-                                Align(alignment: Alignment.centerRight,  child : Text(  (prediction.value.toStringAsFixed(2)), style: TextStyle(fontWeight:FontWeight.bold, fontSize: 12, color: selectedOdds.contains(prediction)
+                                Align(alignment: Alignment.centerRight,  child : Text(  (prediction?.value.toStringAsFixed(2) ?? 'EEE'), style: TextStyle(fontWeight:FontWeight.bold, fontSize: 12, color: selectedOdds.contains(prediction)
                                     ? Colors.white : Colors.grey[700]), textAlign: TextAlign.right))
                           )
                               ])

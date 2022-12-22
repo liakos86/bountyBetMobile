@@ -94,7 +94,8 @@ class MockUtils {
   MatchEvent mockEvent(eventId, odd1, oddx, odd2, oddO25, oddU25, _status, _status_more, _changeEvent){
     MatchOdds mockOdds1 = mockOdds(eventId, odd1, oddx, odd2, oddO25, oddU25);
 
-    MatchEvent event = MatchEvent(eventId: eventId, homeTeam: pickTeam() , awayTeam : pickTeam(), odds: mockOdds1, status: _status);
+    MatchEvent event = MatchEvent(eventId: eventId, homeTeam: pickTeam() , awayTeam : pickTeam(), status: _status);
+    event.odds = mockOdds1;
 
     event.changeEvent = _changeEvent;
     event.status_more = _status_more;

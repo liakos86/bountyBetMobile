@@ -50,9 +50,7 @@ class OddsPageState extends State<OddsPage>{
    * Clicking on the floating button will show or hide the bottom BetSlipBottom.
    * Only if the selected odds are not empty.
    */
-  bool showOdds = false;
-
-  //List<League> allLeagues = <League>[];
+  //bool showOdds = false;
 
   Map eventsPerDayMap = LinkedHashMap();
 
@@ -80,7 +78,6 @@ class OddsPageState extends State<OddsPage>{
 
     print('***********************BUILDING ODDS');
 
-
     if (eventsPerDayMap.isEmpty){
       return CircularProgressIndicator();
     }
@@ -105,24 +102,11 @@ class OddsPageState extends State<OddsPage>{
                 unselectedLabelColor: Colors.white.withOpacity(0.3),
 
               tabs: [
-                // Tab(text: 'All'),
-                // Tab(text: 'All'),
-                // Tab(text: 'All'),
-                // Tab(text: 'All'),
-                // Tab(text: 'All'),
-                // Tab(text: 'All'),
                 Tab(text: eventsPerDayMap.entries.elementAt(0).key),
                 Tab(text: eventsPerDayMap.entries.elementAt(1).key),
                 Tab(text: eventsPerDayMap.entries.elementAt(2).key),
-                // Tab(text: 'All'),
-                // Tab(text: 'All'),
-                // Tab(text: 'All'),
-                // Tab(text: 'All'),
-                // Tab(text: 'All'),
-                // Tab(text: 'All'),
               ],
             ),
-
 
       ),
 
@@ -148,33 +132,47 @@ class OddsPageState extends State<OddsPage>{
                     return _buildRow(eventsPerDayMap.entries.elementAt(2).value[item]);
                   }),
 
-
             ],),
 
         floatingActionButton: FloatingActionButton(
-          onPressed: ()=> setState(() {
-            if(!showOdds && selectedOdds.isNotEmpty) {
-              showOdds = true;
-            }else {
-              showOdds = false;
-            }
-          }),
+          onPressed: ()=> {
+            if (selectedOdds.isNotEmpty)
+          showDialog(context: context, builder: (context) =>
 
-          backgroundColor: showOdds&&selectedOdds.isNotEmpty ? Colors.redAccent : Colors.blueAccent,
+          AlertDialog(
+          title: Text('Place Bet'),
+          elevation: 20,
+          shape: RoundedRectangleBorder(
+          borderRadius:
+          BorderRadius.all(
+          Radius.circular(10.0))),
+          content: Builder(
+          builder: (context) {
+          // Get available height and width of the build area of this widget. Make a choice depending on the size.
+          var height = MediaQuery.of(context).size.height * (2/3);
+          var width = MediaQuery.of(context).size.width;
 
-          child: showOdds&&selectedOdds.isNotEmpty ? Icon(Icons.remove) : Text(BetUtils.finalOddOf(selectedOdds).toStringAsFixed(2), style: TextStyle(fontSize: (BetUtils.finalOddOf(selectedOdds )  < 100) ? 16 : (BetUtils.finalOddOf(selectedOdds )  < 1000) ? 15 : 12)),
+          return Container(
+              width: width,
+              height: height,
+              child : BetSlipBottom(key: UniqueKey(), selectedOdds: selectedOdds, callbackForBetPlacement: placeBetCallback, callbackForBetRemoval: removeOddCallback, )
+            );
+
+          })
+
+          ))
+          },
+
+          backgroundColor: Colors.blueAccent,
+
+          child:  Text(BetUtils.finalOddOf(selectedOdds).toStringAsFixed(2), style: TextStyle(fontSize: (BetUtils.finalOddOf(selectedOdds )  < 100) ? 16 : (BetUtils.finalOddOf(selectedOdds )  < 1000) ? 15 : 12)),
         ),
-
-        bottomSheet:
-            BetSlipBottom(key: UniqueKey(), showOdds: showOdds, selectedOdds: selectedOdds, callbackForBetPlacement: placeBetCallback, callbackForBetRemoval: removeOddCallback,)
-
 
       ),
     );
   }
 
   Widget _buildRow(League league) {
-    // return LeagueRow(key: UniqueKey(), league: league);
    return LeagueMatchesRow(key: UniqueKey(), league: league, callbackForOdds: fixOddsCallback, selectedOdds: selectedOdds);
   }
 
@@ -193,16 +191,19 @@ class OddsPageState extends State<OddsPage>{
     setState(() {
       selectedOdds.remove(toRemove);
       print('REMOVED ' + toRemove.toString());
-      if (selectedOdds.isEmpty){
-        showOdds = false;
-      }
+      // if (selectedOdds.isEmpty){
+      //   showOdds = false;
+      // }
 
     });
+
+    if (selectedOdds.isEmpty){
+      Navigator.pop(context);
+    }
 
   }
 
   void fixOddsCallback(UserPrediction selectedOdd) {
-
     if (selectedOdds.contains(selectedOdd)){
       selectedOdds.remove(selectedOdd);
     }else{
@@ -224,7 +225,7 @@ class OddsPageState extends State<OddsPage>{
   }
 
   void placeBetCallback(double bettingAmount) async {
-    if (bettingAmount <= 0 || selectedOdds.isEmpty){
+    if (bettingAmount <= 0 ){
       return;
     }
 
@@ -235,7 +236,8 @@ class OddsPageState extends State<OddsPage>{
       return;
     }
 
-    UserBet newBet = UserBet(userMongoId: mongoUserId , predictions: selectedOdds, betAmount: bettingAmount);
+    selectedOdds.forEach((element) {element.event = ParentPageState.eventsPerIdMap[element.eventId];});
+    UserBet newBet = UserBet(userMongoId: mongoUserId , predictions: List.of(selectedOdds), betAmount: bettingAmount);
     var encodedBet = jsonEncode(newBet.toJson());
 
     try {
@@ -248,21 +250,15 @@ class OddsPageState extends State<OddsPage>{
           encoding: Encoding.getByName("utf-8")).timeout(
           const Duration(seconds: 20));
 
-
       var responseDec = jsonDecode(userResponse.body);
       User userFromServer = User.fromJson(responseDec);
-
-
       updateUserCallback.call(userFromServer, newBet);
 
       setState(() {
-        bettingAmount = 0;
-        showOdds = false;
+       // bettingAmount = 0;
+       // showOdds = false;
         selectedOdds.clear();
       });
-
-
-
 
     }catch(e){
       print(e);

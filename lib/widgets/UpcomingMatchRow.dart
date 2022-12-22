@@ -1,32 +1,24 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_app/pages/OddsPage.dart';
 import 'package:flutter_app/widgets/GestureDetectorForOdds.dart';
 
 import '../models/UserPrediction.dart';
 import '../models/match_event.dart';
-import 'LogoWithTeamLarge.dart';
 import 'LogoWithTeamName.dart';
 
-class UpcomingMatchRow extends StatefulWidget {
+  class UpcomingMatchRow extends StatefulWidget {
 
-  //UserPrediction? selectedPrediction;
+    List<UserPrediction> selectedOdds = <UserPrediction>[];
 
- List<UserPrediction> selectedOdds = <UserPrediction>[];
+    MatchEvent gameWithOdds;
 
-  //bool gameSelected;
+    Function(UserPrediction) callbackForOdds;
 
-  MatchEvent gameWithOdds;
+    UpcomingMatchRow({Key ?key, required this.gameWithOdds, required this.callbackForOdds, required this.selectedOdds}) : super(key: key);
 
-  Function(UserPrediction) callbackForOdds;
-
-  // Function ?callbackForEvents;
-
-  UpcomingMatchRow({Key ?key, required this.gameWithOdds, required this.callbackForOdds, required this.selectedOdds}) : super(key: key);
-
-  @override
-  UpcomingMatchRowState createState() => UpcomingMatchRowState(gameWithOdds: gameWithOdds, selectedOdds: selectedOdds, callbackForOdds: callbackForOdds);
-}
+    @override
+    UpcomingMatchRowState createState() => UpcomingMatchRowState(gameWithOdds: gameWithOdds, selectedOdds: selectedOdds, callbackForOdds: callbackForOdds);
+  }
 
   class UpcomingMatchRowState extends State<UpcomingMatchRow> {
 
@@ -36,20 +28,13 @@ class UpcomingMatchRow extends StatefulWidget {
 
     Function(UserPrediction) callbackForOdds;
 
-   // bool gameSelected;
-
-    // Function ?callbackForEvents;
-
     MatchEvent gameWithOdds;
 
     UpcomingMatchRowState({
       required this.selectedOdds,
       required this.gameWithOdds,
-     // required this.gameSelected,
-      // required this.callbackForEvents,
       required this.callbackForOdds
     });
-
 
     @override
     Widget build(BuildContext context) {
@@ -70,7 +55,6 @@ class UpcomingMatchRow extends StatefulWidget {
                   Expanded( //first column
                       flex: 10,
                       child:
-
                           Column(
                               children: [
                               Align(
@@ -81,7 +65,6 @@ class UpcomingMatchRow extends StatefulWidget {
                       Align(
                           alignment: Alignment.centerLeft,
                           child:
-
                                 LogoWithTeamName(key: UniqueKey(),
                                     team: gameWithOdds.awayTeam)),
                               ]
@@ -90,7 +73,6 @@ class UpcomingMatchRow extends StatefulWidget {
                   Expanded(
                       flex: 2,
                       child:
-
                       Column( //second column
                           children: [
                             Padding(padding: EdgeInsets.all(6), child:
@@ -102,15 +84,12 @@ class UpcomingMatchRow extends StatefulWidget {
                                   color: Colors.redAccent),))
                           ]
                       )), //SECOND COLUMN END
-
                   //RD COLUMN END
-
-
                 ])), //parent column end
 
           //ODDS ROW
 
-     if (gameWithOdds.odds.odd1.value > -1)
+     if (gameWithOdds.odds != null)
           Row(mainAxisSize: MainAxisSize.max,
 
             children: [
@@ -122,10 +101,10 @@ class UpcomingMatchRow extends StatefulWidget {
                         eventId: gameWithOdds.eventId,
                         predictionText: '1:',
                         callbackForOdds: callbackForOdds,
-                        prediction: gameWithOdds.odds.odd1,
+                        prediction: gameWithOdds.odds?.odd1,
                         toRemove: [
-                          gameWithOdds.odds.odd2,
-                          gameWithOdds.odds.oddX
+                          gameWithOdds.odds?.odd2,
+                          gameWithOdds.odds?.oddX
                         ],))),
               Expanded(flex: 4,
                   child: Padding(padding: EdgeInsets.all(4),
@@ -135,10 +114,10 @@ class UpcomingMatchRow extends StatefulWidget {
                         eventId: gameWithOdds.eventId,
                         predictionText: 'X:',
                         callbackForOdds: callbackForOdds,
-                        prediction: gameWithOdds.odds.oddX,
+                        prediction: gameWithOdds.odds?.oddX,
                         toRemove: [
-                          gameWithOdds.odds.odd2,
-                          gameWithOdds.odds.odd1
+                          gameWithOdds.odds?.odd2,
+                          gameWithOdds.odds?.odd1
                         ],))),
               Expanded(flex: 5,
                   child: Padding(padding: EdgeInsets.all(4),
@@ -148,10 +127,10 @@ class UpcomingMatchRow extends StatefulWidget {
                         eventId: gameWithOdds.eventId,
                         predictionText: '2:',
                         callbackForOdds: callbackForOdds,
-                        prediction: gameWithOdds.odds.odd2,
+                        prediction: gameWithOdds.odds?.odd2,
                         toRemove: [
-                          gameWithOdds.odds.odd1,
-                          gameWithOdds.odds.oddX
+                          gameWithOdds.odds?.odd1,
+                          gameWithOdds.odds?.oddX
                         ],)))
             ],
           ),
@@ -160,13 +139,5 @@ class UpcomingMatchRow extends StatefulWidget {
       );
 
     }
-
-    // update(UserPrediction? prediction){
-    //   callbackForOdds?.call(gameWithOdds.eventId, prediction);
-    //
-    //   setState(() {
-    //      selectedPrediction = prediction;
-    //   });
-    // }
 
   }

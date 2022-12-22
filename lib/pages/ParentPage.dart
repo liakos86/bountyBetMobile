@@ -145,6 +145,8 @@ class ParentPageState extends State<ParentPage>{
   void getUser() async{
 
     SharedPreferences sh_prefs =  await prefs;
+    //sh_prefs.remove('mongoId');
+
     String? mongoId = sh_prefs.getString('mongoId');
     if (mongoId == null){
       return;
@@ -239,7 +241,7 @@ class ParentPageState extends State<ParentPage>{
       List jsonLeaguesData = [];
       try {
         Response leaguesResponse = await get(Uri.parse(UrlConstants.GET_LIVE))
-            .timeout(const Duration(seconds: 5));
+            .timeout(const Duration(seconds: 10));
         jsonLeaguesData = jsonDecode(leaguesResponse.body) as List;
       } catch (e) {
         print(e);

@@ -68,11 +68,17 @@ class MyBetsPageState extends State<MyBetsPage>{
       child: Scaffold(
         appBar: AppBar(
           toolbarHeight: 10,
+         // backgroundColor: Colors.blue[700],
           bottom: TabBar(
+            labelColor: Colors.white,
+            unselectedLabelColor: Colors.grey[200],
+            indicatorColor: Colors.red,
+            indicatorWeight: 8,
+
             tabs: [
-              Tab(icon: Icon(Icons.directions_car), text: 'All'),
-              Tab(icon: Icon(Icons.directions_bike), text: 'Open',),
-              Tab(icon: Icon(Icons.directions_bike), text: 'Settled',),
+              Tab( text: 'All'),
+              Tab( text: 'Open',),
+              Tab( text: 'Settled',),
             ],
           ),
         ),

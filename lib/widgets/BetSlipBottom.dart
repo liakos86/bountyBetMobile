@@ -11,9 +11,7 @@ import 'SelectedOddRow.dart';
 
 class BetSlipBottom extends StatefulWidget {
 
-
-
-  bool showOdds = false;
+  //bool showOdds = false;
 
   List<UserPrediction> selectedOdds = <UserPrediction>[];
 
@@ -24,10 +22,10 @@ class BetSlipBottom extends StatefulWidget {
 
   Function(double) callbackForBetPlacement = (amount)=>{};
 
-  BetSlipBottom({Key? key, required this.showOdds, required this.selectedOdds, required this.callbackForBetPlacement, required this.callbackForBetRemoval}) : super (key: key);
+  BetSlipBottom({Key? key, required this.selectedOdds, required this.callbackForBetPlacement, required this.callbackForBetRemoval}) : super (key: key);
 
   @override
-  BetSlipBottomState createState() => BetSlipBottomState(callbackForBetPlacement: callbackForBetPlacement, callbackForBetRemoval: callbackForBetRemoval, showOdds: showOdds, selectedOdds: selectedOdds);
+  BetSlipBottomState createState() => BetSlipBottomState(callbackForBetPlacement: callbackForBetPlacement, callbackForBetRemoval: callbackForBetRemoval, selectedOdds: selectedOdds);
 
 }
 
@@ -45,7 +43,7 @@ class BetSlipBottomState extends State<BetSlipBottom>{
    */
   Function(UserPrediction) callbackForBetRemoval = (toRemove)=>{};
 
-  bool showOdds = false;
+  //bool showOdds = false;
 
   List<UserPrediction> selectedOdds = <UserPrediction>[];
 
@@ -55,7 +53,7 @@ class BetSlipBottomState extends State<BetSlipBottom>{
     required this.selectedOdds,
     required this.callbackForBetPlacement,
     required this.callbackForBetRemoval,
-    required this.showOdds
+   // required this.showOdds
   });
 
 
@@ -63,12 +61,10 @@ class BetSlipBottomState extends State<BetSlipBottom>{
   Widget build(BuildContext context) {
 
     return
-      showOdds&&selectedOdds.isNotEmpty ?
-      Scaffold(
 
+      Scaffold(
           backgroundColor: Colors.grey[200],
           body:
-
           Column(
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -87,17 +83,12 @@ class BetSlipBottomState extends State<BetSlipBottom>{
                             height: double.infinity,
                             width: double.infinity,
                            decoration: BoxDecoration( color: Colors.white, borderRadius: BorderRadius.all(Radius.circular(8))),
-
-                            child:
-
-
-
+                child:
                     Row(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
                         Expanded(flex: 5, child: Align(alignment: Alignment.centerLeft, child: Text('Return: ' + (bettingAmount * BetUtils.finalOddOf(selectedOdds)).toStringAsFixed(2)))),
                         Expanded(flex: 2, child: Align(alignment: Alignment.centerRight, child: Text(BetUtils.finalOddOf(selectedOdds).toStringAsFixed(2)))),
-
                         Expanded(
                           flex: 3,
                           child: TextField(
@@ -117,47 +108,52 @@ class BetSlipBottomState extends State<BetSlipBottom>{
                             },
                             decoration: InputDecoration(
                               border: OutlineInputBorder(),
-                              hintText: 'enter betting amount',
+                              hintText: 'Amount',
                             ),
                           ),
                         ),
-
                       ],
                     ))
-
                 ),
 
                 Expanded( flex:1 ,
                   child:
-
                   TextButton(
                     style: ButtonStyle(
                         foregroundColor: MaterialStateProperty.all<Color>(Colors.white),
                         backgroundColor: MaterialStateProperty.all<Color>(Colors.red.shade500)
                     ),
                     onPressed: () {
+                      if (bettingAmount <= 0){
+                        return;
+                      }
+
+                      Navigator.pop(context);
                       callbackForBetPlacement.call(bettingAmount);
                     },
                     child: Text('Place Bet'),
-                  )
-                  ,
+                  ),
                 )
-
-
               ]
-
-          ) ) :  ConstrainedBox(constraints: BoxConstraints(maxWidth: 0, maxHeight: 0));
+          ) ) ;
   }
 
   Widget _buildBettingOddRow(UserPrediction bettingOdd) {
-
     MatchEvent eventOfOdd = ParentPageState.eventsPerIdMap[bettingOdd.eventId];
-
     return SelectedOddRow(key: UniqueKey(), event: eventOfOdd, prediction: bettingOdd, callback: (odd) =>
-        callbackForBetRemoval.call(odd)
+        removePrediction(odd)
     );
+  }
+
+  removePrediction(UserPrediction bettingOdd){
+    callbackForBetRemoval.call(bettingOdd);
+
+    setState(() {
+      selectedOdds.remove(bettingOdd);
+    });
 
   }
+
 
 }
 

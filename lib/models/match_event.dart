@@ -11,7 +11,7 @@ class MatchEvent{
     required this.eventId,
     required this.homeTeam,
     required this.awayTeam,
-    required this.odds,
+    // required this.odds,
     required this.status
   } );
 
@@ -39,10 +39,10 @@ class MatchEvent{
 
   Score ?awayTeamScore;
 
-  MatchOdds odds;
+  MatchOdds? odds;
 
   ChangeEvent ?changeEvent;
 
-  static def() {}
+  //static def() {}
 
 }

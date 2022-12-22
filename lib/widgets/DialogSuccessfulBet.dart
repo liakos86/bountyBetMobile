@@ -10,6 +10,7 @@ import 'package:http/http.dart';
 import '../models/User.dart';
 import '../models/UserPrediction.dart';
 import '../models/constants/UrlConstants.dart';
+import 'UserBetPredictionRow.dart';
 import 'UserPlacedBetPredictionRow.dart';
 
 class DialogSuccessfulBet extends StatelessWidget{
@@ -53,6 +54,6 @@ class DialogSuccessfulBet extends StatelessWidget{
   }
 
   Widget _buildSelectedOddRow(UserPrediction bettingOdd) {
-    return UserPlacedBetPredictionRow(prediction: bettingOdd);
+    return UserBetPredictionRow(prediction: bettingOdd);
   }
 }

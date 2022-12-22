@@ -19,10 +19,21 @@ import '../models/match_odds.dart';
 class JsonHelper{
 
   static MatchEvent eventFromJson(var event){
-    MatchOdds odds ;
+    var homeTeam = event["home_team"];
+    var awayTeam = event["away_team"];
+    var homeTeamScore = event["home_score"];
+    var awayTeamScore = event["away_score"];
+    var _changeEvent = event["changeEvent"];
+    var startHour = event["start_hour"];
+    var startMinute = event["start_minute"];
+
+    Team hTeam = Team(homeTeam["id"], homeTeam["name"], homeTeam["logo"]);
+    Team aTeam = Team(awayTeam["id"], awayTeam["name"], awayTeam["logo"]);
+
+    MatchEvent match = MatchEvent(eventId: event["id"], status: event["status"], homeTeam: hTeam, awayTeam: aTeam);
+
 
     var eventOdds = event["main_odds"];
-
     if (eventOdds != null) {
       var outcome1 = eventOdds["outcome_1"];
       var outcome1Value = outcome1["value"];
@@ -33,7 +44,7 @@ class JsonHelper{
       var outcome2 = eventOdds["outcome_2"];
       var outcome2Value = outcome2["value"];
 
-      odds = MatchOdds(
+       MatchOdds odds = MatchOdds(
           oddO25: UserPrediction(eventId: event["id"],
               betPredictionType: BetPredictionType.OVER_25,
               value: outcome1Value),
@@ -51,39 +62,10 @@ class JsonHelper{
           odd2: UserPrediction(eventId: event["id"],
               betPredictionType: BetPredictionType.AWAY_WIN,
               value: outcome2Value)); //.toString().replaceAll(',', '.')));
-    }else{
-      odds = MatchOdds(
-          oddO25: UserPrediction(eventId: event["id"],
-              betPredictionType: BetPredictionType.OVER_25,
-              value: -1),
-          oddU25: UserPrediction(eventId: event["id"],
-              betPredictionType: BetPredictionType.UNDER_25,
-              value: -1),
-          odd1: UserPrediction(eventId: event["id"],
-              betPredictionType: BetPredictionType.HOME_WIN,
-              value: -1),
-          //.toString().replaceAll(',', '.')),
-          oddX: UserPrediction(eventId: event["id"],
-              betPredictionType: BetPredictionType.DRAW,
-              value: -1),
-          //.toString().replaceAll(',', '.')),
-          odd2: UserPrediction(eventId: event["id"],
-              betPredictionType: BetPredictionType.AWAY_WIN,
-              value: -1));
+
+      match.odds = odds;
     }
 
-    var homeTeam = event["home_team"];
-    var awayTeam = event["away_team"];
-    var homeTeamScore = event["home_score"];
-    var awayTeamScore = event["away_score"];
-    var _changeEvent = event["changeEvent"];
-    var startHour = event["start_hour"];
-    var startMinute = event["start_minute"];
-
-    Team hTeam = Team(homeTeam["id"], homeTeam["name"], homeTeam["logo"]);
-    Team aTeam = Team(awayTeam["id"], awayTeam["name"], awayTeam["logo"]);
-
-    MatchEvent match = MatchEvent(eventId: event["id"], status: event["status"], homeTeam: hTeam, awayTeam: aTeam, odds: odds);
 
    match.changeEvent = ChangeEvent.ofCode(_changeEvent);
    match.startHour = startHour;
@@ -95,7 +77,6 @@ class JsonHelper{
    if (homeTeamScore != null){
       match.homeTeamScore = Score(homeTeamScore["current"], homeTeamScore["display"], homeTeamScore["normal_time"],
           homeTeamScore["period_1"], homeTeamScore["period_2"]);
-
     }
 
     if (awayTeamScore != null){
