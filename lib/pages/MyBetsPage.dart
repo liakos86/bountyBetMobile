@@ -37,8 +37,6 @@ class MyBetsPageState extends State<MyBetsPage>{
 
   Function loginOrRegisterCallback;
 
-  // eventsPerIdMap = HashMap();
-
   MyBetsPageState(this.user, this.loginOrRegisterCallback);
 
   @override

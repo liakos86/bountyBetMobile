@@ -8,6 +8,7 @@ import 'package:flutter_app/models/User.dart';
 import 'package:flutter_app/models/constants/Constants.dart';
 import 'package:flutter_app/pages/LivePage.dart';
 import 'package:flutter_app/pages/ParentPage.dart';
+import 'package:flutter_app/widgets/BetSlipWithCustomKeyboard.dart';
 import 'package:flutter_app/widgets/LeagueExpandableTile.dart';
 import 'package:http/http.dart';
 
@@ -48,7 +49,7 @@ class OddsPageState extends State<OddsPage>{
   /*
   * Required because user can deleted selected odds from the betslip directly.
    */
-  List<UserPrediction> selectedOdds = <UserPrediction>[];
+  late final List<UserPrediction> selectedOdds;// = <UserPrediction>[];
 
   Map eventsPerDayMap = LinkedHashMap();
 
@@ -56,6 +57,7 @@ class OddsPageState extends State<OddsPage>{
 
   @override
   void initState() {
+    selectedOdds = <UserPrediction>[];
     eventsPerDayMap = widget.eventsPerDayMap;
     updateUserCallback = widget.updateUserCallback;
 
@@ -155,12 +157,16 @@ class OddsPageState extends State<OddsPage>{
           showDialog(context: context, builder: (context) =>
 
           AlertDialog(
-          title: Text('Place Bet'),
+
+          insetPadding: EdgeInsets.zero,
+          contentPadding: EdgeInsets.all(2.0),
+          buttonPadding: EdgeInsets.zero,
+          alignment: Alignment.bottomCenter,
           elevation: 20,
-          shape: RoundedRectangleBorder(
+          shape: const RoundedRectangleBorder(
           borderRadius:
-          BorderRadius.all(
-          Radius.circular(10.0))),
+          BorderRadius.only(topLeft:
+          Radius.circular(10.0), topRight: Radius.circular(10.0))),
           content: Builder(
           builder: (context) {
           // Get available height and width of the build area of this widget. Make a choice depending on the size.
@@ -170,7 +176,7 @@ class OddsPageState extends State<OddsPage>{
           return SizedBox(
               width: width,
               height: height,
-              child : BetSlipBottom(key: UniqueKey(), selectedOdds: selectedOdds, callbackForBetPlacement: placeBetCallback, callbackForBetRemoval: removeOddCallback, )
+              child : BetSlipWithCustomKeyboard(key: UniqueKey(), selectedOdds: selectedOdds, callbackForBetPlacement: placeBetCallback, callbackForBetRemoval: removeOddCallback, )
             );
 
           })
@@ -192,9 +198,10 @@ class OddsPageState extends State<OddsPage>{
   }
 
   void removeOddCallback(UserPrediction toRemove){
+    selectedOdds.remove(toRemove);
 
     setState(() {
-      selectedOdds.remove(toRemove);
+      selectedOdds;
     });
 
     if (selectedOdds.isEmpty){
