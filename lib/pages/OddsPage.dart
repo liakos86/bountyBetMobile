@@ -5,6 +5,8 @@ import 'dart:convert';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_app/models/User.dart';
+import 'package:flutter_app/models/constants/Constants.dart';
+import 'package:flutter_app/pages/LivePage.dart';
 import 'package:flutter_app/pages/ParentPage.dart';
 import 'package:flutter_app/widgets/LeagueExpandableTile.dart';
 import 'package:http/http.dart';
@@ -15,22 +17,20 @@ import '../models/constants/UrlConstants.dart';
 import '../models/league.dart';
 import '../utils/BetUtils.dart';
 import '../widgets/BetSlipBottom.dart';
+import '../widgets/LeagueMatchesRow.dart';
 
 
 class OddsPage extends StatefulWidget {
 
-  Map eventsPerDayMap = LinkedHashMap();
+  final Map eventsPerDayMap;
 
-  Function loadLeagues = ()=>{ };
-
-  Function updateUserCallback = ()=>{ };
+  final Function updateUserCallback;
 
   @override
-  OddsPageState createState() => OddsPageState(loadLeagues, eventsPerDayMap, updateUserCallback);
+  OddsPageState createState() => OddsPageState();
 
   OddsPage({
     Key? key,
-    required this.loadLeagues,
     required this.updateUserCallback,
     required this.eventsPerDayMap,
     //setName('Today\'s Odds')
@@ -41,34 +41,23 @@ class OddsPage extends StatefulWidget {
 
 class OddsPageState extends State<OddsPage>{
 
+  // final ScrollController _scrollController0 = ScrollController();
+  // final ScrollController _scrollController1 = ScrollController();
+  // final ScrollController _scrollController2 = ScrollController();
+
   /*
   * Required because user can deleted selected odds from the betslip directly.
    */
   List<UserPrediction> selectedOdds = <UserPrediction>[];
 
-  /*
-   * Clicking on the floating button will show or hide the bottom BetSlipBottom.
-   * Only if the selected odds are not empty.
-   */
-  //bool showOdds = false;
-
   Map eventsPerDayMap = LinkedHashMap();
-
-  Function functionLoadLeagues = ()=>{};
 
   Function updateUserCallback = ()=>{ };
 
-  OddsPageState(loadLeagues, eventsPerDayMap, userCallback) {
-    functionLoadLeagues = loadLeagues;
-    updateUserCallback = userCallback;
-    this.eventsPerDayMap = eventsPerDayMap;
-  }
-
   @override
   void initState() {
-    Timer.periodic(Duration(seconds: 5), (timer) {
-      updateLeaguesFromParent(timer);
-    });
+    eventsPerDayMap = widget.eventsPerDayMap;
+    updateUserCallback = widget.updateUserCallback;
 
     super.initState();
   }
@@ -76,10 +65,17 @@ class OddsPageState extends State<OddsPage>{
   @override
   Widget build(BuildContext context) {
 
-    print('***********************BUILDING ODDS');
-
     if (eventsPerDayMap.isEmpty){
-      return CircularProgressIndicator();
+      return  const Align(
+          alignment: Alignment.center,
+          child: SizedBox(
+          width: 100,
+          height: 100,
+          child: CircularProgressIndicator(
+            strokeWidth: 4,
+            color: Colors.blueAccent,
+            backgroundColor: Colors.grey)
+      ));
     }
 
     return DefaultTabController(
@@ -89,6 +85,8 @@ class OddsPageState extends State<OddsPage>{
       child:
 
       Scaffold(
+
+        backgroundColor: Colors.white,
 
           appBar: AppBar(
             toolbarHeight: 0,
@@ -102,37 +100,54 @@ class OddsPageState extends State<OddsPage>{
                 unselectedLabelColor: Colors.white.withOpacity(0.3),
 
               tabs: [
-                Tab(text: eventsPerDayMap.entries.elementAt(0).key),
-                Tab(text: eventsPerDayMap.entries.elementAt(1).key),
                 Tab(text: eventsPerDayMap.entries.elementAt(2).key),
+                Tab(text: eventsPerDayMap.entries.elementAt(1).key),
+                Tab(text: eventsPerDayMap.entries.elementAt(0).key),
               ],
             ),
 
       ),
 
-          body: TabBarView(
+          body:
+
+          PageStorage(
+
+          bucket: pageBucket,
+          child:
+          TabBarView(
             children: [
               ListView.builder(
-                  padding: const EdgeInsets.all(8),
-                  itemCount: eventsPerDayMap.entries.elementAt(0).value.length,
-                  itemBuilder: (context, item) {
-                    return _buildRow(eventsPerDayMap.entries.elementAt(0).value[item]);
-                  }),
 
-              ListView.builder(
-                  padding: const EdgeInsets.all(8),
-                  itemCount: eventsPerDayMap.entries.elementAt(1).value.length,
-                  itemBuilder: (context, item) {
-                    return _buildRow(eventsPerDayMap.entries.elementAt(1).value[item]);
-                  }),
-              ListView.builder(
+                  key: const PageStorageKey<String>(
+                      'pageOdds0'),
+                  // controller: _scrollController0,
                   padding: const EdgeInsets.all(8),
                   itemCount: eventsPerDayMap.entries.elementAt(2).value.length,
                   itemBuilder: (context, item) {
-                    return _buildRow(eventsPerDayMap.entries.elementAt(2).value[item]);
+                    return _buildRow(eventsPerDayMap.entries.elementAt(2).value[item], item);
                   }),
 
-            ],),
+              ListView.builder(
+                  key: const PageStorageKey<String>(
+                      'pageOdds1'),
+                 // controller: _scrollController1,
+                  padding: const EdgeInsets.all(8),
+                  itemCount: eventsPerDayMap.entries.elementAt(1).value.length,
+                  itemBuilder: (context, item) {
+                    return _buildRow(eventsPerDayMap.entries.elementAt(1).value[item], item);
+                  }),
+              ListView.builder(
+                  key: const PageStorageKey<String>(
+                      'pageOdds2'),
+                // controller: _scrollController2,
+                  padding: const EdgeInsets.all(8),
+                  itemCount: eventsPerDayMap.entries.elementAt(0).value.length,
+                  itemBuilder: (context, item) {
+                    return _buildRow(eventsPerDayMap.entries.elementAt(0).value[item], item);
+                  }),
+
+            ],)
+          ),
 
         floatingActionButton: FloatingActionButton(
           onPressed: ()=> {
@@ -152,7 +167,7 @@ class OddsPageState extends State<OddsPage>{
           var height = MediaQuery.of(context).size.height * (2/3);
           var width = MediaQuery.of(context).size.width;
 
-          return Container(
+          return SizedBox(
               width: width,
               height: height,
               child : BetSlipBottom(key: UniqueKey(), selectedOdds: selectedOdds, callbackForBetPlacement: placeBetCallback, callbackForBetRemoval: removeOddCallback, )
@@ -172,29 +187,14 @@ class OddsPageState extends State<OddsPage>{
     );
   }
 
-  Widget _buildRow(League league) {
-   return LeagueMatchesRow(key: UniqueKey(), league: league, callbackForOdds: fixOddsCallback, selectedOdds: selectedOdds);
-  }
-
-  void updateLeaguesFromParent(Timer timer) {
-    Map<String, List<League>> leagues = functionLoadLeagues.call();
-    if (mounted && leagues.isNotEmpty){
-      timer.cancel();
-      setState(() {
-        eventsPerDayMap = leagues;
-      });
-    }
+  Widget _buildRow(League league, int item) {
+   return LeagueExpandableTile(key: PageStorageKey<League>(league), league: league, events: league.events, callbackForOdds: fixOddsCallback, selectedOdds: selectedOdds);
   }
 
   void removeOddCallback(UserPrediction toRemove){
 
     setState(() {
       selectedOdds.remove(toRemove);
-      print('REMOVED ' + toRemove.toString());
-      // if (selectedOdds.isEmpty){
-      //   showOdds = false;
-      // }
-
     });
 
     if (selectedOdds.isEmpty){
@@ -216,10 +216,8 @@ class OddsPageState extends State<OddsPage>{
       selectedOdds.add(selectedOdd);
     }
 
-    setState(() => {
-        selectedOdds
-    }
-
+    setState(() =>
+      selectedOdds
     );
 
   }
@@ -229,14 +227,18 @@ class OddsPageState extends State<OddsPage>{
       return;
     }
 
-    String mongoUserId = '';
-    if (ParentPageState.user.mongoUserId != null){
-     mongoUserId = ParentPageState.user.mongoUserId!;
-    }else{
+    String? mongoUserId = ParentPageState.user.mongoUserId;
+    if (mongoUserId != Constants.defMongoUserId && !ParentPageState.user.validated){
+      String msg = 'Your account requires validation. Please go to ${ParentPageState.user.email} and validate.';
+      alertDialog(msg);
+      return;
+    }else if (mongoUserId == Constants.defMongoUserId){
+      String msg = 'Please login/register at the top left in order to bet.';
+      alertDialog(msg);
       return;
     }
 
-    selectedOdds.forEach((element) {element.event = ParentPageState.eventsPerIdMap[element.eventId];});
+    selectedOdds.forEach((element) {element.event = ParentPageState.findEvent(element.eventId);});
     UserBet newBet = UserBet(userMongoId: mongoUserId , predictions: List.of(selectedOdds), betAmount: bettingAmount);
     var encodedBet = jsonEncode(newBet.toJson());
 
@@ -255,8 +257,6 @@ class OddsPageState extends State<OddsPage>{
       updateUserCallback.call(userFromServer, newBet);
 
       setState(() {
-       // bettingAmount = 0;
-       // showOdds = false;
         selectedOdds.clear();
       });
 
@@ -265,8 +265,14 @@ class OddsPageState extends State<OddsPage>{
     }
   }
 
-  getEventsPerDay(){
-    return eventsPerDayMap;
+  void alertDialog(String msg) {
+    showDialog(context: context, builder: (context) =>
+
+        AlertDialog(
+          title: Text('Registration'),
+          content: Text(msg),
+          elevation: 20,
+        ));
   }
 
 }

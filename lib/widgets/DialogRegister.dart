@@ -23,7 +23,9 @@ class DialogRegister extends StatelessWidget{
 
   @override
   Widget build(BuildContext context) {
-    return Column(
+    return
+
+      Column(
       children: [
 
         TextField(
@@ -78,7 +80,7 @@ class DialogRegister extends StatelessWidget{
   }
 
   void registerWith(String email, String password, String username) async{
-      if (username.length< 5 || email.length<5 || !email.contains('@gmail.com') || password.length <= 8){
+      if (username.length< 5 || email.length<5 || !email.contains('@gmail.com') || password.length < 8){
         return;
       }
 

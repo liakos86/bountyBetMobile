@@ -1,15 +1,7 @@
-class MatchStatus{
+class MatchConstants{
 
-   static const String NOT_STARTED = "notstarted";
+   static const String MATCH_START_TIME_FORMAT = "yyyy-MM-dd HH:mm:ss";
 
-   static const String IN_PROGRESS = "inprogress";
-
-   static const String FINISHED = "finished";
-
-   static const String FT = "FT";
-
-   static const String CANCELLED = "canceled";
-
-   static const String POSTPONED = "postponed";
+   static const String GMT = "GMT";
 
 }

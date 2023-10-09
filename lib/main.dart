@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_app/pages/ParentPage.dart';
+import 'package:flutter_app/pages/ParentPageNoStack.dart';
 
 void main() => runApp(MyApp());
 

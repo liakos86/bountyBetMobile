@@ -1,4 +1,3 @@
-import 'dart:collection';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -6,29 +5,26 @@ import 'package:flutter_app/enums/BetStatus.dart';
 import 'package:flutter_app/models/UserBet.dart';
 
 import '../models/User.dart';
+import '../models/constants/Constants.dart';
 import '../models/interfaces/StatefulWidgetWithName.dart';
 import '../widgets/UserBetRow.dart';
 
 
 class MyBetsPage extends StatefulWidgetWithName{
 
-  User? user;
+  final User user;
+
+  final Function loginOrRegisterCallback;
 
   //HashMap eventsPerIdMap = HashMap();
 
   @override
-  MyBetsPageState createState() => MyBetsPageState(user);
-
-  // MyBetsPage(User user, HashMap<dynamic, dynamic> eventsPerIdMap){
-  //   this.user = user;
-  //   this.eventsPerIdMap = eventsPerIdMap;
-  //   setName('My Bets');
-  // }
+  MyBetsPageState createState() => MyBetsPageState(user, loginOrRegisterCallback);
 
   MyBetsPage({
     Key? key,
     required this.user,
-   // required this.eventsPerIdMap
+    required this.loginOrRegisterCallback
     //setName('Today\'s Odds')
 
   } ) : super(key: key);
@@ -37,24 +33,44 @@ class MyBetsPage extends StatefulWidgetWithName{
 
 class MyBetsPageState extends State<MyBetsPage>{
 
-  User? user;
+  User user;
+
+  Function loginOrRegisterCallback;
 
   // eventsPerIdMap = HashMap();
 
-  MyBetsPageState(this.user);
+  MyBetsPageState(this.user, this.loginOrRegisterCallback);
 
+  @override
+  void initState(){
+    user = widget.user;
+    loginOrRegisterCallback = widget.loginOrRegisterCallback;
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
-    if (user == null){
-      return Text('Please login');
-    }
+    //userBets = context.user
 
-    List<UserBet>? userBets = user?.userBets;
+   if (user.mongoUserId == Constants.defMongoUserId){
+      return
+
+        Container(child: Align(
+          alignment: Alignment.center,
+          child:
+          FloatingActionButton.extended(
+            icon: const Icon(Icons.navigation),
+            backgroundColor: Colors.orange,
+            foregroundColor: Colors.black,
+            onPressed: () => { loginOrRegisterCallback.call() },
+            label: const Text('Login/Register'),
+      ))
+      );
+    }
 
     List<UserBet> pendingBets = <UserBet>[];
     List<UserBet> settledBets = <UserBet>[];
-    for (UserBet bet in userBets!){
+    for (UserBet bet in user.userBets){
       if (BetStatus.PENDING == bet.betStatus){
         pendingBets.add(bet);
       }else{
@@ -76,9 +92,9 @@ class MyBetsPageState extends State<MyBetsPage>{
             indicatorWeight: 8,
 
             tabs: [
-              Tab( text: 'All'),
-              Tab( text: 'Open',),
-              Tab( text: 'Settled',),
+              Tab( text: 'All(${user.userBets.length}}'),
+              Tab( text: 'Open(${pendingBets.length.toString()})',),
+              Tab( text: 'Settled(${settledBets.length.toString()})',),
             ],
           ),
         ),
@@ -87,9 +103,9 @@ class MyBetsPageState extends State<MyBetsPage>{
           children: [
             ListView.builder(
                 padding: const EdgeInsets.all(8),
-                itemCount: userBets.length,
+                itemCount: user.userBets.length,
                 itemBuilder: (context, item) {
-                  return _buildUserBetRow(userBets[item]);
+                  return _buildUserBetRow(user.userBets[item]);
                 }),
 
             ListView.builder(

@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/cupertino.dart';
@@ -28,7 +29,15 @@ class LeaderBoardPageState extends State<LeaderBoardPage>{
   @override
   void initState() {
     super.initState();
+
     getLeadingUsers();
+    Timer.periodic(const Duration(seconds: 30), (timer) {(
+        getLeadingUsers()
+    );
+   }
+   );
+
+
   }
 
   @override
@@ -57,8 +66,10 @@ class LeaderBoardPageState extends State<LeaderBoardPage>{
         usersFromServer.add(userFromServer);
       }
 
+      leaders.clear();
+      leaders.addAll(usersFromServer);
       setState(() {
-        leaders = usersFromServer;
+        leaders;
       });
 
     } catch (e) {

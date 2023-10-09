@@ -14,9 +14,9 @@ class MatchScoreMiddleText extends StatelessWidget{
 
       children: [
 
-        Text('${event.startHour.toString() + ':'+ event.startMinute.toString()}'),
+        Text('${event.start_at.toString()}'),// + ':'+ event.startMinute.toString()}'),
         Text(scoreText(event), style: TextStyle(fontWeight: FontWeight.w500, fontSize: 40),),
-        Text(event.status_for_client.toString()),
+        Text(event.status.toString()),
 
 
       ],

@@ -9,7 +9,7 @@ import 'package:flutter_app/models/constants/MatchConstants.dart';
 import 'package:flutter_app/widgets/LogoWithTeamLarge.dart';
 import '../models/Score.dart';
 import '../models/match_event.dart';
-import 'LogoWithTeamName.dart';
+import 'LogoWithName.dart';
 
 class LeagueStandingRow extends StatefulWidget {
 
@@ -54,7 +54,7 @@ class LeagueStandingRowState extends State<LeagueStandingRow> {
                         Align(
                         alignment: Alignment.centerLeft,
                         child:
-                      LogoWithTeamName(key: UniqueKey(), team: standing.team),
+                      LogoWithName(key: UniqueKey(), name: standing.team.name, logoUrl: standing.team.logo,),
                         )
                     ]
                 )),

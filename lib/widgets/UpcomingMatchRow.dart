@@ -4,7 +4,7 @@ import 'package:flutter_app/widgets/GestureDetectorForOdds.dart';
 
 import '../models/UserPrediction.dart';
 import '../models/match_event.dart';
-import 'LogoWithTeamName.dart';
+import 'LogoWithName.dart';
 
   class UpcomingMatchRow extends StatefulWidget {
 
@@ -42,11 +42,19 @@ import 'LogoWithTeamName.dart';
       return
 
       Wrap(//top parent
-          spacing: 5,
+          spacing: 0,
+
         children: [
 
         DecoratedBox(//first child
-            decoration: BoxDecoration(color: Colors.white),
+            decoration: BoxDecoration(color: Colors.white ,
+              //  borderRadius: BorderRadius.only(topLeft:  Radius.circular(2), topRight:  Radius.circular(2)),
+              border: Border(
+                top: BorderSide(width: 0.3, color: Colors.grey.shade600),
+                left: BorderSide(width: 0, color: Colors.transparent),
+                right: BorderSide(width: 0, color: Colors.transparent),
+                bottom: BorderSide(width: 0.3, color: Colors.grey.shade600),
+              ), ),
             child:
             Row( //top father
                 mainAxisSize: MainAxisSize.max,
@@ -60,24 +68,26 @@ import 'LogoWithTeamName.dart';
                               Align(
                               alignment: Alignment.centerLeft,
                               child:
-                                LogoWithTeamName(key: UniqueKey(),
-                                    team: gameWithOdds.homeTeam)),
+                                LogoWithName(key: UniqueKey(),
+                                    logoUrl: gameWithOdds.homeTeam.logo, name: gameWithOdds.homeTeam.name)),
                       Align(
                           alignment: Alignment.centerLeft,
                           child:
-                                LogoWithTeamName(key: UniqueKey(),
-                                    team: gameWithOdds.awayTeam)),
+                                LogoWithName(key: UniqueKey(),
+                                    logoUrl: gameWithOdds.awayTeam.logo, name: gameWithOdds.awayTeam.name)),
                               ]
                           )), // FIRST COLUMN END
 
                   Expanded(
-                      flex: 2,
+                      flex: 6,
+
                       child:
                       Column( //second column
                           children: [
-                            Padding(padding: EdgeInsets.all(6), child:
-                            Text( (gameWithOdds.startHour! < 10 ? '0' : '' ) + gameWithOdds.startHour!.toString()  + ':' +
-                                (gameWithOdds.startMinute! < 10 ? '0' : '' ) + gameWithOdds.startMinute!.toString() ,
+                            Align(alignment: Alignment.center, child:
+                            Text(
+                              (gameWithOdds.display_status),
+
                               style: TextStyle(
                                   fontSize: 12,
                                   fontWeight: FontWeight.bold,
@@ -90,7 +100,10 @@ import 'LogoWithTeamName.dart';
           //ODDS ROW
 
      if (gameWithOdds.odds != null)
+
+       Container(color: Colors.white, child:
           Row(mainAxisSize: MainAxisSize.max,
+
 
             children: [
               Expanded(flex: 5,
@@ -133,10 +146,10 @@ import 'LogoWithTeamName.dart';
                           gameWithOdds.odds?.oddX
                         ],)))
             ],
-          ),
+          )),
 
-        ]
-      );
+       ]
+     );
 
     }
 

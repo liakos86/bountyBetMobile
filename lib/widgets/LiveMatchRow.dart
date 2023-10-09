@@ -10,29 +10,24 @@ import 'package:flutter_app/models/constants/MatchConstants.dart';
 import 'package:flutter_app/pages/MatchInfoSoccerDetailsPage.dart';
 import '../models/Score.dart';
 import '../models/match_event.dart';
-import 'LogoWithTeamName.dart';
+import 'LogoWithName.dart';
 
 class LiveMatchRow extends StatefulWidget {
 
   final MatchEvent gameWithOdds;
 
-  bool blink;
-
-  LiveMatchRow({Key ?key, required this.gameWithOdds, required this.blink}) : super(key: key);
+  LiveMatchRow({Key ?key, required this.gameWithOdds}) : super(key: key);
 
   @override
-  LiveMatchRowState createState() => LiveMatchRowState(gameWithOdds: gameWithOdds, blink: blink);
+  LiveMatchRowState createState() => LiveMatchRowState(gameWithOdds: gameWithOdds);
 }
 
 class LiveMatchRowState extends State<LiveMatchRow> {
 
   MatchEvent gameWithOdds;
 
-  bool blink;
-
   LiveMatchRowState({
-    required this.gameWithOdds,
-    required this.blink
+    required this.gameWithOdds
   });
 
 
@@ -52,39 +47,33 @@ class LiveMatchRowState extends State<LiveMatchRow> {
 
       DecoratedBox(
 
-          decoration: BoxDecoration(color: gameWithOdds.changeEvent == ChangeEvent.NONE ? Colors.white : Colors.green[100],
-            //  borderRadius: BorderRadius.only(topLeft:  Radius.circular(2), topRight:  Radius.circular(2)),
+          decoration: BoxDecoration(color: gameWithOdds.changeEvent == ChangeEvent.NONE ? Colors.white : ( ChangeEvent.isGoal(gameWithOdds.changeEvent) ? Colors.green[100] : Colors.blue[200]),
               border: Border(
               top: BorderSide(width: 0.3, color: Colors.grey.shade600),
               left: BorderSide(width: 0, color: Colors.transparent),
                 right: BorderSide(width: 0, color: Colors.transparent),
                 bottom: BorderSide(width: 0.3, color: Colors.grey.shade600),
                 ), ),
+
           child:
 
-              Padding(
-    padding: EdgeInsets.all(6),
-              child:
           Row(//top father
               mainAxisSize: MainAxisSize.max,
               children: [
-                // OLA TA CHILDREN PREPEI NA GINOUN EXPANDED!!!!!!!!!!!!!!!
                 Expanded(//first column
                     flex: 10,
                     child:
-
                     Column(
-
                     children: [
                         Align(
                         alignment: Alignment.centerLeft,
                         child:
-                      LogoWithTeamName(key: UniqueKey(), team: gameWithOdds.homeTeam),
+                      LogoWithName(key: UniqueKey(), name: gameWithOdds.homeTeam.name, logoUrl: gameWithOdds.homeTeam.logo,),
                         ),
                             Align(
                                 alignment: Alignment.centerLeft,
                                 child:
-                      LogoWithTeamName(key: UniqueKey(), team: gameWithOdds.awayTeam),
+                      LogoWithName(key: UniqueKey(), name: gameWithOdds.awayTeam.name, logoUrl: gameWithOdds.awayTeam.logo),
                             )
                     ]
                 )),
@@ -97,7 +86,9 @@ class LiveMatchRowState extends State<LiveMatchRow> {
                 Column(//second column
                     children: [
                      Padding(padding: EdgeInsets.all(6), child:
-                      Text(textFromStatus(gameWithOdds), style: TextStyle(
+                      Text(
+                       (gameWithOdds.display_status),
+                        style: TextStyle(
                           fontSize: 12,
                           fontWeight: FontWeight.bold,
                           color: Colors.redAccent),))
@@ -127,17 +118,7 @@ class LiveMatchRowState extends State<LiveMatchRow> {
 
               ])//parent column end
 
-      )));
-  }
-
-  String textFromStatus(MatchEvent event) {
-
-    if (event.status_for_client != null) {
-      String status = event.status_for_client! + (blink ? "'" : "");
-      return status;
-    }
-
-    return event.status;
+      ));
   }
 
   String textScoreFrom(Score ?score) {

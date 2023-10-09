@@ -4,7 +4,7 @@ import 'package:flutter_app/enums/BetPredictionType.dart';
 import 'package:flutter_app/models/match_event.dart';
 
 import '../models/UserPrediction.dart';
-import 'LogoWithTeamName.dart';
+import 'LogoWithName.dart';
 
 class SelectedOddRow extends StatelessWidget{
 
@@ -67,12 +67,12 @@ class SelectedOddRow extends StatelessWidget{
                             Align(
                               alignment: Alignment.centerLeft,
                               child:
-                              LogoWithTeamName(key: UniqueKey(), team: event.homeTeam),
+                              LogoWithName(key: UniqueKey(), logoUrl: event.homeTeam.logo, name: event.homeTeam.name),
                             ),
                             Align(
                               alignment: Alignment.centerLeft,
                               child:
-                              LogoWithTeamName(key: UniqueKey(), team: event.awayTeam),
+                              LogoWithName(key: UniqueKey(), logoUrl: event.awayTeam.logo, name: event.awayTeam.name),
                             )
                           ]
                       )),

@@ -1,10 +1,12 @@
-import 'dart:convert';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_app/pages/ParentPage.dart';
 import 'package:flutter_app/utils/BetUtils.dart';
 
+import '../enums/ChangeEvent.dart';
+import '../enums/MatchEventStatus.dart';
+import '../enums/MatchEventStatusMore.dart';
+import '../utils/MockUtils.dart';
 import '../models/UserPrediction.dart';
 import '../models/match_event.dart';
 import 'SelectedOddRow.dart';
@@ -139,7 +141,18 @@ class BetSlipBottomState extends State<BetSlipBottom>{
   }
 
   Widget _buildBettingOddRow(UserPrediction bettingOdd) {
-    MatchEvent eventOfOdd = ParentPageState.eventsPerIdMap[bettingOdd.eventId];
+    //MatchEvent eventOfOdd = ParentPageState.findEvent(bettingOdd.eventId);
+      MatchEvent eventOfOdd = MockUtils().mockEvent(
+          100,
+          1.5,
+          1.5,
+          1.5,
+          1.5,
+          1.5,
+          MatchEventStatus.INPROGRESS.statusStr,
+          MatchEventStatusMore.INPROGRESS_1ST_HALF.statusStr,
+          ChangeEvent.NONE);
+
     return SelectedOddRow(key: UniqueKey(), event: eventOfOdd, prediction: bettingOdd, callback: (odd) =>
         removePrediction(odd)
     );

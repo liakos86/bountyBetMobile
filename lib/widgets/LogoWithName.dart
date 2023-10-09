@@ -2,20 +2,15 @@ import 'dart:ui';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_app/models/constants/MatchConstants.dart';
-import 'package:flutter_app/models/match_event.dart';
-import 'package:flutter_app/widgets/LiveMatchRow.dart';
 
-import '../models/Team.dart';
-import '../models/league.dart';
-import '../pages/LeagueGamesPage.dart';
-import 'UpcomingMatchRow.dart';
 
-class LogoWithTeamName extends StatelessWidget{
+class LogoWithName extends StatelessWidget{
 
-  Team team;
+  final String logoUrl;
 
-  LogoWithTeamName({Key ?key, required this.team}) : super(key: key);
+  final String name;
+
+  LogoWithName({Key ?key, required this.logoUrl, required this.name}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -28,7 +23,7 @@ class LogoWithTeamName extends StatelessWidget{
             child: Container(
 
                 child: Image.network(
-                  team.logo,
+                  logoUrl,
                   height: 24,
                   width: 24,
                 ),
@@ -42,7 +37,7 @@ class LogoWithTeamName extends StatelessWidget{
               child: Column(
               children:  [Align(
                   alignment: Alignment.centerLeft,
-                  child: Container( child: Text(team.name, overflow: TextOverflow.ellipsis, textAlign: TextAlign.left,  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),))),
+                  child: Container( child: Text(name, overflow: TextOverflow.ellipsis, textAlign: TextAlign.left,  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),))),
                  ]))),
 
       ],

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 class StatefulWidgetWithName extends StatefulWidget{
 
-  String name = '';
+  late final String name;
 
   StatefulWidgetWithName({Key? key}): super(key: key);
 

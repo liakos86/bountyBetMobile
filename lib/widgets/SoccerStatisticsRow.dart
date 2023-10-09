@@ -12,7 +12,7 @@ import 'package:flutter_app/widgets/LogoWithTeamLarge.dart';
 import 'package:flutter_app/pages/MatchInfoSoccerDetailsPage.dart';
 import '../models/Score.dart';
 import '../models/match_event.dart';
-import 'LogoWithTeamName.dart';
+import 'LogoWithName.dart';
 import 'SoccerStatisticBox.dart';
 
 class SoccerStatisticsRow extends StatefulWidget {

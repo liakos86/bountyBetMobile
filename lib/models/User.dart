@@ -1,25 +1,41 @@
 import 'dart:convert';
 
 import 'package:flutter_app/models/UserBet.dart';
+import 'package:flutter_app/models/constants/MatchConstants.dart';
+
+import '../enums/UserLevel.dart';
+import 'constants/Constants.dart';
 
 class User{
 
   User.defUser();
 
-  User(this.username, this.balance, this.userBets);
+  User(this.mongoUserId, this.username, this.balance, this.userBets);
 
-  /*
-   * Currently testing with same user everywhere.
-   */
-  String? mongoUserId;//'''62ff5c5988a49a2e2a3ed9aa';
+  String mongoUserId = Constants.defMongoUserId;
 
-  String username = '';
+  bool validated = false;
 
-  String email = '';
+  String username = Constants.empty;
 
-  String errorMessage = '';
+  String email = Constants.empty;
+
+  String errorMessage = Constants.empty;
 
   double balance = -1;
+
+  UserLevel userLevel = UserLevel.bettingVisitor;
+
+  int monthlyWonBets = 0;
+  int monthlyWonPredictions = 0;
+  int monthlyLostBets = 0;
+  int monthlyLostPredictions = 0;
+
+  int overallWonBets = 0;
+  int overallWonPredictions = 0;
+  int overallLostBets = 0;
+  int overallLostPredictions = 0;
+
 
   List<UserBet> userBets = <UserBet>[];
 
@@ -31,15 +47,25 @@ class User{
     }
 
 
-    User user = User(parsedJson['username'].toString(), parsedJson['balance'] as double,
+    User user = User(parsedJson['mongoId'].toString(), parsedJson['username'].toString(), parsedJson['balance'] as double,
         (parsedJson['userBets'] as List)
             .map((data) =>  UserBet.fromJson(data))
             .toList()
            );
 
-    user.mongoUserId = parsedJson['mongoId'];
+    user.validated = parsedJson['validated'] as bool;
     user.email = parsedJson['email'];
+    user.monthlyWonBets = parsedJson['monthlyWonSlipsCount'];
+    user.monthlyWonPredictions = parsedJson['monthlyWonEventsCount'];
+    user.monthlyLostBets = parsedJson['monthlyLostSlipsCount'];
+    user.monthlyLostPredictions = parsedJson['monthlyLostEventsCount'];
 
+    user.overallWonBets = parsedJson['overallWonSlipsCount'];
+    user.overallWonPredictions = parsedJson['overallWonEventsCount'];
+    user.overallLostBets = parsedJson['overallLostSlipsCount'];
+    user.overallLostPredictions = parsedJson['overallLostEventsCount'];
+
+    user.userLevel = UserLevel.ofLevelCode(parsedJson['level']);
 
     return user;
 

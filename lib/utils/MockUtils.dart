@@ -1,7 +1,7 @@
 import 'dart:collection';
 import 'dart:math';
 
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_app/enums/BetPredictionStatus.dart';
 import 'package:flutter_app/enums/BetPredictionType.dart';
 import 'package:flutter_app/enums/BetStatus.dart';
@@ -10,12 +10,13 @@ import 'package:flutter_app/models/Section.dart';
 import 'package:flutter_app/models/Team.dart';
 import 'package:flutter_app/models/User.dart';
 import 'package:flutter_app/models/UserBet.dart';
-import 'package:flutter_app/models/constants/MatchConstants.dart';
 import 'package:flutter_app/models/constants/MatchStatsConstants.dart';
 import 'package:flutter_app/models/matchEventStatisticsSoccer.dart';
 import 'package:flutter_app/models/match_event.dart';
 import 'package:flutter_app/models/match_odds.dart';
+import 'package:intl/intl.dart';
 
+import '../enums/MatchEventStatus.dart';
 import '../models/Player.dart';
 import '../models/Score.dart';
 import '../models/UserPrediction.dart';
@@ -28,20 +29,16 @@ class MockUtils {
 
   final List<Team> mockTeams = <Team>[];
 
-  MockUtils(){
-
-  }
-
   Map<String, List<League>> mockLeaguesMap(bool live){
     Map<String, List<League>> mockLeaguesMap = new LinkedHashMap();
-    List<League> leagues = mockLeagues(live);
-    mockLeaguesMap.putIfAbsent("yesterday", () => leagues);
-    mockLeaguesMap.putIfAbsent("today", () => leagues);
-    mockLeaguesMap.putIfAbsent("tomorrow", () => leagues);
+    List<League> leagues = mockLeagues();
+    mockLeaguesMap.putIfAbsent('-1', () => leagues);
+    mockLeaguesMap.putIfAbsent('0', () => leagues);
+    mockLeaguesMap.putIfAbsent('1', () => leagues);
     return mockLeaguesMap;
   }
 
-  List<League> mockLeagues(bool live){
+  List<League> mockLeagues(){
     mockTeams.clear();
     mockTeams.add(newTeam('panathinaikos'));
     mockTeams.add(newTeam('liverpool'));
@@ -57,15 +54,15 @@ class MockUtils {
 
     var events = <MatchEvent>[];
     Set<MatchEvent> eventsMock = mockEvents();
+    events.addAll(eventsMock);
+    League league = League(events: events,  has_logo: true, name: "Mock country", league_id: 2);
+
     for (MatchEvent event in eventsMock){
-      if (live && event.status == MatchStatus.IN_PROGRESS) {
-        events.add(event);
-      }else if (!live){
-        events.add(event);
+      if (MatchEventStatus.fromStatusText(event.status) == MatchEventStatus.INPROGRESS) {
+        league.liveEvents.add(event);
       }
     }
 
-    League league = League(events: events,  has_logo: true, name: "Mock country", league_id: 2);
     league.logo = "https://tipsscore.com/resb/league/europe-uefa-champions-league.png" ;
 
     Section section = Section("Section name");
@@ -77,15 +74,15 @@ class MockUtils {
 
   Set<MatchEvent> mockEvents() {
     Set<MatchEvent> mockEvents = LinkedHashSet();
-    MatchEvent mockEvent1 = mockEvent(1, 1.5, 3.4, 5.0, 1.95, 1.85, MatchStatus.IN_PROGRESS, "60", ChangeEvent.NONE);
+    MatchEvent mockEvent1 = mockEvent(1, 1.5, 3.4, 5.0, 1.95, 1.85, MatchEventStatus.INPROGRESS.statusStr, "60", ChangeEvent.NONE);
     mockEvents.add(mockEvent1);
-    MatchEvent mockEvent2 = mockEvent(2, 1.58, 4.4, 5.76, 1.95, 1.85, MatchStatus.NOT_STARTED, "", ChangeEvent.NONE);
+    MatchEvent mockEvent2 = mockEvent(2, 1.58, 4.4, 5.76, 1.95, 1.85, MatchEventStatus.NOTSTARTED.statusStr, "", ChangeEvent.NONE);
     mockEvents.add(mockEvent2);
-    MatchEvent mockEvent3 = mockEvent(3, 1.75, 3.1, 6.5, 1.95, 1.85, MatchStatus.IN_PROGRESS, "65", ChangeEvent.NONE);
+    MatchEvent mockEvent3 = mockEvent(3, 1.75, 3.1, 6.5, 1.95, 1.85, MatchEventStatus.INPROGRESS.statusStr, "65", ChangeEvent.NONE);
     mockEvents.add(mockEvent3);
-    MatchEvent mockEvent4 = mockEvent(4, 1.75, 3.1, 6.5, 1.95, 1.85, MatchStatus.NOT_STARTED, "", ChangeEvent.NONE);
+    MatchEvent mockEvent4 = mockEvent(4, 1.75, 3.1, 6.5, 1.95, 1.85, MatchEventStatus.NOTSTARTED.statusStr, "", ChangeEvent.NONE);
     mockEvents.add(mockEvent4);
-    MatchEvent mockEvent5 = mockEvent(5, 1.75, 3.1, 6.5, 1.95, 1.85, MatchStatus.IN_PROGRESS, "80", ChangeEvent.NONE);
+    MatchEvent mockEvent5 = mockEvent(5, 1.75, 3.1, 6.5, 1.95, 1.85, MatchEventStatus.INPROGRESS.statusStr, "80", ChangeEvent.NONE);
     mockEvents.add(mockEvent5);
 
     return mockEvents;
@@ -94,14 +91,10 @@ class MockUtils {
   MatchEvent mockEvent(eventId, odd1, oddx, odd2, oddO25, oddU25, _status, _status_more, _changeEvent){
     MatchOdds mockOdds1 = mockOdds(eventId, odd1, oddx, odd2, oddO25, oddU25);
 
-    MatchEvent event = MatchEvent(eventId: eventId, homeTeam: pickTeam() , awayTeam : pickTeam(), status: _status);
+    MatchEvent event = MatchEvent(eventId: eventId, homeTeam: pickTeam() , awayTeam : pickTeam(), status: _status, status_more: _status_more, start_at: '2022-10-13 15:00:00');
     event.odds = mockOdds1;
 
     event.changeEvent = _changeEvent;
-    event.status_more = _status_more;
-    event.status_for_client = _status_more+"'";
-    event.startHour = 20;
-    event.startMinute = 0;
     event.homeTeamScore = Score(1, 1, eventId, eventId, eventId);
     event.awayTeamScore = Score(1, 1, eventId, eventId, eventId);
 
@@ -120,11 +113,11 @@ class MockUtils {
 
   MatchOdds mockOdds(eventId, _odd1, _oddx, _odd2, _oddO25, _oddU25){
     return MatchOdds(
-        odd1: UserPrediction(betPredictionType: BetPredictionType.HOME_WIN, eventId: eventId, value: _odd1),
-        oddX: UserPrediction(betPredictionType:BetPredictionType.DRAW, eventId: eventId,value: _oddx),
-        odd2: UserPrediction(betPredictionType:BetPredictionType.AWAY_WIN, eventId: eventId,value: _odd2),
-        oddO25: UserPrediction(betPredictionType:BetPredictionType.OVER_25, eventId: eventId,value: _oddO25),
-        oddU25: UserPrediction(betPredictionType:BetPredictionType.UNDER_25, eventId: eventId,value: _oddU25));
+        odd1: UserPrediction(betPredictionType: BetPredictionType.HOME_WIN, betPredictionStatus: BetPredictionStatus.PENDING,eventId: eventId, value: _odd1),
+        oddX: UserPrediction(betPredictionType:BetPredictionType.DRAW, betPredictionStatus: BetPredictionStatus.PENDING,eventId: eventId,value: _oddx),
+        odd2: UserPrediction(betPredictionType:BetPredictionType.AWAY_WIN, betPredictionStatus: BetPredictionStatus.PENDING,eventId: eventId,value: _odd2),
+        oddO25: UserPrediction(betPredictionType:BetPredictionType.OVER_25, betPredictionStatus: BetPredictionStatus.PENDING,eventId: eventId,value: _oddO25),
+        oddU25: UserPrediction(betPredictionType:BetPredictionType.UNDER_25, betPredictionStatus: BetPredictionStatus.PENDING, eventId: eventId,value: _oddU25));
   }
 
   User mockUser(Map<String, List<League>> validData) {
@@ -142,7 +135,7 @@ class MockUtils {
           betAmount: 5);
       for (int i = 1; i < 4; i++) {
         UserPrediction prediction = UserPrediction(
-            betPredictionType: BetPredictionType.of(1, i), eventId: events.first.eventId
+            betPredictionType: BetPredictionType.of(1, i), betPredictionStatus: BetPredictionStatus.PENDING, eventId: events.first.eventId
             , value: (2.1 + i));
         prediction.betPredictionStatus = BetPredictionStatus.ofStatus(i);
         predictions.add(prediction);
@@ -150,7 +143,7 @@ class MockUtils {
       bet.betStatus = BetStatus.ofStatus(j);
       userBets.add(bet);
     }
-    return new User("mockUser", 1200, userBets);
+    return new User("mongoId", "mockUser", 1200, userBets);
   }
 
   Team newTeam(String teamName) {
@@ -158,7 +151,11 @@ class MockUtils {
   }
 
   pickTeam() {
-    return mockTeams.removeLast();
+    // try {
+    //   return mockTeams.removeLast();
+    // }catch (e){
+      return Team(Random().nextInt(10000000), "mockTeam", 'https://tipsscore.com/resb/no-league.png');
+    //}
   }
 
   List<MatchEventsStatisticsSoccer> mockStats() {

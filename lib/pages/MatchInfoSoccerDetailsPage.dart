@@ -4,7 +4,7 @@ import 'package:flutter_app/models/constants/MatchStatsConstants.dart';
 import 'package:flutter_app/models/matchEventStatisticsSoccer.dart';
 import 'package:flutter_app/widgets/LiveMatchRow.dart';
 import 'package:flutter_app/widgets/LogoWithTeamLarge.dart';
-import 'package:flutter_app/widgets/LogoWithTeamName.dart';
+import 'package:flutter_app/widgets/LogoWithName.dart';
 
 import '../models/match_event.dart';
 import '../widgets/MatchScoreMiddleText.dart';

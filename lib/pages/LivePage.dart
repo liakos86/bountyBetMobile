@@ -1,80 +1,72 @@
-import 'dart:async';
+// You have to add this manually, for some reason it cannot be added automatically
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_app/models/interfaces/StatefulWidgetWithName.dart';
 
 import '../models/league.dart';
 import '../widgets/LeagueExpandableTile.dart';
 
+final pageBucket = PageStorageBucket();
 
 class LivePage extends StatefulWidgetWithName {
 
   @override
-  LivePageState createState() => LivePageState(liveMatchesPerLeague, functionReloadLiveLeagues);
+  LivePageState createState() => LivePageState();
 
-  List<League> liveMatchesPerLeague = <League>[];
+  final List<League> liveLeagues;
 
-  Function functionReloadLiveLeagues = ()=>{};
-
-  LivePage(List<League> _liveMatchesPerLeague, getLiveEventsCallBack) {
-    this.liveMatchesPerLeague = _liveMatchesPerLeague;
-    this.functionReloadLiveLeagues = getLiveEventsCallBack;
-    setName('Live');
-  }
+  LivePage({
+    Key? key,
+    required this.liveLeagues,
+  } ) : super(key: key);
 
 }
 
-class LivePageState extends State<LivePage>{
+class LivePageState extends State<LivePage> with WidgetsBindingObserver{
+
+  // ScrollController scrollController = new ScrollController();
+  
+  List<League> liveLeagues = <League>[];
 
   @override
   void initState(){
+    liveLeagues = widget.liveLeagues;
     super.initState();
-  }
-
-  List<League> liveMatchesPerLeague = <League>[];
-
-  Function functionReloadLiveLeagues = ()=>{};
-
-  LivePageState(liveMatches, functionEvents) {
-    this.liveMatchesPerLeague = liveMatches;
-    this.functionReloadLiveLeagues = functionEvents;
   }
 
   @override
   Widget build(BuildContext context) {
 
-    Timer.periodic(Duration(seconds: 5), (timer) {
-      updateLiveFromParent();
-    });
+    return Scaffold(
 
+      backgroundColor: Colors.white,
 
-    // if (liveMatchesPerLeague.isEmpty){
-    //   return Text('No games yet..');
-    // }
+      key: UniqueKey(),
 
-    return ListView.builder(
+      body:
+      PageStorage(
 
-                  itemCount: liveMatchesPerLeague.length,
-                  itemBuilder: (context, item) {
-                    return _buildRow(liveMatchesPerLeague[item]);
-                  });
+      bucket: pageBucket,
+      child:
+      ListView.builder(
+          key: const PageStorageKey<String>(
+              'pageLive'),
+        // controller: scrollController,
+          itemCount: liveLeagues.length,
+          itemBuilder: (context, item) {
+            return _buildRow(item);
+          }),
+    ));
+
 
   }
 
-  Widget _buildRow(League league) {
-    return LeagueMatchesRow(key: UniqueKey(), league: league, selectedOdds: [], callbackForOdds: (a)=>{},);
+  Widget _buildRow(int item) {
+    League league = liveLeagues[item];
+    return LeagueExpandableTile(key: PageStorageKey<League>(liveLeagues.elementAt(item)), league: league, events: league.liveEvents, selectedOdds: [], callbackForOdds: (a)=>{},);
   }
-
-  void updateLiveFromParent() {
-
-    List<League> leagues = functionReloadLiveLeagues.call();
-
-    if (this.mounted && leagues.isNotEmpty) {
-      setState(() {
-        this.liveMatchesPerLeague = leagues;
-      });
-    }
-
-  }
+  
+  
 
 }

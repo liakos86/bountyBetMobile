@@ -64,7 +64,7 @@ class DialogLogin extends StatelessWidget{
   }
 
   void loginWith(String emailOrUsername, String password) async{
-      if (emailOrUsername.length < 5 || password.length <= 8){
+      if (emailOrUsername.length < 5 || password.length < 8){
         return;
       }
 

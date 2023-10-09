@@ -70,12 +70,6 @@ class GestureDetectorForOddsState extends State<GestureDetectorForOdds>{
     return GestureDetector(
                       onTap: () {
                         callbackForOdds.call(prediction!);
-
-                          // if (prediction==selected) {
-                          //   callbackForOdds?.call(null);
-                          // }else{
-                          //   callbackForOdds?.call(prediction);
-                          // }
                       },
 
                       child:

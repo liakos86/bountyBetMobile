@@ -20,6 +20,7 @@ class UserPrediction{
 
   UserPrediction({
     required this.betPredictionType,
+    required this.betPredictionStatus,
     required this.eventId,
     required this.value
   });
@@ -48,6 +49,7 @@ class UserPrediction{
   static UserPrediction fromJson(Map<String, dynamic> parsedJson){
     UserPrediction prediction = UserPrediction(eventId: parsedJson['eventId'],
         value: parsedJson['oddValue'] as double,
+        betPredictionStatus: BetPredictionStatus.ofStatus(int.parse(parsedJson['predictionStatus'])),
         betPredictionType:  BetPredictionType.of(int.parse(parsedJson['predictionCategory']), int.parse(parsedJson['predictionType'])));
     prediction.event = JsonHelper.eventFromJson(parsedJson['event']);
     return prediction;

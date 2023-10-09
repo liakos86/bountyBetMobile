@@ -7,90 +7,141 @@ import 'package:flutter_app/models/constants/MatchConstants.dart';
 import 'package:flutter_app/models/match_event.dart';
 import 'package:flutter_app/widgets/LiveMatchRow.dart';
 
+import '../enums/MatchEventStatus.dart';
 import '../models/UserPrediction.dart';
 import '../models/league.dart';
 import 'UpcomingMatchRow.dart';
 
-class LeagueMatchesRow extends StatefulWidget {
+class LeagueExpandableTile extends StatefulWidget {
 
   League league;
 
- List<UserPrediction> selectedOdds = <UserPrediction>[];
+  List<MatchEvent> events;
+
+  List<UserPrediction> selectedOdds = <UserPrediction>[];
 
   Function(UserPrediction) callbackForOdds;
 
  // Function ?callbackForEvents;
 
-  LeagueMatchesRow(
-      {Key ?key, required this.league, required this.selectedOdds, required this.callbackForOdds})
+  LeagueExpandableTile(
+      {Key ?key, required this.league, required this.events, required this.selectedOdds, required this.callbackForOdds})
       : super(key: key);
 
   @override
-  LeagueMatchesRowState createState() =>
-      LeagueMatchesRowState(league: league,
-          selectedOdds: selectedOdds,
-          callbackForOdds: callbackForOdds);
+  LeagueExpandableTileState createState() =>
+      LeagueExpandableTileState();
   }
 
-  class LeagueMatchesRowState extends State<LeagueMatchesRow>{
+  class LeagueExpandableTileState extends State<LeagueExpandableTile>{
 
-    bool blink = false;
+    late League league;
 
-    League league;
+    late List<MatchEvent> events;
 
     List<UserPrediction> selectedOdds = <UserPrediction>[];
 
-    Function(UserPrediction) callbackForOdds;
+    late Function(UserPrediction) callbackForOdds;
 
-    LeagueMatchesRowState({required this.league, required this.selectedOdds, required this.callbackForOdds});
+    //LeagueExpandableTileState({required this.league, required this.events, required this.selectedOdds, required this.callbackForOdds});
 
     @override
   void initState() {
     super.initState();
-
-    Timer.periodic(Duration(milliseconds: 3000), (timer) {
-      doBlink();
-    });
   }
 
   @override
   Widget build(BuildContext context) {
+      league = widget.league;
+      events = widget.events;
+      selectedOdds = widget.selectedOdds;
+      callbackForOdds = widget.callbackForOdds;
+
+      return Theme(
+        key: UniqueKey(),
+        data: Theme.of(context).copyWith(
+          listTileTheme: ListTileTheme.of(context).copyWith(
+            dense: true,
+          ),
+        ),
+
+
+           // child: GestureDetector(
+
+                child: ExpansionTile(
+                    key: UniqueKey(),
+                    maintainState: false,
+                    iconColor: Colors.transparent,
+                    collapsedIconColor: Colors.transparent,
+                    initiallyExpanded: true,
+                    collapsedBackgroundColor: Colors.white,
+                    backgroundColor: Colors.yellow[50],
+                    subtitle: Text(league.name, style: const TextStyle(color: Colors.black, fontWeight: FontWeight.w700, fontSize: 12),),
+                    trailing: Text('(${events.length})', style: const TextStyle(color: Colors.black, fontSize: 10),),
+                    leading: Image.network(
+                      league.logo ?? "https://tipsscore.com/resb/no-league.png",
+                      height: 24,
+                      width: 24,
+                    ),
+                    title: Text(league.section!.name.toUpperCase(),
+                        style: TextStyle(fontSize: 10, color: Colors.grey[600], fontWeight: FontWeight.bold)),
+                    children: events.map((item)=> _buildSelectedOddRow(item)).toList()
+                ),
+
+         //   )
+      );
+
+      //       child: ExpansionTile(
+      //           key: UniqueKey(),
+      //           maintainState: false,
+      //           iconColor: Colors.transparent,
+      //           collapsedIconColor: Colors.transparent,
+      //           initiallyExpanded: true,
+      //           collapsedBackgroundColor: Colors.white,
+      //           backgroundColor: Colors.yellow[50],
+      //           subtitle: Text(league.name, style: const TextStyle(color: Colors.black, fontWeight: FontWeight.w700, fontSize: 12),),
+      //           trailing: Text('(${events.length})', style: const TextStyle(color: Colors.black, fontSize: 10),),
+      //           leading: Image.network(
+      //             league.logo ?? "https://tipsscore.com/resb/no-league.png",
+      //             height: 24,
+      //             width: 24,
+      //           ),
+      //           title: Text(league.section!.name.toUpperCase(),
+      //               style: TextStyle(fontSize: 10, color: Colors.grey[600], fontWeight: FontWeight.bold)),
+      //           children: events.map((item)=> _buildSelectedOddRow(item)).toList()
+      //       )
+      // );
+
+
+
     return ExpansionTile(
+      maintainState: true,
       iconColor: Colors.transparent,
       collapsedIconColor: Colors.transparent,
-      initiallyExpanded: true,
-      //tilePadding: EdgeInsets.all(2),
-      backgroundColor: Colors.blue[50],
-      subtitle: Text(league.section!.name, style: TextStyle(color: Colors.black, fontSize: 10),),
+      initiallyExpanded: false,
+      collapsedBackgroundColor: Colors.white,
+      backgroundColor: Colors.yellow[50],
+      subtitle: Text(league.name, style: const TextStyle(color: Colors.black, fontWeight: FontWeight.w700, fontSize: 12),),
+      trailing: Text('(${events.length})', style: const TextStyle(color: Colors.black, fontSize: 10),),
       leading: Image.network(
         league.logo ?? "https://tipsscore.com/resb/no-league.png",
-        height: 32,
-        width: 32,
+        height: 24,
+        width: 24,
       ),
-      title: Text(league.name,
-          style: TextStyle(fontSize: 14, color: Colors.black, fontWeight: FontWeight.bold)),
-      children: league.getEvents().map((item)=> _buildSelectedOddRow(item)).toList()
+      title: Text(league.section!.name.toUpperCase(),
+          style: TextStyle(fontSize: 10, color: Colors.grey[600], fontWeight: FontWeight.bold)),
+      children: events.map((item)=> _buildSelectedOddRow(item)).toList()
     );
   }
 
   Widget _buildSelectedOddRow(MatchEvent event) {
-    if (event.status == MatchStatus.IN_PROGRESS || event.status == MatchStatus.FINISHED
-        || event.status == MatchStatus.POSTPONED || event.status == MatchStatus.CANCELLED) {
-      return LiveMatchRow(key: UniqueKey(), gameWithOdds: event, blink: blink);
+    MatchEventStatus? matchEventStatus =  MatchEventStatus.fromStatusText(event.status);
+    if (matchEventStatus == MatchEventStatus.INPROGRESS || matchEventStatus == MatchEventStatus.FINISHED
+        || matchEventStatus == MatchEventStatus.POSTPONED || matchEventStatus == MatchEventStatus.CANCELLED) {
+      return LiveMatchRow(key: UniqueKey(), gameWithOdds: event);
     }
 
     return UpcomingMatchRow(key: UniqueKey(), gameWithOdds: event, selectedOdds: selectedOdds, callbackForOdds: callbackForOdds);
-  }
-
-  void doBlink() {
-
-      if (!mounted){
-        return;
-      }
-
-      setState(() {
-        blink = !blink;
-      });
   }
 
 }

@@ -1,69 +1,79 @@
-// import 'dart:async';
-// import 'dart:collection';
-// import 'dart:collection';
-// import 'dart:convert';
-//
-// import 'package:flutter/cupertino.dart';
-// import 'package:flutter/material.dart';
-// import 'package:flutter_app/models/constants/UrlConstants.dart';
-// import 'package:flutter_app/models/interfaces/StatefulWidgetWithName.dart';
-// import 'package:http/http.dart';
-//
-// import '../enums/BetPredictionType.dart';
-// import '../helper/JsonHelper.dart';
-// import '../models/constants/MatchConstants.dart';
-// import '../utils/MockUtils.dart';
-// import '../models/UserPrediction.dart';
-// import '../models/league.dart';
-// import '../models/match_event.dart';
-// import '../models/match_odds.dart';
-// import '../widgets/LeagueExpandableTile.dart';
-// import '../widgets/LiveMatchRow.dart';
-// import '../widgets/UpcomingMatchRow.dart';
-//
-//
-// class LeagueGamesPage extends StatefulWidget{
-//
-//   @override
-//   LeagueGamesPageState createState() => LeagueGamesPageState(league);
-//
-//   League league;
-//
-//   LeagueGamesPage({required this.league});
-//
-// }
-//
-// class LeagueGamesPageState extends State<LeagueGamesPage>{
-//
-//   League league = League.defLeague();
-//
-//   LeagueGamesPageState(_league) {
-//     this.league = _league;
-//   }
-//
-//   @override
-//   Widget build(BuildContext context) {
-//
-//     return
-//       Scaffold(
-//         appBar: AppBar(title: Text(league.name)),
-//     body:
-//       ListView.builder(
-//                   padding: const EdgeInsets.all(8),
-//                   itemCount: league.events.length,
-//                   itemBuilder: (context, item) {
-//                     return _buildRow(league.events[item]);
-//                   }),
-//
-//       );
-//   }
-//
-//   Widget _buildRow(MatchEvent event) {
-//     if (event.status == "inprogress" || event.status == "finished") {
-//       return LiveMatchRow(key: UniqueKey(), gameWithOdds: event);
-//     }
-//
-//     return UpcomingMatchRow(key: UniqueKey(), gameWithOdds: event);
-//   }
-//
-// }
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
+import '../enums/MatchEventStatus.dart';
+import '../models/UserPrediction.dart';
+import '../models/league.dart';
+import '../models/match_event.dart';
+import '../widgets/LiveMatchRow.dart';
+import '../widgets/UpcomingMatchRow.dart';
+
+
+class LeagueGamesPage extends StatefulWidget{
+
+  @override
+  LeagueGamesPageState createState() => LeagueGamesPageState(league, selectedOdds, callbackForOdds);
+
+  League league;
+
+  List<UserPrediction> selectedOdds = <UserPrediction>[];
+
+  Function(UserPrediction) callbackForOdds;
+
+  LeagueGamesPage({required this.league, required this.selectedOdds, required this.callbackForOdds});
+
+}
+
+class LeagueGamesPageState extends State<LeagueGamesPage>{
+
+  League league = League.defLeague();
+
+  List<UserPrediction> selectedOdds = <UserPrediction>[];
+
+  Function(UserPrediction) callbackForOdds = (a) => {};
+
+  LeagueGamesPageState(_league, _selectedOdds, _callbackForOdds) {
+    this.league = _league;
+    this.selectedOdds = _selectedOdds;
+    this.callbackForOdds = _callbackForOdds;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+
+    return
+      Scaffold(
+        appBar: AppBar(title: Text(league.name)),
+    body:
+    ExpansionTile(
+        key: UniqueKey(),
+        maintainState: false,
+        iconColor: Colors.transparent,
+        collapsedIconColor: Colors.transparent,
+        initiallyExpanded: true,
+        collapsedBackgroundColor: Colors.white,
+        backgroundColor: Colors.yellow[50],
+        subtitle: Text(league.name, style: const TextStyle(color: Colors.black, fontWeight: FontWeight.w700, fontSize: 12),),
+        trailing: Text('(${league.events.length})', style: const TextStyle(color: Colors.black, fontSize: 10),),
+        leading: Image.network(
+          league.logo ?? "https://tipsscore.com/resb/no-league.png",
+          height: 24,
+          width: 24,
+        ),
+        title: Text(league.section!.name.toUpperCase(),
+            style: TextStyle(fontSize: 10, color: Colors.grey[600], fontWeight: FontWeight.bold)),
+        children: league.events.map((item)=> _buildSelectedOddRow(item)).toList()
+    )
+      );
+  }
+
+  Widget _buildSelectedOddRow(MatchEvent event) {
+    MatchEventStatus? matchEventStatus =  MatchEventStatus.fromStatusText(event.status);
+    if (matchEventStatus == MatchEventStatus.INPROGRESS || matchEventStatus == MatchEventStatus.FINISHED
+        || matchEventStatus == MatchEventStatus.POSTPONED || matchEventStatus == MatchEventStatus.CANCELLED) {
+      return LiveMatchRow(key: UniqueKey(), gameWithOdds: event);
+    }
+
+    return UpcomingMatchRow(key: UniqueKey(), gameWithOdds: event, selectedOdds: selectedOdds, callbackForOdds: callbackForOdds);
+  }
+
+}

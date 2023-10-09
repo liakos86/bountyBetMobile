@@ -26,12 +26,19 @@ class League{
 
   int league_id = 0;
 
-  String ?logo ;
+  String? logo ;
 
   List<MatchEvent> events = <MatchEvent>[];
 
-  List<MatchEvent> getEvents(){
-    return events;
-  }
+  List<MatchEvent> liveEvents = <MatchEvent>[];
+
+  @override
+  operator == (other) =>
+      other is League &&
+          other.league_id == league_id ;
+
+  @override
+  int get hashCode => league_id * 37;
+
 
 }
