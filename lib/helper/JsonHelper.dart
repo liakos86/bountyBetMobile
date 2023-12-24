@@ -1,10 +1,11 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_app/enums/ChangeEvent.dart';
+import 'package:flutter_app/models/MatchEventStatisticsSoccer.dart';
 import 'package:flutter_app/models/Player.dart';
 import 'package:flutter_app/models/StandingRow.dart';
 import 'package:flutter_app/models/league.dart';
-import 'package:flutter_app/models/matchEventStatisticsSoccer.dart';
+import 'package:flutter_app/models/MatchEventIncidentsSoccer.dart';
 import 'package:flutter_app/models/match_event.dart';
 
 import '../enums/BetPredictionStatus.dart';
@@ -21,6 +22,16 @@ import '../models/match_odds.dart';
 
 class JsonHelper{
 
+  static Set<MatchEvent> eventsSetFromJson(var eventsJson){
+    Set<MatchEvent> events = Set();
+    for (var eventJson in eventsJson){
+      MatchEvent event = eventFromJson(eventJson);
+      events.add(event);
+    }
+
+    return events;
+  }
+
   static MatchEvent eventFromJson(var event){
 
     var homeTeam = event["home_team"];
@@ -28,30 +39,18 @@ class JsonHelper{
     var homeTeamScore = event["home_score"];
     var awayTeamScore = event["away_score"];
     var _changeEvent = event["changeEvent"] as int;
-    // var startHour = event["start_hour"];
-    // var startMinute = event["start_minute"];
+    int? sportId = event['sportId'];
+    sportId ??= 1;
 
     var startAt = event['start_at'];
 
-    // if (startAt == null){
-    //   startAt = 'MISSING';
-    //   print('*************** NULLLLLLLLLLLLL   ' + event['id'].toString());
-    // }
-
     Team hTeam = Team(homeTeam["id"], homeTeam["name"], homeTeam["logo"]);
     Team aTeam = Team(awayTeam["id"], awayTeam["name"], awayTeam["logo"]);
-
-
-   //print('CALCULATIONG ' + event['id'].toString());
 
     MatchEvent match = MatchEvent(eventId: event["id"], status: event["status"], status_more: event["status_more"]??'-', homeTeam: hTeam, awayTeam: aTeam, start_at: startAt);
     match.changeEvent = ChangeEvent.ofCode(_changeEvent);
 
     match.calculateLiveMinute();
-    // String? new_status_for_client = event["status_for_client"];
-    // if (new_status_for_client !=null){
-    //   match.status_for_client = new_status_for_client;
-    // }
 
     var eventOdds = event["main_odds"];
     if (eventOdds != null) {
@@ -66,37 +65,45 @@ class JsonHelper{
 
        MatchOdds odds = MatchOdds(
           oddO25: UserPrediction(eventId: event["id"],
+              sportId: sportId,
+              homeTeam: hTeam,
+              awayTeam: aTeam,
               betPredictionType: BetPredictionType.OVER_25,
               betPredictionStatus: BetPredictionStatus.PENDING,
               value: outcome1Value),
           oddU25: UserPrediction(eventId: event["id"],
+              sportId: sportId,
+              homeTeam: hTeam,
+              awayTeam: aTeam,
               betPredictionType: BetPredictionType.UNDER_25,
               betPredictionStatus: BetPredictionStatus.PENDING,
               value: outcome1Value),
           odd1: UserPrediction(eventId: event["id"],
+              sportId: sportId,
+              homeTeam: hTeam,
+              awayTeam: aTeam,
               betPredictionType: BetPredictionType.HOME_WIN,
               betPredictionStatus: BetPredictionStatus.PENDING,
               value: outcome1Value),
           //.toString().replaceAll(',', '.')),
           oddX: UserPrediction(eventId: event["id"],
+              sportId: sportId,
+              homeTeam: hTeam,
+              awayTeam: aTeam,
               betPredictionType: BetPredictionType.DRAW,
               betPredictionStatus: BetPredictionStatus.PENDING,
               value: outcomeXValue),
           //.toString().replaceAll(',', '.')),
           odd2: UserPrediction(eventId: event["id"],
+              sportId: sportId,
+              homeTeam: hTeam,
+              awayTeam: aTeam,
               betPredictionType: BetPredictionType.AWAY_WIN,
               betPredictionStatus: BetPredictionStatus.PENDING,
               value: outcome2Value)); //.toString().replaceAll(',', '.')));
 
       match.odds = odds;
     }
-
-
-   // match.startHour = startHour;
-   // match.startMinute = startMinute;
-
-   //match.status_more = event["status_more"];
-   //match.status_for_client = event["status_for_client"];
 
    if (homeTeamScore != null){
       match.homeTeamScore = Score(homeTeamScore["current"], homeTeamScore["display"], homeTeamScore["normal_time"],
@@ -110,7 +117,12 @@ class JsonHelper{
 
     var matchIncidents = event['incidents'];
     if (matchIncidents != null){
-       match.statistics = incidentsFromJson(matchIncidents);
+       match.incidents = incidentsFromJson(matchIncidents);
+    }
+
+    var matchStats = event['statistics'];
+    if (matchStats != null){
+      match.statistics = statsFromJson(matchStats);
     }
 
     return match;
@@ -137,6 +149,7 @@ class JsonHelper{
         name: league['name'],
         league_id: league['id'],
         has_logo: league['has_logo'],
+        priority: league['priority'],
         events: matches);
     l.liveEvents = liveMatches;
 
@@ -189,12 +202,12 @@ class JsonHelper{
 
   }
 
-  static List<MatchEventsStatisticsSoccer> incidentsFromJson(matchIncidentsWrapperJson) {
-    List<MatchEventsStatisticsSoccer> incidents = <MatchEventsStatisticsSoccer>[];
+  static List<MatchEventIncidentsSoccer> incidentsFromJson(matchIncidentsWrapperJson) {
+    List<MatchEventIncidentsSoccer> incidents = <MatchEventIncidentsSoccer>[];
 
     var matchIncidentsJson = matchIncidentsWrapperJson['data'];
     for (var incidentJson in matchIncidentsJson){
-      MatchEventsStatisticsSoccer incident = MatchEventsStatisticsSoccer(
+      MatchEventIncidentsSoccer incident = MatchEventIncidentsSoccer(
           id: incidentJson['id'],
           event_id: incidentJson['event_id'],
           incident_type: incidentJson['incident_type'],
@@ -203,6 +216,8 @@ class JsonHelper{
           );
 
       incident.text = incidentJson['text'];
+
+      incident.card_type = incidentJson['card_type'];
 
       incident.scoring_team = incidentJson['scoring_team'];
       incident.reason = incidentJson['reason'];
@@ -237,5 +252,24 @@ class JsonHelper{
     return player;
   }
 
+  static List<MatchEventStatisticsSoccer> statsFromJson(matchStatsWrapperJson) {
+    List<MatchEventStatisticsSoccer> stats = <MatchEventStatisticsSoccer>[];
+
+    var matchStatsJson = matchStatsWrapperJson['data'];
+    for (var statJson in matchStatsJson){
+      MatchEventStatisticsSoccer stat = MatchEventStatisticsSoccer(
+        id: statJson['id'],
+        group: statJson['group'],
+        period: statJson['period'],
+        home: statJson['home'],
+        away: statJson['away'],
+        compare_code: statJson['compare_code']
+      );
+
+      stats.add(stat);
+    }
+
+    return stats;
+  }
 
 }

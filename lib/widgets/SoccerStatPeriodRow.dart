@@ -3,12 +3,12 @@ import 'dart:ui';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:flutter_app/models/matchEventStatisticsSoccer.dart';
-import 'SoccerStatisticBox.dart';
+import 'package:flutter_app/models/MatchEventIncidentsSoccer.dart';
+import 'SoccerIncidentBox.dart';
 
 class SoccerStatPeriodRow extends StatelessWidget {
 
-  final MatchEventsStatisticsSoccer statistic;
+  final MatchEventIncidentsSoccer statistic;
 
   SoccerStatPeriodRow({Key ?key, required this.statistic}) : super(key: key);
 
@@ -16,19 +16,19 @@ class SoccerStatPeriodRow extends StatelessWidget {
   Widget build(BuildContext context) {
     return
       Container(
-        height: 50,
+        height: 20,
 
           decoration: BoxDecoration(color:  Colors.grey[200],
-              border: Border(top: BorderSide(color: Colors.black, width: 0.5), bottom: BorderSide(color: Colors.black, width: 0.5))),
+              border: const Border(top: BorderSide(color: Colors.black, width: 0.5), bottom: BorderSide(color: Colors.black, width: 0.5))),
           child:
               Padding(
-                padding: EdgeInsets.all(4),
+                padding: const EdgeInsets.all(4),
                 child:
                 Row(//top father
                     mainAxisSize: MainAxisSize.max,
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Text(statistic.text! , style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),),
+                      Text(statistic.text! , style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 10),),
                     ]
                 ),
       ));

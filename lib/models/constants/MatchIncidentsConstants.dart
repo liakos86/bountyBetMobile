@@ -1,4 +1,4 @@
-class MatchStatConstants{
+class MatchIncidentsConstants{
 
    static const String SUBSTITUTION = "substitution";
 

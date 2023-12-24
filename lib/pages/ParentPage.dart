@@ -1,11 +1,9 @@
 import 'dart:async';
 import 'dart:collection';
 import 'dart:convert';
-import 'dart:io';
 
-import 'package:device_info_plus/device_info_plus.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_app/models/UserBet.dart';
 import 'package:flutter_app/models/constants/Constants.dart';
@@ -15,9 +13,6 @@ import 'package:flutter_app/pages/LeaguesInfoPage.dart';
 import 'package:flutter_app/pages/OddsPage.dart';
 import 'package:flutter_app/widgets/DialogTabbedLoginOrRegister.dart';
 import 'package:http/http.dart';
-import 'package:intl/intl.dart';
-import 'package:mqtt_client/mqtt_client.dart';
-import 'package:mqtt_client/mqtt_server_client.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../enums/ChangeEvent.dart';
@@ -27,12 +22,12 @@ import '../models/ChangeEventSoccer.dart';
 import '../models/User.dart';
 import '../models/match_event.dart';
 import '../utils/MockUtils.dart';
-import '../utils/client/MqttLiveEventsClient.dart';
 import '../widgets/DialogSuccessfulBet.dart';
 import '../widgets/DialogUserRegistered.dart';
 import 'LeaderBoardPage.dart';
 import 'LivePage.dart';
 import 'MyBetsPage.dart';
+
 
 class ParentPage extends StatefulWidget {
 
@@ -48,18 +43,7 @@ class ParentPage extends StatefulWidget {
  * 4. My bets page
  * 5. Leagues' info page
  */
-class ParentPageState extends State<ParentPage> with WidgetsBindingObserver {
-
-  /*
-   * Client for live score topics' subscription.
-   * We place it here to pass down changes to more than one page
-   */
-  MqttServerClient? mqttClient ;
-
-  /*
-   * Unique device id required to subscribe to topic.
-   */
-  String? deviceId;
+class ParentPageState extends State<ParentPage> {
 
   /*
    * Following keys provide access to the state of each page.
@@ -80,8 +64,6 @@ class ParentPageState extends State<ParentPage> with WidgetsBindingObserver {
    */
   static User user = User.defUser();
 
-
-
   /*
    * Map with keys the dates and values the List of leagues for each date.
    */
@@ -91,9 +73,6 @@ class ParentPageState extends State<ParentPage> with WidgetsBindingObserver {
    * The leagues which contain live games, only with the live games.
    */
   final List<League> liveLeagues = <League>[];
-
-
-  // final List<UserBet> userBets = <UserBet>[];
 
   /*
    * All the leagues with standings etc.
@@ -117,6 +96,7 @@ class ParentPageState extends State<ParentPage> with WidgetsBindingObserver {
    */
   @override
   void initState() {
+    super.initState();
 
       pagesList.add(OddsPage(key: oddsPageKey, updateUserCallback: updateUserCallBack, eventsPerDayMap: eventsPerDayMap));
       pagesList.add(LivePage(key: livePageKey, liveLeagues: liveLeagues));
@@ -124,9 +104,10 @@ class ParentPageState extends State<ParentPage> with WidgetsBindingObserver {
       pagesList.add(MyBetsPage(key: betsPageKey, user: user, loginOrRegisterCallback: promptLoginOrRegister));
       pagesList.add(LeaguesInfoPage(key: leaguesPageKey, allLeagues: allLeagues));
 
-      getLeaguesAsync().then((leaguesMap) => UpdateLeaguesAndLiveMatches(leaguesMap));
 
-      Timer.periodic(const Duration(seconds: 5), (timer) { getLeaguesAsync().then((leaguesMap) =>
+      getLeaguesAsync(null).then((leaguesMap) => UpdateLeaguesAndLiveMatches(leaguesMap));
+
+      Timer.periodic(const Duration(seconds: 20), (timer) { getLeaguesAsync(timer).then((leaguesMap) =>
             UpdateLeaguesAndLiveMatches(leaguesMap)
           );
         }
@@ -153,10 +134,8 @@ class ParentPageState extends State<ParentPage> with WidgetsBindingObserver {
 
       });
 
-      subscribeToLiveTopic();
+      setupFirebaseListeners();
 
-      super.initState();
-      WidgetsBinding.instance.addObserver(this);
   }
 
   void updateUser(User value){
@@ -194,15 +173,19 @@ class ParentPageState extends State<ParentPage> with WidgetsBindingObserver {
               padding: const EdgeInsets.all(8),
               child:
                 user.mongoUserId == Constants.defMongoUserId ?
-                  FloatingActionButton(onPressed: promptLoginOrRegister,
+                  FloatingActionButton(
+                      heroTag: 'btnParentLogin',
+                      onPressed: promptLoginOrRegister,
                       backgroundColor: Colors.green,
                       foregroundColor: Colors.black,
-                      mini: true, child: Icon(Icons.login, color: Colors.white))
+                      mini: true, child: const Icon(Icons.login, color: Colors.white))
                       :
-                  FloatingActionButton(onPressed: promptLogout,
+                  FloatingActionButton(
+                      heroTag: 'btnParentLogout',
+                      onPressed: promptLogout,
                       backgroundColor: Colors.orange,
                       foregroundColor: Colors.black,
-                      mini: true, child: Icon(Icons.logout, color: Colors.white))
+                      mini: true, child: const Icon(Icons.logout, color: Colors.white))
 
             )
 
@@ -259,34 +242,6 @@ class ParentPageState extends State<ParentPage> with WidgetsBindingObserver {
     );
   }
 
-  @override
-  void dispose(){
-    WidgetsBinding.instance.removeObserver(this);
-    super.dispose();
-  }
-
-  @override
-  void didChangeAppLifecycleState(AppLifecycleState state) {
-    switch (state) {
-      case AppLifecycleState.resumed:
-      //print("app in resumed");
-        subscribeToLiveTopic();
-        break;
-      case AppLifecycleState.inactive:
-      //print("app in inactive");
-        unsubscribeToLiveTopic();
-        break;
-      case AppLifecycleState.paused:
-      //print("app in paused");
-        unsubscribeToLiveTopic();
-        break;
-      case AppLifecycleState.detached:
-      //print("app in detached");
-        unsubscribeToLiveTopic();
-        break;
-    }
-  }
-
   static MatchEvent findEvent(int eventId){
 
     for (MapEntry dayEntry in eventsPerDayMap.entries){
@@ -321,26 +276,17 @@ class ParentPageState extends State<ParentPage> with WidgetsBindingObserver {
     }
   }
 
-  Future<Map<String, List<League>>> getLeaguesAsync() async {
+  Future<Map<String, List<League>>> getLeaguesAsync(Timer? timer) async {
 
       Map jsonLeaguesData = LinkedHashMap();
 
       try {
-        Response leaguesResponse = await get(Uri.parse(UrlConstants.GET_LEAGUES)).timeout(const Duration(seconds: 15));
+        Response leaguesResponse = await get(Uri.parse(UrlConstants.GET_LEAGUES)).timeout(const Duration(seconds: 10));
         jsonLeaguesData = await jsonDecode(leaguesResponse.body) as Map;
       } catch (e) {
 
-
-
         print('ERROR REST ---- MOCKING............');
-        Map<String, List<League>> validData = MockUtils().mockLeaguesMap(false);
-        User mockUser = MockUtils().mockUser(validData);
-        setState(() {
-          user.username = mockUser.username;
-          // user.userBets.addAll(mockUser.userBets);
-          user.userBets.clear();
-          user.userBets.addAll(mockUser.userBets);
-        });
+        Map<String, List<League>> validData = MockUtils().mockLeaguesMap(eventsPerDayMap, false);
         return validData;
       }
 
@@ -429,56 +375,81 @@ class ParentPageState extends State<ParentPage> with WidgetsBindingObserver {
 
   void UpdateLeaguesAndLiveMatches(Map<String, List<League>> incomingLeaguesMap) {
 
-
     if (incomingLeaguesMap.isEmpty) {
+      return;//TODO maybe empty everything?
+    }
+
+    if (eventsPerDayMap.isEmpty){//first incoming matches
+      eventsPerDayMap['-1'] = incomingLeaguesMap[Constants.todayLeaguesKey];
+      eventsPerDayMap[Constants.todayLeaguesKey] = incomingLeaguesMap[Constants.todayLeaguesKey];
+      eventsPerDayMap['1'] = incomingLeaguesMap[Constants.todayLeaguesKey];
+
+      for(League league in eventsPerDayMap[Constants.todayLeaguesKey]){
+        if (league.liveEvents.isEmpty){
+          continue;
+        }
+
+        liveLeagues.add(league);
+      }
+
+      sortLeagues();
+      updatePageStates();
+
       return;
     }
 
-    List<League> liveLeaguesUpd = <League>[];
 
-    // List<League> incomingTodayLeagues = List.of(incomingLeaguesMap["0"] as Iterable<League>);
-    //
-    // for(League incomingLeague in incomingTodayLeagues){
-    //   if (incomingLeague.liveEvents.isEmpty){
-    //     continue;
-    //   }
-    //
-    //   if (!liveLeagues.contains(incomingLeague)){
-    //     liveLeagues.add(incomingLeague);
-    //     continue;
-    //   }
-    //
-    //   for(League existingLeague in liveLeagues){
-    //     if (existingLeague.league_id == incomingLeague.league_id){
-    //
-    //       List<MatchEvent> existingEvents = existingLeague.liveEvents;
-    //       List<MatchEvent> incomingEvents = incomingLeague.liveEvents;
-    //
-    //       for (MatchEvent existingEvent in List.of(existingEvents)){
-    //         if (!incomingEvents.contains(existingEvent)){
-    //           existingEvents.remove(existingEvent);
-    //         }else{
-    //           //copy fields
-    //           MatchEvent incomingEvent = incomingEvents.firstWhere((element) => element.eventId == existingEvent.eventId);
-    //           existingEvent.copyFrom(incomingEvent);
-    //         }
-    //       }
-    //
-    //       for (MatchEvent incomingEvent in incomingEvents){
-    //         if (!existingEvents.contains(incomingEvent)){
-    //           existingEvents.add(incomingEvent);
-    //         }
-    //       }
-    //
-    //     }
-    //   }
-    // }
+    List<League> existingTodayLeagues = eventsPerDayMap[Constants.todayLeaguesKey];
+    List<League> incomingTodayLeagues = incomingLeaguesMap[Constants.todayLeaguesKey]!;
 
-    List<League>? todayLeagues = incomingLeaguesMap["0"];
-    liveLeaguesUpd = List.of(todayLeagues!);
-    for (League l in List.of(liveLeaguesUpd)) {
-      if (l.liveEvents.isEmpty) {
-        liveLeaguesUpd.remove(l);
+    for(League incomingLeague in incomingTodayLeagues){
+
+      var existingLeague = existingTodayLeagues.firstWhere((element) => element == incomingLeague, orElse: () => League.defLeague());
+
+      //missing league
+      if (existingLeague == League.defLeague()){
+          existingTodayLeagues.add(incomingLeague);
+          continue;
+      }
+
+      List<MatchEvent> existingLiveEventsOfLeague = existingLeague.liveEvents;
+      List<MatchEvent> incomingLiveEventsOfLeague = incomingLeague.liveEvents;
+
+      for (MatchEvent existingEvent in List.of(existingLiveEventsOfLeague)){// remove it or copy the fields
+        if (!incomingLiveEventsOfLeague.contains(existingEvent)){
+          existingLiveEventsOfLeague.remove(existingEvent);
+        }else{
+          //copy fields
+          MatchEvent incomingEvent = incomingLiveEventsOfLeague.firstWhere((element) => element == existingEvent);
+          existingEvent.copyFrom(incomingEvent);
+        }
+      }
+
+      for (MatchEvent incomingEvent in incomingLiveEventsOfLeague){//add if missing
+        if (!existingLiveEventsOfLeague.contains(incomingEvent)){
+          existingLiveEventsOfLeague.add(incomingEvent);
+        }
+      }
+
+    }
+
+    for(League existingLeague in List.of(existingTodayLeagues)) {//league has to be removed
+      var incomingLeague = incomingTodayLeagues.firstWhere((
+          element) => element == existingLeague,
+          orElse: () => League.defLeague());
+
+      if (incomingLeague == League.defLeague()) {
+        existingTodayLeagues.remove(existingLeague);
+        liveLeagues.remove(existingLeague);
+      }
+    }
+
+    for(League league in eventsPerDayMap[Constants.todayLeaguesKey]){
+      if (league.liveEvents.isEmpty){
+        liveLeagues.remove(league);
+
+      }else if (!liveLeagues.contains(league)) {
+        liveLeagues.add(league);
       }
     }
 
@@ -488,105 +459,73 @@ class ParentPageState extends State<ParentPage> with WidgetsBindingObserver {
       }
     }
 
-    liveLeagues.clear();
-    liveLeagues.addAll(liveLeaguesUpd);
-
-
-
-
-
-    eventsPerDayMap.clear();
-    List<League> allLeaguesNew = <League>[];
-    incomingLeaguesMap.entries.forEach((element) {
-      eventsPerDayMap.putIfAbsent(element.key, ()=> element.value);
-      List<League> leagues = element.value;
-      for (League l in leagues){
-        if (!allLeaguesNew.contains(l)){
-          allLeaguesNew.add(l);
-        }
-      }
-    });
 
     allLeagues.clear();
-    allLeagues.addAll(allLeaguesNew);
+    allLeagues.addAll(existingTodayLeagues);
 
-    oddsPageKey.currentState?.setState(() {
-      eventsPerDayMap;
-    });
+    sortLeagues();
 
-    livePageKey.currentState?.setState(() {
-      liveLeagues;
-    });
+    updatePageStates();
 
-    leaguesPageKey.currentState?.setState(() {
-      allLeagues;
-    });
+
 
   }
 
-  Future<void> unsubscribeToLiveTopic() async {
-    // if (mqttClient != null && mqttClient?.connectionStatus == MqttConnectionState.connected|| mqttClient?.connectionStatus == MqttConnectionState.connecting){
-    mqttClient?.disconnect();
-    // }
+  void promptLoginOrRegister() {
+    showDialog(context: context, builder: (context) =>
+
+        AlertDialog(
+          contentPadding: const EdgeInsets.all(0),
+          title: const Text('Login'),
+          content: DialogTabbedLoginOrRegister(registerCallback: registedUserCallback, loginCallback: loginUserCallback,),
+          elevation: 20,
+
+
+        ));
   }
 
-  Future<void> subscribeToLiveTopic() async {
+  void promptLogout() {
+    showDialog(context: context, builder: (context) =>
 
-    if (mqttClient != null && (mqttClient?.connectionStatus == MqttConnectionState.connected || mqttClient?.connectionStatus == MqttConnectionState.connecting)){
-      return;
+        const AlertDialog(
+          title: Text('Logout'),
+          content: Text('Are you sure you want to logout?'),
+          elevation: 20,
+        ));
+  }
+
+  void updateLiveMatches(eventsPerDayMap) {}
+
+/**
+ *
+ * FIREBASE
+ */
+
+void setupFirebaseListeners() async{
+
+
+  //handler for app in foreground
+  FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+    print('FG Message data: ${message.messageId}');
+    if (message.notification != null) {
+      print('Message also contained a notification: ${message.notification}');
     }
 
-    if (deviceId == null || deviceId!.isEmpty){
-      deviceId = await getDeviceId();
-    }
+    handleFirebaseTopicMessage(message);
+  });
 
-    MqttLiveEventsClient mqtt = new MqttLiveEventsClient();
-    MqttClient client = await mqtt.connect(deviceId);
-    mqtt.subscribeToLiveScores(client);
-    client.updates?.listen((List<MqttReceivedMessage<MqttMessage>> c) {
+  //now we can subscribe to topic
+  await FirebaseMessaging.instance.subscribeToTopic("MatchEventsLiveSoccer");
 
-      handleLiveScoreTopicMessage(c);
+}
 
-    });
 
-  }
+  void handleFirebaseTopicMessage(RemoteMessage message) {
 
-  Future<String?> getDeviceId() async {
-    String deviceIdentifier = '';
-    DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
-    if (kIsWeb) {
-      final WebBrowserInfo webInfo = await deviceInfo.webBrowserInfo;
-      deviceIdentifier = webInfo.vendor! +
-          webInfo.userAgent! +
-          webInfo.hardwareConcurrency.toString();
-    } else {
-      if (Platform.isAndroid) {
-        try {
-          final AndroidDeviceInfo androidInfo = await deviceInfo.androidInfo;
-          deviceIdentifier = androidInfo.id;
-        }catch(e){
-          print(e.toString());
-        }
-      } else if (Platform.isIOS) {
-        final IosDeviceInfo iosInfo = await deviceInfo.iosInfo;
-        deviceIdentifier = iosInfo.identifierForVendor!;
-      } else if (Platform.isLinux) {
-        final LinuxDeviceInfo linuxInfo = await deviceInfo.linuxInfo;
-        deviceIdentifier = linuxInfo.machineId!;
-      }
-    }
-
-    return deviceIdentifier.replaceAll('.', '');
-  }
-
-  void handleLiveScoreTopicMessage(List<MqttReceivedMessage<MqttMessage>> c) {
-
-    final MqttPublishMessage message = c[0].payload as MqttPublishMessage;
-    final payload = MqttPublishPayload.bytesToStringAsString(
-        message.payload.message);
-    final jsonValues = json.decode(payload);
+    final payload = message.data;
+    final jsonValues = json.decode(payload['changeEvent']);
     ChangeEventSoccer changeEventSoccer = ChangeEventSoccer.fromJson(jsonValues);
-    print('Received message:$payload from topic: ${c[0].topic}>');
+    // print('Received message:$payload from topic: ${c[0].topic}>');
 
     if (!mounted){
       return;
@@ -617,9 +556,9 @@ class ParentPageState extends State<ParentPage> with WidgetsBindingObserver {
       relevantEvent.awayTeamScore = changeEventSoccer.awayTeamScore;
 
       MatchEvent parentEvent = ParentPageState.findEvent(changeEventSoccer.eventId);
-                parentEvent.changeEvent = changeEventSoccer.changeEvent;
-                parentEvent.homeTeamScore = changeEventSoccer.homeTeamScore;
-                parentEvent.awayTeamScore = changeEventSoccer.awayTeamScore;
+      parentEvent.changeEvent = changeEventSoccer.changeEvent;
+      parentEvent.homeTeamScore = changeEventSoccer.homeTeamScore;
+      parentEvent.awayTeamScore = changeEventSoccer.awayTeamScore;
     }
 
     oddsPageKey.currentState?.setState(() {
@@ -631,26 +570,31 @@ class ParentPageState extends State<ParentPage> with WidgetsBindingObserver {
     });
   }
 
-  void promptLoginOrRegister() {
-    showDialog(context: context, builder: (context) =>
+  void sortLeagues() {
+    eventsPerDayMap.entries.forEach((element) {
+      element.value.sort();
+    });
 
-        AlertDialog(
-          title: Text('Login'),
-          content: DialogTabbedLoginOrRegister(registerCallback: registedUserCallback, loginCallback: loginUserCallback,),
-          elevation: 20,
+    liveLeagues.sort();
 
-
-        ));
+    allLeagues.sort();
   }
 
-  void promptLogout() {
-    showDialog(context: context, builder: (context) =>
+  void updatePageStates() {
+    oddsPageKey.currentState?.setState(() {
+      eventsPerDayMap;
+    });
 
-        const AlertDialog(
-          title: Text('Logout'),
-          content: Text('Are you sure you want to logout?'),
-          elevation: 20,
-        ));
+    livePageKey.currentState?.setState(() {
+      liveLeagues;
+    });
+
+    leaguesPageKey.currentState?.setState(() {
+      allLeagues;
+    });
   }
+
 
 }
+
+

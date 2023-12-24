@@ -26,6 +26,10 @@ enum ChangeEvent{
     return ChangeEvent.HOME_GOAL == e || ChangeEvent.AWAY_GOAL == e;
   }
 
+  static bool isForNotification(ChangeEvent? e){
+    return ChangeEvent.RED_CARD == e || isGoal(e) || ChangeEvent.FULL_TIME == e;
+  }
+
   static ChangeEvent ofCode(int code){
 
     // if (code?.isEmpty ?? true){

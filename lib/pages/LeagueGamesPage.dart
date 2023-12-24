@@ -1,10 +1,12 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_app/helper/SharedPrefs.dart';
+import 'package:flutter_app/pages/ParentPage.dart';
 import '../enums/MatchEventStatus.dart';
 import '../models/UserPrediction.dart';
 import '../models/league.dart';
 import '../models/match_event.dart';
-import '../widgets/LiveMatchRow.dart';
+import '../widgets/row/LiveMatchRow.dart';
 import '../widgets/UpcomingMatchRow.dart';
 
 
@@ -70,7 +72,7 @@ class LeagueGamesPageState extends State<LeagueGamesPage>{
     MatchEventStatus? matchEventStatus =  MatchEventStatus.fromStatusText(event.status);
     if (matchEventStatus == MatchEventStatus.INPROGRESS || matchEventStatus == MatchEventStatus.FINISHED
         || matchEventStatus == MatchEventStatus.POSTPONED || matchEventStatus == MatchEventStatus.CANCELLED) {
-      return LiveMatchRow(key: UniqueKey(), gameWithOdds: event);
+      return LiveMatchRow(key: UniqueKey(), gameWithOdds: event, isFavourite: sharedPrefs.favEventIds.contains(event.eventId.toString()),);
     }
 
     return UpcomingMatchRow(key: UniqueKey(), gameWithOdds: event, selectedOdds: selectedOdds, callbackForOdds: callbackForOdds);

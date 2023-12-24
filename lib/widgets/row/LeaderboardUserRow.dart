@@ -153,12 +153,8 @@ class LeaderboardRowState extends State<LeaderboardUserRow> {
                             alignment: Alignment.center,
                             child:
 
-                          // SizedBox(
-                          //   width: 100,
-                          //   height: 30,
-                          //   child:
                           FloatingActionButton.extended(
-
+                              heroTag: 'btnLeaderBoardBounty${user.mongoUserId}',
                               icon: const Icon(Icons.navigation),
                               backgroundColor: Colors.orange,
                               foregroundColor: Colors.black,

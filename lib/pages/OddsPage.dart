@@ -18,7 +18,7 @@ import '../models/constants/UrlConstants.dart';
 import '../models/league.dart';
 import '../utils/BetUtils.dart';
 import '../widgets/BetSlipBottom.dart';
-import '../widgets/LeagueMatchesRow.dart';
+import '../widgets/row/LeagueMatchesRow.dart';
 
 
 class OddsPage extends StatefulWidget {
@@ -42,10 +42,6 @@ class OddsPage extends StatefulWidget {
 
 class OddsPageState extends State<OddsPage>{
 
-  // final ScrollController _scrollController0 = ScrollController();
-  // final ScrollController _scrollController1 = ScrollController();
-  // final ScrollController _scrollController2 = ScrollController();
-
   /*
   * Required because user can deleted selected odds from the betslip directly.
    */
@@ -64,6 +60,20 @@ class OddsPageState extends State<OddsPage>{
     super.initState();
   }
 
+  TabBar get _tabBar => TabBar(
+    labelStyle: TextStyle(color: Colors.white, fontSize: 18),
+    isScrollable: true,
+    indicatorColor: Colors.red,
+    indicatorWeight: 6,
+    tabAlignment: TabAlignment.center,
+    unselectedLabelColor: Colors.white.withOpacity(0.3),
+    tabs: [
+      Tab(text: eventsPerDayMap.entries.elementAt(2).key),
+      Tab(text: eventsPerDayMap.entries.elementAt(1).key),
+      Tab(text: eventsPerDayMap.entries.elementAt(0).key),
+    ],
+  );
+
   @override
   Widget build(BuildContext context) {
 
@@ -80,9 +90,12 @@ class OddsPageState extends State<OddsPage>{
       ));
     }
 
-    return DefaultTabController(
+    return
+
+
+    DefaultTabController(
       initialIndex: 1,
-      length: 3,
+      length: eventsPerDayMap.keys.length,
 
       child:
 
@@ -93,20 +106,27 @@ class OddsPageState extends State<OddsPage>{
           appBar: AppBar(
             toolbarHeight: 0,
             bottom:
-
-              TabBar(
-
-                isScrollable: true,
-                indicatorColor: Colors.red,
-                indicatorWeight: 6,
-                unselectedLabelColor: Colors.white.withOpacity(0.3),
-
-              tabs: [
-                Tab(text: eventsPerDayMap.entries.elementAt(2).key),
-                Tab(text: eventsPerDayMap.entries.elementAt(1).key),
-                Tab(text: eventsPerDayMap.entries.elementAt(0).key),
-              ],
+            PreferredSize(
+              preferredSize: _tabBar.preferredSize,
+              child: ColoredBox(
+                color: Colors.blueAccent,
+                child: _tabBar,
+              ),
             ),
+
+            //   TabBar(
+            //     labelStyle: TextStyle(color: Colors.white, ),
+            //     isScrollable: true,
+            //     indicatorColor: Colors.red,
+            //     indicatorWeight: 6,
+            //     unselectedLabelColor: Colors.white.withOpacity(0.3),
+            //
+            //   tabs: [
+            //     Tab(text: eventsPerDayMap.entries.elementAt(2).key),
+            //     Tab(text: eventsPerDayMap.entries.elementAt(1).key),
+            //     Tab(text: eventsPerDayMap.entries.elementAt(0).key),
+            //   ],
+            // ),
 
       ),
 
@@ -152,6 +172,8 @@ class OddsPageState extends State<OddsPage>{
           ),
 
         floatingActionButton: FloatingActionButton(
+          heroTag: 'btnOdds',
+          foregroundColor: Colors.white,
           onPressed: ()=> {
             if (selectedOdds.isNotEmpty)
           showDialog(context: context, builder: (context) =>
@@ -245,7 +267,7 @@ class OddsPageState extends State<OddsPage>{
       return;
     }
 
-    selectedOdds.forEach((element) {element.event = ParentPageState.findEvent(element.eventId);});
+    //selectedOdds.forEach((element) {element.event = ParentPageState.findEvent(element.eventId);});
     UserBet newBet = UserBet(userMongoId: mongoUserId , predictions: List.of(selectedOdds), betAmount: bettingAmount);
     var encodedBet = jsonEncode(newBet.toJson());
 
@@ -276,7 +298,7 @@ class OddsPageState extends State<OddsPage>{
     showDialog(context: context, builder: (context) =>
 
         AlertDialog(
-          title: Text('Registration'),
+          title: const Text('Registration'),
           content: Text(msg),
           elevation: 20,
         ));

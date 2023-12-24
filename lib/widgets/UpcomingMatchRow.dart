@@ -69,12 +69,12 @@ import 'LogoWithName.dart';
                               alignment: Alignment.centerLeft,
                               child:
                                 LogoWithName(key: UniqueKey(),
-                                    logoUrl: gameWithOdds.homeTeam.logo, name: gameWithOdds.homeTeam.name)),
+                                    logoUrl: gameWithOdds.homeTeam.logo, name: gameWithOdds.homeTeam.name, redCards: 0,)),
                       Align(
                           alignment: Alignment.centerLeft,
                           child:
                                 LogoWithName(key: UniqueKey(),
-                                    logoUrl: gameWithOdds.awayTeam.logo, name: gameWithOdds.awayTeam.name)),
+                                    logoUrl: gameWithOdds.awayTeam.logo, name: gameWithOdds.awayTeam.name, redCards: 0,)),
                               ]
                           )), // FIRST COLUMN END
 
@@ -86,9 +86,9 @@ import 'LogoWithName.dart';
                           children: [
                             Align(alignment: Alignment.center, child:
                             Text(
-                              (gameWithOdds.display_status),
+                              (gameWithOdds.start_at_local),
 
-                              style: TextStyle(
+                              style: const TextStyle(
                                   fontSize: 12,
                                   fontWeight: FontWeight.bold,
                                   color: Colors.redAccent),))

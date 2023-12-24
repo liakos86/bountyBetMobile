@@ -1,11 +1,11 @@
-import 'dart:async';
 import 'dart:ui';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_app/models/constants/MatchConstants.dart';
+import 'package:flutter_app/helper/SharedPrefs.dart';
 import 'package:flutter_app/models/match_event.dart';
-import 'package:flutter_app/widgets/LiveMatchRow.dart';
+import 'package:flutter_app/pages/ParentPage.dart';
+import 'package:flutter_app/widgets/row/LiveMatchRow.dart';
 
 import '../enums/MatchEventStatus.dart';
 import '../models/UserPrediction.dart';
@@ -83,7 +83,7 @@ class LeagueExpandableTile extends StatefulWidget {
                       height: 24,
                       width: 24,
                     ),
-                    title: Text(league.section!.name.toUpperCase(),
+                    title: Text(league.section.name.toUpperCase(),
                         style: TextStyle(fontSize: 10, color: Colors.grey[600], fontWeight: FontWeight.bold)),
                     children: events.map((item)=> _buildSelectedOddRow(item)).toList()
                 ),
@@ -138,7 +138,7 @@ class LeagueExpandableTile extends StatefulWidget {
     MatchEventStatus? matchEventStatus =  MatchEventStatus.fromStatusText(event.status);
     if (matchEventStatus == MatchEventStatus.INPROGRESS || matchEventStatus == MatchEventStatus.FINISHED
         || matchEventStatus == MatchEventStatus.POSTPONED || matchEventStatus == MatchEventStatus.CANCELLED) {
-      return LiveMatchRow(key: UniqueKey(), gameWithOdds: event);
+      return LiveMatchRow(key: UniqueKey(), gameWithOdds: event, isFavourite: sharedPrefs.favEventIds.contains(event.eventId.toString()));
     }
 
     return UpcomingMatchRow(key: UniqueKey(), gameWithOdds: event, selectedOdds: selectedOdds, callbackForOdds: callbackForOdds);

@@ -1,19 +1,17 @@
-import 'dart:async';
 import 'dart:ui';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_app/models/constants/MatchConstants.dart';
-import 'package:flutter_app/models/constants/UrlConstants.dart';
+import 'package:flutter_app/helper/SharedPrefs.dart';
 import 'package:flutter_app/models/match_event.dart';
 import 'package:flutter_app/pages/LeagueGamesPage.dart';
-import 'package:flutter_app/widgets/LiveMatchRow.dart';
+import 'package:flutter_app/pages/ParentPage.dart';
+import 'package:flutter_app/widgets/row/LiveMatchRow.dart';
 
-import '../enums/MatchEventStatus.dart';
-import '../models/UserPrediction.dart';
-import '../models/league.dart';
-import 'LogoWithName.dart';
-import 'UpcomingMatchRow.dart';
+import '../../enums/MatchEventStatus.dart';
+import '../../models/UserPrediction.dart';
+import '../../models/league.dart';
+import '../UpcomingMatchRow.dart';
 
 class LeagueMatchesRow extends StatefulWidget {
 
@@ -165,7 +163,7 @@ class LeagueMatchesRow extends StatefulWidget {
     MatchEventStatus? matchEventStatus =  MatchEventStatus.fromStatusText(event.status);
     if (matchEventStatus == MatchEventStatus.INPROGRESS || matchEventStatus == MatchEventStatus.FINISHED
         || matchEventStatus == MatchEventStatus.POSTPONED || matchEventStatus == MatchEventStatus.CANCELLED) {
-      return LiveMatchRow(key: UniqueKey(), gameWithOdds: event);
+      return LiveMatchRow(key: UniqueKey(), gameWithOdds: event, isFavourite: sharedPrefs.favEventIds.contains(event.eventId.toString()),);
     }
 
     return UpcomingMatchRow(key: UniqueKey(), gameWithOdds: event, selectedOdds: selectedOdds, callbackForOdds: callbackForOdds);

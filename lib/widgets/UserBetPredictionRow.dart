@@ -8,11 +8,10 @@ import '../models/UserPrediction.dart';
 
 class UserBetPredictionRow extends StatelessWidget{
 
-  UserPrediction prediction;
-  //MatchEvent event;
+  final UserPrediction prediction;
+  //user.nt event;
 
   UserBetPredictionRow({
-    //required this.event,
     required this.prediction
   });
 
@@ -74,7 +73,7 @@ class UserBetPredictionRow extends StatelessWidget{
                       crossAxisAlignment: CrossAxisAlignment.start,
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: [
-                        Text('${prediction.event?.homeTeam.name} - ${prediction.event?.awayTeam.name}',
+                        Text('${prediction.homeTeam.name} - ${prediction.awayTeam.name}',
                           style: TextStyle(fontSize: 15, color: Colors.black),),
                         Text('${prediction.betPredictionType} @ ${prediction.value.toStringAsFixed(2)}',
                           style: TextStyle(fontSize: 15, color: Colors.green[700]),)

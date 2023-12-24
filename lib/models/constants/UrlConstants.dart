@@ -2,13 +2,15 @@ class UrlConstants{
 
   //static const SERVER_IP_PLAIN = "liakos86-32935.portmap.host";
 
-  static const SERVER_IP_PLAIN = "192.168.1.5";
+  static const SERVER_IP_PLAIN = "192.168.1.8";
 
   static const SRV_VERSION = "betCoreServer";
 
   static const SERVER_IP = "http://" + SERVER_IP_PLAIN + ":8080/";//'http://192.168.43.17:8080/';  // for mobile hotspot
 
   static const String GET_LEAGUES = SERVER_IP +  SRV_VERSION + '/betServer/getLeagues';
+
+  static const String GET_SPECIFIC_LIVE = SERVER_IP +  SRV_VERSION + '/betServer/getLiveSpecific/';
 
   static const String GET_LEADERS_URL = SERVER_IP + SRV_VERSION + '/betServer/getLeaderBoard';
 

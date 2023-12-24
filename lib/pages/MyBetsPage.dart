@@ -8,6 +8,7 @@ import '../models/User.dart';
 import '../models/constants/Constants.dart';
 import '../models/interfaces/StatefulWidgetWithName.dart';
 import '../widgets/UserBetRow.dart';
+import 'LivePage.dart';
 
 
 class MyBetsPage extends StatefulWidgetWithName{
@@ -53,17 +54,17 @@ class MyBetsPageState extends State<MyBetsPage>{
    if (user.mongoUserId == Constants.defMongoUserId){
       return
 
-        Container(child: Align(
+        Align(
           alignment: Alignment.center,
           child:
           FloatingActionButton.extended(
+            heroTag: 'btnMyBetsLogin',
             icon: const Icon(Icons.navigation),
             backgroundColor: Colors.orange,
             foregroundColor: Colors.black,
             onPressed: () => { loginOrRegisterCallback.call() },
             label: const Text('Login/Register'),
-      ))
-      );
+      ));
     }
 
     List<UserBet> pendingBets = <UserBet>[];
@@ -97,38 +98,51 @@ class MyBetsPageState extends State<MyBetsPage>{
           ),
         ),
 
-        body: TabBarView(
+        body:
+
+            PageStorage(
+
+          bucket: pageBucket,
+        child:
+        TabBarView(
           children: [
             ListView.builder(
+                key: const PageStorageKey<String>(
+                    'pageBetsAll'),
                 padding: const EdgeInsets.all(8),
                 itemCount: user.userBets.length,
                 itemBuilder: (context, item) {
-                  return _buildUserBetRow(user.userBets[item]);
+                  return _buildUserBetRow(user.userBets[item], 'all$item');
                 }),
 
             ListView.builder(
+                key: const PageStorageKey<String>(
+                    'pageBetsPending'),
                 padding: const EdgeInsets.all(8),
                 itemCount: pendingBets.length,
                 itemBuilder: (context, item) {
-                  return _buildUserBetRow(pendingBets[item]);
+                  return _buildUserBetRow(pendingBets[item], 'pending$item');
                 }),
 
             ListView.builder(
+                key: const PageStorageKey<String>(
+                    'pageBetsLost'),
                 padding: const EdgeInsets.all(8),
                 itemCount: settledBets.length,
                 itemBuilder: (context, item) {
-                  return _buildUserBetRow(settledBets[item]);
+                  return _buildUserBetRow(settledBets[item], 'settled$item');
                 })
           ],)
+            )
 
         ),
     );
 
   }
 
-  Widget _buildUserBetRow(UserBet bet) {
+  Widget _buildUserBetRow(UserBet bet, String key) {
 
-    return UserBetRow(bet);
+    return UserBetRow(key: PageStorageKey<String>(key), bet: bet);
   }
 
 }

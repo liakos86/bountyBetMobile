@@ -1,11 +1,28 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_app/models/match_event.dart';
 
-class MatchScoreMiddleText extends StatelessWidget{
+import '../models/Score.dart';
 
-  MatchEvent event;
+class MatchScoreMiddleText extends StatefulWidget {
 
-  MatchScoreMiddleText({required this.event});
+  final MatchEvent event;
+
+  MatchScoreMiddleText({Key? key, required this.event}) : super(key: key);
+
+  @override
+  MatchScoreMiddleTextState createState() =>
+      MatchScoreMiddleTextState();
+}
+
+  class MatchScoreMiddleTextState extends State<MatchScoreMiddleText>{
+
+  @override
+  void initState() {
+    super.initState();
+    event = widget.event;
+  }
+
+  late MatchEvent event;
 
   @override
   Widget build(BuildContext context) {
@@ -14,9 +31,9 @@ class MatchScoreMiddleText extends StatelessWidget{
 
       children: [
 
-        Text('${event.start_at.toString()}'),// + ':'+ event.startMinute.toString()}'),
-        Text(scoreText(event), style: TextStyle(fontWeight: FontWeight.w500, fontSize: 40),),
-        Text(event.status.toString()),
+        Text(event.start_at_local),// + ':'+ event.startMinute.toString()}'),
+        Text(scoreText(event), style: const TextStyle(fontWeight: FontWeight.w500, fontSize: 40),),
+        Text(event.display_status.toString()),
 
 
       ],

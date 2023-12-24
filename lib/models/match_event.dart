@@ -1,17 +1,18 @@
 import 'package:flutter_app/models/constants/Constants.dart';
-import 'package:flutter_app/models/constants/MatchStatsConstants.dart';
-import 'package:flutter_app/models/matchEventStatisticsSoccer.dart';
+import 'package:flutter_app/models/MatchEventIncidentsSoccer.dart';
 import 'package:flutter_app/models/match_odds.dart';
 import 'package:intl/intl.dart';
 
 import '../enums/ChangeEvent.dart';
 import '../enums/MatchEventStatus.dart';
 import '../enums/MatchEventStatusMore.dart';
+import 'MatchEventStatisticsSoccer.dart';
 import 'Score.dart';
 import 'Team.dart';
 import 'constants/MatchConstants.dart';
 
 class MatchEvent{
+
 
   MatchEvent({
     required this.eventId,
@@ -22,7 +23,9 @@ class MatchEvent{
 		required this.start_at
   } );
 
-  List<MatchEventsStatisticsSoccer> statistics = <MatchEventsStatisticsSoccer>[];
+  List<MatchEventIncidentsSoccer> incidents = <MatchEventIncidentsSoccer>[];
+
+	List<MatchEventStatisticsSoccer> statistics = <MatchEventStatisticsSoccer>[];
 
   Map<String, String> ?translations;
 
@@ -32,13 +35,11 @@ class MatchEvent{
 
 	String start_at;
 
+	String start_at_local = Constants.empty;
+
   String status;
 
   String status_more;
-
-  // int ?startHour;
-	//
-  // int ?startMinute;
 
   Team homeTeam ;
 
@@ -56,11 +57,17 @@ class MatchEvent{
 
 		DateFormat matchTimeFormat = DateFormat(MatchConstants.MATCH_START_TIME_FORMAT);
 		DateTime matchTime = matchTimeFormat.parseUtc(start_at).toLocal();
+		start_at_local = '${matchTime.hour < 10 ? '0' : ''}${matchTime.hour}:${matchTime.minute < 10 ? '0' : ''}${matchTime.minute}' ;
 
-		if (! (MatchEventStatus.INPROGRESS == (MatchEventStatus.fromStatusText(status)))) {
+		MatchEventStatus? eventStatus = MatchEventStatus.fromStatusText(status);
+		if (! (MatchEventStatus.INPROGRESS == eventStatus)) {
 
-			display_status = '${matchTime.hour < 10 ? '0' : ''}${matchTime.hour}:${matchTime.minute < 10 ? '0' : ''}${matchTime.minute}' ;
+			if (MatchEventStatus.FINISHED == eventStatus){
+				display_status = 'FT';
+				return;
+			}
 
+			display_status = start_at_local;
 			return;
 		}
 
@@ -71,9 +78,6 @@ class MatchEvent{
 			return;
 		}
 
-
-
-
 		 if (MatchEventStatusMore.INPROGRESS_HALFTIME == status_more) {
 
 			if (ChangeEvent.SECOND_HALF_START == changeEvent){
@@ -81,28 +85,40 @@ class MatchEvent{
 				changeEvent = ChangeEvent.NONE;
 			}
 
+
 		}else if (MatchEventStatusMore.INPROGRESS_1ST_HALF == (matchEventStatusMore)) {
 			int x = DateTime
 					.now()
 					.millisecondsSinceEpoch - matchTime.millisecondsSinceEpoch;
 			int minute = (x / 60000).toInt();
 			if (minute > 45) {
-				this.display_status = "45+";
+
+				String injury1st = '';
+				if (minute - 45 >0){
+					injury1st = (minute - 45).toString();
+				}
+
+				display_status = "45+$injury1st";
 			} else {
-				this.display_status = (minute).toString();
+				display_status = "$minute'";
 			}
 		} else if (MatchEventStatusMore.INPROGRESS_2ND_HALF == (matchEventStatusMore)) {
 			int x = DateTime
 					.now()
 					.millisecondsSinceEpoch - matchTime.millisecondsSinceEpoch;
-			int minute = (x / 60000).toInt();
+			int minute = x ~/ 60000;
 			if (minute > 90) {
-				this.display_status = "90+";
+
+				String injury2nd = '';
+				if (minute - 90 >0){
+					injury2nd = (minute - 45).toString();
+				}
+				display_status = "90+$injury2nd";
 			} else {
-				this.display_status = (minute).toString();
+				display_status = "$minute'";
 			}
 		} else {// TODO:  extra time etc
-			this.display_status = "ELSE!";
+			display_status = "ELSE!";
 		}
 
 	}
@@ -119,6 +135,14 @@ class MatchEvent{
   	changeEvent = incomingEvent.changeEvent;
   	homeTeamScore = incomingEvent.homeTeamScore;
   	awayTeamScore = incomingEvent.awayTeamScore;
+  	start_at_local = incomingEvent.start_at_local;
+  	display_status = incomingEvent.display_status;
+
+  	incidents.clear();
+  	statistics.clear();
+  	incidents.addAll(incomingEvent.incidents);
+  	statistics.addAll(incomingEvent.statistics);
+
 	}
 
 }

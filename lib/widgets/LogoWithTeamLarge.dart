@@ -15,35 +15,57 @@ class LogoWithTeamLarge extends StatelessWidget{
   Widget build(BuildContext context) {
     return
 
-        Container(
-          padding: EdgeInsets.all(10),
-          width: 120,
-          decoration: BoxDecoration(
-            //shape: BoxShape.rectangle,
-            border: Border.all(width: 3, color: Colors.blue.shade200),
+
+        DecoratedBox(
+          decoration: const BoxDecoration(
               color: Colors.white, borderRadius: BorderRadius.all(Radius.circular(16))
           ),
 
-
         child:
-      Column(//mainAxisSize: MainAxisSize.min,// HOME TEAM NAME ROW
 
+            SizedBox(
+          width:100,
+            height:100,
+
+            child:
+
+                Container(
+          height: double.infinity,
+            child:
+                Align(
+            alignment: Alignment.center,
+            child:
+            Wrap(
+alignment: WrapAlignment.spaceAround,
+    verticalDirection: VerticalDirection.up,
+    children: [
+      Column(//mainAxisSize: MainAxisSize.min,// HOME TEAM NAME ROW
+        mainAxisAlignment: MainAxisAlignment.center,
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
+
            Image.network(
                         team.logo,
-                        height: 64,
-                        width: 64
+                        height: 48,
+                        width: 48
                     ),
 
                 Text(team.name,
-                    style: TextStyle(
-                        overflow: TextOverflow.ellipsis,
-                        fontWeight: FontWeight.bold, fontSize: 16, color: Colors.black)),
-              ],
-            ),
+                    textAlign: TextAlign.center,
+                    maxLines: 2,
+                    style: const TextStyle(
 
+                        overflow: TextOverflow.ellipsis,
+                        fontWeight: FontWeight.bold, fontSize: 14, color: Colors.black)),
+
+              ],
+
+      //  )
+    //)
+        )]
       //)
-      // )
+      ))))
     );
   }
 

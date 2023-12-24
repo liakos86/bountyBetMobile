@@ -43,7 +43,7 @@ class UserBet{
     return UserBet(userMongoId: parsedJson['mongoUserId'].toString(),
         betAmount: parsedJson['betAmount'] as double,
         predictions:  (parsedJson['predictions'] as List)
-            .map((data) =>  UserPrediction.fromJson(data))
+            .map((prediction) =>  UserPrediction.fromJson(prediction))
             .toList());
   }
 

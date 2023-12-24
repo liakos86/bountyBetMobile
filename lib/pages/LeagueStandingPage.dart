@@ -19,8 +19,8 @@ import '../models/league.dart';
 import '../models/match_event.dart';
 import '../models/match_odds.dart';
 import '../widgets/LeagueExpandableTile.dart';
-import '../widgets/LeagueStandingRow.dart';
-import '../widgets/LiveMatchRow.dart';
+import '../widgets/row/LeagueStandingRow.dart';
+import '../widgets/row/LiveMatchRow.dart';
 import '../widgets/SimpleLeagueRow.dart';
 import '../widgets/UpcomingMatchRow.dart';
 

@@ -25,8 +25,6 @@ class LivePage extends StatefulWidgetWithName {
 
 class LivePageState extends State<LivePage> with WidgetsBindingObserver{
 
-  // ScrollController scrollController = new ScrollController();
-  
   List<League> liveLeagues = <League>[];
 
   @override

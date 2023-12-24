@@ -3,6 +3,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_app/utils/BetUtils.dart';
+import 'package:flutter_app/widgets/row/UserPredictionRow.dart';
 
 import '../enums/ChangeEvent.dart';
 import '../enums/MatchEventStatus.dart';
@@ -14,7 +15,6 @@ import 'SelectedOddRow.dart';
 
 class BetSlipWithCustomKeyboard extends StatefulWidget {
 
-  //bool showOdds = false;
 
   late final List<UserPrediction> selectedOdds;
 
@@ -161,19 +161,10 @@ class BetSlipWithCustomKeyboardState extends State<BetSlipWithCustomKeyboard>{
   }
 
   Widget _buildBettingOddRow(UserPrediction bettingOdd) {
-    //MatchEvent eventOfOdd = ParentPageState.findEvent(bettingOdd.eventId);
-      MatchEvent eventOfOdd = MockUtils().mockEvent(
-          100,
-          1.5,
-          1.5,
-          1.5,
-          1.5,
-          1.5,
-          MatchEventStatus.INPROGRESS.statusStr,
-          MatchEventStatusMore.INPROGRESS_1ST_HALF.statusStr,
-          ChangeEvent.NONE);
 
-    return SelectedOddRow(key: UniqueKey(), event: eventOfOdd, prediction: bettingOdd, callback: (odd) =>
+    return UserPredictionRow(key: UniqueKey(), prediction: bettingOdd, callback: (odd) => removePrediction(odd));
+
+    return SelectedOddRow(key: UniqueKey(), prediction: bettingOdd, callback: (odd) =>
         removePrediction(odd)
     );
   }

@@ -7,9 +7,9 @@ import 'package:flutter_app/enums/ChangeEvent.dart';
 import 'package:flutter_app/models/StandingRow.dart';
 import 'package:flutter_app/models/constants/MatchConstants.dart';
 import 'package:flutter_app/widgets/LogoWithTeamLarge.dart';
-import '../models/Score.dart';
-import '../models/match_event.dart';
-import 'LogoWithName.dart';
+import '../../models/Score.dart';
+import '../../models/match_event.dart';
+import '../LogoWithName.dart';
 
 class LeagueStandingRow extends StatefulWidget {
 
@@ -54,7 +54,7 @@ class LeagueStandingRowState extends State<LeagueStandingRow> {
                         Align(
                         alignment: Alignment.centerLeft,
                         child:
-                      LogoWithName(key: UniqueKey(), name: standing.team.name, logoUrl: standing.team.logo,),
+                      LogoWithName(key: UniqueKey(), name: standing.team.name, logoUrl: standing.team.logo, redCards: 0,),
                         )
                     ]
                 )),
