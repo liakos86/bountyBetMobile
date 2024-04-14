@@ -73,7 +73,7 @@ class UserBetPredictionRow extends StatelessWidget{
                       crossAxisAlignment: CrossAxisAlignment.start,
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: [
-                        Text('${prediction.homeTeam.name} - ${prediction.awayTeam.name}',
+                        Text('${prediction.homeTeam.getLocalizedName()} - ${prediction.awayTeam.getLocalizedName()}',
                           style: TextStyle(fontSize: 15, color: Colors.black),),
                         Text('${prediction.betPredictionType} @ ${prediction.value.toStringAsFixed(2)}',
                           style: TextStyle(fontSize: 15, color: Colors.green[700]),)

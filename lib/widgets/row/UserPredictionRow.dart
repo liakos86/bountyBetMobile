@@ -61,7 +61,7 @@ class UserPredictionRow extends StatelessWidget{
                           crossAxisAlignment: CrossAxisAlignment.start,
                           mainAxisAlignment: MainAxisAlignment.start,
                           children: [
-                            Text('${prediction.homeTeam.name} - ${prediction.awayTeam.name}',
+                            Text('${prediction.homeTeam.getLocalizedName()} - ${prediction.awayTeam.getLocalizedName()}',
                               style: const TextStyle(fontSize: 12, color: Colors.black),
                               maxLines: 1, overflow: TextOverflow.clip,),
                             const SizedBox(height: 4),
@@ -140,11 +140,11 @@ class UserPredictionRow extends StatelessWidget{
 
   String predictionTypeTextOf(BetPredictionType? betPredictionType) {
         if (BetPredictionType.AWAY_WIN == betPredictionType ){
-          return prediction.awayTeam.name;
+          return prediction.awayTeam.getLocalizedName();
         }
 
         if (BetPredictionType.HOME_WIN == betPredictionType ){
-          return prediction.homeTeam.name;
+          return prediction.homeTeam.getLocalizedName();
         }
 
         return 'Draw';

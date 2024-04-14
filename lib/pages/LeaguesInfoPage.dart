@@ -1,10 +1,14 @@
 
 import 'dart:async';
+import 'dart:io';
 
+import 'package:animated_background/particles.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_app/models/interfaces/StatefulWidgetWithName.dart';
 
+import '../models/constants/Constants.dart';
 import '../models/league.dart';
 import '../widgets/SimpleLeagueRow.dart';
 
@@ -52,7 +56,37 @@ class LeaguesInfoPageState extends State<LeaguesInfoPage>{
   }
 
   Widget _buildRow(League league) {
-    return SimpleLeagueRow(key: UniqueKey(), league: league);
+
+    Image leagueImg = Image(
+      image: CachedNetworkImageProvider(league.logo!),
+        height: 16,
+        width: 16,
+      errorBuilder:
+          ( context,  exception,  stackTrace) {
+        if (exception is HttpException ) {
+          return Image.asset(Constants.assetNoLeagueImage , width: 16, height: 16,);
+        } else {
+          return Image.asset(Constants.assetNoLeagueImage, width: 16, height: 16,);
+        }
+      },
+    );
+
+    // Defining Particles for animation.
+    ParticleOptions particles = ParticleOptions(
+      image: leagueImg,
+      baseColor: Colors.cyan,
+      spawnOpacity: 0.0,
+      opacityChangeRate: 0.25,
+      minOpacity: 0.1,
+      maxOpacity: 0.4,
+      particleCount: 5,
+      spawnMaxRadius: 15.0,
+      spawnMaxSpeed: 50.0,
+      spawnMinSpeed: 20,
+      spawnMinRadius: 7.0,
+    );
+
+    return SimpleLeagueRow(key: UniqueKey(), league: league, particles: particles);
   }
 
   }

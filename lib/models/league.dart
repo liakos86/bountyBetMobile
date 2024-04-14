@@ -28,7 +28,7 @@ class League implements Comparable<League>{
 
   int league_id = 0;
 
-  String? logo ;
+  String? logo ;//= Constants.assetNoLeagueImage;
 
   List<MatchEvent> events = <MatchEvent>[];
 

@@ -1,40 +1,43 @@
 enum ChangeEvent{
 
-  NONE(changeCode: 0),
+  NONE(changeCode: 0, displayName: 'No event'),
 
-  HOME_GOAL(changeCode: 1),
+  HOME_GOAL(changeCode: 1, displayName: 'GOAL!!!'),
 
-  AWAY_GOAL(changeCode: 2),
+  AWAY_GOAL(changeCode: 2, displayName: 'GOAL!!!'),
 
-  MATCH_START(changeCode: 3),
+  MATCH_START(changeCode: 3, displayName: 'Match started.'),
 
-  RED_CARD(changeCode: 4),
+  HOME_RED_CARD(changeCode: 4, displayName: 'Red Card!!!'),
 
-  HALF_TIME(changeCode: 5),
+  AWAY_RED_CARD(changeCode: 5, displayName: 'Red Card!!!'),
 
-  FULL_TIME(changeCode: 6),
+  HALF_TIME(changeCode: 6, displayName: 'Half time.'),
 
-  SECOND_HALF_START(changeCode: 7);
+  FULL_TIME(changeCode: 7, displayName: 'Match ended.'),
+
+  SECOND_HALF_START(changeCode: 8, displayName: 'Second half started.');
 
   final int changeCode;
 
+  final String displayName;
+
   const ChangeEvent({
-    required this.changeCode
+    required this.changeCode,
+    required this.displayName
   });
 
   static bool isGoal(ChangeEvent? e){
     return ChangeEvent.HOME_GOAL == e || ChangeEvent.AWAY_GOAL == e;
   }
 
+
+
   static bool isForNotification(ChangeEvent? e){
-    return ChangeEvent.RED_CARD == e || isGoal(e) || ChangeEvent.FULL_TIME == e;
+    return ChangeEvent.HOME_RED_CARD == e || ChangeEvent.AWAY_RED_CARD == e || isGoal(e) || ChangeEvent.HALF_TIME == e || ChangeEvent.FULL_TIME == e;
   }
 
   static ChangeEvent ofCode(int code){
-
-    // if (code?.isEmpty ?? true){
-    //   return ChangeEvent.NONE;
-    // }
 
     for (ChangeEvent status in ChangeEvent.values){
       if (code == status.changeCode){

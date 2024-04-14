@@ -1,25 +1,31 @@
 import 'dart:convert';
+import 'dart:math';
 
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_app/helper/JsonHelper.dart';
-import 'package:flutter_app/models/match_event.dart';
+import 'package:flutter_app/enums/ChangeEvent.dart';
 import 'package:flutter_app/pages/ParentPage.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 import 'dart:async';
-import 'package:http/http.dart';
-
-import 'enums/ChangeEvent.dart';
-import 'enums/MatchEventStatus.dart';
 import 'firebase_options.dart';
 import 'helper/SharedPrefs.dart';
 import 'models/ChangeEventSoccer.dart';
-import 'models/constants/Constants.dart';
-import 'models/constants/UrlConstants.dart';
-import 'models/notification/NotificationInfo.dart';
 
+
+
+/// Create a [AndroidNotificationChannel] for heads up notifications
+late AndroidNotificationChannel channel;
+
+bool isFlutterLocalNotificationsInitialized = false;
+
+
+/// Initialize the [FlutterLocalNotificationsPlugin] package.
+late FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin;
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -29,22 +35,60 @@ Future<void> main() async {
     options: DefaultFirebaseOptions.currentPlatform,
   );
 
-  //ask permissions if not asked
-  FirebaseMessaging messaging = FirebaseMessaging.instance;
-  await messaging.requestPermission(
-    alert: true,
-    announcement: false,
-    badge: true,
-    carPlay: false,
-    criticalAlert: false,
-    provisional: false,
-    sound: true,
-  );
+  // //ask permissions if not asked
+  // FirebaseMessaging messaging = FirebaseMessaging.instance;
+  // await messaging.requestPermission(
+  //   alert: true,
+  //   announcement: false,
+  //   badge: true,
+  //   carPlay: false,
+  //   criticalAlert: false,
+  //   provisional: false,
+  //   sound: true,
+  // );
 
-  FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
+  FirebaseMessaging.onBackgroundMessage( _firebaseMessagingBackgroundHandler );
+
+  if (!kIsWeb) {
+    await setupFlutterNotifications();
+  }
+
   await sharedPrefs.init();
 
   runApp(MyApp());
+}
+
+Future<void> setupFlutterNotifications() async {
+  if (isFlutterLocalNotificationsInitialized) {
+    return;
+  }
+  channel = const AndroidNotificationChannel(
+    'high_importance_channel', // id
+    'High Importance Notifications', // title
+    description:
+    'This channel is used for important notifications.', // description
+    importance: Importance.high,
+  );
+
+  flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
+
+  /// Create an Android Notification Channel.
+  ///
+  /// We use this channel in the `AndroidManifest.xml` file to override the
+  /// default FCM channel to enable heads up notifications.
+  await flutterLocalNotificationsPlugin
+      .resolvePlatformSpecificImplementation<
+      AndroidFlutterLocalNotificationsPlugin>()
+      ?.createNotificationChannel(channel);
+
+  /// Update the iOS foreground notification presentation options to allow
+  /// heads up notifications.
+  await FirebaseMessaging.instance.setForegroundNotificationPresentationOptions(
+    alert: true,
+    badge: true,
+    sound: true,
+  );
+  isFlutterLocalNotificationsInitialized = true;
 }
 
 class MyApp extends StatelessWidget {
@@ -58,101 +102,77 @@ class MyApp extends StatelessWidget {
   }
 }
 
-/*
+
+
+  /*
  * This will run in the background, so it does not share the same shared prefs with the app.
  * We need to initialize the shared prefs to avoid null pointers.
  * Reloading is also required to update newly added favourites.
  */
+@pragma('vm:entry-point') // avoid discarding during tree shake
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
-  sharedPrefs.init();
-  sharedPrefs.reload();
-  handleIncomingTopicMessageWhenInBackground(message);
-}
+    await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+    await setupFlutterNotifications();
 
-void handleIncomingTopicMessageWhenInBackground(RemoteMessage message) async{
+    sharedPrefs.init();
+    sharedPrefs.reload();
+    handleIncomingTopicMessageWhenInBackground(message);
+  }
 
-      final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
+  void handleIncomingTopicMessageWhenInBackground(RemoteMessage message) async{
 
-      // Set<MatchEvent> favEvents = await getLiveFavouritesAsync();
+    var favEventIds = sharedPrefs.getListByKey(sp_fav_event_ids);
+    if (favEventIds.isEmpty){
+      return;
+    }
 
-      var favEventIds = sharedPrefs.favEventIds;
-      if (favEventIds.isEmpty){
-        return;
-      }
-
-      final payload = message.data;
+    final payload = message.data;
+    final String msgId = message.messageId.toString();
+    try {
       final jsonValues = json.decode(payload['changeEvent']);
-      ChangeEventSoccer changeEventSoccer = ChangeEventSoccer.fromJson(jsonValues);
-
+      ChangeEventSoccer changeEventSoccer = ChangeEventSoccer.fromJson(
+          jsonValues);
       for (String fav in favEventIds){
-        int favEventId = int.parse(fav);
+       int favEventId = int.parse(fav);
 
-        // NotificationInfo info = await checkForNotification(fav);
-        if (favEventId == changeEventSoccer.eventId){
-          flutterLocalNotificationsPlugin.show(
-            888,
-            changeEventSoccer.changeEvent.name,
-            'Something happened!!!',
-            const NotificationDetails(
-              iOS: DarwinNotificationDetails(),
-
-              android: AndroidNotificationDetails(
-                'my_foreground',
-                'MY FOREGROUND SERVICE',
-                icon: '@mipmap/ic_launcher',
-                ongoing: true,
-              ),
-            ),
-          );
-        }
+      if (favEventId != changeEventSoccer.eventId){
+      flutterLocalNotificationsPlugin.show(
+        Random().nextInt(10000000),
+        changeEventSoccer.changeEvent.displayName,
+        notificationBodyFrom(changeEventSoccer),
+        const NotificationDetails(
+          iOS: DarwinNotificationDetails(),//TODO: needs setup for IOS
+          android: AndroidNotificationDetails(
+            'my_foreground',
+            'MY FOREGROUND SERVICE',
+            icon: 'https://xscore.cc/resb/league/europe-uefa-champions-league.png',//  '@mipmap/ic_launcher',
+            priority: Priority.high,
+            ongoing: false,
+          ),
+        ),
+      );
       }
+      }
+    }catch(e){
+      print('Invalid message: $payload - $msgId');
+    }
+  }
+
+String notificationBodyFrom(ChangeEventSoccer changeEventSoccer) {
+  switch (changeEventSoccer.changeEvent){
+    case ChangeEvent.FULL_TIME:
+      return '${changeEventSoccer.homeTeam.name} ${changeEventSoccer.homeTeamScore.current} - ${changeEventSoccer.awayTeamScore.current} ${changeEventSoccer.awayTeam.name}';
+    case ChangeEvent.HOME_GOAL:
+      return '${changeEventSoccer.homeTeam.name} ${changeEventSoccer.homeTeamScore.current} - ${changeEventSoccer.awayTeamScore.current} ${changeEventSoccer.awayTeam.name}';
+    case ChangeEvent.AWAY_GOAL:
+      return '${changeEventSoccer.homeTeam.name} ${changeEventSoccer.homeTeamScore.current} - ${changeEventSoccer.awayTeamScore.current} ${changeEventSoccer.awayTeam.name}';
+    case ChangeEvent.HALF_TIME:
+      return 'Half time ${changeEventSoccer.homeTeamScore.current} - ${changeEventSoccer.awayTeamScore.current}';
+    case ChangeEvent.HOME_RED_CARD:
+      return 'Home red ${changeEventSoccer.homeTeamScore.current} - ${changeEventSoccer.awayTeamScore.current}';
+    case ChangeEvent.AWAY_RED_CARD:
+      return 'Away red ${changeEventSoccer.homeTeamScore.current} - ${changeEventSoccer.awayTeamScore.current}';
+    default:
+      return 'Nothing';
+  }
 }
-
-// Future<Set<MatchEvent>> getLiveFavouritesAsync() async {
-//
-//   if (sharedPrefs.favEventIds.isEmpty) {
-//     return Set();
-//   }
-//
-//   Set<MatchEvent> favMatches = {};
-//
-//   try {
-//     Response favEventsResponse =
-//     await get(Uri.parse(UrlConstants.GET_SPECIFIC_LIVE + sharedPrefs.favEventIds.join(Constants.comma)))
-//         .timeout(const Duration(seconds: 20));
-//     var matchesJson = await jsonDecode(favEventsResponse.body);
-//     favMatches = JsonHelper.eventsSetFromJson(matchesJson);
-//     return favMatches;
-//   } catch (e) {
-//     return favMatches;
-//   }
-// }
-
-// Future<NotificationInfo> checkForNotification(MatchEvent existingEvent) async {
-//
-//   NotificationInfo notificationInfo = NotificationInfo();
-//
-//   if (ChangeEvent.isForNotification(existingEvent.changeEvent)) {
-//     if (sharedPrefs.favEventIds.contains(existingEvent.eventId.toString())) {
-//
-//       notificationInfo.id = existingEvent.eventId;
-//       notificationInfo.title = '${existingEvent.homeTeam.name} - ${existingEvent.awayTeam.name}';
-//
-//       if (ChangeEvent.isGoal(existingEvent.changeEvent)) {
-//         notificationInfo.body = '${existingEvent.homeTeamScore!.current} - ${existingEvent.awayTeamScore!.current}';
-//       } else if (ChangeEvent.RED_CARD == existingEvent.changeEvent) {
-//         notificationInfo.body = 'RED CARD';
-//       }
-//
-//       if (ChangeEvent.FULL_TIME == existingEvent.changeEvent) {
-//         sharedPrefs.removeFavEvent(existingEvent.eventId.toString());
-//       }
-//     }
-//   }
-//
-//   if (MatchEventStatus.FINISHED == existingEvent.status) {
-//     sharedPrefs.removeFavEvent(existingEvent.eventId.toString());
-//   }
-//
-//   return notificationInfo;
-// }

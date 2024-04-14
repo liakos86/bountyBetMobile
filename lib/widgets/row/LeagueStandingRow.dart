@@ -1,5 +1,6 @@
 
 
+import 'package:animated_background/animated_background.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -19,21 +20,24 @@ class LeagueStandingRow extends StatefulWidget {
   LeagueStandingRow({Key ?key, required this.standing}) : super(key: key);
 
   @override
-  LeagueStandingRowState createState() => LeagueStandingRowState(standing: standing);
+  LeagueStandingRowState createState() => LeagueStandingRowState(standing: standing,);
 }
 
 class LeagueStandingRowState extends State<LeagueStandingRow> {
 
   StandingRow standing;
 
+
   LeagueStandingRowState({
-    required this.standing
+    required this.standing,
   });
 
 
   @override
   Widget build(BuildContext context) {
     return
+
+
 
       SizedBox(
 
@@ -54,7 +58,7 @@ class LeagueStandingRowState extends State<LeagueStandingRow> {
                         Align(
                         alignment: Alignment.centerLeft,
                         child:
-                      LogoWithName(key: UniqueKey(), name: standing.team.name, logoUrl: standing.team.logo, redCards: 0,),
+                      LogoWithName(key: UniqueKey(), name: standing.team.getLocalizedName(), logoUrl: standing.team.logo, redCards: 0, logoSize: 24, fontSize: 14,),
                         )
                     ]
                 )),
@@ -72,6 +76,7 @@ class LeagueStandingRowState extends State<LeagueStandingRow> {
                     ]
                 )),//SECOND COLUMN END
               ])//parent column end
+      // )
       );
   }
 }

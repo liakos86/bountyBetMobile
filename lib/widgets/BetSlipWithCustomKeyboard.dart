@@ -3,15 +3,13 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_app/utils/BetUtils.dart';
+import 'package:flutter_app/widgets/row/LiveMatchRow.dart';
 import 'package:flutter_app/widgets/row/UserPredictionRow.dart';
 
-import '../enums/ChangeEvent.dart';
-import '../enums/MatchEventStatus.dart';
-import '../enums/MatchEventStatusMore.dart';
-import '../utils/MockUtils.dart';
 import '../models/UserPrediction.dart';
 import '../models/match_event.dart';
 import 'SelectedOddRow.dart';
+// import 'SelectedOddRow.dart';
 
 class BetSlipWithCustomKeyboard extends StatefulWidget {
 
@@ -68,12 +66,14 @@ class BetSlipWithCustomKeyboardState extends State<BetSlipWithCustomKeyboard>{
 
     return
 
+    Container(color: Colors.white, child:
+
           Flex(
             direction: Axis.vertical,
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children : [
-                Expanded( flex:16 , child: ListView.builder(
+                Expanded( flex:16 ,  child: ListView.builder(
                     padding: const EdgeInsets.all(8),
                     itemCount: selectedOdds.length,
                     itemBuilder: (context, item) {
@@ -157,16 +157,18 @@ class BetSlipWithCustomKeyboardState extends State<BetSlipWithCustomKeyboard>{
                   ),
                 )
               ]
-          );
+          ));
   }
 
   Widget _buildBettingOddRow(UserPrediction bettingOdd) {
 
+    return SelectedOddRow(key: UniqueKey(), prediction: bettingOdd, callback: (odd) => removePrediction(odd));
     return UserPredictionRow(key: UniqueKey(), prediction: bettingOdd, callback: (odd) => removePrediction(odd));
 
-    return SelectedOddRow(key: UniqueKey(), prediction: bettingOdd, callback: (odd) =>
-        removePrediction(odd)
-    );
+
+    // return SelectedOddRow(key: UniqueKey(), prediction: bettingOdd, callback: (odd) =>
+    //     removePrediction(odd)
+    // );
   }
 
   removePrediction(UserPrediction bettingOdd){

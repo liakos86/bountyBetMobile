@@ -4,6 +4,7 @@ import 'dart:convert';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_app/helper/SharedPrefs.dart';
 import 'package:flutter_app/models/User.dart';
 import 'package:flutter_app/models/constants/Constants.dart';
 import 'package:flutter_app/pages/LivePage.dart';
@@ -27,6 +28,9 @@ class OddsPage extends StatefulWidget {
 
   final Function updateUserCallback;
 
+  final List<UserPrediction> selectedOdds;
+
+
   @override
   OddsPageState createState() => OddsPageState();
 
@@ -34,6 +38,7 @@ class OddsPage extends StatefulWidget {
     Key? key,
     required this.updateUserCallback,
     required this.eventsPerDayMap,
+    required this.selectedOdds
     //setName('Today\'s Odds')
 
   } ) : super(key: key);
@@ -53,20 +58,19 @@ class OddsPageState extends State<OddsPage>{
 
   @override
   void initState() {
-    selectedOdds = <UserPrediction>[];
+    selectedOdds = widget.selectedOdds;
     eventsPerDayMap = widget.eventsPerDayMap;
     updateUserCallback = widget.updateUserCallback;
-
     super.initState();
   }
 
   TabBar get _tabBar => TabBar(
-    labelStyle: TextStyle(color: Colors.white, fontSize: 18),
+    labelStyle: const TextStyle(color: Colors.black54, fontSize: 16, fontWeight: FontWeight.bold),
     isScrollable: true,
     indicatorColor: Colors.red,
     indicatorWeight: 6,
     tabAlignment: TabAlignment.center,
-    unselectedLabelColor: Colors.white.withOpacity(0.3),
+    unselectedLabelColor: Colors.black54.withOpacity(0.2),
     tabs: [
       Tab(text: eventsPerDayMap.entries.elementAt(2).key),
       Tab(text: eventsPerDayMap.entries.elementAt(1).key),
@@ -109,24 +113,10 @@ class OddsPageState extends State<OddsPage>{
             PreferredSize(
               preferredSize: _tabBar.preferredSize,
               child: ColoredBox(
-                color: Colors.blueAccent,
+                color: Colors.yellow.shade100,
                 child: _tabBar,
               ),
             ),
-
-            //   TabBar(
-            //     labelStyle: TextStyle(color: Colors.white, ),
-            //     isScrollable: true,
-            //     indicatorColor: Colors.red,
-            //     indicatorWeight: 6,
-            //     unselectedLabelColor: Colors.white.withOpacity(0.3),
-            //
-            //   tabs: [
-            //     Tab(text: eventsPerDayMap.entries.elementAt(2).key),
-            //     Tab(text: eventsPerDayMap.entries.elementAt(1).key),
-            //     Tab(text: eventsPerDayMap.entries.elementAt(0).key),
-            //   ],
-            // ),
 
       ),
 
@@ -216,7 +206,7 @@ class OddsPageState extends State<OddsPage>{
   }
 
   Widget _buildRow(League league, int item) {
-   return LeagueExpandableTile(key: PageStorageKey<League>(league), league: league, events: league.events, callbackForOdds: fixOddsCallback, selectedOdds: selectedOdds);
+   return LeagueExpandableTile(key: PageStorageKey<League>(league), league: league, events: league.events, callbackForOdds: fixOddsCallback, selectedOdds: selectedOdds, favourites: favourites(),);
   }
 
   void removeOddCallback(UserPrediction toRemove){
@@ -302,6 +292,11 @@ class OddsPageState extends State<OddsPage>{
           content: Text(msg),
           elevation: 20,
         ));
+  }
+
+  favourites() {
+    sharedPrefs.reload();
+    return sharedPrefs.getListByKey(sp_fav_event_ids);
   }
 
 }

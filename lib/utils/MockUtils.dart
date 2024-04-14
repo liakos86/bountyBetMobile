@@ -25,7 +25,7 @@ import '../models/league.dart';
 
 class MockUtils {
 
-  final String LOGO_BASE_URL ="https://tipsscore.com/resb/team/";
+  final String LOGO_BASE_URL ="https://xscore.cc/resb/team/";
 
   // final List<Team> mockTeams = <Team>[];
 
@@ -93,9 +93,9 @@ class MockUtils {
     mockTeams.add(newTeam('olympiacos_'+leagueId.toString()));
 
     Set<MatchEvent> mockEvents = LinkedHashSet();
-    MatchEvent mockEvent1 = mockEvent(mockTeams.elementAt(0), mockTeams.elementAt(1), 1, 1.5, 3.4, 5.0, 1.95, 1.85, MatchEventStatus.INPROGRESS.statusStr, "60", ChangeEvent.NONE);
+    MatchEvent mockEvent1 = mockEvent(mockTeams.elementAt(0), mockTeams.elementAt(1), 1+leagueId, 1.5, 3.4, 5.0, 1.95, 1.85, MatchEventStatus.INPROGRESS.statusStr, "60", ChangeEvent.NONE);
     mockEvents.add(mockEvent1);
-    MatchEvent mockEvent2 = mockEvent(mockTeams.elementAt(2), mockTeams.elementAt(3), 2, 1.58, 4.4, 5.76, 1.95, 1.85, MatchEventStatus.NOTSTARTED.statusStr, "", ChangeEvent.NONE);
+    MatchEvent mockEvent2 = mockEvent(mockTeams.elementAt(2), mockTeams.elementAt(3), 2+leagueId, 1.58, 4.4, 5.76, 1.95, 1.85, MatchEventStatus.NOTSTARTED.statusStr, "", ChangeEvent.NONE);
     mockEvents.add(mockEvent2);
     return mockEvents;
   }
@@ -197,6 +197,19 @@ class MockUtils {
     stat.text = text;
     return stat;
 
+  }
+
+  static User mockUser() {
+    User user = User("1234", "Mocker", 10123, <UserBet>[]);
+    user.monthlyLostBets=1;
+    user.monthlyWonBets=2;
+    user.monthlyLostPredictions=12;
+    user.monthlyWonPredictions=6;
+    user.overallLostBets=5;
+    user.overallWonBets=12;
+    user.overallLostPredictions=22;
+    user.overallWonPredictions=32;
+    return user;
   }
 
 }

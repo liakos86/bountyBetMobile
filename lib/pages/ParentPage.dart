@@ -1,17 +1,20 @@
 import 'dart:async';
 import 'dart:collection';
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_app/models/UserBet.dart';
 import 'package:flutter_app/models/constants/Constants.dart';
+import 'package:flutter_app/models/constants/JsonConstants.dart';
 import 'package:flutter_app/models/constants/UrlConstants.dart';
 import 'package:flutter_app/models/league.dart';
 import 'package:flutter_app/pages/LeaguesInfoPage.dart';
 import 'package:flutter_app/pages/OddsPage.dart';
 import 'package:flutter_app/widgets/DialogTabbedLoginOrRegister.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -20,6 +23,8 @@ import '../enums/MatchEventStatus.dart';
 import '../helper/JsonHelper.dart';
 import '../models/ChangeEventSoccer.dart';
 import '../models/User.dart';
+import '../models/UserPrediction.dart';
+import '../models/constants/MatchConstants.dart';
 import '../models/match_event.dart';
 import '../utils/MockUtils.dart';
 import '../widgets/DialogSuccessfulBet.dart';
@@ -28,6 +33,10 @@ import 'LeaderBoardPage.dart';
 import 'LivePage.dart';
 import 'MyBetsPage.dart';
 
+/*
+   * The current device locale. It can change at any time by user.
+   */
+ String? locale;
 
 class ParentPage extends StatefulWidget {
 
@@ -43,7 +52,7 @@ class ParentPage extends StatefulWidget {
  * 4. My bets page
  * 5. Leagues' info page
  */
-class ParentPageState extends State<ParentPage> {
+class ParentPageState extends State<ParentPage> with WidgetsBindingObserver {
 
   /*
    * Following keys provide access to the state of each page.
@@ -53,6 +62,8 @@ class ParentPageState extends State<ParentPage> {
   GlobalKey betsPageKey = GlobalKey();
   GlobalKey leaderboardPageKey = GlobalKey();
   GlobalKey leaguesPageKey = GlobalKey();
+
+
 
   /*
    * Shared prefs
@@ -85,6 +96,11 @@ class ParentPageState extends State<ParentPage> {
   int _selectedPage = 0;
 
   /*
+   * List of odds in the betslip.
+   */
+  final List<UserPrediction> selectedOdds = <UserPrediction>[];
+
+  /*
    * The list of pages for the navigator.
    */
   List<Widget> pagesList = <Widget>[];
@@ -96,19 +112,22 @@ class ParentPageState extends State<ParentPage> {
    */
   @override
   void initState() {
+    WidgetsBinding.instance.addObserver(this);
     super.initState();
+    WidgetsBinding.instance
+        .addPostFrameCallback((_) => setLocale(context));
 
-      pagesList.add(OddsPage(key: oddsPageKey, updateUserCallback: updateUserCallBack, eventsPerDayMap: eventsPerDayMap));
+      pagesList.add(OddsPage(key: oddsPageKey, updateUserCallback: updateUserCallBack, eventsPerDayMap: eventsPerDayMap, selectedOdds: selectedOdds,));
       pagesList.add(LivePage(key: livePageKey, liveLeagues: liveLeagues));
       pagesList.add(LeaderBoardPage());
       pagesList.add(MyBetsPage(key: betsPageKey, user: user, loginOrRegisterCallback: promptLoginOrRegister));
       pagesList.add(LeaguesInfoPage(key: leaguesPageKey, allLeagues: allLeagues));
 
 
-      getLeaguesAsync(null).then((leaguesMap) => UpdateLeaguesAndLiveMatches(leaguesMap));
+      getLeaguesAsync(null).then((leaguesMap) => updateLeaguesAndLiveMatches(leaguesMap));
 
       Timer.periodic(const Duration(seconds: 20), (timer) { getLeaguesAsync(timer).then((leaguesMap) =>
-            UpdateLeaguesAndLiveMatches(leaguesMap)
+            updateLeaguesAndLiveMatches(leaguesMap)
           );
         }
       );
@@ -136,6 +155,33 @@ class ParentPageState extends State<ParentPage> {
 
       setupFirebaseListeners();
 
+
+
+
+  }
+
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangeLocales(List<Locale>? locales) {
+    super.didChangeLocales(locales);
+    //
+    // setState(() {
+    //   locale = locales?.first ?? locale;
+    // });
+  }
+
+  setLocale(BuildContext context) {
+    final String localeNew = Platform.localeName;//Localizations.localeOf(context);
+
+    setState(() {
+      locale = localeNew;
+    });
   }
 
   void updateUser(User value){
@@ -208,7 +254,7 @@ class ParentPageState extends State<ParentPage> {
         backgroundColor: Colors.blueAccent,
         fixedColor: Colors.white,
         currentIndex: _selectedPage,
-        items: [
+        items: const [
           BottomNavigationBarItem(
             icon: Icon(Icons.home),
             label: 'Odds'
@@ -320,7 +366,7 @@ class ParentPageState extends State<ParentPage> {
 
     Navigator.pop(context);
 
-    if (user.errorMessage == ''){
+    if (user.errorMessage == Constants.empty){
       await updateUserMongoId(user);
       return;
     }
@@ -363,7 +409,7 @@ class ParentPageState extends State<ParentPage> {
       var leaguesJson = dailyLeagues.value;
       List<League> leagues = <League>[];
       for (var league in leaguesJson) {
-        League leagueObj = JsonHelper.leagueFromJson(league);
+        League leagueObj = await JsonHelper.leagueFromJson(league);
         leagues.add(leagueObj);
       }
 
@@ -373,18 +419,26 @@ class ParentPageState extends State<ParentPage> {
     return newEventsPerDayMap;
   }
 
-  void UpdateLeaguesAndLiveMatches(Map<String, List<League>> incomingLeaguesMap) {
+  /*
+   * Every X seconds we receive Map which contains all the league matches per day.
+   * Key 0 is the today's matches , 1 is tomorrow etc.
+   * Since we already have some matches from the previous calls, we have to 
+   * 1. Add the new matches we received.
+   * 2. Delete the matches that are missing from the previous call.
+   * 3. Update the data of the matches that were pre-existing.
+   */
+  void updateLeaguesAndLiveMatches(Map<String, List<League>> incomingLeaguesMap) {
 
     if (incomingLeaguesMap.isEmpty) {
       return;//TODO maybe empty everything?
     }
 
     if (eventsPerDayMap.isEmpty){//first incoming matches
-      eventsPerDayMap['-1'] = incomingLeaguesMap[Constants.todayLeaguesKey];
-      eventsPerDayMap[Constants.todayLeaguesKey] = incomingLeaguesMap[Constants.todayLeaguesKey];
-      eventsPerDayMap['1'] = incomingLeaguesMap[Constants.todayLeaguesKey];
+      eventsPerDayMap['-1'] = incomingLeaguesMap[MatchConstants.KEY_TODAY];
+      eventsPerDayMap[MatchConstants.KEY_TODAY] = incomingLeaguesMap[MatchConstants.KEY_TODAY];
+      eventsPerDayMap['1'] = incomingLeaguesMap[MatchConstants.KEY_TODAY];
 
-      for(League league in eventsPerDayMap[Constants.todayLeaguesKey]){
+      for(League league in eventsPerDayMap[MatchConstants.KEY_TODAY]){
         if (league.liveEvents.isEmpty){
           continue;
         }
@@ -399,8 +453,8 @@ class ParentPageState extends State<ParentPage> {
     }
 
 
-    List<League> existingTodayLeagues = eventsPerDayMap[Constants.todayLeaguesKey];
-    List<League> incomingTodayLeagues = incomingLeaguesMap[Constants.todayLeaguesKey]!;
+    List<League> existingTodayLeagues = eventsPerDayMap[MatchConstants.KEY_TODAY];
+    List<League> incomingTodayLeagues = incomingLeaguesMap[MatchConstants.KEY_TODAY]!;
 
     for(League incomingLeague in incomingTodayLeagues){
 
@@ -418,6 +472,7 @@ class ParentPageState extends State<ParentPage> {
       for (MatchEvent existingEvent in List.of(existingLiveEventsOfLeague)){// remove it or copy the fields
         if (!incomingLiveEventsOfLeague.contains(existingEvent)){
           existingLiveEventsOfLeague.remove(existingEvent);
+          checkForOddsRemoval([existingEvent]);
         }else{
           //copy fields
           MatchEvent incomingEvent = incomingLiveEventsOfLeague.firstWhere((element) => element == existingEvent);
@@ -430,7 +485,6 @@ class ParentPageState extends State<ParentPage> {
           existingLiveEventsOfLeague.add(incomingEvent);
         }
       }
-
     }
 
     for(League existingLeague in List.of(existingTodayLeagues)) {//league has to be removed
@@ -441,10 +495,11 @@ class ParentPageState extends State<ParentPage> {
       if (incomingLeague == League.defLeague()) {
         existingTodayLeagues.remove(existingLeague);
         liveLeagues.remove(existingLeague);
+        checkForOddsRemoval(existingLeague.events);
       }
     }
 
-    for(League league in eventsPerDayMap[Constants.todayLeaguesKey]){
+    for(League league in eventsPerDayMap[MatchConstants.KEY_TODAY]){
       if (league.liveEvents.isEmpty){
         liveLeagues.remove(league);
 
@@ -466,8 +521,6 @@ class ParentPageState extends State<ParentPage> {
     sortLeagues();
 
     updatePageStates();
-
-
 
   }
 
@@ -506,7 +559,7 @@ void setupFirebaseListeners() async{
 
   //handler for app in foreground
   FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-    print('FG Message data: ${message.messageId}');
+    // print('FG Message data: ${message.messageId}');
     if (message.notification != null) {
       print('Message also contained a notification: ${message.notification}');
     }
@@ -514,18 +567,30 @@ void setupFirebaseListeners() async{
     handleFirebaseTopicMessage(message);
   });
 
+
+
   //now we can subscribe to topic
-  await FirebaseMessaging.instance.subscribeToTopic("MatchEventsLiveSoccer");
+  await FirebaseMessaging.instance.subscribeToTopic("LiveSoccer");
 
 }
-
 
   void handleFirebaseTopicMessage(RemoteMessage message) {
 
     final payload = message.data;
-    final jsonValues = json.decode(payload['changeEvent']);
+    // print('Received message:$payload ');
+    if (payload[JsonConstants.changeEvent] == null){
+      return;
+    }
+
+    var jsonValues;
+
+    try {
+      jsonValues = json.decode(payload[JsonConstants.changeEvent]);
+    }catch(e){
+      return;
+    }
+
     ChangeEventSoccer changeEventSoccer = ChangeEventSoccer.fromJson(jsonValues);
-    // print('Received message:$payload from topic: ${c[0].topic}>');
 
     if (!mounted){
       return;
@@ -592,6 +657,31 @@ void setupFirebaseListeners() async{
     leaguesPageKey.currentState?.setState(() {
       allLeagues;
     });
+  }
+
+  void checkForOddsRemoval(List<MatchEvent> events) {
+    if (selectedOdds.isEmpty){
+      return;
+    }
+
+    int initialSize = selectedOdds.length;
+
+    for(MatchEvent event in events){
+      for (UserPrediction prediction in List.of(selectedOdds)){
+        if (event.eventId == prediction.eventId){
+          selectedOdds.remove(prediction);
+        }
+      }
+    }
+
+    if (initialSize == selectedOdds.length){
+      return;
+    }
+
+    oddsPageKey.currentState?.setState(() {
+      selectedOdds;
+    });
+
   }
 
 

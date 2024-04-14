@@ -1,5 +1,6 @@
 import 'dart:ui';
 
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -7,8 +8,8 @@ import 'package:flutter_app/enums/ChangeEvent.dart';
 import 'package:flutter_app/enums/MatchEventStatus.dart';
 import 'package:flutter_app/helper/SharedPrefs.dart';
 import 'package:flutter_app/models/MatchEventIncidentsSoccer.dart';
+import 'package:flutter_app/models/notification/NotificationInfo.dart';
 import 'package:flutter_app/pages/MatchInfoSoccerDetailsPage.dart';
-import 'package:flutter_app/pages/ParentPage.dart';
 import 'package:flutter_app/utils/notification/NotificationService.dart';
 import '../../models/Score.dart';
 import '../../models/match_event.dart';
@@ -18,9 +19,8 @@ class LiveMatchRow extends StatefulWidget {
 
   final MatchEvent gameWithOdds;
 
-  final bool isFavourite;
 
-  LiveMatchRow({Key ?key, required this.gameWithOdds, required this.isFavourite}) : super(key: key);
+  LiveMatchRow({Key ?key, required this.gameWithOdds}) : super(key: key);
 
   @override
   LiveMatchRowState createState() => LiveMatchRowState();
@@ -30,15 +30,10 @@ class LiveMatchRowState extends State<LiveMatchRow> {
 
   late MatchEvent gameWithOdds;
 
-  late bool isFavourite;
-
-@override
+  @override
   void initState() {
-
     super.initState();
     gameWithOdds = widget.gameWithOdds;
-    isFavourite = sharedPrefs.favEventIds.contains(gameWithOdds.eventId.toString());
-
 }
 
 
@@ -59,17 +54,10 @@ class LiveMatchRowState extends State<LiveMatchRow> {
       }
     }
 
-    setState(() {
-      gameWithOdds;
-    });
-
     return
-
-
-
       DecoratedBox(
 
-          decoration: BoxDecoration(color: gameWithOdds.changeEvent == ChangeEvent.NONE ? Colors.white : ( ChangeEvent.isGoal(gameWithOdds.changeEvent) ? Colors.green[100] : Colors.blue[200]),
+          decoration: BoxDecoration(color: gameWithOdds.changeEvent == ChangeEvent.NONE ? Colors.white : ( ChangeEvent.isGoal(gameWithOdds.changeEvent) ? Colors.red.shade50 : Colors.blue[200]),
               border: Border(
               top: BorderSide(width: 0.3, color: Colors.grey.shade600),
               left: const BorderSide(width: 0, color: Colors.transparent),
@@ -91,16 +79,17 @@ class LiveMatchRowState extends State<LiveMatchRow> {
 
                     GestureDetector(
                         onTap: () async =>{
+
                           if (await NotificationService.checkPermission()){
-                            isFavourite = !isFavourite,
-                            if (sharedPrefs.favEventIds.contains(
-                                gameWithOdds.eventId.toString()) ){
-                              sharedPrefs.removeFavEvent(gameWithOdds.eventId.toString())
-                            } else
-                              {
-                                sharedPrefs.appendEventId(gameWithOdds.eventId.toString())
+
+                            //if (await sharedPrefs.isFavEvent(gameWithOdds.eventId.toString())){
+                            if (gameWithOdds.isFavourite){
+                              sharedPrefs.removeFavEvent(gameWithOdds.eventId.toString()),
+                              updateFav(false)
+                            } else{
+                              sharedPrefs.appendEventId(gameWithOdds.eventId.toString()),
+                              updateFav(true)
                               },
-                            updateFav()
                          }
                         },
                         child:
@@ -109,7 +98,7 @@ class LiveMatchRowState extends State<LiveMatchRow> {
                           Align(
                             alignment: Alignment.center,
                             child:
-                                isFavourite?
+                                gameWithOdds.isFavourite?
                                 const Icon(Icons.star_outlined)
                                     :
                             const Icon(Icons.star_border),
@@ -118,11 +107,7 @@ class LiveMatchRowState extends State<LiveMatchRow> {
                     )) :
 
                         const SizedBox(width: 0,)
-                )
-
-                ,
-
-
+                ),
 
                 Expanded(//first column
                     flex: 10,
@@ -152,12 +137,12 @@ class LiveMatchRowState extends State<LiveMatchRow> {
                         Align(
                         alignment: Alignment.centerLeft,
                         child:
-                      LogoWithName(key: UniqueKey(), name: gameWithOdds.homeTeam.name, logoUrl: gameWithOdds.homeTeam.logo, redCards: homeRed),
+                      LogoWithName(key: UniqueKey(), name: gameWithOdds.homeTeam.getLocalizedName(), logoUrl: gameWithOdds.homeTeam.logo, redCards: homeRed, logoSize: 24, fontSize: 14,),
                         ),
                             Align(
                                 alignment: Alignment.centerLeft,
                                 child:
-                      LogoWithName(key: UniqueKey(), name: gameWithOdds.awayTeam.name, logoUrl: gameWithOdds.awayTeam.logo, redCards: awayRed),
+                      LogoWithName(key: UniqueKey(), name: gameWithOdds.awayTeam.getLocalizedName(), logoUrl: gameWithOdds.awayTeam.logo, redCards: awayRed, logoSize: 24, fontSize: 14,),
                             )
                     ]
                 ))),
@@ -222,9 +207,9 @@ class LiveMatchRowState extends State<LiveMatchRow> {
     return gameWithOdds;
   }
 
-  updateFav() {
+  updateFav(bool newfav) {
     setState(() {
-      isFavourite;
+      gameWithOdds.isFavourite = newfav;
     });
   }
 

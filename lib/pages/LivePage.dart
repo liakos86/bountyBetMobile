@@ -2,6 +2,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_app/helper/SharedPrefs.dart';
 import 'package:flutter_app/models/interfaces/StatefulWidgetWithName.dart';
 
 import '../models/league.dart';
@@ -27,9 +28,12 @@ class LivePageState extends State<LivePage> with WidgetsBindingObserver{
 
   List<League> liveLeagues = <League>[];
 
+  List<String> favourites = <String>[];
+
   @override
   void initState(){
     liveLeagues = widget.liveLeagues;
+    favourites = getFavourites();
     super.initState();
   }
 
@@ -57,12 +61,16 @@ class LivePageState extends State<LivePage> with WidgetsBindingObserver{
           }),
     ));
 
-
   }
 
   Widget _buildRow(int item) {
     League league = liveLeagues[item];
-    return LeagueExpandableTile(key: PageStorageKey<League>(liveLeagues.elementAt(item)), league: league, events: league.liveEvents, selectedOdds: [], callbackForOdds: (a)=>{},);
+    return LeagueExpandableTile(key: PageStorageKey<League>(liveLeagues.elementAt(item)), league: league, events: league.liveEvents, selectedOdds: [], callbackForOdds: (a)=>{}, favourites: favourites);
+  }
+
+  List<String> getFavourites(){
+    sharedPrefs.reload();
+    return sharedPrefs.getListByKey(sp_fav_event_ids);
   }
   
   

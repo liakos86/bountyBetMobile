@@ -8,13 +8,13 @@ import 'LogoWithName.dart';
 
   class UpcomingMatchRow extends StatefulWidget {
 
-    List<UserPrediction> selectedOdds = <UserPrediction>[];
+    final List<UserPrediction> selectedOdds;
 
-    MatchEvent gameWithOdds;
+    final MatchEvent gameWithOdds;
 
-    Function(UserPrediction) callbackForOdds;
+    final Function(UserPrediction) callbackForOdds;
 
-    UpcomingMatchRow({Key ?key, required this.gameWithOdds, required this.callbackForOdds, required this.selectedOdds}) : super(key: key);
+    const UpcomingMatchRow({Key ?key, required this.gameWithOdds, required this.callbackForOdds, required this.selectedOdds}) : super(key: key);
 
     @override
     UpcomingMatchRowState createState() => UpcomingMatchRowState(gameWithOdds: gameWithOdds, selectedOdds: selectedOdds, callbackForOdds: callbackForOdds);
@@ -69,12 +69,12 @@ import 'LogoWithName.dart';
                               alignment: Alignment.centerLeft,
                               child:
                                 LogoWithName(key: UniqueKey(),
-                                    logoUrl: gameWithOdds.homeTeam.logo, name: gameWithOdds.homeTeam.name, redCards: 0,)),
+                                    logoUrl: gameWithOdds.homeTeam.logo, name: gameWithOdds.homeTeam.getLocalizedName(), redCards: 0, logoSize: 24, fontSize: 14,)),
                       Align(
                           alignment: Alignment.centerLeft,
                           child:
                                 LogoWithName(key: UniqueKey(),
-                                    logoUrl: gameWithOdds.awayTeam.logo, name: gameWithOdds.awayTeam.name, redCards: 0,)),
+                                    logoUrl: gameWithOdds.awayTeam.logo, name: gameWithOdds.awayTeam.getLocalizedName(), redCards: 0, logoSize: 24, fontSize: 14,)),
                               ]
                           )), // FIRST COLUMN END
 

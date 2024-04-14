@@ -35,7 +35,7 @@ class RowWithTeams extends StatelessWidget{
                       ),
 
                         Flexible(
-                        child:Text(homeTeam.name, overflow: TextOverflow.clip, maxLines: 1,  textAlign: TextAlign.left,  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),)),
+                        child:Text(homeTeam.getLocalizedName(), overflow: TextOverflow.clip, maxLines: 1,  textAlign: TextAlign.left,  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),)),
               ]
         ),
         ),
@@ -54,7 +54,7 @@ class RowWithTeams extends StatelessWidget{
                 ),
 
                 Flexible(
-                    child:Text(awayTeam.name, overflow: TextOverflow.clip, maxLines: 1,  textAlign: TextAlign.left,  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),)),
+                    child:Text(awayTeam.getLocalizedName(), overflow: TextOverflow.clip, maxLines: 1,  textAlign: TextAlign.left,  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),)),
               ]
           ),
         ),

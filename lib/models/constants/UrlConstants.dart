@@ -2,7 +2,7 @@ class UrlConstants{
 
   //static const SERVER_IP_PLAIN = "liakos86-32935.portmap.host";
 
-  static const SERVER_IP_PLAIN = "192.168.1.8";
+  static const SERVER_IP_PLAIN = "192.168.2.2";
 
   static const SRV_VERSION = "betCoreServer";
 

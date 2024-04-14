@@ -55,7 +55,7 @@ class MatchInfoSoccerDetailsPageState extends State<MatchInfoSoccerDetailsPage>{
     return
 
       Scaffold(
-      appBar: AppBar(title: Text('${event.homeTeam.name}  -  ${event.awayTeam.name}')),
+      appBar: AppBar(title: Text('${event.homeTeam.getLocalizedName()}  -  ${event.awayTeam.getLocalizedName()}')),
     body:
 
     PageStorage(

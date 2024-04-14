@@ -1,14 +1,17 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:animated_background/particles.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_app/utils/MockUtils.dart';
 import 'package:http/http.dart';
 
 import '../models/User.dart';
 import '../models/constants/UrlConstants.dart';
 import '../models/interfaces/StatefulWidgetWithName.dart';
 import '../widgets/row/LeaderboardUserRow.dart';
+import '../widgets/row/LeaderboardUserRowNew.dart';
 
 
 class LeaderBoardPage extends StatefulWidgetWithName {
@@ -43,11 +46,13 @@ class LeaderBoardPageState extends State<LeaderBoardPage>{
   @override
   Widget build(BuildContext context) {
 
+
+
     return ListView.builder(
         padding: const EdgeInsets.all(8),
         itemCount: leaders.length,
         itemBuilder: (context, item) {
-          return _buildUserRow(leaders[item]);
+          return _buildUserRow(item);
         });
 
   }
@@ -68,18 +73,25 @@ class LeaderBoardPageState extends State<LeaderBoardPage>{
 
       leaders.clear();
       leaders.addAll(usersFromServer);
-      setState(() {
-        leaders;
-      });
+
 
     } catch (e) {
+      leaders.add(MockUtils.mockUser());
       print(e);
     }
+
+    setState(() {
+      leaders;
+    });
   }
 
-  Widget _buildUserRow(User leader) {
+  Widget _buildUserRow( int item) {
 
-    return LeaderboardUserRow(user: leader);
+    User leader = leaders[item];
+
+
+
+    return LeaderboardUserRowNew(user: leader, position: item+1);
 
   }
 

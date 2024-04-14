@@ -8,37 +8,52 @@ import 'package:flutter/widgets.dart';
 
 import '../../models/User.dart';
 
-class LeaderboardUserRow extends StatefulWidget {
+class LeaderboardUserRowNew extends StatefulWidget {
 
   final User user;
 
-  final ParticleOptions particles;
+  final int position;
 
-
-  LeaderboardUserRow({Key ?key, required this.user, required this.particles}) : super(key: key);
+  LeaderboardUserRowNew({Key ?key, required this.user, required this.position}) : super(key: key);
 
   @override
-  LeaderboardRowState createState() => LeaderboardRowState(user: user, particles: particles);
+  LeaderboardRowStateNew createState() => LeaderboardRowStateNew(user: user, position: position);
 }
 
-class LeaderboardRowState extends State<LeaderboardUserRow>  with SingleTickerProviderStateMixin{
+class LeaderboardRowStateNew extends State<LeaderboardUserRowNew>  with SingleTickerProviderStateMixin{
 
   User user;
 
-  ParticleOptions particles;
+  int position;
 
-
-  LeaderboardRowState({
+  LeaderboardRowStateNew({
     required this.user,
-    required this.particles
+    required this.position
   });
 
   @override
   Widget build(BuildContext context) {
 
+    // Defining Particles for animation.
+    ParticleOptions particles =  ParticleOptions(
+      image: position < 4 ? Image.asset('assets/images/$position.png') : null,
+      baseColor: Colors.cyan,
+      spawnOpacity: 0.0,
+      opacityChangeRate: 0.25,
+      minOpacity: 0.1,
+      maxOpacity: 0.3,
+      particleCount: 10,
+      spawnMaxRadius: 15.0,
+      spawnMaxSpeed: 100.0,
+      spawnMinSpeed: 30,
+      spawnMinRadius: 7.0,
+    );
+
+
     return
 
-      Container(height: 150,
+      Container(
+          height: 120,
           color: Colors.white,
           child:
 
@@ -51,43 +66,55 @@ class LeaderboardRowState extends State<LeaderboardUserRow>  with SingleTickerPr
         child:
       Padding(
         padding: EdgeInsets.only(
-            top: 16.0, left: 6.0, right: 6.0, bottom: 6.0),
+            top: 6.0, left: 6.0, right: 6.0, bottom: 6.0),
         child:
         Theme(
           data: ThemeData().copyWith(dividerColor: Colors.transparent),
           child:
-          ExpansionTile(
-          initiallyExpanded: true,
 
-          backgroundColor: Colors.transparent,
+              Column(
 
-          leading:
-          //CircularProgressIndicator(value: 0.5, color: Colors.green, backgroundColor: Colors.red[100], semanticsLabel: "50%"),
-          Container(
-            height: 50.0,
-            width: 50.0,
-            color: Colors.transparent,
-            child: Stack(
+                children: [
+
+    Expanded( //first column
+    flex: 4,
+    child:
+
+         Row(
+            children : [
+           Expanded( //first column
+           flex: 2,
+           child:
+            Stack(
               children: <Widget>[
                 Center(
-                  child: Container(
-                    width: 50,
-                    height: 50,
-                    child: new CircularProgressIndicator(
-                      strokeWidth: 3,
-                      color: Colors.green, backgroundColor: Colors.red[100],
-                      value: 0.4,
-                    ),
+                  child: CircularProgressIndicator(
+                    strokeWidth: 3,
+                    color: Colors.green, backgroundColor: Colors.red[100],
+                    value: 0.4,
                   ),
                 ),
-                Center(child: Text("40%")),
+                const Center(child: Text("40%")),
               ],
-            ),
-          ),
+            )
+        ),
+
+              Expanded( //first column
+                  flex: 8,
+                  child:
+                  Text(user.username)
+              )
 
 
-          title: Text(user.username),
-          children: <Widget>[
+        ],
+
+          )),
+
+      Expanded( //first column
+        flex: 2,
+        child:
+
+        //  children: <Widget>[
             Stack(
               children: <Widget>[
                 SizedBox(
@@ -107,7 +134,11 @@ class LeaderboardRowState extends State<LeaderboardUserRow>  with SingleTickerPr
                       fontWeight: FontWeight.normal,
                       color: Colors.black),), alignment: Alignment.center,),
               ],
-            ),
+            )),
+
+          Expanded( //first column
+            flex: 2,
+            child:
             Stack(
               children: <Widget>[
                 SizedBox(
@@ -126,7 +157,7 @@ class LeaderboardRowState extends State<LeaderboardUserRow>  with SingleTickerPr
                       fontWeight: FontWeight.normal,
                       color: Colors.black),), alignment: Alignment.center,),
               ],
-            ),
+            )),
           ],
         ),
       ),

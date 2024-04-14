@@ -15,6 +15,8 @@
 
   FINAL_RESULT_ONLY(statusStr:"FRO"),
 
+  STARTED(statusStr:"Started"),
+
   EMPTY(statusStr:"-")
 
  ;

@@ -18,6 +18,14 @@ class Score{
      this.period_2
   );
 
+  void copyFrom(Score? incoming){
+    this.current = incoming?.current;
+    this.display = incoming?.display;
+    this.normal_time = incoming?.normal_time;
+    this.period_1 = incoming?.period_1;
+    this.period_2 = incoming?.period_2;
+  }
+
      static Score fromJson(Map<String, dynamic> jsonValues){
        int current = jsonValues['current'];
        int display = jsonValues['display'];

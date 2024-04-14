@@ -1,45 +1,56 @@
 
 
+import 'package:animated_background/animated_background.dart';
+import 'package:animated_background/particles.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:flutter_app/enums/ChangeEvent.dart';
-import 'package:flutter_app/models/constants/MatchConstants.dart';
-import 'package:flutter_app/widgets/LogoWithTeamLarge.dart';
-import '../models/Score.dart';
+import '../models/constants/Constants.dart';
 import '../models/league.dart';
-import '../models/match_event.dart';
 import '../pages/LeagueStandingPage.dart';
-import 'LogoWithLeague.dart';
 
 class SimpleLeagueRow extends StatefulWidget {
 
   final League league;
 
+  final ParticleOptions particles;
 
-  SimpleLeagueRow({Key ?key, required this.league}) : super(key: key);
+  SimpleLeagueRow({Key ?key, required this.league, required this.particles}) : super(key: key);
 
   @override
-  SimpleLeagueRowState createState() => SimpleLeagueRowState(league: league);
+  SimpleLeagueRowState createState() => SimpleLeagueRowState(league: league, particles: particles);
 }
 
-class SimpleLeagueRowState extends State<SimpleLeagueRow> {
+class SimpleLeagueRowState extends State<SimpleLeagueRow> with SingleTickerProviderStateMixin {
 
   League league;
 
+  ParticleOptions particles;
+
   SimpleLeagueRowState({
-    required this.league
+    required this.league,
+    required this.particles
   });
 
 
   @override
   Widget build(BuildContext context) {
+
     return
+
+      Container(height: 100,
+          child:
+      AnimatedBackground(
+        vsync: this,
+        behaviour: RandomParticleBehaviour(options: particles),
+    child:
+
 
       GestureDetector(
         onTap: () {
 
-          if (league.seasons==null || league.seasons.isEmpty){
+          if (league.seasons.isEmpty){
             return;
           }
 
@@ -52,7 +63,7 @@ class SimpleLeagueRowState extends State<SimpleLeagueRow> {
     child:
       DecoratedBox(
 
-          decoration: BoxDecoration(color: Colors.white ),
+          decoration: const BoxDecoration(color: Colors.transparent ),
           child:
 
           Row(//top father
@@ -71,18 +82,21 @@ class SimpleLeagueRowState extends State<SimpleLeagueRow> {
                         alignment: Alignment.centerLeft,
                         child:
                         Padding(
-                            padding: EdgeInsets.all(6), child:
+                            padding: const EdgeInsets.all(6), child:
 
                         Text.rich(
                           TextSpan(
                             children: [
                               WidgetSpan(
-                                  child: Image.network(
-                                      league.logo ?? "https://tipsscore.com/resb/no-league.png",
-                                      height: 48,
-                                      width: 48
-                                  )),
-                              WidgetSpan(child: SizedBox(width: 30)),
+                                  child: CachedNetworkImage(
+                                    imageUrl: league.logo!,
+                                    placeholder: (context, url) => Image.asset(Constants.assetNoLeagueImage, width: 48, height: 48,),
+                                    errorWidget: (context, url, error) => Image.asset(Constants.assetNoLeagueImage, width: 48, height: 48,),
+                                    height: 48,
+                                    width: 48,
+                                  )
+                              ),
+                              const WidgetSpan(child: SizedBox(width: 30)),
 
                             ],
                           ),
@@ -128,6 +142,7 @@ class SimpleLeagueRowState extends State<SimpleLeagueRow> {
 
               ])//parent column end
 
+      ))
       ));
   }
 

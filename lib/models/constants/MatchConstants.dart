@@ -4,4 +4,6 @@ class MatchConstants{
 
    static const String GMT = "GMT";
 
+   static const String KEY_TODAY = '0';
+
 }

@@ -1,6 +1,6 @@
 
-import 'package:flutter/material.dart';
 import 'package:flutter_app/enums/ChangeEvent.dart';
+import 'package:flutter_app/helper/SharedPrefs.dart';
 import 'package:flutter_app/models/MatchEventStatisticsSoccer.dart';
 import 'package:flutter_app/models/Player.dart';
 import 'package:flutter_app/models/StandingRow.dart';
@@ -17,22 +17,21 @@ import '../models/Section.dart';
 import '../models/Standing.dart';
 import '../models/Team.dart';
 import '../models/UserPrediction.dart';
-import '../models/constants/MatchConstants.dart';
 import '../models/match_odds.dart';
 
 class JsonHelper{
 
-  static Set<MatchEvent> eventsSetFromJson(var eventsJson){
+  static Future<Set<MatchEvent>> eventsSetFromJson(var eventsJson) async{
     Set<MatchEvent> events = Set();
     for (var eventJson in eventsJson){
-      MatchEvent event = eventFromJson(eventJson);
+      MatchEvent event = await eventFromJson(eventJson);
       events.add(event);
     }
 
     return events;
   }
 
-  static MatchEvent eventFromJson(var event){
+  static Future<MatchEvent> eventFromJson(var event) async{
 
     var homeTeam = event["home_team"];
     var awayTeam = event["away_team"];
@@ -42,11 +41,19 @@ class JsonHelper{
     int? sportId = event['sportId'];
     sportId ??= 1;
 
-    var startAt = event['start_at'];
 
     Team hTeam = Team(homeTeam["id"], homeTeam["name"], homeTeam["logo"]);
     Team aTeam = Team(awayTeam["id"], awayTeam["name"], awayTeam["logo"]);
 
+    if (homeTeam['name_translations'] != null){
+      hTeam.name_translations = homeTeam['name_translations'];
+    }
+
+    if (awayTeam['name_translations'] != null){
+      aTeam.name_translations = awayTeam['name_translations'];
+    }
+
+    var startAt = event['start_at'];
     MatchEvent match = MatchEvent(eventId: event["id"], status: event["status"], status_more: event["status_more"]??'-', homeTeam: hTeam, awayTeam: aTeam, start_at: startAt);
     match.changeEvent = ChangeEvent.ofCode(_changeEvent);
 
@@ -125,10 +132,15 @@ class JsonHelper{
       match.statistics = statsFromJson(matchStats);
     }
 
+    List<String> favEvents = await sharedPrefs.getListByKey(sp_fav_event_ids);
+    if (favEvents.contains(match.eventId.toString())){
+      match.isFavourite = true;
+    }
+
     return match;
   }
 
-  static League leagueFromJson(league) {
+  static Future<League> leagueFromJson(league) async{
     List<MatchEvent> matches = <MatchEvent>[];
     List<MatchEvent> liveMatches = <MatchEvent>[];
 
@@ -138,7 +150,7 @@ class JsonHelper{
         continue;
       }
 
-      MatchEvent match = eventFromJson(jsonEvent);
+      MatchEvent match = await eventFromJson(jsonEvent);
       matches.add(match);
       if (MatchEventStatus.INPROGRESS == MatchEventStatus.fromStatusText(match.status)){
         liveMatches.add(match);
@@ -191,6 +203,10 @@ class JsonHelper{
     for (var stRow in stRows){
       var teamJson = stRow['team'];
       Team hTeam = Team(teamJson["id"], teamJson["name"], teamJson["logo"]);
+      if (teamJson['name_translations'] != null){
+        hTeam.name_translations = teamJson['name_translations'];
+      }
+
       StandingRow row = StandingRow(team: hTeam);
       row.away_points = stRow['away_points'];
       row.home_points = stRow['home_points'];

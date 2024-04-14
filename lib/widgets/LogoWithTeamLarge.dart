@@ -51,7 +51,7 @@ alignment: WrapAlignment.spaceAround,
                         width: 48
                     ),
 
-                Text(team.name,
+                Text(team.getLocalizedName(),
                     textAlign: TextAlign.center,
                     maxLines: 2,
                     style: const TextStyle(

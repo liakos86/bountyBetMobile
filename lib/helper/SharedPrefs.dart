@@ -9,41 +9,55 @@ class SharedPrefs {
     }
   }
 
-  void reload(){
-    _sharedPrefs?.reload();
+  void reload () async{
+    await _sharedPrefs?.reload();
   }
 
   void appendEventId(String value){
-    List<String> current = favEventIds;
+    List<String> current =  _sharedPrefs?.getStringList(sp_fav_event_ids) ?? <String>[];//favEventIds;
     if (current.contains(value)) {
       throw new Exception("EVENT ALREADY IS FAVOURITE");
     }
 
     current.add(value);
     _sharedPrefs?.setStringList(sp_fav_event_ids, current);
-    reload();
+    //reload();
 
   }
 
-  List<String> get favEventIds => _sharedPrefs?.getStringList(sp_fav_event_ids) ?? <String>[];
+  //List<String> get favEventIds => _sharedPrefs?.getStringList(sp_fav_event_ids) ?? <String>[];
 
   remove(String key){
     _sharedPrefs?.remove(key);
   }
 
-  removeFavEvent(String value){
-    List<String> current = favEventIds;
+  void removeFavEvent(String value){
+    List<String> current =  _sharedPrefs?.getStringList(sp_fav_event_ids) ?? <String>[];//favEventIds;
     if (!current.contains(value)) {
       throw new Exception("EVENT ALREADY IS FAVOURITE");
     }
 
     current.remove(value);
     _sharedPrefs?.setStringList(sp_fav_event_ids, current);
-    reload();
+    //reload();
   }
 
   getByKey(String key){
     return _sharedPrefs?.getString(key) ?? Constants.empty;
+  }
+
+  getListByKey(String key){
+    return _sharedPrefs?.getStringList(key) ?? <String>[];
+  }
+
+  Future<bool> isFavEvent(String eventId) async{
+    await _sharedPrefs?.reload();
+    List<String> current =  _sharedPrefs?.getStringList(sp_fav_event_ids) ?? <String>[];//favEventIds;
+    if (!current.contains(eventId)) {
+      return false;
+    }
+
+    return true;
   }
 
 }

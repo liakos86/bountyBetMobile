@@ -1,28 +1,12 @@
-import 'dart:async';
-import 'dart:collection';
-import 'dart:collection';
-import 'dart:convert';
 
+import 'package:animated_background/particles.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_app/models/StandingRow.dart';
-import 'package:flutter_app/models/constants/UrlConstants.dart';
 import 'package:flutter_app/models/interfaces/StatefulWidgetWithName.dart';
-import 'package:http/http.dart';
 
-import '../enums/BetPredictionType.dart';
-import '../helper/JsonHelper.dart';
-import '../models/constants/MatchConstants.dart';
-import '../utils/MockUtils.dart';
-import '../models/UserPrediction.dart';
 import '../models/league.dart';
-import '../models/match_event.dart';
-import '../models/match_odds.dart';
-import '../widgets/LeagueExpandableTile.dart';
 import '../widgets/row/LeagueStandingRow.dart';
-import '../widgets/row/LiveMatchRow.dart';
-import '../widgets/SimpleLeagueRow.dart';
-import '../widgets/UpcomingMatchRow.dart';
 
 
 class LeagueStandingPage extends StatefulWidgetWithName {
@@ -90,7 +74,11 @@ class LeagueStandingPageState extends State<LeagueStandingPage>{
   }
 
   Widget _buildRow(StandingRow row) {
-    return LeagueStandingRow(key: UniqueKey(), standing: row);
+
+
+
+
+    return LeagueStandingRow(key: UniqueKey(), standing: row, );
   }
 
 }
