@@ -6,6 +6,7 @@ import 'package:flutter_app/models/match_event.dart';
 
 import '../enums/BetPredictionStatus.dart';
 import 'Team.dart';
+import 'constants/JsonConstants.dart';
 
 class UserPrediction{
 
@@ -63,8 +64,8 @@ class UserPrediction{
         value: parsedJson['oddValue'] as double,
         betPredictionStatus: BetPredictionStatus.ofStatus(int.parse(parsedJson['predictionStatus'])),
         betPredictionType:  BetPredictionType.of(int.parse(parsedJson['predictionCategory']), int.parse(parsedJson['predictionType'])),
-        homeTeam: Team(homeTeam["id"], homeTeam["name"], homeTeam["logo"]),
-        awayTeam: Team(awayTeam["id"], awayTeam["name"], awayTeam["logo"]),
+        homeTeam: Team(homeTeam[JsonConstants.id], homeTeam["name"], homeTeam["logo"]),
+        awayTeam: Team(awayTeam[JsonConstants.id], awayTeam["name"], awayTeam["logo"]),
         sportId: parsedJson['sportId'] as int
     );
 

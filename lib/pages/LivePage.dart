@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_app/helper/SharedPrefs.dart';
 import 'package:flutter_app/models/interfaces/StatefulWidgetWithName.dart';
 
-import '../models/league.dart';
+import '../models/LeagueWithData.dart';
 import '../widgets/LeagueExpandableTile.dart';
 
 final pageBucket = PageStorageBucket();
@@ -15,7 +15,7 @@ class LivePage extends StatefulWidgetWithName {
   @override
   LivePageState createState() => LivePageState();
 
-  final List<League> liveLeagues;
+  final List<LeagueWithData> liveLeagues;
 
   LivePage({
     Key? key,
@@ -26,7 +26,7 @@ class LivePage extends StatefulWidgetWithName {
 
 class LivePageState extends State<LivePage> with WidgetsBindingObserver{
 
-  List<League> liveLeagues = <League>[];
+  List<LeagueWithData> liveLeagues = <LeagueWithData>[];
 
   List<String> favourites = <String>[];
 
@@ -64,8 +64,8 @@ class LivePageState extends State<LivePage> with WidgetsBindingObserver{
   }
 
   Widget _buildRow(int item) {
-    League league = liveLeagues[item];
-    return LeagueExpandableTile(key: PageStorageKey<League>(liveLeagues.elementAt(item)), league: league, events: league.liveEvents, selectedOdds: [], callbackForOdds: (a)=>{}, favourites: favourites);
+    LeagueWithData league = liveLeagues[item];
+    return LeagueExpandableTile(key: PageStorageKey<LeagueWithData>(liveLeagues.elementAt(item)), league: league, events: league.liveEvents, selectedOdds: [], callbackForOdds: (a)=>{}, favourites: favourites);
   }
 
   List<String> getFavourites(){

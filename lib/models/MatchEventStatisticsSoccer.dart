@@ -1,26 +1,20 @@
 
-import 'Player.dart';
+import 'package:flutter_app/models/MatchEventStatisticSoccer.dart';
 
-class MatchEventStatisticsSoccer {
+import 'constants/JsonConstants.dart';
 
-  int id;
-  String period; //"ALL"
-  String group; //"Shots"
-  String? name; //"Shots"
-  String? home; //"Shots"
-  String? away; //"Shots"
-  int? compare_code;
+class MatchEventStatisticsSoccer{
 
+  List<MatchEventStatisticSoccer> data = <MatchEventStatisticSoccer>[];
 
-  MatchEventStatisticsSoccer({
-    required this.id,
-    required this.period,
-    required this.group,
-     this.name,
-     this.home,
-     this.away,
-     this.compare_code,
-  }  );
+  static fromJson(model){
+    MatchEventStatisticsSoccer stats = MatchEventStatisticsSoccer();
+    Iterable l = model[JsonConstants.data];
+    for(var stat in l){
+      stats.data.add(MatchEventStatisticSoccer.fromJson(stat));
+    }
 
+    return stats;
+  }
 
 }

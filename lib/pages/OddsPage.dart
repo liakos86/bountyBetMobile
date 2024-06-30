@@ -4,6 +4,8 @@ import 'dart:convert';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_app/enums/BetPlacementStatus.dart';
+import 'package:flutter_app/enums/BetPredictionStatus.dart';
 import 'package:flutter_app/helper/SharedPrefs.dart';
 import 'package:flutter_app/models/User.dart';
 import 'package:flutter_app/models/constants/Constants.dart';
@@ -16,7 +18,7 @@ import 'package:http/http.dart';
 import '../models/UserBet.dart';
 import '../models/UserPrediction.dart';
 import '../models/constants/UrlConstants.dart';
-import '../models/league.dart';
+import '../models/LeagueWithData.dart';
 import '../utils/BetUtils.dart';
 import '../widgets/BetSlipBottom.dart';
 import '../widgets/row/LeagueMatchesRow.dart';
@@ -205,8 +207,8 @@ class OddsPageState extends State<OddsPage>{
     );
   }
 
-  Widget _buildRow(League league, int item) {
-   return LeagueExpandableTile(key: PageStorageKey<League>(league), league: league, events: league.events, callbackForOdds: fixOddsCallback, selectedOdds: selectedOdds, favourites: favourites(),);
+  Widget _buildRow(LeagueWithData league, int item) {
+   return LeagueExpandableTile(key: PageStorageKey<LeagueWithData>(league), league: league, events: league.events, callbackForOdds: fixOddsCallback, selectedOdds: selectedOdds, favourites: favourites(),);
   }
 
   void removeOddCallback(UserPrediction toRemove){
@@ -241,20 +243,21 @@ class OddsPageState extends State<OddsPage>{
 
   }
 
-  void placeBetCallback(double bettingAmount) async {
+  Future<BetPlacementStatus> placeBetCallback(double bettingAmount) async {
     if (bettingAmount <= 0 ){
-      return;
+      return BetPlacementStatus.FAILED_INSUFFICIENT_FUNDS;
     }
+
 
     String? mongoUserId = ParentPageState.user.mongoUserId;
     if (mongoUserId != Constants.defMongoUserId && !ParentPageState.user.validated){
       String msg = 'Your account requires validation. Please go to ${ParentPageState.user.email} and validate.';
       alertDialog(msg);
-      return;
+      return BetPlacementStatus.FAILED_USER_NOT_VALIDATED;
     }else if (mongoUserId == Constants.defMongoUserId){
       String msg = 'Please login/register at the top left in order to bet.';
       alertDialog(msg);
-      return;
+      return BetPlacementStatus.FAILED_USER_NOT_VALIDATED;
     }
 
     //selectedOdds.forEach((element) {element.event = ParentPageState.findEvent(element.eventId);});
@@ -273,14 +276,24 @@ class OddsPageState extends State<OddsPage>{
 
       var responseDec = jsonDecode(userResponse.body);
       User userFromServer = User.fromJson(responseDec);
+
+      BetPlacementStatus betPlacementStatus = BetPlacementStatus.ofStatus(int.parse(userFromServer.errorMessage));
+
+      if (betPlacementStatus != BetPlacementStatus.PLACED){
+        return betPlacementStatus;
+      }
+
       updateUserCallback.call(userFromServer, newBet);
 
       setState(() {
         selectedOdds.clear();
       });
 
+      return BetPlacementStatus.PLACED;
+
     }catch(e){
       print(e);
+      return BetPlacementStatus.FAIL_GENERIC;
     }
   }
 

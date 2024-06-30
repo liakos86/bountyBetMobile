@@ -6,12 +6,17 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import '../models/constants/Constants.dart';
-import '../models/league.dart';
-import '../pages/LeagueStandingPage.dart';
+import 'package:flutter_app/models/Standing.dart';
+import '../../models/League.dart';
+import '../../models/Season.dart';
+import '../../models/constants/Constants.dart';
+import '../../models/LeagueWithData.dart';
+import '../../pages/LeagueStandingPage.dart';
 
 class SimpleLeagueRow extends StatefulWidget {
 
+
+  // final League league;
   final League league;
 
   final ParticleOptions particles;
@@ -25,6 +30,7 @@ class SimpleLeagueRow extends StatefulWidget {
 class SimpleLeagueRowState extends State<SimpleLeagueRow> with SingleTickerProviderStateMixin {
 
   League league;
+  // Season season;
 
   ParticleOptions particles;
 
@@ -39,24 +45,23 @@ class SimpleLeagueRowState extends State<SimpleLeagueRow> with SingleTickerProvi
 
     return
 
-      Container(height: 100,
+      SizedBox(height: 64,
           child:
       AnimatedBackground(
         vsync: this,
         behaviour: RandomParticleBehaviour(options: particles),
-    child:
-
+        child:
 
       GestureDetector(
         onTap: () {
 
-          if (league.seasons.isEmpty){
+          if (league.seasonIds.isEmpty){
             return;
           }
 
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => LeagueStandingPage(league)),
+            MaterialPageRoute(builder: (context) => LeagueStandingPage(leagueId: league.league_id, seasonId: league.seasonIds.first)),
           );
 
     },
@@ -82,7 +87,7 @@ class SimpleLeagueRowState extends State<SimpleLeagueRow> with SingleTickerProvi
                         alignment: Alignment.centerLeft,
                         child:
                         Padding(
-                            padding: const EdgeInsets.all(6), child:
+                            padding: const EdgeInsets.all(4), child:
 
                         Text.rich(
                           TextSpan(
@@ -90,13 +95,13 @@ class SimpleLeagueRowState extends State<SimpleLeagueRow> with SingleTickerProvi
                               WidgetSpan(
                                   child: CachedNetworkImage(
                                     imageUrl: league.logo!,
-                                    placeholder: (context, url) => Image.asset(Constants.assetNoLeagueImage, width: 48, height: 48,),
-                                    errorWidget: (context, url, error) => Image.asset(Constants.assetNoLeagueImage, width: 48, height: 48,),
-                                    height: 48,
-                                    width: 48,
+                                    placeholder: (context, url) => Image.asset(Constants.assetNoLeagueImage, width: 32, height: 32,),
+                                    errorWidget: (context, url, error) => Image.asset(Constants.assetNoLeagueImage, width: 32, height: 32,),
+                                    height: 32,
+                                    width: 32,
                                   )
                               ),
-                              const WidgetSpan(child: SizedBox(width: 30)),
+                              const WidgetSpan(child: SizedBox(width: 16)),
 
                             ],
                           ),
@@ -122,8 +127,9 @@ class SimpleLeagueRowState extends State<SimpleLeagueRow> with SingleTickerProvi
                             alignment: Alignment.centerLeft,
                             child:
                             Text(league.name + league.league_id.toString(),
-                                style: TextStyle(
-                                    fontWeight: FontWeight.bold, fontSize: 18, color: Colors.black)),
+                                style: const TextStyle(
+                                  overflow: TextOverflow.ellipsis,
+                                    fontWeight: FontWeight.bold, fontSize: 14, color: Colors.black)),
                           ),
                          ] ),
 
@@ -132,7 +138,7 @@ class SimpleLeagueRowState extends State<SimpleLeagueRow> with SingleTickerProvi
                                 Align(
                                   alignment: Alignment.centerLeft,
                                   child:
-                                  Text(league.section?.name ?? 'Section null',
+                                  Text(league.section.name ?? 'Section null',
                                       style: TextStyle(
                                           fontWeight: FontWeight.normal, fontSize: 12, color: Colors.black)),
                                 ),

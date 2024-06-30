@@ -1,14 +1,31 @@
 class Score{
 
+  // This is the sum score for normal + extra + penalties of the current match
   int ?current;
 
+  // This is to be displayed
   int ?display;
 
+  // This is first half
   int ?period_1;
 
+  // This is the second half
   int ?period_2;
 
+  // This is 90 minutes
   int ?normal_time;
+
+  // Total goals in extra time
+  int? overTime;
+
+  // Penalties score
+  int? penalties;
+
+  // Extra first half
+  int? extra_1;
+
+  // Extra second half
+  int? extra_2;
 
   Score(
      this.current,

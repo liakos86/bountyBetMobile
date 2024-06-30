@@ -1,5 +1,6 @@
 
 class Constants {
+  static const int maxBet = 999999;
   static const String defMongoUserId = 'default';
   static const String empty = '';
   static const String comma = ',';

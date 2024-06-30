@@ -11,7 +11,7 @@ import 'package:http/http.dart';
 import '../models/UserBet.dart';
 import '../models/UserPrediction.dart';
 import '../models/constants/UrlConstants.dart';
-import '../models/league.dart';
+import '../models/LeagueWithData.dart';
 import '../utils/BetUtils.dart';
 import '../widgets/BetSlipBottom.dart';
 import 'DialogRegister.dart';

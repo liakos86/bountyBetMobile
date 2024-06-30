@@ -3,12 +3,12 @@ import 'dart:ui';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:flutter_app/models/MatchEventIncidentsSoccer.dart';
-import 'SoccerIncidentBox.dart';
+import 'package:flutter_app/models/MatchEventIncidentSoccer.dart';
+import '../SoccerIncidentBox.dart';
 
 class SoccerStatPeriodRow extends StatelessWidget {
 
-  final MatchEventIncidentsSoccer statistic;
+  final MatchEventIncidentSoccer statistic;
 
   SoccerStatPeriodRow({Key ?key, required this.statistic}) : super(key: key);
 

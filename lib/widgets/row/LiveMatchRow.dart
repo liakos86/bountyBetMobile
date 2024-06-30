@@ -5,12 +5,14 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_app/enums/ChangeEvent.dart';
+import 'package:flutter_app/enums/LastedPeriod.dart';
 import 'package:flutter_app/enums/MatchEventStatus.dart';
 import 'package:flutter_app/helper/SharedPrefs.dart';
-import 'package:flutter_app/models/MatchEventIncidentsSoccer.dart';
+import 'package:flutter_app/models/MatchEventIncidentSoccer.dart';
 import 'package:flutter_app/models/notification/NotificationInfo.dart';
 import 'package:flutter_app/pages/MatchInfoSoccerDetailsPage.dart';
 import 'package:flutter_app/utils/notification/NotificationService.dart';
+import '../../enums/WinnerType.dart';
 import '../../models/Score.dart';
 import '../../models/match_event.dart';
 import '../LogoWithName.dart';
@@ -43,10 +45,12 @@ class LiveMatchRowState extends State<LiveMatchRow> {
     int homeRed = 0;
     int awayRed = 0;
 
-    Iterable<MatchEventIncidentsSoccer> redCards = gameWithOdds.incidents.where((element) =>
+
+
+    Iterable<MatchEventIncidentSoccer> redCards = gameWithOdds.incidents.where((element) =>
       element.incident_type=="card" && (element.card_type=='Red' || element.card_type=='YellowRed'));
 
-    for (MatchEventIncidentsSoccer redCard in redCards){
+    for (MatchEventIncidentSoccer redCard in redCards){
       if (redCard.player_team==1){
         ++homeRed;
       }else if (redCard.player_team==2){
@@ -72,7 +76,7 @@ class LiveMatchRowState extends State<LiveMatchRow> {
               children: [
 
                 Expanded(//first column
-                    flex: MatchEventStatus.INPROGRESS.statusStr== gameWithOdds.status ? 2 : 0,
+                    flex: 1,
                     child:
 
                     MatchEventStatus.INPROGRESS.statusStr== gameWithOdds.status ?
@@ -106,7 +110,7 @@ class LiveMatchRowState extends State<LiveMatchRow> {
                         ]
                     )) :
 
-                        const SizedBox(width: 0,)
+                        const SizedBox()
                 ),
 
                 Expanded(//first column
@@ -137,12 +141,12 @@ class LiveMatchRowState extends State<LiveMatchRow> {
                         Align(
                         alignment: Alignment.centerLeft,
                         child:
-                      LogoWithName(key: UniqueKey(), name: gameWithOdds.homeTeam.getLocalizedName(), logoUrl: gameWithOdds.homeTeam.logo, redCards: homeRed, logoSize: 24, fontSize: 14,),
+                      LogoWithName(key: UniqueKey(), name: gameWithOdds.homeTeam.getLocalizedName(), logoUrl: gameWithOdds.homeTeam.logo, redCards: homeRed, logoSize: 24, fontSize: 14,  winnerType: calculateWinnerType(gameWithOdds, 1)),
                         ),
                             Align(
                                 alignment: Alignment.centerLeft,
                                 child:
-                      LogoWithName(key: UniqueKey(), name: gameWithOdds.awayTeam.getLocalizedName(), logoUrl: gameWithOdds.awayTeam.logo, redCards: awayRed, logoSize: 24, fontSize: 14,),
+                      LogoWithName(key: UniqueKey(), name: gameWithOdds.awayTeam.getLocalizedName(), logoUrl: gameWithOdds.awayTeam.logo, redCards: awayRed, logoSize: 24, fontSize: 14,  winnerType: calculateWinnerType(gameWithOdds, 2)),
                             )
                     ]
                 ))),
@@ -154,10 +158,10 @@ class LiveMatchRowState extends State<LiveMatchRow> {
 
                 Column(//second column
                     children: [
-                     Padding(padding: EdgeInsets.all(6), child:
+                     Padding(padding: const EdgeInsets.all(6), child:
                       Text(
                        (gameWithOdds.display_status),
-                        style: TextStyle(
+                        style: const TextStyle(
                           fontSize: 12,
                           fontWeight: FontWeight.bold,
                           color: Colors.redAccent),))
@@ -165,20 +169,20 @@ class LiveMatchRowState extends State<LiveMatchRow> {
                 )),//SECOND COLUMN END
 
                 Expanded(
-                    flex: 2,
+                    flex: 3,
 
                     child:
 
                 Column(// third column
                     children: [
                       Padding(padding: const EdgeInsets.all(6), child:
-                      Text(textScoreFrom(gameWithOdds.homeTeamScore), style: TextStyle(
+                      Text(textScoreFrom(gameWithOdds.homeTeamScore, gameWithOdds.status, gameWithOdds.lasted_period), style: TextStyle(
                           fontSize: gameWithOdds.changeEvent == ChangeEvent.HOME_GOAL ? 13 : 12,
                           fontWeight:  FontWeight.w900,
                           color: gameWithOdds.changeEvent == ChangeEvent.HOME_GOAL ? Colors.redAccent : Colors.black87),)),
 
-                      Padding(padding: EdgeInsets.all(8), child:
-                      Text(textScoreFrom(gameWithOdds.awayTeamScore), style: TextStyle(
+                      Padding(padding: const EdgeInsets.all(8), child:
+                      Text(textScoreFrom(gameWithOdds.awayTeamScore, gameWithOdds.status, gameWithOdds.lasted_period), style: TextStyle(
                           fontSize: gameWithOdds.changeEvent == ChangeEvent.AWAY_GOAL ? 13 : 12,
                           fontWeight: FontWeight.w900,
                           color: gameWithOdds.changeEvent == ChangeEvent.AWAY_GOAL ? Colors.redAccent : Colors.black87),)),
@@ -190,16 +194,58 @@ class LiveMatchRowState extends State<LiveMatchRow> {
       );
   }
 
-  String textScoreFrom(Score ?score) {
+  String textScoreFrom(Score ?score, String status, String? lastedPeriod) {
     if (score == null){
       return '-';
     }
 
-    if (score.current == null){
+    if (MatchEventStatus.FINISHED == MatchEventStatus.fromStatusText(status)){
+      if (score.display == null) {
+        return '-';
+      }
+
+      if (lastedPeriod == null || LastedPeriod.PERIOD_2 == LastedPeriod.fromStatusText(lastedPeriod)) {
+        return score.display.toString();
+      }
+
+      return '${score.display} (${score.current})';
+
+    }
+
+
+    if (score.display == null){
       return '-';
     }
 
-    return score.current.toString();
+    return score.display.toString();
+
+
+  }
+
+  WinnerType calculateWinnerType(MatchEvent gameWithOdds, int homeOrAway) {
+
+    if (MatchEventStatus.FINISHED != MatchEventStatus.fromStatusText(gameWithOdds.status)) {
+      return WinnerType.NONE;
+    }
+
+    if (gameWithOdds.aggregated_winner_code != null){
+      if (homeOrAway == gameWithOdds.aggregated_winner_code){
+        return WinnerType.AFTER;
+      }
+
+      return WinnerType.NONE;
+    }
+
+    if (gameWithOdds.winner_code != null){
+
+      if (homeOrAway == gameWithOdds.winner_code){
+        return WinnerType.NORMAL;
+      }
+
+      return WinnerType.NONE;
+    }
+
+    return WinnerType.NONE;
 
   }
 

@@ -1,0 +1,39 @@
+{
+  "@@locale": "en",
+  "appTitle": "Flutter i18n",
+  "@appTitle": {
+    "description": "Main application title"
+  },
+  "welcome": "Welcome!",
+  "goal": "goal",
+  "incidents": "Incidents",
+  "expected_goals" : "Expected goals",
+  
+    "ball_possession" : "Ball possession",
+  
+    "total_shots" : "Total shots",
+  
+    "shots_on_target" : "Shots on target",
+  
+    "corner_kicks" : "Corner kicks",
+  
+    "offsides" : "Offsides",
+  
+    "yellow_cards" : "Yellow cards",
+  
+    "red_cards" : "Red cards",
+  
+    "goalkeeper_saves" : "Keeper saves",
+  
+    "hit_woodwork" : "Hit the post",
+
+    "points" : "points",
+
+    "won" : "bets won",
+
+    "buypreds" : "Buy predictions of ",
+
+    "monthlybetswon" : "Monthly bets won:",
+
+    "monthlypredswon" : "Monthly correct predictions:"
+}

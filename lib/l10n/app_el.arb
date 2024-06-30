@@ -1,0 +1,40 @@
+{
+  "@@locale": "el",
+  "appTitle": "Εφαρμογή",
+  "@appTitle": {
+    "description": "Main application title"
+  },
+  "welcome": "Welcome!",
+  "goal": "Γκολ",
+  "incidents": "Φάσεις",
+  "expected_goals" : "Αναμενόμενα Γκολ",
+  
+    "ball_possession" : "Κατοχή",
+  
+    "total_shots" : "Συνολικά σουτ",
+  
+    "shots_on_target" : "Σουτ στην εστία",
+  
+    "corner_kicks" : "Κόρνερ",
+  
+    "offsides" : "Οφσάιντς",
+  
+    "yellow_cards" : "Κίτρινες κάρτες",
+  
+    "red_cards" : "Κόκκινες κάρτες",
+  
+    "goalkeeper_saves" : "Επεμβάσεις τερματοφύλακα",
+  
+    "hit_woodwork" : "Δοκάρια",
+
+    "points" : "πόντοι",
+
+    "won" : "κερδισμένα",
+
+    "buypreds" : "Αγόρασε τις προβλέψεις του ",
+
+    "monthlybetswon" : "Κερδισμένα δελτία μήνα:",
+
+    "monthlypredswon" : "Κερδισμένες προβλέψεις μήνα:"
+
+}

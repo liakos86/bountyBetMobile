@@ -8,20 +8,39 @@ import 'package:http/http.dart';
 import '../models/User.dart';
 import '../models/constants/UrlConstants.dart';
 
-class DialogLogin extends StatelessWidget{
+class DialogLogin extends StatefulWidget {
 
-  String emailOrUsername ='';
 
-  String password = '';
 
-  Function callback = (User user)=>{};
+  Function callback = (User user) => {};
 
   DialogLogin({required this.callback});
+
+  @override
+  State<StatefulWidget> createState() => DialogLoginState(callback: callback);
+}
+
+
+  class DialogLoginState extends State<DialogLogin>{
+
+  DialogLoginState({
+    required this.callback
+  });
+
+    Function callback = (User user) => {};
+
+    String emailOrUsername = '';
+
+    String password = '';
+
+    String errorMsg = '';
 
   @override
   Widget build(BuildContext context) {
     return Column(
       children: [
+
+        Text(errorMsg, style: TextStyle(color: Colors.red)),
 
         TextField(
           controller: null,
@@ -64,7 +83,21 @@ class DialogLogin extends StatelessWidget{
   }
 
   void loginWith(String emailOrUsername, String password) async{
-      if (emailOrUsername.length < 5 || password.length < 8){
+      if (emailOrUsername.length < 5 ){
+
+        setState(() {
+          errorMsg = 'Username must be at least 5 characters long';
+        });
+
+        return;
+      }
+
+      if (password.length < 1 ){
+
+        setState(() {
+          errorMsg = 'Invalid username or password';
+        });
+
         return;
       }
 
@@ -76,7 +109,7 @@ class DialogLogin extends StatelessWidget{
             },
             body: jsonEncode(toJson(emailOrUsername, password)),
             encoding: Encoding.getByName("utf-8")).timeout(
-            const Duration(seconds: 10));
+            const Duration(seconds: 5));
 
         var responseDec = jsonDecode(loginResponse.body);
         User userFromServer = User.fromJson(responseDec);
@@ -84,6 +117,11 @@ class DialogLogin extends StatelessWidget{
         callback.call(userFromServer);
 
       }catch(e){
+
+        setState(() {
+          errorMsg = 'Login failed server error';
+        });
+
         print(e);
       }
     }
@@ -102,5 +140,7 @@ class DialogLogin extends StatelessWidget{
         "username": emailOrUsername
       };
     }
+
+
 
 }

@@ -1,11 +1,14 @@
 
 import 'package:flutter_app/enums/ChangeEvent.dart';
 import 'package:flutter_app/helper/SharedPrefs.dart';
-import 'package:flutter_app/models/MatchEventStatisticsSoccer.dart';
+import 'package:flutter_app/models/MatchEventStatisticSoccer.dart';
 import 'package:flutter_app/models/Player.dart';
 import 'package:flutter_app/models/StandingRow.dart';
-import 'package:flutter_app/models/league.dart';
-import 'package:flutter_app/models/MatchEventIncidentsSoccer.dart';
+import 'package:flutter_app/models/TimeDetails.dart';
+import 'package:flutter_app/models/constants/JsonConstants.dart';
+import 'package:flutter_app/models/LeagueWithData.dart';
+import 'package:flutter_app/models/MatchEventIncidentSoccer.dart';
+import 'package:flutter_app/models/League.dart';
 import 'package:flutter_app/models/match_event.dart';
 
 import '../enums/BetPredictionStatus.dart';
@@ -42,8 +45,8 @@ class JsonHelper{
     sportId ??= 1;
 
 
-    Team hTeam = Team(homeTeam["id"], homeTeam["name"], homeTeam["logo"]);
-    Team aTeam = Team(awayTeam["id"], awayTeam["name"], awayTeam["logo"]);
+    Team hTeam = Team(homeTeam[JsonConstants.id], homeTeam["name"], homeTeam["logo"]);
+    Team aTeam = Team(awayTeam[JsonConstants.id], awayTeam["name"], awayTeam["logo"]);
 
     if (homeTeam['name_translations'] != null){
       hTeam.name_translations = homeTeam['name_translations'];
@@ -54,10 +57,10 @@ class JsonHelper{
     }
 
     var startAt = event['start_at'];
-    MatchEvent match = MatchEvent(eventId: event["id"], status: event["status"], status_more: event["status_more"]??'-', homeTeam: hTeam, awayTeam: aTeam, start_at: startAt);
+    MatchEvent match = MatchEvent(eventId: event[JsonConstants.id], status: event["status"], status_more: event["status_more"]??'-', homeTeam: hTeam, awayTeam: aTeam, start_at: startAt);
     match.changeEvent = ChangeEvent.ofCode(_changeEvent);
 
-    match.calculateLiveMinute();
+
 
     var eventOdds = event["main_odds"];
     if (eventOdds != null) {
@@ -71,21 +74,21 @@ class JsonHelper{
       var outcome2Value = outcome2["value"];
 
        MatchOdds odds = MatchOdds(
-          oddO25: UserPrediction(eventId: event["id"],
+          oddO25: UserPrediction(eventId: event[JsonConstants.id],
               sportId: sportId,
               homeTeam: hTeam,
               awayTeam: aTeam,
               betPredictionType: BetPredictionType.OVER_25,
               betPredictionStatus: BetPredictionStatus.PENDING,
               value: outcome1Value),
-          oddU25: UserPrediction(eventId: event["id"],
+          oddU25: UserPrediction(eventId: event[JsonConstants.id],
               sportId: sportId,
               homeTeam: hTeam,
               awayTeam: aTeam,
               betPredictionType: BetPredictionType.UNDER_25,
               betPredictionStatus: BetPredictionStatus.PENDING,
               value: outcome1Value),
-          odd1: UserPrediction(eventId: event["id"],
+          odd1: UserPrediction(eventId: event[JsonConstants.id],
               sportId: sportId,
               homeTeam: hTeam,
               awayTeam: aTeam,
@@ -93,21 +96,20 @@ class JsonHelper{
               betPredictionStatus: BetPredictionStatus.PENDING,
               value: outcome1Value),
           //.toString().replaceAll(',', '.')),
-          oddX: UserPrediction(eventId: event["id"],
+          oddX: UserPrediction(eventId: event[JsonConstants.id],
               sportId: sportId,
               homeTeam: hTeam,
               awayTeam: aTeam,
               betPredictionType: BetPredictionType.DRAW,
               betPredictionStatus: BetPredictionStatus.PENDING,
               value: outcomeXValue),
-          //.toString().replaceAll(',', '.')),
-          odd2: UserPrediction(eventId: event["id"],
+          odd2: UserPrediction(eventId: event[JsonConstants.id],
               sportId: sportId,
               homeTeam: hTeam,
               awayTeam: aTeam,
               betPredictionType: BetPredictionType.AWAY_WIN,
               betPredictionStatus: BetPredictionStatus.PENDING,
-              value: outcome2Value)); //.toString().replaceAll(',', '.')));
+              value: outcome2Value));
 
       match.odds = odds;
     }
@@ -122,31 +124,44 @@ class JsonHelper{
           awayTeamScore["period_1"], awayTeamScore["period_2"]);
     }
 
-    var matchIncidents = event['incidents'];
-    if (matchIncidents != null){
-       match.incidents = incidentsFromJson(matchIncidents);
-    }
+    // var matchIncidents = event['incidents'];
+    // if (matchIncidents != null){
+    //    match.incidents = incidentsFromJson(matchIncidents);
+    // }
+    //
+    // var matchStats = event['statistics'];
+    // if (matchStats != null){
+    //   match.statistics = statsFromJson(matchStats, match.eventId);
+    // }
 
-    var matchStats = event['statistics'];
-    if (matchStats != null){
-      match.statistics = statsFromJson(matchStats);
-    }
+    match.timeDetails = TimeDetails.fromJson(event['time_details']);
+
+    // the last period of the match e.g. extra_2 means the match ended in extra time.
+    match.lasted_period = event['lasted_period'];
+
+    //winner code based on Score.aggregatedScore , i.e. the winner or qualified team.
+    match.aggregated_winner_code = event['aggregated_winner_code'];
+
+    //the match winner code after all played periods. counts extra time and penalties.
+    match.winner_code = event['winner_code'];
 
     List<String> favEvents = await sharedPrefs.getListByKey(sp_fav_event_ids);
     if (favEvents.contains(match.eventId.toString())){
       match.isFavourite = true;
     }
 
+    match.calculateLiveMinute();
     return match;
   }
 
-  static Future<League> leagueFromJson(league) async{
+  static Future<LeagueWithData> leagueWithDataFromJson(leagueWithDataJson) async{
+
     List<MatchEvent> matches = <MatchEvent>[];
     List<MatchEvent> liveMatches = <MatchEvent>[];
 
-    var jsonLeagueEvents = league["matchEvents"];
+    var jsonLeagueEvents = leagueWithDataJson["matchEvents"];
     for (var jsonEvent in jsonLeagueEvents){
-      if (jsonEvent['id'] == null || jsonEvent['id'] == -1 || jsonEvent['id'].toString() == '-1'){
+      if (jsonEvent[JsonConstants.id] == null || jsonEvent[JsonConstants.id] == -1 || jsonEvent[JsonConstants.id].toString() == '-1'){
         continue;
       }
 
@@ -157,81 +172,63 @@ class JsonHelper{
       }
     }
 
-    League l = League(
-        name: league['name'],
-        league_id: league['id'],
-        has_logo: league['has_logo'],
-        priority: league['priority'],
+    var league = leagueWithDataJson['league'];
+    League li = await leagueFromJson(league);
+
+    LeagueWithData l = LeagueWithData(
+        league: li,
         events: matches);
     l.liveEvents = liveMatches;
-
-    l.logo = league['logo'];
-
-    var sectionJson = league['section'];
-    if (sectionJson != null) {
-      Section section = Section(sectionJson['name']);
-      l.section = section;
-    }
-    var seasonsJson = league['seasons'];
-    if (seasonsJson == null ){
-
-    }else {
-      for (var seasonJson in seasonsJson) {
-        Season season = seasonFromJson(seasonJson);
-        l.seasons.add(season);
-      }
-    }
 
     return l;
   }
 
-  static seasonFromJson(seasonJson) {
 
-    Standing st = standingFromJson(seasonJson['standing']);
+  static Future<League> leagueFromJson(league) async{
+    League li = League(
+        name: league[JsonConstants.name],
+        league_id: league[JsonConstants.id],
+        has_logo: league[JsonConstants.hasLogo],
+        priority: league[JsonConstants.priority]
+    );
 
-    Season s = Season(year_start: seasonJson['year_start'], year_end: seasonJson['year_end'], standing: st);
-    return s;
-
-  }
-
-  static Standing standingFromJson(standing) {
-    List<StandingRow> rows = <StandingRow>[];
-
-    //var standing = seasonJson['standing'];
-
-    var stRows = standing['standings_rows'];
-    for (var stRow in stRows){
-      var teamJson = stRow['team'];
-      Team hTeam = Team(teamJson["id"], teamJson["name"], teamJson["logo"]);
-      if (teamJson['name_translations'] != null){
-        hTeam.name_translations = teamJson['name_translations'];
-      }
-
-      StandingRow row = StandingRow(team: hTeam);
-      row.away_points = stRow['away_points'];
-      row.home_points = stRow['home_points'];
-      row.position = stRow['position'];
-      rows.add(row);
+    var sectionJson = league[JsonConstants.section];
+    if (sectionJson != null) {
+      Section section = Section(sectionJson[JsonConstants.name]);
+      li.section = section;
     }
 
-    return Standing(standingRows: rows);
+    li.logo = league[JsonConstants.logo];
 
+    List<int> leagueSeasonIds = <int>[];
+    var seasonsJson = league['seasonIds'];
+    if (seasonsJson != null ){
+      for (int seasonJson in seasonsJson) {
+        leagueSeasonIds.add(seasonJson);
+      }
+    }
+
+    li.seasonIds = leagueSeasonIds;
+
+    return li;
   }
 
-  static List<MatchEventIncidentsSoccer> incidentsFromJson(matchIncidentsWrapperJson) {
-    List<MatchEventIncidentsSoccer> incidents = <MatchEventIncidentsSoccer>[];
 
-    var matchIncidentsJson = matchIncidentsWrapperJson['data'];
+
+  static List<MatchEventIncidentSoccer> incidentsFromJson(matchIncidentsWrapperJson) {
+    List<MatchEventIncidentSoccer> incidents = <MatchEventIncidentSoccer>[];
+
+    var matchIncidentsJson = matchIncidentsWrapperJson[JsonConstants.data];
     for (var incidentJson in matchIncidentsJson){
-      MatchEventIncidentsSoccer incident = MatchEventIncidentsSoccer(
-          id: incidentJson['id'],
-          event_id: incidentJson['event_id'],
+      MatchEventIncidentSoccer incident = MatchEventIncidentSoccer(
+          id: incidentJson[JsonConstants.id],
+          event_id: incidentJson[JsonConstants.eventId],
           incident_type: incidentJson['incident_type'],
           time: incidentJson['time'],
           order: incidentJson['order'],
           );
 
-      incident.text = incidentJson['text'];
+      incident.text = incidentJson[JsonConstants.text];
 
       incident.card_type = incidentJson['card_type'];
 
@@ -239,8 +236,8 @@ class JsonHelper{
       incident.reason = incidentJson['reason'];
       incident.player_team = incidentJson['player_team'];
       incident.scoring_team = incidentJson['scoring_team'];
-      incident.home_score = incidentJson['home_score'];
-      incident.away_score = incidentJson['away_score'];
+      incident.home_score = incidentJson[JsonConstants.homeScore];
+      incident.away_score = incidentJson[JsonConstants.awayScore];
 
       incident.player = playerFromJson(incidentJson['player']);
       incident.player_two_in = playerFromJson(incidentJson['player_two_in']);
@@ -257,9 +254,9 @@ class JsonHelper{
       return null;
     }
 
-    Player player = Player(id: playerJson['id'],
+    Player player = Player(id: playerJson[JsonConstants.id],
         sport_id: playerJson['sport_id'],
-        name: playerJson['name'],
+        name: playerJson[JsonConstants.name],
         name_short: playerJson['name_short'],
         position: playerJson['position'],
         has_photo: playerJson['has_photo'],
@@ -268,13 +265,15 @@ class JsonHelper{
     return player;
   }
 
-  static List<MatchEventStatisticsSoccer> statsFromJson(matchStatsWrapperJson) {
-    List<MatchEventStatisticsSoccer> stats = <MatchEventStatisticsSoccer>[];
+  static List<MatchEventStatisticSoccer> statsFromJson(matchStatsWrapperJson, int eventId) {
+    List<MatchEventStatisticSoccer> stats = <MatchEventStatisticSoccer>[];
 
-    var matchStatsJson = matchStatsWrapperJson['data'];
+    var matchStatsJson = matchStatsWrapperJson[JsonConstants.data];
     for (var statJson in matchStatsJson){
-      MatchEventStatisticsSoccer stat = MatchEventStatisticsSoccer(
-        id: statJson['id'],
+      MatchEventStatisticSoccer stat = MatchEventStatisticSoccer(
+        id: statJson[JsonConstants.id],
+        // event_id: eventId,
+        name: statJson[JsonConstants.name],
         group: statJson['group'],
         period: statJson['period'],
         home: statJson['home'],

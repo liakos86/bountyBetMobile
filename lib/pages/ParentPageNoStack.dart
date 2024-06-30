@@ -11,7 +11,7 @@
 // import 'package:flutter_app/enums/MatchEventStatusMore.dart';
 // import 'package:flutter_app/models/UserBet.dart';
 // import 'package:flutter_app/models/constants/UrlConstants.dart';
-// import 'package:flutter_app/models/league.dart';
+// import 'package:flutter_app/models/LeagueWithData.dart';
 // import 'package:flutter_app/pages/LeaguesInfoPage.dart';
 // import 'package:flutter_app/pages/LivePageNoTopic.dart';
 // import 'package:flutter_app/pages/OddsPage.dart';

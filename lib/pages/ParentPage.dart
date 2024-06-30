@@ -10,7 +10,7 @@ import 'package:flutter_app/models/UserBet.dart';
 import 'package:flutter_app/models/constants/Constants.dart';
 import 'package:flutter_app/models/constants/JsonConstants.dart';
 import 'package:flutter_app/models/constants/UrlConstants.dart';
-import 'package:flutter_app/models/league.dart';
+import 'package:flutter_app/models/LeagueWithData.dart';
 import 'package:flutter_app/pages/LeaguesInfoPage.dart';
 import 'package:flutter_app/pages/OddsPage.dart';
 import 'package:flutter_app/widgets/DialogTabbedLoginOrRegister.dart';
@@ -64,6 +64,7 @@ class ParentPageState extends State<ParentPage> with WidgetsBindingObserver {
   GlobalKey leaguesPageKey = GlobalKey();
 
 
+  String appBarTitle = Constants.empty;
 
   /*
    * Shared prefs
@@ -78,17 +79,17 @@ class ParentPageState extends State<ParentPage> with WidgetsBindingObserver {
   /*
    * Map with keys the dates and values the List of leagues for each date.
    */
-  static Map eventsPerDayMap = HashMap<String, List<League>>();
+  static Map eventsPerDayMap = HashMap<String, List<LeagueWithData>>();
 
   /*
    * The leagues which contain live games, only with the live games.
    */
-  final List<League> liveLeagues = <League>[];
+  final List<LeagueWithData> liveLeagues = <LeagueWithData>[];
 
   /*
    * All the leagues with standings etc.
    */
-  List<League> allLeagues = <League>[];
+  List<LeagueWithData> allLeagues = <LeagueWithData>[];
 
   /*
    * The index of the page navigator.
@@ -121,7 +122,7 @@ class ParentPageState extends State<ParentPage> with WidgetsBindingObserver {
       pagesList.add(LivePage(key: livePageKey, liveLeagues: liveLeagues));
       pagesList.add(LeaderBoardPage());
       pagesList.add(MyBetsPage(key: betsPageKey, user: user, loginOrRegisterCallback: promptLoginOrRegister));
-      pagesList.add(LeaguesInfoPage(key: leaguesPageKey, allLeagues: allLeagues));
+      pagesList.add(LeaguesInfoPage(key: leaguesPageKey));
 
 
       getLeaguesAsync(null).then((leaguesMap) => updateLeaguesAndLiveMatches(leaguesMap));
@@ -186,6 +187,8 @@ class ParentPageState extends State<ParentPage> with WidgetsBindingObserver {
 
   void updateUser(User value){
 
+
+
     user.username = value.username;
     user.userBets.clear();
     user.userBets.addAll(value.userBets);
@@ -196,8 +199,11 @@ class ParentPageState extends State<ParentPage> with WidgetsBindingObserver {
     user.mongoUserId = value.mongoUserId;
     user.errorMessage = value.errorMessage;
 
+    appBarTitle = '${user.username}(${user.balance.toStringAsFixed(2)})';
+
     setState(() {
       user;
+      appBarTitle;
     });
 
     betsPageKey.currentState?.setState(() {
@@ -212,7 +218,7 @@ class ParentPageState extends State<ParentPage> with WidgetsBindingObserver {
     return Scaffold(
       appBar: AppBar(
 
-          title: user.mongoUserId == Constants.defMongoUserId ? Text('Football') : Text(user.username + '('+user.balance.toStringAsFixed(2)+')'),
+          title: Text(appBarTitle) ,
         leading:
 
             Padding(
@@ -291,7 +297,7 @@ class ParentPageState extends State<ParentPage> with WidgetsBindingObserver {
   static MatchEvent findEvent(int eventId){
 
     for (MapEntry dayEntry in eventsPerDayMap.entries){
-      for (League l in dayEntry.value){
+      for (LeagueWithData l in dayEntry.value){
         for (MatchEvent e in l.events){
           if (eventId == e.eventId){
             return e;
@@ -308,6 +314,9 @@ class ParentPageState extends State<ParentPage> with WidgetsBindingObserver {
     SharedPreferences sh_prefs =  await prefs;
     String? mongoId = sh_prefs.getString('mongoId');
     if (mongoId == null){//638376a4d9419c54f54ec23f
+      setState(() {
+        appBarTitle = 'Football';
+      });
       return null;
     }
 
@@ -322,7 +331,7 @@ class ParentPageState extends State<ParentPage> with WidgetsBindingObserver {
     }
   }
 
-  Future<Map<String, List<League>>> getLeaguesAsync(Timer? timer) async {
+  Future<Map<String, List<LeagueWithData>>> getLeaguesAsync(Timer? timer) async {
 
       Map jsonLeaguesData = LinkedHashMap();
 
@@ -332,7 +341,7 @@ class ParentPageState extends State<ParentPage> with WidgetsBindingObserver {
       } catch (e) {
 
         print('ERROR REST ---- MOCKING............');
-        Map<String, List<League>> validData = MockUtils().mockLeaguesMap(eventsPerDayMap, false);
+        Map<String, List<LeagueWithData>> validData = MockUtils().mockLeaguesMap(eventsPerDayMap, false);
         return validData;
       }
 
@@ -401,19 +410,19 @@ class ParentPageState extends State<ParentPage> with WidgetsBindingObserver {
         ));
   }
 
-  Future<Map<String, List<League>>> convertJsonLeaguesToObjects(Map jsonLeaguesData) async{
-    Map<String, List<League>> newEventsPerDayMap = LinkedHashMap();
+  Future<Map<String, List<LeagueWithData>>> convertJsonLeaguesToObjects(Map jsonLeaguesData) async{
+    Map<String, List<LeagueWithData>> newEventsPerDayMap = LinkedHashMap();
     for (MapEntry dailyLeagues in  jsonLeaguesData.entries) {
       String day = dailyLeagues.key;
 
-      var leaguesJson = dailyLeagues.value;
-      List<League> leagues = <League>[];
-      for (var league in leaguesJson) {
-        League leagueObj = await JsonHelper.leagueFromJson(league);
-        leagues.add(leagueObj);
+      var leaguesWithDataJson = dailyLeagues.value;
+      List<LeagueWithData> leaguesWithData = <LeagueWithData>[];
+      for (var leagueWithData in leaguesWithDataJson) {
+        LeagueWithData leagueObj = await JsonHelper.leagueWithDataFromJson(leagueWithData);
+        leaguesWithData.add(leagueObj);
       }
 
-      newEventsPerDayMap.putIfAbsent(day, ()=> leagues);
+      newEventsPerDayMap.putIfAbsent(day, ()=> leaguesWithData);
     }
 
     return newEventsPerDayMap;
@@ -427,7 +436,7 @@ class ParentPageState extends State<ParentPage> with WidgetsBindingObserver {
    * 2. Delete the matches that are missing from the previous call.
    * 3. Update the data of the matches that were pre-existing.
    */
-  void updateLeaguesAndLiveMatches(Map<String, List<League>> incomingLeaguesMap) {
+  void updateLeaguesAndLiveMatches(Map<String, List<LeagueWithData>> incomingLeaguesMap) {
 
     if (incomingLeaguesMap.isEmpty) {
       return;//TODO maybe empty everything?
@@ -438,7 +447,7 @@ class ParentPageState extends State<ParentPage> with WidgetsBindingObserver {
       eventsPerDayMap[MatchConstants.KEY_TODAY] = incomingLeaguesMap[MatchConstants.KEY_TODAY];
       eventsPerDayMap['1'] = incomingLeaguesMap[MatchConstants.KEY_TODAY];
 
-      for(League league in eventsPerDayMap[MatchConstants.KEY_TODAY]){
+      for(LeagueWithData league in eventsPerDayMap[MatchConstants.KEY_TODAY]){
         if (league.liveEvents.isEmpty){
           continue;
         }
@@ -453,15 +462,15 @@ class ParentPageState extends State<ParentPage> with WidgetsBindingObserver {
     }
 
 
-    List<League> existingTodayLeagues = eventsPerDayMap[MatchConstants.KEY_TODAY];
-    List<League> incomingTodayLeagues = incomingLeaguesMap[MatchConstants.KEY_TODAY]!;
+    List<LeagueWithData> existingTodayLeagues = eventsPerDayMap[MatchConstants.KEY_TODAY];
+    List<LeagueWithData> incomingTodayLeagues = incomingLeaguesMap[MatchConstants.KEY_TODAY]!;
 
-    for(League incomingLeague in incomingTodayLeagues){
+    for(LeagueWithData incomingLeague in incomingTodayLeagues){
 
-      var existingLeague = existingTodayLeagues.firstWhere((element) => element == incomingLeague, orElse: () => League.defLeague());
+      var existingLeague = existingTodayLeagues.firstWhere((element) => element == incomingLeague, orElse: () => LeagueWithData.defLeague());
 
       //missing league
-      if (existingLeague == League.defLeague()){
+      if (existingLeague == LeagueWithData.defLeague()){
           existingTodayLeagues.add(incomingLeague);
           continue;
       }
@@ -487,19 +496,19 @@ class ParentPageState extends State<ParentPage> with WidgetsBindingObserver {
       }
     }
 
-    for(League existingLeague in List.of(existingTodayLeagues)) {//league has to be removed
+    for(LeagueWithData existingLeague in List.of(existingTodayLeagues)) {//league has to be removed
       var incomingLeague = incomingTodayLeagues.firstWhere((
           element) => element == existingLeague,
-          orElse: () => League.defLeague());
+          orElse: () => LeagueWithData.defLeague());
 
-      if (incomingLeague == League.defLeague()) {
+      if (incomingLeague == LeagueWithData.defLeague()) {
         existingTodayLeagues.remove(existingLeague);
         liveLeagues.remove(existingLeague);
         checkForOddsRemoval(existingLeague.events);
       }
     }
 
-    for(League league in eventsPerDayMap[MatchConstants.KEY_TODAY]){
+    for(LeagueWithData league in eventsPerDayMap[MatchConstants.KEY_TODAY]){
       if (league.liveEvents.isEmpty){
         liveLeagues.remove(league);
 
@@ -508,7 +517,7 @@ class ParentPageState extends State<ParentPage> with WidgetsBindingObserver {
       }
     }
 
-    for (League league in liveLeagues){
+    for (LeagueWithData league in liveLeagues){
       for (MatchEvent event in league.liveEvents){
         event.calculateLiveMinute();
       }
@@ -596,7 +605,7 @@ void setupFirebaseListeners() async{
       return;
     }
 
-    for (League l in liveLeagues){
+    for (LeagueWithData l in liveLeagues){
 
       List<MatchEvent> events = l.liveEvents;
       MatchEvent? relevantEvent;
@@ -654,9 +663,9 @@ void setupFirebaseListeners() async{
       liveLeagues;
     });
 
-    leaguesPageKey.currentState?.setState(() {
-      allLeagues;
-    });
+    // leaguesPageKey.currentState?.setState(() {
+    //   allLeagues;
+    // });
   }
 
   void checkForOddsRemoval(List<MatchEvent> events) {

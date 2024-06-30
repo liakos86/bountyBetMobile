@@ -1,14 +1,14 @@
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_app/models/MatchEventIncidentsSoccer.dart';
+import 'package:flutter_app/models/MatchEventIncidentSoccer.dart';
 
 import '../models/constants/Constants.dart';
 import 'StatIncidentPictureWithText.dart';
 
 class SoccerIncidentBox extends StatelessWidget{
 
-  final MatchEventIncidentsSoccer incident;
+  final MatchEventIncidentSoccer incident;
 
   SoccerIncidentBox({Key ?key, required this.incident}) : super(key: key);
 
@@ -74,7 +74,7 @@ class SoccerIncidentBox extends StatelessWidget{
 
   }
 
-  String textFor(MatchEventIncidentsSoccer statistic) {
+  String textFor(MatchEventIncidentSoccer statistic) {
     String incident_type = statistic.incident_type;
     if ("substitution" == incident_type){
       return '${statistic.time}\' ${statistic.player?.name_short}\n(${statistic.player_two_in?.name_short})';
@@ -83,7 +83,7 @@ class SoccerIncidentBox extends StatelessWidget{
     return '${statistic.time}\' ${statistic.player?.name_short}';
   }
 
-  homeTeamStat(MatchEventIncidentsSoccer statistic) {
+  homeTeamStat(MatchEventIncidentSoccer statistic) {
     bool home =  statistic.player_team == 1 ||
         statistic.scoring_team ==1;
     return home;

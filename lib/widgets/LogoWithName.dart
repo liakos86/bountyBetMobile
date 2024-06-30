@@ -6,6 +6,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
+import '../enums/WinnerType.dart';
 import '../models/constants/Constants.dart';
 
 
@@ -21,8 +22,11 @@ class LogoWithName extends StatefulWidget {
 
   final double logoSize;
 
+  final WinnerType winnerType;
+
   const LogoWithName(
-      {Key ?key, required this.logoUrl, required this.logoSize, required this.fontSize, required this.name, required this.redCards})
+      {Key ?key, required this.logoUrl, required this.logoSize, required this.fontSize,
+        required this.name, required this.redCards, required this.winnerType})
       : super(key: key);
 
   @override
@@ -42,6 +46,8 @@ class LogoWithName extends StatefulWidget {
 
   late String name;
 
+  late WinnerType winnerType;
+
   @override
   void initState() {
     super.initState();
@@ -50,6 +56,7 @@ class LogoWithName extends StatefulWidget {
     redCards = widget.redCards;
     name = widget.name;
     logoUrl = widget.logoUrl;
+    winnerType = widget.winnerType;
   }
 
   @override
@@ -94,7 +101,7 @@ class LogoWithName extends StatefulWidget {
               child: Column(
               children:  [Align(
                   alignment: Alignment.centerLeft,
-                  child: Text(name, overflow: TextOverflow.ellipsis, textAlign: TextAlign.left,  style: TextStyle(fontWeight: FontWeight.bold, fontSize: fontSize),)),
+                  child: Text(name + (WinnerType.AFTER == winnerType ? '*' : Constants.empty), overflow: TextOverflow.ellipsis, textAlign: TextAlign.left,  style: TextStyle(fontWeight: WinnerType.NONE == winnerType ? FontWeight.w500 : FontWeight.w900, fontSize: fontSize),)),
                  ]))),
 
         Expanded(

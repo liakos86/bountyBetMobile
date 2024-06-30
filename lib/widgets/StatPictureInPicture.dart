@@ -1,10 +1,10 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_app/models/MatchEventIncidentsSoccer.dart';
+import 'package:flutter_app/models/MatchEventIncidentSoccer.dart';
 
 class StatPictureInPicture extends StatelessWidget{
 
-  MatchEventIncidentsSoccer statistic;
+  MatchEventIncidentSoccer statistic;
 
   StatPictureInPicture({required this.statistic});
 

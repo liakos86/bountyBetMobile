@@ -10,12 +10,12 @@ import 'package:flutter_app/widgets/row/LiveMatchRow.dart';
 import '../enums/MatchEventStatus.dart';
 import '../models/UserPrediction.dart';
 import '../models/constants/Constants.dart';
-import '../models/league.dart';
-import 'UpcomingMatchRow.dart';
+import '../models/LeagueWithData.dart';
+import 'row/UpcomingMatchRow.dart';
 
 class LeagueExpandableTile extends StatefulWidget {
 
-  final League league;
+  final LeagueWithData league;
 
   final List<MatchEvent> events;
 
@@ -37,7 +37,7 @@ class LeagueExpandableTile extends StatefulWidget {
 
   class LeagueExpandableTileState extends State<LeagueExpandableTile>{
 
-    late League league;
+    late LeagueWithData league;
 
     late List<MatchEvent> events;
 
@@ -77,19 +77,19 @@ class LeagueExpandableTile extends StatefulWidget {
                     initiallyExpanded: true,
                     collapsedBackgroundColor: Colors.yellow[50],
                     backgroundColor: Colors.yellow[50],
-                    subtitle: Text(league.name, style: const TextStyle(color: Colors.black, fontWeight: FontWeight.w700, fontSize: 12),),
+                    subtitle: Text(league.league.name, style: const TextStyle(color: Colors.black, fontWeight: FontWeight.w700, fontSize: 12),),
                     trailing: Text('(${events.length})', style: const TextStyle(color: Colors.black, fontSize: 10),),
                     leading:
 
                     CachedNetworkImage(
-                      imageUrl: league.logo ?? Constants.noImageUrl,
+                      imageUrl: league.league.logo ?? Constants.noImageUrl,
                       placeholder: (context, url) => Image.asset(Constants.assetNoLeagueImage, width: 32, height: 32,),
                       errorWidget: (context, url, error) => Image.asset(Constants.assetNoLeagueImage, width: 32, height: 32,),
                       height: 32,
                       width: 32,
                     ),
 
-                    title: Text(league.section.name.toUpperCase(),
+                    title: Text(league.league.section.name.toUpperCase(),
                         style: TextStyle(fontSize: 10, color: Colors.grey[600], fontWeight: FontWeight.bold)),
                     children: events.map((item)=> _buildSelectedOddRow(item)).toList()
                 ),

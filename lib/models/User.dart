@@ -71,4 +71,20 @@ class User{
 
   }
 
+  String betSlipsMonthlyText(){
+    return '$monthlyWonBets/${monthlyWonBets + monthlyLostBets}';
+  }
+
+  String betSlipsOverallText(){
+    return '$overallWonBets/${overallWonBets + overallLostBets}';
+  }
+
+  String betPredictionsMonthlyText(){
+    return '$monthlyWonPredictions/${monthlyWonPredictions + monthlyLostPredictions}';
+  }
+
+  String betPredictionsOverallText(){
+    return '$overallWonPredictions/${overallWonPredictions + overallLostPredictions}';
+  }
+
 }

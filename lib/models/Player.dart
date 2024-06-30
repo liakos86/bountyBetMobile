@@ -1,3 +1,5 @@
+import 'constants/JsonConstants.dart';
+
 class Player{
 
   int id;
@@ -31,5 +33,14 @@ class Player{
     required this.position_name
 
   });
+
+  static Player? fromJson(model) {
+    if (model == null){
+      return null;
+    }
+
+    return Player(id: int.parse(model[JsonConstants.id]), sport_id: int.parse(model['sport_id']), name: model[JsonConstants.name], name_short: model['name_short'], position: model['position'], has_photo: (model['has_photo'] == 'true' ? true : false), photo: model['photo'], position_name: model['position_name']);
+
+  }
 
 }

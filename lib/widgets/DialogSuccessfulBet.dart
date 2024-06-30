@@ -10,8 +10,8 @@ import 'package:http/http.dart';
 import '../models/User.dart';
 import '../models/UserPrediction.dart';
 import '../models/constants/UrlConstants.dart';
-import 'UserBetPredictionRow.dart';
-import 'UserPlacedBetPredictionRow.dart';
+import './row/UserBetPredictionRow.dart';
+import 'row/UserPlacedBetPredictionRow.dart';
 
 class DialogSuccessfulBet extends StatelessWidget{
 

@@ -7,17 +7,17 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_app/enums/ChangeEvent.dart';
 import 'package:flutter_app/models/constants/MatchConstants.dart';
-import 'package:flutter_app/models/MatchEventIncidentsSoccer.dart';
+import 'package:flutter_app/models/MatchEventIncidentSoccer.dart';
 import 'package:flutter_app/widgets/LogoWithTeamLarge.dart';
 import 'package:flutter_app/pages/MatchInfoSoccerDetailsPage.dart';
-import '../models/Score.dart';
-import '../models/match_event.dart';
-import 'LogoWithName.dart';
-import 'SoccerIncidentBox.dart';
+import '../../models/Score.dart';
+import '../../models/match_event.dart';
+import '../LogoWithName.dart';
+import '../SoccerIncidentBox.dart';
 
 class SoccerIncidentRow extends StatefulWidget {
 
-  final MatchEventIncidentsSoccer incident;
+  final MatchEventIncidentSoccer incident;
 
 
   SoccerIncidentRow({Key ?key, required this.incident}) : super(key: key);
@@ -28,7 +28,7 @@ class SoccerIncidentRow extends StatefulWidget {
 
 class SoccerIncidentRowState extends State<SoccerIncidentRow> {
 
-  MatchEventIncidentsSoccer statistic;
+  MatchEventIncidentSoccer statistic;
 
   SoccerIncidentRowState({
     required this.statistic
@@ -41,12 +41,6 @@ class SoccerIncidentRowState extends State<SoccerIncidentRow> {
     bool isHomeStat = homeTeamStat(statistic);
 
     return
-      // DecoratedBox(
-      //
-      //     decoration: const BoxDecoration(color:  Colors.transparent,
-      //       //  borderRadius: BorderRadius.only(topLeft:  Radius.circular(2), topRight:  Radius.circular(2)),
-      //         ),
-      //     child:
 
               Padding(
     padding: const EdgeInsets.all(4),
@@ -70,7 +64,7 @@ class SoccerIncidentRowState extends State<SoccerIncidentRow> {
   }
 
 
-  homeTeamStat(MatchEventIncidentsSoccer statistic) {
+  homeTeamStat(MatchEventIncidentSoccer statistic) {
    return  statistic.player_team == 1 ||
         statistic.scoring_team ==1;
   }

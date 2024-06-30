@@ -4,6 +4,8 @@ import 'dart:ui';
 import 'package:flutter_app/models/constants/Constants.dart';
 import 'package:flutter_app/pages/ParentPage.dart';
 
+import 'constants/JsonConstants.dart';
+
 class Team{
 
   int id;
@@ -57,7 +59,7 @@ class Team{
   }
 
   static Team fromJson(Map<String, dynamic> jsonValues){
-    Team hTeam = Team(jsonValues["id"], jsonValues["name"], jsonValues["logo"]);
+    Team hTeam = Team(jsonValues[JsonConstants.id], jsonValues["name"], jsonValues["logo"]);
 
     if (jsonValues['name_translations'] != null){
       hTeam.name_translations = jsonValues['name_translations'];

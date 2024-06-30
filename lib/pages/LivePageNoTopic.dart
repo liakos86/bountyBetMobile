@@ -14,7 +14,7 @@
 // import 'package:mqtt_client/mqtt_server_client.dart';
 // import 'package:device_info_plus/device_info_plus.dart';
 //
-// import '../models/league.dart';
+// import '../models/LeagueWithData.dart';
 // import '../models/match_event.dart';
 // import '../widgets/LeagueExpandableTile.dart';
 //

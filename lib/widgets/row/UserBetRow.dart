@@ -7,9 +7,9 @@ import 'package:flutter_app/enums/BetStatus.dart';
 import 'package:flutter_app/models/match_event.dart';
 import 'package:flutter_app/widgets/row/UserPredictionRow.dart';
 
-import '../models/UserPrediction.dart';
-import '../models/UserBet.dart';
-import 'UserBetPredictionRow.dart';
+import '../../models/UserPrediction.dart';
+import '../../models/UserBet.dart';
+import './UserBetPredictionRow.dart';
 
 class UserBetRow extends StatelessWidget{
 

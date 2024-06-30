@@ -1,6 +1,6 @@
 import 'Team.dart';
 
-class StandingRow{
+class StandingRow implements Comparable<StandingRow>{
 
   int position =0;
 
@@ -13,5 +13,26 @@ class StandingRow{
   Team team ;
 
   StandingRow({required this.team});
+
+  @override
+  operator == (other) =>
+      other is StandingRow &&
+          other.position == position ;
+
+  @override
+  int get hashCode => position * 37;
+
+  @override
+  int compareTo(StandingRow other) {
+    if (this.position < other.position){
+      return -1;
+    }
+
+    if (this.position > other.position){
+      return 1;
+    }
+
+    return 0;
+  }
 
 }

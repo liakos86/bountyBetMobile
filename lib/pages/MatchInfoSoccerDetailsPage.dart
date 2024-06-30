@@ -1,16 +1,25 @@
 import 'dart:async';
+import 'dart:convert';
+
+import 'package:flutter_app/widgets/row/SoccerStatisticRow.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_app/models/MatchEventIncidentsSoccer.dart';
+import 'package:flutter_app/models/MatchEventStatisticSoccer.dart';
 import 'package:flutter_app/models/MatchEventStatisticsSoccer.dart';
 import 'package:flutter_app/models/constants/MatchIncidentsConstants.dart';
-import 'package:flutter_app/models/MatchEventIncidentsSoccer.dart';
+import 'package:flutter_app/models/MatchEventIncidentSoccer.dart';
+import 'package:flutter_app/utils/MockUtils.dart';
 import 'package:flutter_app/widgets/LogoWithTeamLarge.dart';
+import 'package:http/http.dart';
 
+import '../models/constants/UrlConstants.dart';
 import '../models/match_event.dart';
 import '../widgets/MatchScoreMiddleText.dart';
-import '../widgets/SoccerStatPeriodRow.dart';
-import '../widgets/SoccerIncidentRow.dart';
+import '../widgets/row/SoccerStatPeriodRow.dart';
+import '../widgets/row/SoccerIncidentRow.dart';
 import 'LivePage.dart';
 
 class MatchInfoSoccerDetailsPage extends StatefulWidget{
@@ -33,6 +42,9 @@ class MatchInfoSoccerDetailsPageState extends State<MatchInfoSoccerDetailsPage>{
 
   late Function eventCallback;
 
+  List<MatchEventIncidentSoccer> incidents = <MatchEventIncidentSoccer>[];
+  List<MatchEventStatisticSoccer> statistics = <MatchEventStatisticSoccer>[];
+
   GlobalKey middleKey = GlobalKey();
 
   @override
@@ -41,6 +53,7 @@ class MatchInfoSoccerDetailsPageState extends State<MatchInfoSoccerDetailsPage>{
     event = widget.event;
     eventCallback = widget.eventCallback;
 
+    updateEvent();
     Timer.periodic(const Duration(seconds: 10), (timer) {
 
       updateEvent();
@@ -91,7 +104,7 @@ class MatchInfoSoccerDetailsPageState extends State<MatchInfoSoccerDetailsPage>{
 
 
         DefaultTabController(
-          length: 3,
+          length: 2,
           child: Scaffold(
             backgroundColor: Colors.grey[50],
               appBar: AppBar(
@@ -103,10 +116,9 @@ class MatchInfoSoccerDetailsPageState extends State<MatchInfoSoccerDetailsPage>{
                   indicatorColor: Colors.black,
                   indicatorWeight: 2,
 
-                  tabs: const [
-                   Tab(text: 'Incidents'),
-                   Tab(text: 'Statistics',),
-                   Tab(text: 'TODO',),
+                  tabs:  [
+                   Tab(text: AppLocalizations.of(context)!.incidents),
+                   const Tab(text: 'Statistics',),
                   ],
                 ),
               ),
@@ -116,24 +128,17 @@ class MatchInfoSoccerDetailsPageState extends State<MatchInfoSoccerDetailsPage>{
                   ListView.builder(
                       key: const PageStorageKey<String>(
                           'pageDetailsIncidents'),
-                      itemCount: event.incidents.length,
+                      itemCount: incidents.length,
                       itemBuilder: (context, item) {
-                        return _buildIncidentRow(event.incidents[item]);
+                        return _buildIncidentRow(incidents[item]);
                       }),
                   ListView.builder(
                       key: const PageStorageKey<String>(
                           'pageDetailsStats'),
-                      itemCount: event.statistics.length,
+                      itemCount: statistics.length,
                       itemBuilder: (context, item) {
-                        return _buildStatRow(event.statistics[item]);
+                        return _buildStatRow(statistics[item]);
                       }),
-                  ListView.builder(
-                      key: const PageStorageKey<String>(
-                          'pageDetailsNews'),
-                      itemCount: event.statistics.length,
-                      itemBuilder: (context, item) {
-                        return _buildIncidentRow(event.incidents[item]);
-                      })
                 ],)
 
           ),
@@ -147,7 +152,7 @@ class MatchInfoSoccerDetailsPageState extends State<MatchInfoSoccerDetailsPage>{
 
   }
 
-  Widget _buildIncidentRow(MatchEventIncidentsSoccer stat) {
+  Widget _buildIncidentRow(MatchEventIncidentSoccer stat) {
     if (MatchIncidentsConstants.PERIOD == stat.incident_type){
       return SoccerStatPeriodRow(key: UniqueKey(), statistic: stat);
     }
@@ -155,23 +160,80 @@ class MatchInfoSoccerDetailsPageState extends State<MatchInfoSoccerDetailsPage>{
     return SoccerIncidentRow(key: UniqueKey(), incident: stat);
   }
 
-  Widget _buildStatRow(MatchEventStatisticsSoccer stat) {
+  Widget _buildStatRow(MatchEventStatisticSoccer stat) {
 
+    return SoccerStatisticRow(key: UniqueKey(), statistic: stat);
 
-    return SizedBox(height: 10,);
   }
 
-  void updateEvent() {
+  void updateEvent() async{
 
-     MatchEvent newEvent = eventCallback.call();
+    List<MatchEventIncidentSoccer> newIncidents = await getIncidentsAsync();
+    if ( newIncidents.isNotEmpty){
+      incidents.clear();
+      incidents.addAll(newIncidents);
+    }
 
-      event.copyFrom(newEvent);
+
+    List<MatchEventStatisticSoccer> newStats = await getStatisticsAsync();
+    if ( newStats.isNotEmpty){
+      statistics.clear();
+      statistics.addAll(newStats);
+    }
+
+    if (!mounted){
+      return;
+    }
+
+    setState(() {
+      incidents;
+      statistics;
+    });
+
+     //MatchEvent newEvent = eventCallback.call();
+
+      //event.copyFrom(newEvent);
 
 
 
-     middleKey.currentState?.setState(() {
-       event;
-     });
+     // middleKey.currentState?.setState(() {
+     //   event;
+     // });
+  }
+
+  Future<List<MatchEventIncidentSoccer>> getIncidentsAsync() async{
+
+    String getIncidentsUrlFinal = UrlConstants.GET_EVENT_INCIDENTS_URL + event.eventId.toString();
+    try {
+      Response response = await get(Uri.parse(getIncidentsUrlFinal)).timeout(const Duration(seconds: 3));
+      var responseDec = await jsonDecode(response.body);
+      return MatchEventIncidentsSoccer.fromJson(responseDec).data;
+      // Iterable l = await json.decode(response.body);
+      //List<MatchEventIncidentSoccer> incidents = List<MatchEventIncidentSoccer>.from(l.map((model)=> MatchEventIncidentSoccer.fromJson(model)));
+      return incidents;
+    } catch (e) {
+      print('INCIDENTS ERRROR ' + e.toString());
+      return MockUtils().mockStats();
+    }
+  }
+
+
+  Future<List<MatchEventStatisticSoccer>> getStatisticsAsync() async{
+
+    // return <MatchEventStatisticSoccer>[];
+
+    String getStatsUrlFinal = UrlConstants.GET_EVENT_STATISTICS_URL + event.eventId.toString();
+    try {
+      Response response = await get(Uri.parse(getStatsUrlFinal)).timeout(const Duration(seconds: 3));
+      var responseDec = await jsonDecode(response.body);
+      return MatchEventStatisticsSoccer.fromJson(responseDec).data;
+      // Iterable l = await json.decode(response.body);
+      // List<MatchEventStatisticSoccer> incidents = List<MatchEventStatisticSoccer>.from(l.map((model)=> MatchEventStatisticSoccer.fromJson(model)));
+      // return incidents;
+    } catch (e) {
+      print('STATS ERRROR ' + e.toString());
+      return <MatchEventStatisticSoccer>[];
+    }
   }
 
 

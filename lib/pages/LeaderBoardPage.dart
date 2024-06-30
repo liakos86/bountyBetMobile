@@ -91,7 +91,8 @@ class LeaderBoardPageState extends State<LeaderBoardPage>{
 
 
 
-    return LeaderboardUserRowNew(user: leader, position: item+1);
+    // return LeaderboardUserRowNew(user: leader, position: item+1);
+    return LeaderboardUserRow(user: leader, key: UniqueKey(),);
 
   }
 

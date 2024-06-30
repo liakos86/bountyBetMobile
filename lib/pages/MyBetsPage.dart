@@ -7,7 +7,7 @@ import 'package:flutter_app/models/UserBet.dart';
 import '../models/User.dart';
 import '../models/constants/Constants.dart';
 import '../models/interfaces/StatefulWidgetWithName.dart';
-import '../widgets/UserBetRow.dart';
+import '../widgets/row/UserBetRow.dart';
 import 'LivePage.dart';
 
 

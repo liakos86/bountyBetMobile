@@ -4,7 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_app/enums/BetPredictionStatus.dart';
 
-import '../models/UserPrediction.dart';
+import '../../models/UserPrediction.dart';
 
 class UserBetPredictionRow extends StatelessWidget{
 

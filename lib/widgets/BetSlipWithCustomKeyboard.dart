@@ -2,13 +2,15 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_app/enums/BetPlacementStatus.dart';
 import 'package:flutter_app/utils/BetUtils.dart';
 import 'package:flutter_app/widgets/row/LiveMatchRow.dart';
 import 'package:flutter_app/widgets/row/UserPredictionRow.dart';
 
 import '../models/UserPrediction.dart';
+import '../models/constants/Constants.dart';
 import '../models/match_event.dart';
-import 'SelectedOddRow.dart';
+import './row/SelectedOddRow.dart';
 // import 'SelectedOddRow.dart';
 
 class BetSlipWithCustomKeyboard extends StatefulWidget {
@@ -46,6 +48,8 @@ class BetSlipWithCustomKeyboardState extends State<BetSlipWithCustomKeyboard>{
   List<UserPrediction> selectedOdds;
 
   double bettingAmount = 0;
+
+  String errorMsg = Constants.empty;
 
   BetSlipWithCustomKeyboardState(
      this.selectedOdds,
@@ -107,7 +111,9 @@ class BetSlipWithCustomKeyboardState extends State<BetSlipWithCustomKeyboard>{
                               child: TextField(
                             controller: betAmountController,
                             keyboardType: TextInputType.number,
-                            inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                            inputFormatters: [FilteringTextInputFormatter.digitsOnly, LengthLimitingTextInputFormatter(9)],
+
+
                             onChanged:
                                 (text) {
                               setState(() {
@@ -118,7 +124,13 @@ class BetSlipWithCustomKeyboardState extends State<BetSlipWithCustomKeyboard>{
                                   return;
                                 }
 
+
                                 bettingAmount = double.parse(text);
+
+                                if (bettingAmount > Constants.maxBet){
+                                  errorMsg = 'Maximum bet amount is ${Constants.maxBet}';
+                                }
+
                               });
                             },
                             decoration: const InputDecoration(
@@ -138,20 +150,58 @@ class BetSlipWithCustomKeyboardState extends State<BetSlipWithCustomKeyboard>{
                     )
                 ),
 
+                Expanded( flex:1 ,
+
+                    child: Padding(
+                        padding: const EdgeInsets.all(2),
+                        child:Align(alignment: Alignment.centerLeft,
+                            child: Text(errorMsg, style: const TextStyle(fontWeight: FontWeight.w600, color: Colors.red ),)
+                    )
+                )
+                ),
+
+
                 Expanded( flex:2 ,
                   child:
+
                   TextButton(
                     style: ButtonStyle(
+                        shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                            RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(4.0),
+                                side: BorderSide(color: Colors.black)
+                            )
+                        ),
                         foregroundColor: MaterialStateProperty.all<Color>(Colors.white),
                         backgroundColor: MaterialStateProperty.all<Color>(Colors.red.shade500)
                     ),
                     onPressed: () {
                       if (bettingAmount <= 0){
+
+                        setState(() {
+                          errorMsg = 'Please select a positive bet amount';
+                        });
+
                         return;
                       }
 
-                      Navigator.pop(context);
-                      callbackForBetPlacement.call(bettingAmount);
+                      //BetPlacementStatus betPlacementStatus = BetPlacementStatus.FAIL_GENERIC;
+
+                      Future<BetPlacementStatus> betPlacementStatusFuture = callbackForBetPlacement.call(bettingAmount);
+                      betPlacementStatusFuture.then((betPlacementStatus) =>
+                      {
+                      if (betPlacementStatus == BetPlacementStatus.PLACED){
+                          errorMsg = Constants.empty,
+                          Navigator.pop(context)
+                    }else{
+                      setState(() {
+                      errorMsg = betPlacementStatus.statusText;
+                      })
+                      }
+                    }
+
+                      );
+
                     },
                     child: const Text('Place Bet'),
                   ),

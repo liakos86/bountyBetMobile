@@ -1,4 +1,4 @@
-import 'league.dart';
+import 'LeagueWithData.dart';
 
 class Competition{
 
@@ -8,7 +8,7 @@ class Competition{
 
   String competitionLogo;
 
-  List<League> leagues = <League>[];
+  List<LeagueWithData> leagues = <LeagueWithData>[];
 
   Competition(this.competitionId, this.competitionName, this.competitionLogo);
 

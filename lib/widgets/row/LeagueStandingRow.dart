@@ -8,6 +8,7 @@ import 'package:flutter_app/enums/ChangeEvent.dart';
 import 'package:flutter_app/models/StandingRow.dart';
 import 'package:flutter_app/models/constants/MatchConstants.dart';
 import 'package:flutter_app/widgets/LogoWithTeamLarge.dart';
+import '../../enums/WinnerType.dart';
 import '../../models/Score.dart';
 import '../../models/match_event.dart';
 import '../LogoWithName.dart';
@@ -58,7 +59,7 @@ class LeagueStandingRowState extends State<LeagueStandingRow> {
                         Align(
                         alignment: Alignment.centerLeft,
                         child:
-                      LogoWithName(key: UniqueKey(), name: standing.team.getLocalizedName(), logoUrl: standing.team.logo, redCards: 0, logoSize: 24, fontSize: 14,),
+                      LogoWithName(key: UniqueKey(), name: standing.team.getLocalizedName(), logoUrl: standing.team.logo, redCards: 0, logoSize: 24, fontSize: 14,  winnerType: WinnerType.NONE),
                         )
                     ]
                 )),

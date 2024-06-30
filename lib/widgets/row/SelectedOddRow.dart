@@ -1,14 +1,15 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_app/enums/BetPredictionType.dart';
+import 'package:flutter_app/enums/WinnerType.dart';
 import 'package:flutter_app/models/match_odds.dart';
 import 'package:flutter_app/pages/ParentPage.dart';
 import 'package:flutter_app/widgets/DisplayOdd.dart';
 import 'package:flutter_app/widgets/GestureDetectorForOdds.dart';
 
-import '../models/UserPrediction.dart';
-import '../models/match_event.dart';
-import 'LogoWithName.dart';
+import '../../models/UserPrediction.dart';
+import '../../models/match_event.dart';
+import '../LogoWithName.dart';
 
 class SelectedOddRow extends StatelessWidget {
 
@@ -78,12 +79,12 @@ class SelectedOddRow extends StatelessWidget {
                                     alignment: Alignment.centerLeft,
                                     child:
                                     LogoWithName(key: UniqueKey(),
-                                      logoUrl: prediction.homeTeam.logo, name: prediction.homeTeam.getLocalizedName(), redCards: 0, logoSize: 18, fontSize: 10,)),
+                                      logoUrl: prediction.homeTeam.logo, name: prediction.homeTeam.getLocalizedName(), redCards: 0, logoSize: 18, fontSize: 10, winnerType: WinnerType.NONE,)),
                                 Align(
                                     alignment: Alignment.centerLeft,
                                     child:
                                     LogoWithName(key: UniqueKey(),
-                                      logoUrl: prediction.awayTeam.logo, name: prediction.awayTeam.getLocalizedName(), redCards: 0, logoSize: 18, fontSize: 10,)),
+                                      logoUrl: prediction.awayTeam.logo, name: prediction.awayTeam.getLocalizedName(), redCards: 0, logoSize: 18, fontSize: 10,  winnerType: WinnerType.NONE)),
                               ]
                           )), // FIRST COLUMN END
 

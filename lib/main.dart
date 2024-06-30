@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:math';
 
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
@@ -8,8 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_app/enums/ChangeEvent.dart';
 import 'package:flutter_app/pages/ParentPage.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:fluttertoast/fluttertoast.dart';
+
 
 import 'dart:async';
 import 'firebase_options.dart';
@@ -96,6 +96,10 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+
+      localizationsDelegates: AppLocalizations.localizationsDelegates, // <--- add this
+      supportedLocales: AppLocalizations.supportedLocales, // <--- add this
+
       theme: ThemeData(primaryColor: Colors.green[900]),
       home: ParentPage(),
     );
