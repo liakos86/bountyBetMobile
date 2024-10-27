@@ -34,6 +34,8 @@
 
   AFTER_PENALTIES(statusStr: "AP"),
 
+  WALKOVER(statusStr: "Walkover"),
+
   EMPTY(statusStr:"-")
 
  ;
@@ -51,7 +53,7 @@
   }
   }
 
-  return null;
+  return null;//TODO decide on a default for prod
  }
 
 }

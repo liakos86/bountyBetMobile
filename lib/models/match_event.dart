@@ -1,13 +1,10 @@
-import 'package:flutter_app/enums/LastedPeriod.dart';
 import 'package:flutter_app/models/constants/Constants.dart';
-import 'package:flutter_app/models/MatchEventIncidentSoccer.dart';
 import 'package:flutter_app/models/match_odds.dart';
 import 'package:intl/intl.dart';
 
 import '../enums/ChangeEvent.dart';
 import '../enums/MatchEventStatus.dart';
 import '../enums/MatchEventStatusMore.dart';
-import 'MatchEventStatisticSoccer.dart';
 import 'Score.dart';
 import 'Team.dart';
 import 'TimeDetails.dart';
@@ -25,9 +22,6 @@ class MatchEvent{
 		required this.start_at
   } );
 
-  List<MatchEventIncidentSoccer> incidents = <MatchEventIncidentSoccer>[];
-
-	List<MatchEventStatisticSoccer> statistics = <MatchEventStatisticSoccer>[];
 
   Map<String, String> ?translations;
 
@@ -87,7 +81,7 @@ class MatchEvent{
 		if (! (MatchEventStatus.INPROGRESS == eventStatus)) {
 
 			if (MatchEventStatus.FINISHED == eventStatus){
-				// print(homeTeam.name +  ' stsus more iss:' + status_more);
+				//print(homeTeam.name +  ' stsus more iss:' + status_more);
 				display_status = MatchEventStatusMore.fromStatusMoreText(status_more)!.statusStr;
 				return;
 				// if (lastedPeriod == null){
@@ -220,11 +214,6 @@ class MatchEvent{
   	status = incomingEvent.status;
   	status_more = incomingEvent.status_more;
   	timeDetails = incomingEvent.timeDetails;
-
-  	incidents.clear();
-  	statistics.clear();
-  	incidents.addAll(incomingEvent.incidents);
-  	statistics.addAll(incomingEvent.statistics);
 
 	}
 

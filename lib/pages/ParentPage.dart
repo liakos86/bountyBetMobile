@@ -22,6 +22,7 @@ import '../enums/ChangeEvent.dart';
 import '../enums/MatchEventStatus.dart';
 import '../helper/JsonHelper.dart';
 import '../models/ChangeEventSoccer.dart';
+import '../models/League.dart';
 import '../models/User.dart';
 import '../models/UserPrediction.dart';
 import '../models/constants/MatchConstants.dart';
@@ -79,6 +80,11 @@ class ParentPageState extends State<ParentPage> with WidgetsBindingObserver {
   /*
    * Map with keys the dates and values the List of leagues for each date.
    */
+  static Map allLeaguesMap = HashMap<int, League>();
+
+  /*
+   * Map with keys the dates and values the List of leagues for each date.
+   */
   static Map eventsPerDayMap = HashMap<String, List<LeagueWithData>>();
 
   /*
@@ -89,7 +95,7 @@ class ParentPageState extends State<ParentPage> with WidgetsBindingObserver {
   /*
    * All the leagues with standings etc.
    */
-  List<LeagueWithData> allLeagues = <LeagueWithData>[];
+  List<LeagueWithData> allLeaguesWithData = <LeagueWithData>[];
 
   /*
    * The index of the page navigator.
@@ -125,9 +131,9 @@ class ParentPageState extends State<ParentPage> with WidgetsBindingObserver {
       pagesList.add(LeaguesInfoPage(key: leaguesPageKey));
 
 
-      getLeaguesAsync(null).then((leaguesMap) => updateLeaguesAndLiveMatches(leaguesMap));
+      getLeaguesAsync(null).then((leaguesMap) => updateLeagues(leaguesMap)).then((something) => getLeagueEventsAsync(null).then((leagueEventsMap) => updateLeaguesAndLiveMatches(leagueEventsMap)));
 
-      Timer.periodic(const Duration(seconds: 20), (timer) { getLeaguesAsync(timer).then((leaguesMap) =>
+      Timer.periodic(const Duration(seconds: 20), (timer) { getLeagueEventsAsync(timer).then((leaguesMap) =>
             updateLeaguesAndLiveMatches(leaguesMap)
           );
         }
@@ -331,12 +337,12 @@ class ParentPageState extends State<ParentPage> with WidgetsBindingObserver {
     }
   }
 
-  Future<Map<String, List<LeagueWithData>>> getLeaguesAsync(Timer? timer) async {
+  Future<Map<String, List<LeagueWithData>>> getLeagueEventsAsync(Timer? timer) async {
 
       Map jsonLeaguesData = LinkedHashMap();
 
       try {
-        Response leaguesResponse = await get(Uri.parse(UrlConstants.GET_LEAGUES)).timeout(const Duration(seconds: 10));
+        Response leaguesResponse = await get(Uri.parse(UrlConstants.GET_LEAGUE_EVENTS)).timeout(const Duration(seconds: 10));
         jsonLeaguesData = await jsonDecode(leaguesResponse.body) as Map;
       } catch (e) {
 
@@ -346,6 +352,23 @@ class ParentPageState extends State<ParentPage> with WidgetsBindingObserver {
       }
 
       return await convertJsonLeaguesToObjects(jsonLeaguesData);
+  }
+
+  Future<List<League>> getLeaguesAsync(Timer? timer) async {
+
+    List<League> jsonLeaguesData = <League>[];
+
+    try {
+      Response leaguesResponse = await get(Uri.parse(UrlConstants.GET_LEAGUES)).timeout(const Duration(seconds: 10));
+      Iterable leaguesIterable = json.decode(leaguesResponse.body);
+      jsonLeaguesData = List<League>.from(leaguesIterable.map((model)=> JsonHelper.leagueFromJson(model)));
+    } catch (e) {
+
+      print('ERROR REST ---- LEAGUES MOCKING............');
+
+    }
+
+    return jsonLeaguesData;
   }
 
   registedUserCallback(User user) {
@@ -524,8 +547,8 @@ class ParentPageState extends State<ParentPage> with WidgetsBindingObserver {
     }
 
 
-    allLeagues.clear();
-    allLeagues.addAll(existingTodayLeagues);
+    allLeaguesWithData.clear();
+    allLeaguesWithData.addAll(existingTodayLeagues);
 
     sortLeagues();
 
@@ -651,7 +674,7 @@ void setupFirebaseListeners() async{
 
     liveLeagues.sort();
 
-    allLeagues.sort();
+    allLeaguesWithData.sort();
   }
 
   void updatePageStates() {
@@ -691,6 +714,12 @@ void setupFirebaseListeners() async{
       selectedOdds;
     });
 
+  }
+
+  updateLeagues(List<League> leagues) {
+    for ( League l in leagues){
+      allLeaguesMap.putIfAbsent(l.league_id, ()=>l);
+    }
   }
 
 

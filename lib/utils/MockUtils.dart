@@ -142,7 +142,7 @@ class MockUtils {
       event.changeEvent = ChangeEvent.NONE;
     }
 
-    event.incidents = mockStats();
+   // event.incidents = mockStats();
 
     event.calculateLiveMinute();
     return event;

@@ -47,17 +47,18 @@ class LiveMatchRowState extends State<LiveMatchRow> {
 
 
 
-    Iterable<MatchEventIncidentSoccer> redCards = gameWithOdds.incidents.where((element) =>
-      element.incident_type=="card" && (element.card_type=='Red' || element.card_type=='YellowRed'));
+    // Iterable<MatchEventIncidentSoccer> redCards = gameWithOdds.incidents.where((element) =>
+    //   element.incident_type=="card" && (element.card_type=='Red' || element.card_type=='YellowRed'));
+    //
+    // for (MatchEventIncidentSoccer redCard in redCards){
+    //   if (redCard.player_team==1){
+    //     ++homeRed;
+    //   }else if (redCard.player_team==2){
+    //     ++awayRed;
+    //   }
+    // }
 
-    for (MatchEventIncidentSoccer redCard in redCards){
-      if (redCard.player_team==1){
-        ++homeRed;
-      }else if (redCard.player_team==2){
-        ++awayRed;
-      }
-    }
-
+    print('drawing for ' + gameWithOdds.homeTeam.name);
     return
       DecoratedBox(
 

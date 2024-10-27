@@ -10,6 +10,7 @@ import 'package:flutter_app/models/LeagueWithData.dart';
 import 'package:flutter_app/models/MatchEventIncidentSoccer.dart';
 import 'package:flutter_app/models/League.dart';
 import 'package:flutter_app/models/match_event.dart';
+import 'package:flutter_app/pages/ParentPage.dart';
 
 import '../enums/BetPredictionStatus.dart';
 import '../enums/BetPredictionType.dart';
@@ -124,16 +125,6 @@ class JsonHelper{
           awayTeamScore["period_1"], awayTeamScore["period_2"]);
     }
 
-    // var matchIncidents = event['incidents'];
-    // if (matchIncidents != null){
-    //    match.incidents = incidentsFromJson(matchIncidents);
-    // }
-    //
-    // var matchStats = event['statistics'];
-    // if (matchStats != null){
-    //   match.statistics = statsFromJson(matchStats, match.eventId);
-    // }
-
     match.timeDetails = TimeDetails.fromJson(event['time_details']);
 
     // the last period of the match e.g. extra_2 means the match ended in extra time.
@@ -172,8 +163,9 @@ class JsonHelper{
       }
     }
 
-    var league = leagueWithDataJson['league'];
-    League li = await leagueFromJson(league);
+    // var league = leagueWithDataJson['league'];
+    int leagueId = leagueWithDataJson['leagueId'];
+    League li = ParentPageState.allLeaguesMap[leagueId];
 
     LeagueWithData l = LeagueWithData(
         league: li,
@@ -184,7 +176,7 @@ class JsonHelper{
   }
 
 
-  static Future<League> leagueFromJson(league) async{
+  static League leagueFromJson(league){
     League li = League(
         name: league[JsonConstants.name],
         league_id: league[JsonConstants.id],
@@ -211,80 +203,6 @@ class JsonHelper{
     li.seasonIds = leagueSeasonIds;
 
     return li;
-  }
-
-
-
-  static List<MatchEventIncidentSoccer> incidentsFromJson(matchIncidentsWrapperJson) {
-    List<MatchEventIncidentSoccer> incidents = <MatchEventIncidentSoccer>[];
-
-    var matchIncidentsJson = matchIncidentsWrapperJson[JsonConstants.data];
-    for (var incidentJson in matchIncidentsJson){
-      MatchEventIncidentSoccer incident = MatchEventIncidentSoccer(
-          id: incidentJson[JsonConstants.id],
-          event_id: incidentJson[JsonConstants.eventId],
-          incident_type: incidentJson['incident_type'],
-          time: incidentJson['time'],
-          order: incidentJson['order'],
-          );
-
-      incident.text = incidentJson[JsonConstants.text];
-
-      incident.card_type = incidentJson['card_type'];
-
-      incident.scoring_team = incidentJson['scoring_team'];
-      incident.reason = incidentJson['reason'];
-      incident.player_team = incidentJson['player_team'];
-      incident.scoring_team = incidentJson['scoring_team'];
-      incident.home_score = incidentJson[JsonConstants.homeScore];
-      incident.away_score = incidentJson[JsonConstants.awayScore];
-
-      incident.player = playerFromJson(incidentJson['player']);
-      incident.player_two_in = playerFromJson(incidentJson['player_two_in']);
-
-      incidents.add(incident);
-    }
-
-    incidents.sort();
-    return incidents;
-  }
-
-  static Player? playerFromJson(playerJson) {
-    if (playerJson == null){
-      return null;
-    }
-
-    Player player = Player(id: playerJson[JsonConstants.id],
-        sport_id: playerJson['sport_id'],
-        name: playerJson[JsonConstants.name],
-        name_short: playerJson['name_short'],
-        position: playerJson['position'],
-        has_photo: playerJson['has_photo'],
-        photo: playerJson['photo'],
-        position_name: playerJson['position_name']);
-    return player;
-  }
-
-  static List<MatchEventStatisticSoccer> statsFromJson(matchStatsWrapperJson, int eventId) {
-    List<MatchEventStatisticSoccer> stats = <MatchEventStatisticSoccer>[];
-
-    var matchStatsJson = matchStatsWrapperJson[JsonConstants.data];
-    for (var statJson in matchStatsJson){
-      MatchEventStatisticSoccer stat = MatchEventStatisticSoccer(
-        id: statJson[JsonConstants.id],
-        // event_id: eventId,
-        name: statJson[JsonConstants.name],
-        group: statJson['group'],
-        period: statJson['period'],
-        home: statJson['home'],
-        away: statJson['away'],
-        compare_code: statJson['compare_code']
-      );
-
-      stats.add(stat);
-    }
-
-    return stats;
   }
 
 }

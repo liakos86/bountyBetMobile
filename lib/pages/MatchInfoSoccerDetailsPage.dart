@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:flutter_app/models/MatchEventStatisticsWithIncidents.dart';
 import 'package:flutter_app/widgets/row/SoccerStatisticRow.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
@@ -168,18 +169,17 @@ class MatchInfoSoccerDetailsPageState extends State<MatchInfoSoccerDetailsPage>{
 
   void updateEvent() async{
 
-    List<MatchEventIncidentSoccer> newIncidents = await getIncidentsAsync();
-    if ( newIncidents.isNotEmpty){
+    MatchEventStatisticsWithIncidents newIncidents = await getStatisticsAsync();
+    if ( newIncidents.incidents.data.isNotEmpty){
       incidents.clear();
-      incidents.addAll(newIncidents);
+      incidents.addAll(newIncidents.incidents.data);
     }
 
-
-    List<MatchEventStatisticSoccer> newStats = await getStatisticsAsync();
-    if ( newStats.isNotEmpty){
+    if ( newIncidents.statistics.data.isNotEmpty){
       statistics.clear();
-      statistics.addAll(newStats);
+      statistics.addAll(newIncidents.statistics.data);
     }
+
 
     if (!mounted){
       return;
@@ -190,35 +190,10 @@ class MatchInfoSoccerDetailsPageState extends State<MatchInfoSoccerDetailsPage>{
       statistics;
     });
 
-     //MatchEvent newEvent = eventCallback.call();
-
-      //event.copyFrom(newEvent);
-
-
-
-     // middleKey.currentState?.setState(() {
-     //   event;
-     // });
-  }
-
-  Future<List<MatchEventIncidentSoccer>> getIncidentsAsync() async{
-
-    String getIncidentsUrlFinal = UrlConstants.GET_EVENT_INCIDENTS_URL + event.eventId.toString();
-    try {
-      Response response = await get(Uri.parse(getIncidentsUrlFinal)).timeout(const Duration(seconds: 3));
-      var responseDec = await jsonDecode(response.body);
-      return MatchEventIncidentsSoccer.fromJson(responseDec).data;
-      // Iterable l = await json.decode(response.body);
-      //List<MatchEventIncidentSoccer> incidents = List<MatchEventIncidentSoccer>.from(l.map((model)=> MatchEventIncidentSoccer.fromJson(model)));
-      return incidents;
-    } catch (e) {
-      print('INCIDENTS ERRROR ' + e.toString());
-      return MockUtils().mockStats();
-    }
   }
 
 
-  Future<List<MatchEventStatisticSoccer>> getStatisticsAsync() async{
+  Future<MatchEventStatisticsWithIncidents> getStatisticsAsync() async{
 
     // return <MatchEventStatisticSoccer>[];
 
@@ -226,13 +201,13 @@ class MatchInfoSoccerDetailsPageState extends State<MatchInfoSoccerDetailsPage>{
     try {
       Response response = await get(Uri.parse(getStatsUrlFinal)).timeout(const Duration(seconds: 3));
       var responseDec = await jsonDecode(response.body);
-      return MatchEventStatisticsSoccer.fromJson(responseDec).data;
+      return MatchEventStatisticsWithIncidents.fromJson(responseDec);
       // Iterable l = await json.decode(response.body);
       // List<MatchEventStatisticSoccer> incidents = List<MatchEventStatisticSoccer>.from(l.map((model)=> MatchEventStatisticSoccer.fromJson(model)));
       // return incidents;
     } catch (e) {
       print('STATS ERRROR ' + e.toString());
-      return <MatchEventStatisticSoccer>[];
+      return MatchEventStatisticsWithIncidents();
     }
   }
 
