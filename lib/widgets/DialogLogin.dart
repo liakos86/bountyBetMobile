@@ -67,7 +67,12 @@ class DialogLogin extends StatefulWidget {
 
         TextButton(
           style: ButtonStyle(
-              elevation: MaterialStateProperty.all<double>(10),
+              shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                  RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(4.0),
+                      side: BorderSide(color: Colors.black)
+                  )
+              ),
               foregroundColor: MaterialStateProperty.all<Color>(Colors.white),
               backgroundColor: MaterialStateProperty.all<Color>(Colors.red.shade500)
           ),

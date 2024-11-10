@@ -5,7 +5,7 @@ import 'package:flutter_app/models/match_event.dart';
 import 'Section.dart';
 import 'constants/JsonConstants.dart';
 
-class League {
+class League implements Comparable<League>{
 
   League({
     required this.name,
@@ -32,7 +32,7 @@ class League {
   //
   // List<MatchEvent> liveEvents = <MatchEvent>[];
 
-  int priority = -1;
+  int priority = 0;
 
   static League fromJson(league) {
     League li = League(
@@ -61,6 +61,30 @@ class League {
     li.seasonIds = leagueSeasonIds;
 
     return li;
+  }
+
+  @override
+  int get hashCode => league_id * 37;
+
+  @override
+  int compareTo(League other) {
+    if (this.priority > other.priority){
+      return -1;
+    }
+
+    if (this.priority < other.priority){
+      return 1;
+    }
+
+    if (this.name.compareTo(other.name) < 0){
+      return -1;
+    }
+
+    if (this.name.compareTo(other.name) > 0){
+      return 1;
+    }
+
+    return 0;
   }
 }
 

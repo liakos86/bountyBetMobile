@@ -8,10 +8,8 @@ import 'package:flutter_app/enums/ChangeEvent.dart';
 import 'package:flutter_app/enums/LastedPeriod.dart';
 import 'package:flutter_app/enums/MatchEventStatus.dart';
 import 'package:flutter_app/helper/SharedPrefs.dart';
-import 'package:flutter_app/models/MatchEventIncidentSoccer.dart';
-import 'package:flutter_app/models/notification/NotificationInfo.dart';
 import 'package:flutter_app/pages/MatchInfoSoccerDetailsPage.dart';
-import 'package:flutter_app/utils/notification/NotificationService.dart';
+import 'package:flutter_app/pages/ParentPage.dart';
 import '../../enums/WinnerType.dart';
 import '../../models/Score.dart';
 import '../../models/match_event.dart';
@@ -41,13 +39,13 @@ class LiveMatchRowState extends State<LiveMatchRow> {
 
   @override
   Widget build(BuildContext context) {
-
+    
     int homeRed = 0;
     int awayRed = 0;
 
 
 
-    // Iterable<MatchEventIncidentSoccer> redCards = gameWithOdds.incidents.where((element) =>
+    // Iterable<MatchEventIncidentSoccer> redCards = gameWithOdds.st.where((element) =>
     //   element.incident_type=="card" && (element.card_type=='Red' || element.card_type=='YellowRed'));
     //
     // for (MatchEventIncidentSoccer redCard in redCards){
@@ -58,7 +56,6 @@ class LiveMatchRowState extends State<LiveMatchRow> {
     //   }
     // }
 
-    print('drawing for ' + gameWithOdds.homeTeam.name);
     return
       DecoratedBox(
 
@@ -77,7 +74,7 @@ class LiveMatchRowState extends State<LiveMatchRow> {
               children: [
 
                 Expanded(//first column
-                    flex: 1,
+                    flex: 3,
                     child:
 
                     MatchEventStatus.INPROGRESS.statusStr== gameWithOdds.status ?
@@ -85,7 +82,8 @@ class LiveMatchRowState extends State<LiveMatchRow> {
                     GestureDetector(
                         onTap: () async =>{
 
-                          if (await NotificationService.checkPermission()){
+                          // if (await NotificationService.checkPermission()){
+                          if ((await checkFirebasePermission()).authorizationStatus == AuthorizationStatus.authorized){
 
                             //if (await sharedPrefs.isFavEvent(gameWithOdds.eventId.toString())){
                             if (gameWithOdds.isFavourite){
@@ -95,7 +93,10 @@ class LiveMatchRowState extends State<LiveMatchRow> {
                               sharedPrefs.appendEventId(gameWithOdds.eventId.toString()),
                               updateFav(true)
                               },
-                         }
+                            ParentPageState.favouritesUpdate(),
+                         }else{
+                            print('no permision')
+                          }
                         },
                         child:
                     Column(
@@ -114,11 +115,14 @@ class LiveMatchRowState extends State<LiveMatchRow> {
                         const SizedBox()
                 ),
 
-                Expanded(//first column
-                    flex: 10,
+                Expanded(//second column
+                    flex: 20,
                     child:
 
+
+
                 GestureDetector(
+                  behavior: HitTestBehavior.translucent,
                 onTap: () {
 
                 Navigator.push(
@@ -137,6 +141,8 @@ class LiveMatchRowState extends State<LiveMatchRow> {
                 },
                 child:
 
+                // Container(//we need this to apply gesture detection everywhere
+                //     child:
                     Column(
                     children: [
                         Align(
@@ -150,7 +156,9 @@ class LiveMatchRowState extends State<LiveMatchRow> {
                       LogoWithName(key: UniqueKey(), name: gameWithOdds.awayTeam.getLocalizedName(), logoUrl: gameWithOdds.awayTeam.logo, redCards: awayRed, logoSize: 24, fontSize: 14,  winnerType: calculateWinnerType(gameWithOdds, 2)),
                             )
                     ]
-                ))),
+                ))
+                        // )
+                ),
       //), // FIRST COLUMN END
 
                 Expanded(
@@ -258,6 +266,19 @@ class LiveMatchRowState extends State<LiveMatchRow> {
     setState(() {
       gameWithOdds.isFavourite = newfav;
     });
+  }
+
+  Future<NotificationSettings> checkFirebasePermission() async {
+    FirebaseMessaging messaging = FirebaseMessaging.instance;
+    return await messaging.requestPermission(
+      alert: true,
+      announcement: false,
+      badge: true,
+      carPlay: false,
+      criticalAlert: false,
+      provisional: false,
+      sound: true,
+    );
   }
 
 }

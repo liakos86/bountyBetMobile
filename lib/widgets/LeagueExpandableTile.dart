@@ -11,6 +11,7 @@ import '../enums/MatchEventStatus.dart';
 import '../models/UserPrediction.dart';
 import '../models/constants/Constants.dart';
 import '../models/LeagueWithData.dart';
+import '../models/context/AppContext.dart';
 import 'row/UpcomingMatchRow.dart';
 
 class LeagueExpandableTile extends StatefulWidget {
@@ -104,6 +105,9 @@ class LeagueExpandableTile extends StatefulWidget {
         || matchEventStatus == MatchEventStatus.POSTPONED || matchEventStatus == MatchEventStatus.CANCELLED) {
       return LiveMatchRow(key: UniqueKey(), gameWithOdds: event);
     }
+
+    // print('UPCMING ROW BUILDING ' + AppContext.eventsPerDayMap['0'].length.toString());
+
 
     return UpcomingMatchRow(key: UniqueKey(), gameWithOdds: event, selectedOdds: selectedOdds, callbackForOdds: callbackForOdds);
   }

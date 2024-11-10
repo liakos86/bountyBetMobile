@@ -9,36 +9,16 @@ class LeagueWithData implements Comparable<LeagueWithData>{
 
   LeagueWithData({
     required this.league,
-    // required this.name,
-    // required this.league_id,
-    // required this.has_logo,
     required this.events,
-    // required this.priority
   } );
 
   LeagueWithData.defLeague();
 
   League league = League.defConst();
 
-  // Map<String, String> ?translations;
-
-  // Section section = Section('Other');
-
-  // List<Season> seasons = <Season>[];
-
-  // bool has_logo = false;
-
-  // String name = Constants.empty;
-
-  // int league_id = 0;
-
-  // String? logo ;//= Constants.assetNoLeagueImage;
-
   List<MatchEvent> events = <MatchEvent>[];
 
   List<MatchEvent> liveEvents = <MatchEvent>[];
-
-  // int priority = -1;
 
   @override
   operator == (other) =>
@@ -50,15 +30,7 @@ class LeagueWithData implements Comparable<LeagueWithData>{
 
   @override
   int compareTo(LeagueWithData other) {
-    if (this.league.priority > other.league.priority){
-      return -1;
-    }
-
-    if (this.league.priority < other.league.priority){
-      return 1;
-    }
-
-    return 0;
+    return this.league.compareTo(other.league);
   }
 
 

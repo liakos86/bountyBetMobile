@@ -1,26 +1,20 @@
 
 import 'package:flutter_app/enums/ChangeEvent.dart';
 import 'package:flutter_app/helper/SharedPrefs.dart';
-import 'package:flutter_app/models/MatchEventStatisticSoccer.dart';
-import 'package:flutter_app/models/Player.dart';
-import 'package:flutter_app/models/StandingRow.dart';
 import 'package:flutter_app/models/TimeDetails.dart';
 import 'package:flutter_app/models/constants/JsonConstants.dart';
 import 'package:flutter_app/models/LeagueWithData.dart';
-import 'package:flutter_app/models/MatchEventIncidentSoccer.dart';
 import 'package:flutter_app/models/League.dart';
 import 'package:flutter_app/models/match_event.dart';
-import 'package:flutter_app/pages/ParentPage.dart';
 
 import '../enums/BetPredictionStatus.dart';
 import '../enums/BetPredictionType.dart';
 import '../enums/MatchEventStatus.dart';
 import '../models/Score.dart';
-import '../models/Season.dart';
 import '../models/Section.dart';
-import '../models/Standing.dart';
 import '../models/Team.dart';
 import '../models/UserPrediction.dart';
+import '../models/context/AppContext.dart';
 import '../models/match_odds.dart';
 
 class JsonHelper{
@@ -165,7 +159,12 @@ class JsonHelper{
 
     // var league = leagueWithDataJson['league'];
     int leagueId = leagueWithDataJson['leagueId'];
-    League li = ParentPageState.allLeaguesMap[leagueId];
+
+    if(!AppContext.allLeaguesMap.containsKey(leagueId)){
+      print('League missing ' + leagueId.toString());
+    }
+
+    League li = AppContext.allLeaguesMap[leagueId];
 
     LeagueWithData l = LeagueWithData(
         league: li,

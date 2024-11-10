@@ -6,16 +6,16 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_app/enums/ChangeEvent.dart';
 import 'package:flutter_app/pages/ParentPage.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
 
 import 'dart:async';
+import 'enums/ChangeEvent.dart';
 import 'firebase_options.dart';
 import 'helper/SharedPrefs.dart';
 import 'models/ChangeEventSoccer.dart';
-
+import 'models/context/AppContext.dart';
 
 
 /// Create a [AndroidNotificationChannel] for heads up notifications
@@ -34,18 +34,6 @@ Future<void> main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-
-  // //ask permissions if not asked
-  // FirebaseMessaging messaging = FirebaseMessaging.instance;
-  // await messaging.requestPermission(
-  //   alert: true,
-  //   announcement: false,
-  //   badge: true,
-  //   carPlay: false,
-  //   criticalAlert: false,
-  //   provisional: false,
-  //   sound: true,
-  // );
 
   FirebaseMessaging.onBackgroundMessage( _firebaseMessagingBackgroundHandler );
 
@@ -164,18 +152,18 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
 
 String notificationBodyFrom(ChangeEventSoccer changeEventSoccer) {
   switch (changeEventSoccer.changeEvent){
-    case ChangeEvent.FULL_TIME:
-      return '${changeEventSoccer.homeTeam.name} ${changeEventSoccer.homeTeamScore.current} - ${changeEventSoccer.awayTeamScore.current} ${changeEventSoccer.awayTeam.name}';
-    case ChangeEvent.HOME_GOAL:
-      return '${changeEventSoccer.homeTeam.name} ${changeEventSoccer.homeTeamScore.current} - ${changeEventSoccer.awayTeamScore.current} ${changeEventSoccer.awayTeam.name}';
-    case ChangeEvent.AWAY_GOAL:
-      return '${changeEventSoccer.homeTeam.name} ${changeEventSoccer.homeTeamScore.current} - ${changeEventSoccer.awayTeamScore.current} ${changeEventSoccer.awayTeam.name}';
-    case ChangeEvent.HALF_TIME:
-      return 'Half time ${changeEventSoccer.homeTeamScore.current} - ${changeEventSoccer.awayTeamScore.current}';
-    case ChangeEvent.HOME_RED_CARD:
-      return 'Home red ${changeEventSoccer.homeTeamScore.current} - ${changeEventSoccer.awayTeamScore.current}';
-    case ChangeEvent.AWAY_RED_CARD:
-      return 'Away red ${changeEventSoccer.homeTeamScore.current} - ${changeEventSoccer.awayTeamScore.current}';
+    // case ChangeEvent.FULL_TIME:
+    //   return '${changeEventSoccer.homeTeam.name} ${changeEventSoccer.homeTeamScore.current} - ${changeEventSoccer.awayTeamScore.current} ${changeEventSoccer.awayTeam.name}';
+    // case ChangeEvent.HOME_GOAL:
+    //   return '${changeEventSoccer.homeTeam.name} ${changeEventSoccer.homeTeamScore.current} - ${changeEventSoccer.awayTeamScore.current} ${changeEventSoccer.awayTeam.name}';
+    // case ChangeEvent.AWAY_GOAL:
+    //   return '${changeEventSoccer.homeTeam.name} ${changeEventSoccer.homeTeamScore.current} - ${changeEventSoccer.awayTeamScore.current} ${changeEventSoccer.awayTeam.name}';
+    // case ChangeEvent.HALF_TIME:
+    //   return 'Half time ${changeEventSoccer.homeTeamScore.current} - ${changeEventSoccer.awayTeamScore.current}';
+    // case ChangeEvent.HOME_RED_CARD:
+    //   return 'Home red ${changeEventSoccer.homeTeamScore.current} - ${changeEventSoccer.awayTeamScore.current}';
+    // case ChangeEvent.AWAY_RED_CARD:
+    //   return 'Away red ${changeEventSoccer.homeTeamScore.current} - ${changeEventSoccer.awayTeamScore.current}';
     default:
       return 'Nothing';
   }

@@ -52,7 +52,7 @@ class DialogRegisterState extends State<DialogRegister> {
             onChanged: (text) {
               this.email = text;
             },
-            decoration: InputDecoration(
+            decoration: const InputDecoration(
               border: OutlineInputBorder(),
               hintText: 'your email',
             ),
@@ -63,7 +63,7 @@ class DialogRegisterState extends State<DialogRegister> {
             onChanged: (text) {
               this.username = text;
             },
-            decoration: InputDecoration(
+            decoration: const InputDecoration(
               border: OutlineInputBorder(),
               hintText: 'your username',
             ),
@@ -75,20 +75,25 @@ class DialogRegisterState extends State<DialogRegister> {
             onChanged: (text) {
               this.password = text;
             },
-            decoration: InputDecoration(
+            decoration: const InputDecoration(
               border: OutlineInputBorder(),
               hintText: 'your password',
             ),
           ),
 
           TextButton(
-            style: ButtonStyle(
-                elevation: MaterialStateProperty.all<double>(10),
-                foregroundColor: MaterialStateProperty.all<Color>(Colors.white),
-                backgroundColor: MaterialStateProperty.all<Color>(
-                    Colors.red.shade500)
-            ),
-            onPressed: () {
+          style: ButtonStyle(
+          shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+          RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(4.0),
+          side: BorderSide(color: Colors.black)
+          )
+          ),
+          foregroundColor: MaterialStateProperty.all<Color>(Colors.white),
+          backgroundColor: MaterialStateProperty.all<Color>(Colors.red.shade500)
+          ),
+          onPressed: () {
+
               registerWith(email, password, username);
             },
             child: Text('Register'),

@@ -13,20 +13,21 @@ import 'package:flutter_app/pages/LivePage.dart';
 import 'package:flutter_app/pages/ParentPage.dart';
 import 'package:flutter_app/widgets/BetSlipWithCustomKeyboard.dart';
 import 'package:flutter_app/widgets/LeagueExpandableTile.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart';
 
+import '../models/League.dart';
 import '../models/UserBet.dart';
 import '../models/UserPrediction.dart';
 import '../models/constants/UrlConstants.dart';
 import '../models/LeagueWithData.dart';
+import '../models/context/AppContext.dart';
 import '../utils/BetUtils.dart';
-import '../widgets/BetSlipBottom.dart';
-import '../widgets/row/LeagueMatchesRow.dart';
 
 
 class OddsPage extends StatefulWidget {
 
-  final Map eventsPerDayMap;
+  // final Map eventsPerDayMap;
 
   final Function updateUserCallback;
 
@@ -39,7 +40,7 @@ class OddsPage extends StatefulWidget {
   OddsPage({
     Key? key,
     required this.updateUserCallback,
-    required this.eventsPerDayMap,
+    // required this.eventsPerDayMap,
     required this.selectedOdds
     //setName('Today\'s Odds')
 
@@ -54,14 +55,14 @@ class OddsPageState extends State<OddsPage>{
    */
   late final List<UserPrediction> selectedOdds;// = <UserPrediction>[];
 
-  Map eventsPerDayMap = LinkedHashMap();
+  // Map eventsPerDayMap = LinkedHashMap();
 
   Function updateUserCallback = ()=>{ };
 
   @override
   void initState() {
     selectedOdds = widget.selectedOdds;
-    eventsPerDayMap = widget.eventsPerDayMap;
+    // eventsPerDayMap = widget.eventsPerDayMap;
     updateUserCallback = widget.updateUserCallback;
     super.initState();
   }
@@ -74,16 +75,16 @@ class OddsPageState extends State<OddsPage>{
     tabAlignment: TabAlignment.center,
     unselectedLabelColor: Colors.black54.withOpacity(0.2),
     tabs: [
-      Tab(text: eventsPerDayMap.entries.elementAt(2).key),
-      Tab(text: eventsPerDayMap.entries.elementAt(1).key),
-      Tab(text: eventsPerDayMap.entries.elementAt(0).key),
+      Tab(text: AppContext.eventsPerDayMap.entries.elementAt(2).key),
+      Tab(text: AppContext.eventsPerDayMap.entries.elementAt(1).key),
+      Tab(text: AppContext.eventsPerDayMap.entries.elementAt(0).key),
     ],
   );
 
   @override
   Widget build(BuildContext context) {
 
-    if (eventsPerDayMap.isEmpty){
+    if (AppContext.eventsPerDayMap.isEmpty){
       return  const Align(
           alignment: Alignment.center,
           child: SizedBox(
@@ -101,7 +102,7 @@ class OddsPageState extends State<OddsPage>{
 
     DefaultTabController(
       initialIndex: 1,
-      length: eventsPerDayMap.keys.length,
+      length: AppContext.eventsPerDayMap.keys.length,
 
       child:
 
@@ -130,15 +131,16 @@ class OddsPageState extends State<OddsPage>{
           child:
           TabBarView(
             children: [
+
               ListView.builder(
 
                   key: const PageStorageKey<String>(
                       'pageOdds0'),
                   // controller: _scrollController0,
                   padding: const EdgeInsets.all(8),
-                  itemCount: eventsPerDayMap.entries.elementAt(2).value.length,
+                  itemCount: AppContext.eventsPerDayMap.entries.elementAt(2).value.length,
                   itemBuilder: (context, item) {
-                    return _buildRow(eventsPerDayMap.entries.elementAt(2).value[item], item);
+                    return _buildRow(AppContext.eventsPerDayMap.entries.elementAt(2).value[item], item);
                   }),
 
               ListView.builder(
@@ -146,18 +148,20 @@ class OddsPageState extends State<OddsPage>{
                       'pageOdds1'),
                  // controller: _scrollController1,
                   padding: const EdgeInsets.all(8),
-                  itemCount: eventsPerDayMap.entries.elementAt(1).value.length,
+                  itemCount: AppContext.eventsPerDayMap.entries.elementAt(1).value.length,
                   itemBuilder: (context, item) {
-                    return _buildRow(eventsPerDayMap.entries.elementAt(1).value[item], item);
+                    return _buildRow(AppContext.eventsPerDayMap.entries.elementAt(1).value[item], item);
                   }),
+
+
               ListView.builder(
                   key: const PageStorageKey<String>(
                       'pageOdds2'),
                 // controller: _scrollController2,
                   padding: const EdgeInsets.all(8),
-                  itemCount: eventsPerDayMap.entries.elementAt(0).value.length,
+                  itemCount: AppContext.eventsPerDayMap.entries.elementAt(0).value.length,
                   itemBuilder: (context, item) {
-                    return _buildRow(eventsPerDayMap.entries.elementAt(0).value[item], item);
+                    return _buildRow(AppContext.eventsPerDayMap.entries.elementAt(0).value[item], item);
                   }),
 
             ],)
@@ -167,10 +171,16 @@ class OddsPageState extends State<OddsPage>{
           heroTag: 'btnOdds',
           foregroundColor: Colors.white,
           onPressed: ()=> {
-            if (selectedOdds.isNotEmpty)
-          showDialog(context: context, builder: (context) =>
 
-          AlertDialog(
+            if (AppContext.user.mongoUserId != Constants.defMongoUserId && !AppContext.user.validated){
+              alertDialog('Your account requires validation. Please go to ${AppContext.user.email} and validate.')
+            }else if (AppContext.user.mongoUserId == Constants.defMongoUserId){
+              alertDialog('Please login/register at the top left in order to bet.')
+            } else if (selectedOdds.isNotEmpty)
+
+              showDialog(context: context, builder: (context) =>
+
+              AlertDialog(
 
           insetPadding: EdgeInsets.zero,
           contentPadding: EdgeInsets.all(2.0),
@@ -225,9 +235,17 @@ class OddsPageState extends State<OddsPage>{
   }
 
   void fixOddsCallback(UserPrediction selectedOdd) {
+
+    print('after click BUILDING ' + AppContext.eventsPerDayMap['0'].length.toString());
     if (selectedOdds.contains(selectedOdd)){
       selectedOdds.remove(selectedOdd);
     }else{
+
+      if (Constants.MAX_BET_PREDICTIONS == selectedOdds.length){
+        Fluttertoast.showToast(msg: 'Max bets size');
+        return;
+      }
+
       for (UserPrediction up in List.of(selectedOdds)){
         if (selectedOdd.eventId == up.eventId){
           selectedOdds.remove(up);
@@ -237,9 +255,16 @@ class OddsPageState extends State<OddsPage>{
       selectedOdds.add(selectedOdd);
     }
 
+
+    print('after click BUILDING ' + AppContext.eventsPerDayMap['0'].length.toString());
+
+
     setState(() =>
       selectedOdds
     );
+
+    print('after click BUILDING ' + AppContext.eventsPerDayMap['0'].length.toString());
+
 
   }
 
@@ -249,9 +274,9 @@ class OddsPageState extends State<OddsPage>{
     }
 
 
-    String? mongoUserId = ParentPageState.user.mongoUserId;
-    if (mongoUserId != Constants.defMongoUserId && !ParentPageState.user.validated){
-      String msg = 'Your account requires validation. Please go to ${ParentPageState.user.email} and validate.';
+    String? mongoUserId = AppContext.user.mongoUserId;
+    if (mongoUserId != Constants.defMongoUserId && !AppContext.user.validated){
+      String msg = 'Your account requires validation. Please go to ${AppContext.user.email} and validate.';
       alertDialog(msg);
       return BetPlacementStatus.FAILED_USER_NOT_VALIDATED;
     }else if (mongoUserId == Constants.defMongoUserId){
@@ -274,16 +299,16 @@ class OddsPageState extends State<OddsPage>{
           encoding: Encoding.getByName("utf-8")).timeout(
           const Duration(seconds: 20));
 
-      var responseDec = jsonDecode(userResponse.body);
-      User userFromServer = User.fromJson(responseDec);
+      // var responseDec = jsonDecode(userResponse.body);
+      //User userFromServer = User.fromJson(responseDec);
 
-      BetPlacementStatus betPlacementStatus = BetPlacementStatus.ofStatus(int.parse(userFromServer.errorMessage));
+      BetPlacementStatus betPlacementStatus = BetPlacementStatus.ofStatusText(userResponse.body);
 
       if (betPlacementStatus != BetPlacementStatus.PLACED){
         return betPlacementStatus;
       }
 
-      updateUserCallback.call(userFromServer, newBet);
+      updateUserCallback.call(newBet);
 
       setState(() {
         selectedOdds.clear();

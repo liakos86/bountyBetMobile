@@ -8,8 +8,10 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_app/helper/JsonHelper.dart';
+import 'package:flutter_app/models/constants/PageConstants.dart';
 import 'package:flutter_app/models/interfaces/StatefulWidgetWithName.dart';
 import 'package:flutter_app/models/League.dart';
+import 'package:flutter_app/pages/ParentPage.dart';
 import 'package:http/http.dart';
 
 import '../models/constants/Constants.dart';
@@ -41,6 +43,11 @@ class LeaguesInfoPageState extends State<LeaguesInfoPage>{
         updateLeagues(leaguesList));
 
     Timer.periodic(const Duration(seconds: 20), (timer) {
+
+      if (!this.mounted || ! (ParentPageState.selectedPageIndex == PageConstants.INDEX_PAGE_LEAGUE_INFO)){
+        return;
+      }
+
       getStandingsWithoutTablesAsync().then((leaguesList) =>
           updateLeagues(leaguesList));
     });
@@ -66,7 +73,7 @@ class LeaguesInfoPageState extends State<LeaguesInfoPage>{
   Widget _buildRow(League league) {
 
     Image leagueImg = Image(
-      image: CachedNetworkImageProvider(league.logo!),
+      image: CachedNetworkImageProvider(league.logo ?? ''),
         height: 16,
         width: 16,
       errorBuilder:
@@ -116,6 +123,7 @@ class LeaguesInfoPageState extends State<LeaguesInfoPage>{
       return;
     }
 
+    leaguesList.sort();
     allLeagues.clear();
 
     setState(() {

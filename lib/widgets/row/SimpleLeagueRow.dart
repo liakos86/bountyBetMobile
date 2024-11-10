@@ -94,7 +94,7 @@ class SimpleLeagueRowState extends State<SimpleLeagueRow> with SingleTickerProvi
                             children: [
                               WidgetSpan(
                                   child: CachedNetworkImage(
-                                    imageUrl: league.logo!,
+                                    imageUrl: league.logo ?? '',
                                     placeholder: (context, url) => Image.asset(Constants.assetNoLeagueImage, width: 32, height: 32,),
                                     errorWidget: (context, url, error) => Image.asset(Constants.assetNoLeagueImage, width: 32, height: 32,),
                                     height: 32,

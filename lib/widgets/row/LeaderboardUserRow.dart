@@ -5,6 +5,7 @@ import 'package:animated_background/particles.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_app/models/context/AppContext.dart';
 import 'package:flutter_app/pages/ParentPage.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
@@ -104,14 +105,14 @@ class LeaderboardRowState extends State<LeaderboardUserRow>  with SingleTickerPr
 
 
     Card(
-      color: user.mongoUserId == ParentPageState.user.mongoUserId ? Colors.greenAccent : Colors.cyan[50],
+      color: user.mongoUserId == AppContext.user.mongoUserId ? Colors.greenAccent : Colors.cyan[50],
       child:
       AnimatedBackground(
         vsync: this,
         behaviour: RandomParticleBehaviour(options: particles),
         child:
       Padding(
-        padding: EdgeInsets.all(
+        padding: const EdgeInsets.all(
            8),
         child:
         Theme(

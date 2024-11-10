@@ -6,6 +6,7 @@ import 'package:flutter_app/enums/BetPlacementStatus.dart';
 import 'package:flutter_app/utils/BetUtils.dart';
 import 'package:flutter_app/widgets/row/LiveMatchRow.dart';
 import 'package:flutter_app/widgets/row/UserPredictionRow.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 import '../models/UserPrediction.dart';
 import '../models/constants/Constants.dart';
@@ -49,7 +50,7 @@ class BetSlipWithCustomKeyboardState extends State<BetSlipWithCustomKeyboard>{
 
   double bettingAmount = 0;
 
-  String errorMsg = Constants.empty;
+  // String errorMsg = Constants.empty;
 
   BetSlipWithCustomKeyboardState(
      this.selectedOdds,
@@ -128,7 +129,8 @@ class BetSlipWithCustomKeyboardState extends State<BetSlipWithCustomKeyboard>{
                                 bettingAmount = double.parse(text);
 
                                 if (bettingAmount > Constants.maxBet){
-                                  errorMsg = 'Maximum bet amount is ${Constants.maxBet}';
+                                  Fluttertoast.showToast(msg: 'Maximum bet amount is ${Constants.maxBet}');
+                                  // errorMsg = 'Maximum bet amount is ${Constants.maxBet}';
                                 }
 
                               });
@@ -150,15 +152,15 @@ class BetSlipWithCustomKeyboardState extends State<BetSlipWithCustomKeyboard>{
                     )
                 ),
 
-                Expanded( flex:1 ,
-
-                    child: Padding(
-                        padding: const EdgeInsets.all(2),
-                        child:Align(alignment: Alignment.centerLeft,
-                            child: Text(errorMsg, style: const TextStyle(fontWeight: FontWeight.w600, color: Colors.red ),)
-                    )
-                )
-                ),
+                // Expanded( flex:1 ,
+                //
+                //     child: Padding(
+                //         padding: const EdgeInsets.all(2),
+                //         child:Align(alignment: Alignment.centerLeft,
+                //             child: Text(errorMsg, style: const TextStyle(fontWeight: FontWeight.w600, color: Colors.red ),)
+                //     )
+                // )
+                // ),
 
 
                 Expanded( flex:2 ,
@@ -178,9 +180,11 @@ class BetSlipWithCustomKeyboardState extends State<BetSlipWithCustomKeyboard>{
                     onPressed: () {
                       if (bettingAmount <= 0){
 
-                        setState(() {
-                          errorMsg = 'Please select a positive bet amount';
-                        });
+                        Fluttertoast.showToast(msg: 'Please select a positive bet amount');
+
+                        // setState(() {
+                        //   errorMsg = 'Please select a positive bet amount';
+                        // });
 
                         return;
                       }
@@ -190,15 +194,22 @@ class BetSlipWithCustomKeyboardState extends State<BetSlipWithCustomKeyboard>{
                       Future<BetPlacementStatus> betPlacementStatusFuture = callbackForBetPlacement.call(bettingAmount);
                       betPlacementStatusFuture.then((betPlacementStatus) =>
                       {
-                      if (betPlacementStatus == BetPlacementStatus.PLACED){
-                          errorMsg = Constants.empty,
+                        if (betPlacementStatus == BetPlacementStatus.PLACED){
+                          Fluttertoast.showToast(
+                              msg: 'Bet placed successfully'),
+
+                          // errorMsg = Constants.empty,
                           Navigator.pop(context)
-                    }else{
-                      setState(() {
-                      errorMsg = betPlacementStatus.statusText;
-                      })
+                        } else
+                          {
+                            Fluttertoast.showToast(
+                                msg: betPlacementStatus.statusText)
+                            // setState(() {
+                            // errorMsg = betPlacementStatus.statusText;
+                            // })
+                            // }
+                          }
                       }
-                    }
 
                       );
 

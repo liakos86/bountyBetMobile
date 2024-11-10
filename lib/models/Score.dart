@@ -44,11 +44,11 @@ class Score{
   }
 
      static Score fromJson(Map<String, dynamic> jsonValues){
-       int current = jsonValues['current'];
-       int display = jsonValues['display'];
-       int normal_time = jsonValues['normal_time'];
-       int period_1 = jsonValues['period_1'];
-       int period_2 = jsonValues['period_2'];
+       int current = int.parse(jsonValues['current']);
+       int display = int.parse(jsonValues['display']);
+       int normal_time = int.parse(jsonValues['normal_time']);
+       int period_1 = int.parse(jsonValues['period_1']);
+       int period_2 = int.parse(jsonValues['period_2']);
       return Score(current, display, normal_time, period_1, period_2);
     }
 

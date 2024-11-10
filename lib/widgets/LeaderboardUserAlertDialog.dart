@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_app/models/context/AppContext.dart';
 import 'package:flutter_app/pages/ParentPage.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
@@ -39,7 +40,7 @@ class LeaderboardUserAlertDialog extends StatelessWidget {
             ],)),
 
 
-      (ParentPageState.user.mongoUserId == Constants.defMongoUserId ||  ParentPageState.user.mongoUserId != user.mongoUserId) ?
+      (AppContext.user.mongoUserId == Constants.defMongoUserId ||  AppContext.user.mongoUserId != user.mongoUserId) ?
 
           Expanded( flex: 1, child: Container(width: double.infinity, color: Colors.red, child: TextButton(
 

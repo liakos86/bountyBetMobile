@@ -59,7 +59,7 @@ class Team{
   }
 
   static Team fromJson(Map<String, dynamic> jsonValues){
-    Team hTeam = Team(jsonValues[JsonConstants.id], jsonValues["name"], jsonValues["logo"]);
+    Team hTeam = Team(int.parse(jsonValues[JsonConstants.id]), jsonValues["name"], jsonValues["logo"]);
 
     if (jsonValues['name_translations'] != null){
       hTeam.name_translations = jsonValues['name_translations'];

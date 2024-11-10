@@ -11,10 +11,10 @@ import 'package:flutter_app/models/constants/Constants.dart';
 import 'package:flutter_app/models/constants/JsonConstants.dart';
 import 'package:flutter_app/models/constants/UrlConstants.dart';
 import 'package:flutter_app/models/LeagueWithData.dart';
+import 'package:flutter_app/models/context/AppContext.dart';
 import 'package:flutter_app/pages/LeaguesInfoPage.dart';
 import 'package:flutter_app/pages/OddsPage.dart';
 import 'package:flutter_app/widgets/DialogTabbedLoginOrRegister.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -34,12 +34,12 @@ import 'LeaderBoardPage.dart';
 import 'LivePage.dart';
 import 'MyBetsPage.dart';
 
-/*
+  /*
    * The current device locale. It can change at any time by user.
-   */
+  */
  String? locale;
 
-class ParentPage extends StatefulWidget {
+  class ParentPage extends StatefulWidget {
 
   @override
   ParentPageState createState() => ParentPageState();
@@ -55,15 +55,8 @@ class ParentPage extends StatefulWidget {
  */
 class ParentPageState extends State<ParentPage> with WidgetsBindingObserver {
 
-  /*
-   * Following keys provide access to the state of each page.
-   */
-  GlobalKey oddsPageKey = GlobalKey();
-  GlobalKey livePageKey = GlobalKey();
-  GlobalKey betsPageKey = GlobalKey();
-  GlobalKey leaderboardPageKey = GlobalKey();
-  GlobalKey leaguesPageKey = GlobalKey();
-
+  
+  // AppContext appContext = AppContext();
 
   String appBarTitle = Constants.empty;
 
@@ -73,34 +66,9 @@ class ParentPageState extends State<ParentPage> with WidgetsBindingObserver {
   Future<SharedPreferences> prefs = SharedPreferences.getInstance();
 
   /*
-   * User with bets etc.
-   */
-  static User user = User.defUser();
-
-  /*
-   * Map with keys the dates and values the List of leagues for each date.
-   */
-  static Map allLeaguesMap = HashMap<int, League>();
-
-  /*
-   * Map with keys the dates and values the List of leagues for each date.
-   */
-  static Map eventsPerDayMap = HashMap<String, List<LeagueWithData>>();
-
-  /*
-   * The leagues which contain live games, only with the live games.
-   */
-  final List<LeagueWithData> liveLeagues = <LeagueWithData>[];
-
-  /*
-   * All the leagues with standings etc.
-   */
-  List<LeagueWithData> allLeaguesWithData = <LeagueWithData>[];
-
-  /*
    * The index of the page navigator.
    */
-  int _selectedPage = 0;
+  static int selectedPageIndex = 0;
 
   /*
    * List of odds in the betslip.
@@ -113,25 +81,46 @@ class ParentPageState extends State<ParentPage> with WidgetsBindingObserver {
   List<Widget> pagesList = <Widget>[];
 
   /*
+   * Following keys provide access to the state of each page.
+   */
+  static GlobalKey oddsPageKey = GlobalKey();
+  static GlobalKey livePageKey = GlobalKey();
+  static GlobalKey betsPageKey = GlobalKey();
+  static GlobalKey leaderboardPageKey = GlobalKey();
+  static GlobalKey leaguesPageKey = GlobalKey();
+
+  /*
    * Fetch the leagues async
    * Fetch the user async
    * When the results are fetched the app will re-build and redraw.
    */
   @override
   void initState() {
+
+
+     AppContext.eventsPerDayMap. putIfAbsent('-1', () => <LeagueWithData>[]);
+     AppContext. eventsPerDayMap.putIfAbsent('0', () => <LeagueWithData>[]);
+     AppContext. eventsPerDayMap.putIfAbsent('1', () => <LeagueWithData>[]);
+
+
     WidgetsBinding.instance.addObserver(this);
     super.initState();
     WidgetsBinding.instance
         .addPostFrameCallback((_) => setLocale(context));
 
-      pagesList.add(OddsPage(key: oddsPageKey, updateUserCallback: updateUserCallBack, eventsPerDayMap: eventsPerDayMap, selectedOdds: selectedOdds,));
-      pagesList.add(LivePage(key: livePageKey, liveLeagues: liveLeagues));
+      pagesList.add(OddsPage(key: oddsPageKey, updateUserCallback: updateUserCallBack, selectedOdds: selectedOdds));
+      // pagesList.add(OddsPage(key: oddsPageKey, updateUserCallback: updateUserCallBack, eventsPerDayMap: AppContext.eventsPerDayMap, selectedOdds: selectedOdds));
+      pagesList.add(LivePage(key: livePageKey, liveLeagues: AppContext.liveLeagues));
+      // pagesList.add(LivePage(key: livePageKey));
       pagesList.add(LeaderBoardPage());
-      pagesList.add(MyBetsPage(key: betsPageKey, user: user, loginOrRegisterCallback: promptLoginOrRegister));
+      pagesList.add(MyBetsPage(key: betsPageKey, user: AppContext.user, loginOrRegisterCallback: promptLoginOrRegister));
       pagesList.add(LeaguesInfoPage(key: leaguesPageKey));
 
 
-      getLeaguesAsync(null).then((leaguesMap) => updateLeagues(leaguesMap)).then((something) => getLeagueEventsAsync(null).then((leagueEventsMap) => updateLeaguesAndLiveMatches(leagueEventsMap)));
+      getLeaguesAsync(null)
+          .then((leaguesMap) => updateLeagues(leaguesMap))
+          .then((updated) => getLeagueEventsAsync(null)
+          .then((leagueEventsMap) => updateLeaguesAndLiveMatches(leagueEventsMap)));
 
       Timer.periodic(const Duration(seconds: 20), (timer) { getLeagueEventsAsync(timer).then((leaguesMap) =>
             updateLeaguesAndLiveMatches(leaguesMap)
@@ -162,9 +151,6 @@ class ParentPageState extends State<ParentPage> with WidgetsBindingObserver {
 
       setupFirebaseListeners();
 
-
-
-
   }
 
 
@@ -191,29 +177,35 @@ class ParentPageState extends State<ParentPage> with WidgetsBindingObserver {
     });
   }
 
+  static void favouritesUpdate(){
+    //if (fromLive){
+      oddsPageKey.currentState?.setState(() {
+        AppContext.eventsPerDayMap;
+      });
+    //}
+
+    //if (fromOdds){
+      livePageKey.currentState?.setState(() {
+        // AppContext.eventsPerDayMap[MatchConstants.KEY_TODAY];
+        // AppContext.liveLeagues;
+      });
+    //}
+  }
+
+
   void updateUser(User value){
 
+    AppContext.updateUser(value);
 
-
-    user.username = value.username;
-    user.userBets.clear();
-    user.userBets.addAll(value.userBets);
-    user.validated = value.validated;
-
-    user.email = value.email;
-    user.balance = value.balance;
-    user.mongoUserId = value.mongoUserId;
-    user.errorMessage = value.errorMessage;
-
-    appBarTitle = '${user.username}(${user.balance.toStringAsFixed(2)})';
+    appBarTitle = '${AppContext.user.username}(${AppContext.user.balance.toStringAsFixed(2)})';
 
     setState(() {
-      user;
+      AppContext.user;
       appBarTitle;
     });
 
     betsPageKey.currentState?.setState(() {
-      user;
+      AppContext.user;
     });
 
   }
@@ -230,7 +222,7 @@ class ParentPageState extends State<ParentPage> with WidgetsBindingObserver {
             Padding(
               padding: const EdgeInsets.all(8),
               child:
-                user.mongoUserId == Constants.defMongoUserId ?
+                AppContext.user.mongoUserId == Constants.defMongoUserId ?
                   FloatingActionButton(
                       heroTag: 'btnParentLogin',
                       onPressed: promptLoginOrRegister,
@@ -256,7 +248,7 @@ class ParentPageState extends State<ParentPage> with WidgetsBindingObserver {
        * The following widget guarantees that no reload will be performed between clicks of the bottom bar.
        */
       IndexedStack(
-              index: _selectedPage,
+              index: selectedPageIndex,
               children: [pagesList[0], pagesList[1], pagesList[2], pagesList[3], pagesList[4]]),
 
       bottomNavigationBar: BottomNavigationBar(
@@ -265,7 +257,7 @@ class ParentPageState extends State<ParentPage> with WidgetsBindingObserver {
         type: BottomNavigationBarType.fixed,
         backgroundColor: Colors.blueAccent,
         fixedColor: Colors.white,
-        currentIndex: _selectedPage,
+        currentIndex: selectedPageIndex,
         items: const [
           BottomNavigationBarItem(
             icon: Icon(Icons.home),
@@ -291,7 +283,7 @@ class ParentPageState extends State<ParentPage> with WidgetsBindingObserver {
 
         onTap: (index){
           setState(() {
-            _selectedPage = index;
+            selectedPageIndex = index;
           });
 
         },
@@ -302,7 +294,7 @@ class ParentPageState extends State<ParentPage> with WidgetsBindingObserver {
 
   static MatchEvent findEvent(int eventId){
 
-    for (MapEntry dayEntry in eventsPerDayMap.entries){
+    for (MapEntry dayEntry in AppContext.eventsPerDayMap.entries){
       for (LeagueWithData l in dayEntry.value){
         for (MatchEvent e in l.events){
           if (eventId == e.eventId){
@@ -312,7 +304,7 @@ class ParentPageState extends State<ParentPage> with WidgetsBindingObserver {
       }
     }
 
-    return eventsPerDayMap.entries.first.value.events.first;
+    return AppContext.eventsPerDayMap.entries.first.value.events.first;
 
   }
 
@@ -347,7 +339,7 @@ class ParentPageState extends State<ParentPage> with WidgetsBindingObserver {
       } catch (e) {
 
         print('ERROR REST ---- MOCKING............');
-        Map<String, List<LeagueWithData>> validData = MockUtils().mockLeaguesMap(eventsPerDayMap, false);
+        Map<String, List<LeagueWithData>> validData = MockUtils().mockLeaguesMap(AppContext.eventsPerDayMap, false);
         return validData;
       }
 
@@ -420,17 +412,23 @@ class ParentPageState extends State<ParentPage> with WidgetsBindingObserver {
     updateUser(user);
   }
 
-  updateUserCallBack(User userUpdated, UserBet newBet) {
+  updateUserCallBack(UserBet newBet) {
 
-      updateUser(userUpdated);
+    getUserAsync().then((value) =>
+    {
+      if (value != null){
+        updateUser(value)
+      }
+    }
+    );
 
-      showDialog(context: context, builder: (context) =>
-
-        AlertDialog(
-          title: Text('Successful bet'),
-          content: DialogSuccessfulBet(newBet: newBet),
-          elevation: 20,
-        ));
+      // showDialog(context: context, builder: (context) =>
+      //
+      //   AlertDialog(
+      //     title: Text('Successful bet'),
+      //     content: DialogSuccessfulBet(newBet: newBet),
+      //     elevation: 20,
+      //   ));
   }
 
   Future<Map<String, List<LeagueWithData>>> convertJsonLeaguesToObjects(Map jsonLeaguesData) async{
@@ -465,17 +463,17 @@ class ParentPageState extends State<ParentPage> with WidgetsBindingObserver {
       return;//TODO maybe empty everything?
     }
 
-    if (eventsPerDayMap.isEmpty){//first incoming matches
-      eventsPerDayMap['-1'] = incomingLeaguesMap[MatchConstants.KEY_TODAY];
-      eventsPerDayMap[MatchConstants.KEY_TODAY] = incomingLeaguesMap[MatchConstants.KEY_TODAY];
-      eventsPerDayMap['1'] = incomingLeaguesMap[MatchConstants.KEY_TODAY];
+    if (AppContext.eventsPerDayMap.isEmpty){//first incoming matches
+      AppContext.eventsPerDayMap['-1'] = incomingLeaguesMap[MatchConstants.KEY_TODAY];
+      AppContext.eventsPerDayMap[MatchConstants.KEY_TODAY] = incomingLeaguesMap[MatchConstants.KEY_TODAY];
+      AppContext.eventsPerDayMap['1'] = incomingLeaguesMap[MatchConstants.KEY_TODAY];
 
-      for(LeagueWithData league in eventsPerDayMap[MatchConstants.KEY_TODAY]){
+      for(LeagueWithData league in AppContext.eventsPerDayMap[MatchConstants.KEY_TODAY]){
         if (league.liveEvents.isEmpty){
           continue;
         }
 
-        liveLeagues.add(league);
+        AppContext.liveLeagues.add(league);
       }
 
       sortLeagues();
@@ -485,7 +483,7 @@ class ParentPageState extends State<ParentPage> with WidgetsBindingObserver {
     }
 
 
-    List<LeagueWithData> existingTodayLeagues = eventsPerDayMap[MatchConstants.KEY_TODAY];
+    List<LeagueWithData> existingTodayLeagues = AppContext.eventsPerDayMap[MatchConstants.KEY_TODAY];
     List<LeagueWithData> incomingTodayLeagues = incomingLeaguesMap[MatchConstants.KEY_TODAY]!;
 
     for(LeagueWithData incomingLeague in incomingTodayLeagues){
@@ -495,6 +493,11 @@ class ParentPageState extends State<ParentPage> with WidgetsBindingObserver {
       //missing league
       if (existingLeague == LeagueWithData.defLeague()){
           existingTodayLeagues.add(incomingLeague);
+
+          if(incomingLeague.liveEvents.isNotEmpty){
+            AppContext.liveLeagues.add(incomingLeague);
+          }
+
           continue;
       }
 
@@ -509,46 +512,52 @@ class ParentPageState extends State<ParentPage> with WidgetsBindingObserver {
           //copy fields
           MatchEvent incomingEvent = incomingLiveEventsOfLeague.firstWhere((element) => element == existingEvent);
           existingEvent.copyFrom(incomingEvent);
+          existingEvent.calculateLiveMinute();//TODO: do it with timer in live page
         }
       }
 
       for (MatchEvent incomingEvent in incomingLiveEventsOfLeague){//add if missing
         if (!existingLiveEventsOfLeague.contains(incomingEvent)){
           existingLiveEventsOfLeague.add(incomingEvent);
+          incomingEvent.calculateLiveMinute();//TODO: do it with timer in live page
         }
       }
     }
 
-    for(LeagueWithData existingLeague in List.of(existingTodayLeagues)) {//league has to be removed
+    for(LeagueWithData existingLeague in List.of(existingTodayLeagues)) {//league has to be removed cause new leagues do not contain it
       var incomingLeague = incomingTodayLeagues.firstWhere((
           element) => element == existingLeague,
           orElse: () => LeagueWithData.defLeague());
 
       if (incomingLeague == LeagueWithData.defLeague()) {
         existingTodayLeagues.remove(existingLeague);
-        liveLeagues.remove(existingLeague);
+
+        if (AppContext.liveLeagues.contains(existingLeague)) {
+          AppContext.liveLeagues.remove(existingLeague);
+        }
+
         checkForOddsRemoval(existingLeague.events);
       }
     }
 
-    for(LeagueWithData league in eventsPerDayMap[MatchConstants.KEY_TODAY]){
-      if (league.liveEvents.isEmpty){
-        liveLeagues.remove(league);
+    // for(LeagueWithData league in AppContext.eventsPerDayMap[MatchConstants.KEY_TODAY]){//TODO: do in live page
+    //   if (league.liveEvents.isEmpty){
+    //     AppContext.liveLeagues.remove(league);
+    //
+    //   }else if (!AppContext.liveLeagues.contains(league)) {
+    //     AppContext.liveLeagues.add(league);
+    //   }
+    // }
 
-      }else if (!liveLeagues.contains(league)) {
-        liveLeagues.add(league);
-      }
-    }
-
-    for (LeagueWithData league in liveLeagues){
-      for (MatchEvent event in league.liveEvents){
-        event.calculateLiveMinute();
-      }
-    }
+    // for (LeagueWithData league in AppContext.liveLeagues){
+    //   for (MatchEvent event in league.liveEvents){
+    //     event.calculateLiveMinute();
+    //   }
+    // }
 
 
-    allLeaguesWithData.clear();
-    allLeaguesWithData.addAll(existingTodayLeagues);
+    // AppContext.allLeaguesWithData.clear();
+    // AppContext.allLeaguesWithData.addAll(existingTodayLeagues);
 
     sortLeagues();
 
@@ -560,13 +569,37 @@ class ParentPageState extends State<ParentPage> with WidgetsBindingObserver {
     showDialog(context: context, builder: (context) =>
 
         AlertDialog(
-          contentPadding: const EdgeInsets.all(0),
-          title: const Text('Login'),
-          content: DialogTabbedLoginOrRegister(registerCallback: registedUserCallback, loginCallback: loginUserCallback,),
+          title: const Text('Welcome'),
+          backgroundColor: Colors.blueAccent,
+          titleTextStyle: const TextStyle(color: Colors.white, fontSize: 20),
+          insetPadding: EdgeInsets.zero,
+          contentPadding: const EdgeInsets.all(2.0),
+          buttonPadding: EdgeInsets.zero,
+          alignment: Alignment.bottomCenter,
           elevation: 20,
+          shape: const RoundedRectangleBorder(
+              borderRadius:
+              BorderRadius.only(topLeft:
+              Radius.circular(10.0), topRight: Radius.circular(10.0))),
+          content:
 
-
-        ));
+          Builder(
+              builder: (context) {
+                // Get available height and width of the build area of this widget. Make a choice depending on the size.
+                var height = MediaQuery
+                    .of(context)
+                    .size
+                    .height * (2 / 3);
+                var width = MediaQuery
+                    .of(context)
+                    .size
+                    .width;
+                return SizedBox(width: width, height: height, child: DialogTabbedLoginOrRegister(
+                  registerCallback: registedUserCallback,
+                  loginCallback: loginUserCallback,)
+                );
+              }
+        )));
   }
 
   void promptLogout() {
@@ -591,6 +624,9 @@ void setupFirebaseListeners() async{
 
   //handler for app in foreground
   FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+    if (!mounted){
+      return;
+    }
     // print('FG Message data: ${message.messageId}');
     if (message.notification != null) {
       print('Message also contained a notification: ${message.notification}');
@@ -614,21 +650,10 @@ void setupFirebaseListeners() async{
       return;
     }
 
-    var jsonValues;
+    ChangeEventSoccer changeEventSoccer = ChangeEventSoccer.fromJson(payload);
 
-    try {
-      jsonValues = json.decode(payload[JsonConstants.changeEvent]);
-    }catch(e){
-      return;
-    }
-
-    ChangeEventSoccer changeEventSoccer = ChangeEventSoccer.fromJson(jsonValues);
-
-    if (!mounted){
-      return;
-    }
-
-    for (LeagueWithData l in liveLeagues){
+    // for (LeagueWithData l in AppContext.liveLeagues){
+    for (LeagueWithData l in AppContext.eventsPerDayMap[MatchConstants.KEY_TODAY]){
 
       List<MatchEvent> events = l.liveEvents;
       MatchEvent? relevantEvent;
@@ -649,41 +674,44 @@ void setupFirebaseListeners() async{
       }
 
       relevantEvent.changeEvent = changeEventSoccer.changeEvent;
-      relevantEvent.homeTeamScore = changeEventSoccer.homeTeamScore;
-      relevantEvent.awayTeamScore = changeEventSoccer.awayTeamScore;
+      relevantEvent.homeTeamScore?.current = changeEventSoccer.homeTeamScore;
+      relevantEvent.awayTeamScore?.current = changeEventSoccer.awayTeamScore;
 
+      //TODO should update only one event!
       MatchEvent parentEvent = ParentPageState.findEvent(changeEventSoccer.eventId);
       parentEvent.changeEvent = changeEventSoccer.changeEvent;
-      parentEvent.homeTeamScore = changeEventSoccer.homeTeamScore;
-      parentEvent.awayTeamScore = changeEventSoccer.awayTeamScore;
+      parentEvent.homeTeamScore?.current = changeEventSoccer.homeTeamScore;
+      parentEvent.awayTeamScore?.current = changeEventSoccer.awayTeamScore;
     }
 
     oddsPageKey.currentState?.setState(() {
-      eventsPerDayMap;
+      AppContext.eventsPerDayMap;
     });
 
     livePageKey.currentState?.setState(() {
-      liveLeagues;
+      // AppContext.eventsPerDayMap[MatchConstants.KEY_TODAY];
+      AppContext.liveLeagues;
     });
   }
 
   void sortLeagues() {
-    eventsPerDayMap.entries.forEach((element) {
+    AppContext.eventsPerDayMap.entries.forEach((element) {
       element.value.sort();
     });
 
-    liveLeagues.sort();
+    // AppContext.liveLeagues.sort();
 
-    allLeaguesWithData.sort();
+//    AppContext.allLeaguesWithData.sort();
   }
 
   void updatePageStates() {
     oddsPageKey.currentState?.setState(() {
-      eventsPerDayMap;
+      AppContext.eventsPerDayMap;
     });
 
     livePageKey.currentState?.setState(() {
-      liveLeagues;
+      //AppContext.eventsPerDayMap[MatchConstants.KEY_TODAY];
+      AppContext.liveLeagues;
     });
 
     // leaguesPageKey.currentState?.setState(() {
@@ -716,10 +744,12 @@ void setupFirebaseListeners() async{
 
   }
 
-  updateLeagues(List<League> leagues) {
+  bool updateLeagues(List<League> leagues) {
     for ( League l in leagues){
-      allLeaguesMap.putIfAbsent(l.league_id, ()=>l);
+      AppContext.allLeaguesMap.putIfAbsent(l.league_id, ()=>l);
     }
+
+    return true;
   }
 
 

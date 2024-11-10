@@ -6,6 +6,8 @@ import 'package:flutter_app/helper/SharedPrefs.dart';
 import 'package:flutter_app/models/interfaces/StatefulWidgetWithName.dart';
 
 import '../models/LeagueWithData.dart';
+import '../models/constants/MatchConstants.dart';
+import '../models/context/AppContext.dart';
 import '../widgets/LeagueExpandableTile.dart';
 
 final pageBucket = PageStorageBucket();
@@ -26,7 +28,7 @@ class LivePage extends StatefulWidgetWithName {
 
 class LivePageState extends State<LivePage> with WidgetsBindingObserver{
 
-  List<LeagueWithData> liveLeagues = <LeagueWithData>[];
+  late List<LeagueWithData> liveLeagues;// = AppContext.eventsPerDayMap[MatchConstants.KEY_TODAY].where((element) => element.liveEvents.isNotEmpty);// <LeagueWithData>[];
 
   List<String> favourites = <String>[];
 
@@ -39,6 +41,10 @@ class LivePageState extends State<LivePage> with WidgetsBindingObserver{
 
   @override
   Widget build(BuildContext context) {
+
+
+    // List<LeagueWithData> liveLeagues = liveLeagues.where((element) => element.liveEvents.isNotEmpty).toList();// <LeagueWithData>[];
+
 
     return Scaffold(
 

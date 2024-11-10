@@ -1,7 +1,6 @@
 import 'package:flutter_app/models/MatchEventIncidentsSoccer.dart';
 import 'package:flutter_app/models/MatchEventStatisticsSoccer.dart';
 
-import 'MatchEventIncidentSoccer.dart';
 import 'MatchEventStatisticSoccer.dart';
 import 'Player.dart';
 import 'constants/JsonConstants.dart';
@@ -13,42 +12,6 @@ class MatchEventStatisticsWithIncidents{
   MatchEventIncidentsSoccer incidents = MatchEventIncidentsSoccer();
 
   MatchEventStatisticsSoccer statistics = MatchEventStatisticsSoccer();
-
-  
-  static List<MatchEventIncidentSoccer> incidentsFromJson(matchIncidentsWrapperJson) {
-    List<MatchEventIncidentSoccer> incidents = <MatchEventIncidentSoccer>[];
-
-    var matchIncidentsJson = matchIncidentsWrapperJson[JsonConstants.data];
-    for (var incidentJson in matchIncidentsJson){
-      MatchEventIncidentSoccer incident = MatchEventIncidentSoccer(
-        id: incidentJson[JsonConstants.id],
-        event_id: incidentJson[JsonConstants.eventId],
-        incident_type: incidentJson['incident_type'],
-        time: incidentJson['time'],
-        order: incidentJson['order'],
-      );
-
-      incident.text = incidentJson[JsonConstants.text];
-
-      incident.card_type = incidentJson['card_type'];
-
-      incident.scoring_team = incidentJson['scoring_team'];
-      incident.reason = incidentJson['reason'];
-      incident.player_team = incidentJson['player_team'];
-      incident.scoring_team = incidentJson['scoring_team'];
-      incident.home_score = incidentJson[JsonConstants.homeScore];
-      incident.away_score = incidentJson[JsonConstants.awayScore];
-
-      incident.player = playerFromJson(incidentJson['player']);
-      incident.player_two_in = playerFromJson(incidentJson['player_two_in']);
-
-      incidents.add(incident);
-    }
-
-    incidents.sort();
-    return incidents;
-  }
-
 
   static Player? playerFromJson(playerJson) {
     if (playerJson == null){
