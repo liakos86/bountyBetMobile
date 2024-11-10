@@ -4,6 +4,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_app/enums/BetPredictionStatus.dart';
 import 'package:flutter_app/enums/BetPredictionType.dart';
+import 'package:flutter_app/enums/WinnerType.dart';
+import 'package:flutter_app/widgets/LogoWithName.dart';
 
 import '../../enums/Sport.dart';
 import '../../models/UserPrediction.dart';
@@ -26,7 +28,7 @@ class UserPredictionRow extends StatelessWidget{
 
           children: [
                 Container(
-                    height: 50,
+                    //height: 50,
                     decoration: BoxDecoration(
                         color: Colors.white,
                         gradient: LinearGradient(
@@ -49,28 +51,36 @@ class UserPredictionRow extends StatelessWidget{
                       padding: const EdgeInsets.all(8),
                       child: Row(children: [
 
-                        Expanded(flex: 1, child:
+                        // Expanded(flex: 1, child:
+                        //
+                        // Sport.ofId(prediction.sportId) == Sport.soccer ?
+                        //     const Icon( Icons.sports_soccer_rounded, color:   Colors.black)
+                        // :   const Icon( Icons.sports_basketball_rounded, color:   Colors.orange),
+                        // ),
 
-                        Sport.ofId(prediction.sportId) == Sport.soccer ?
-                            const Icon( Icons.sports_soccer_rounded, color:   Colors.black)
-                        :   const Icon( Icons.sports_basketball_rounded, color:   Colors.orange),
-                        ),
-
-                      Expanded(flex: 8, child:
+                      Expanded(flex: 6, child:
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           mainAxisAlignment: MainAxisAlignment.start,
                           children: [
-                            Text('${prediction.homeTeam.getLocalizedName()} - ${prediction.awayTeam.getLocalizedName()}',
-                              style: const TextStyle(fontSize: 12, color: Colors.black),
-                              maxLines: 1, overflow: TextOverflow.clip,),
-                            const SizedBox(height: 4),
-                            Text('${predictionTypeTextOf(prediction.betPredictionType)} @ ${prediction.value.toStringAsFixed(2)}',
-                              style: const TextStyle(fontSize: 14, color: Colors.black, fontWeight: FontWeight.bold),
-                              maxLines: 1, overflow: TextOverflow.clip,)
+                            LogoWithName(logoUrl: prediction.homeTeam.logo, logoSize: 20, fontSize: 12, name: prediction.homeTeam.getLocalizedName(), redCards: 0, winnerType: WinnerType.NONE),
+                            LogoWithName(logoUrl: prediction.awayTeam.logo, logoSize: 20, fontSize: 12, name: prediction.awayTeam.getLocalizedName(), redCards: 0, winnerType: WinnerType.NONE),
+
                           ],
                         )
                       ),
+
+                        Expanded(flex: 6, child:
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            Text('${predictionTypeTextOf(prediction.betPredictionType)} @ ${prediction.value.toStringAsFixed(2)}',
+                              style: const TextStyle(fontSize: 12, color: Colors.black, fontWeight: FontWeight.bold),
+                              maxLines: 3, overflow: TextOverflow.clip,)
+                          ],
+                        )
+                        ),
 
                       Expanded(flex: 1, child:
 
@@ -102,35 +112,7 @@ class UserPredictionRow extends StatelessWidget{
                   ),
 
                 ),
-            // Positioned(bottom : 0,
-            //   child: Padding(
-            //       padding: const EdgeInsets.all(8),
-            //       child: Row(children: [
-            //
-            //       prediction.betPredictionStatus==BetPredictionStatus.LOST ?
-            //
-            //         const Icon( Icons.highlight_remove, color:   Colors.red)
-            //           : prediction.betPredictionStatus==BetPredictionStatus.WON ?
-            //         const Icon(Icons.check_circle_outline_outlined, color:   Colors.green) :
-            //         const Icon(Icons.pending_outlined, color:   Colors.black),
-            //         const SizedBox(width: 4),
-            //         Column(
-            //           crossAxisAlignment: CrossAxisAlignment.start,
-            //           mainAxisAlignment: MainAxisAlignment.start,
-            //           children: [
-            //             Text('${prediction.homeTeam.name} - ${prediction.awayTeam.name}',
-            //               style: const TextStyle(fontSize: 12, color: Colors.black),
-            //             maxLines: 1, overflow: TextOverflow.clip,),
-            //             const SizedBox(height: 4),
-            //             Text('${prediction.betPredictionType} @ ${prediction.value.toStringAsFixed(2)}',
-            //               style: const TextStyle(fontSize: 14, color: Colors.black, fontWeight: FontWeight.bold),
-            //               maxLines: 1, overflow: TextOverflow.clip,)
-            //           ],
-            //         ),
-            //
-            //       ],)
-            //   ),
-            // ),
+
           ],
       //  )
 

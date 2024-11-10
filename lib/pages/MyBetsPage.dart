@@ -83,10 +83,10 @@ class MyBetsPageState extends State<MyBetsPage>{
       child: Scaffold(
         appBar: AppBar(
           toolbarHeight: 10,
-         // backgroundColor: Colors.blue[700],
+         backgroundColor: Colors.blueAccent,
           bottom: TabBar(
             labelColor: Colors.white,
-            unselectedLabelColor: Colors.grey[200],
+            unselectedLabelColor: Colors.grey[600],
             indicatorColor: Colors.red,
             indicatorWeight: 8,
 

@@ -24,6 +24,7 @@ class UserBetRow extends StatelessWidget{
     return
 
       Theme(
+
         key: UniqueKey(),
     data: Theme.of(context).copyWith(
     listTileTheme: ListTileTheme.of(context).copyWith(
@@ -32,8 +33,9 @@ class UserBetRow extends StatelessWidget{
     ),
       child:
       ExpansionTile(
+
       initiallyExpanded: true,
-      tilePadding: const EdgeInsets.all(8),
+      tilePadding: const EdgeInsets.all(4),
       backgroundColor: bet.betStatus == BetStatus.LOST ? Colors.red[100] : (bet.betStatus == BetStatus.WON ? Colors.green[200] : Colors.white),
       subtitle: Text('Bet: ${bet.betAmount.toStringAsFixed(2)}'),
       leading:
@@ -47,7 +49,7 @@ class UserBetRow extends StatelessWidget{
 
 
       title: Text('Possible earnings: ' + bet.toReturn().toStringAsFixed(2),
-          style: TextStyle(fontSize: 18, color: Colors.black, fontWeight: FontWeight.bold)),
+          style: TextStyle(fontSize: 16, color: Colors.black, fontWeight: FontWeight.bold)),
       children: bet.predictions.map((item)=> _buildSelectedOddRow(item)).toList()
     ));
   }
