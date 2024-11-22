@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:collection';
 import 'dart:convert';
 
+import 'package:flutter_app/models/interfaces/StatefulWidgetWithName.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 
@@ -29,7 +30,7 @@ import '../models/context/AppContext.dart';
 import '../utils/BetUtils.dart';
 
 
-class OddsPage extends StatefulWidget {
+class OddsPage extends StatefulWidgetWithName {
 
   // final Map eventsPerDayMap;
 
@@ -37,6 +38,12 @@ class OddsPage extends StatefulWidget {
 
   final List<UserPrediction> selectedOdds;
 
+  @override
+  StatefulElement createElement() {
+    setName('Today\'s Odds');
+    // TODO: implement createElement
+    return super.createElement();
+  }
 
   @override
   OddsPageState createState() => OddsPageState();
@@ -46,7 +53,7 @@ class OddsPage extends StatefulWidget {
     required this.updateUserCallback,
     // required this.eventsPerDayMap,
     required this.selectedOdds
-    //setName('Today\'s Odds')
+
 
   } ) : super(key: key);
 
@@ -72,9 +79,9 @@ class OddsPageState extends State<OddsPage>{
   }
 
   TabBar get _tabBar => TabBar(
-    labelStyle: const TextStyle(color: Colors.black54, fontSize: 16, fontWeight: FontWeight.bold),
+    labelStyle: const TextStyle(color: Colors.black87, fontSize: 16, fontWeight: FontWeight.normal),
     isScrollable: true,
-    indicatorColor: Colors.red,
+    indicatorColor: Colors.redAccent,
     indicatorWeight: 6,
     tabAlignment: TabAlignment.center,
     unselectedLabelColor: Colors.black54.withOpacity(0.2),
@@ -120,7 +127,7 @@ class OddsPageState extends State<OddsPage>{
             PreferredSize(
               preferredSize: _tabBar.preferredSize,
               child: ColoredBox(
-                color: Colors.green.shade200,
+                color: Colors.deepOrange.shade100,
                 child: _tabBar,
               ),
             ),

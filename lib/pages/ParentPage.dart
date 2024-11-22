@@ -57,7 +57,7 @@ import 'MyBetsPage.dart';
 class ParentPageState extends State<ParentPage> with WidgetsBindingObserver {
 
 
-  String appBarTitle = Constants.empty;
+  String appBarTitle = 'FantasyBet';
 
   /*
    * Shared prefs
@@ -224,7 +224,15 @@ class ParentPageState extends State<ParentPage> with WidgetsBindingObserver {
     return Scaffold(
       appBar: AppBar(
 
+        bottom: PreferredSize(
+            preferredSize: const Size.fromHeight(2.0),
+            child: Container(
+              color: Colors.grey.shade500,
+              height: 1.0,
+            )),
           title: Text(appBarTitle) ,
+        titleTextStyle: const TextStyle(color: Colors.black87, fontSize: 20),
+        backgroundColor: Colors.deepOrange.shade100,
         leading:
 
             Padding(
@@ -242,13 +250,6 @@ class ParentPageState extends State<ParentPage> with WidgetsBindingObserver {
                           const Icon(Icons.login, color: Colors.white)
                             :
                           const Icon(Icons.settings_rounded, color: Colors.white))
-                  //     :
-                  // FloatingActionButton(
-                  //     heroTag: 'btnParentLogout',
-                  //     onPressed: promptLogout,
-                  //     backgroundColor: Colors.orange,
-                  //     foregroundColor: Colors.black,
-                  //     mini: true, child: const Icon(Icons.logout, color: Colors.white))
 
             )
 
