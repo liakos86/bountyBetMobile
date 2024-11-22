@@ -99,9 +99,11 @@ class LogoWithName extends StatefulWidget {
               padding: const EdgeInsets.only(left: 0, top:8, bottom: 8),
 
               child: Column(
-              children:  [Align(
+              children:  [
+                Align(
                   alignment: Alignment.centerLeft,
-                  child: Text(name + (WinnerType.AFTER == winnerType ? '*' : Constants.empty), overflow: TextOverflow.ellipsis, textAlign: TextAlign.left,  style: TextStyle(fontWeight: WinnerType.NONE == winnerType ? FontWeight.w500 : FontWeight.w900, fontSize: fontSize),)),
+                  child: Text( name + (WinnerType.AFTER == winnerType ? '*' : Constants.empty), overflow: TextOverflow.ellipsis, textAlign: TextAlign.left,
+                    style: TextStyle(fontWeight: WinnerType.NONE == winnerType ? FontWeight.w500 : FontWeight.w900, fontSize: fontSize),)),
                  ]))),
 
         Expanded(

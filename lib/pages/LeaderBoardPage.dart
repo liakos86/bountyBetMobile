@@ -10,6 +10,7 @@ import 'package:http/http.dart';
 import '../models/User.dart';
 import '../models/constants/UrlConstants.dart';
 import '../models/interfaces/StatefulWidgetWithName.dart';
+import '../widgets/row/LeaderBoardRow.dart';
 import '../widgets/row/LeaderboardUserRow.dart';
 import '../widgets/row/LeaderboardUserRowNew.dart';
 
@@ -92,7 +93,8 @@ class LeaderBoardPageState extends State<LeaderBoardPage>{
 
 
     // return LeaderboardUserRowNew(user: leader, position: item+1);
-    return LeaderboardUserRow(user: leader, key: UniqueKey(),);
+    // return LeaderboardUserRow(user: leader, key: UniqueKey(),);
+    return LeaderBoardRow(user: leader, key: UniqueKey(),);
 
   }
 

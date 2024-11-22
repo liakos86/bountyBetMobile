@@ -52,7 +52,7 @@ class JsonHelper{
     }
 
     var startAt = event['start_at'];
-    MatchEvent match = MatchEvent(eventId: event[JsonConstants.id], status: event["status"], status_more: event["status_more"]??'-', homeTeam: hTeam, awayTeam: aTeam, start_at: startAt);
+    MatchEvent match = MatchEvent(eventId: event[JsonConstants.id], leagueId: event[JsonConstants.leagueId], status: event["status"], status_more: event["status_more"]??'-', homeTeam: hTeam, awayTeam: aTeam, start_at: startAt);
     match.changeEvent = ChangeEvent.ofCode(_changeEvent);
 
 
@@ -139,7 +139,7 @@ class JsonHelper{
     return match;
   }
 
-  static Future<LeagueWithData> leagueWithDataFromJson(leagueWithDataJson) async{
+  static Future<LeagueWithData?> leagueWithDataFromJson(leagueWithDataJson) async{
 
     List<MatchEvent> matches = <MatchEvent>[];
     List<MatchEvent> liveMatches = <MatchEvent>[];
@@ -162,6 +162,7 @@ class JsonHelper{
 
     if(!AppContext.allLeaguesMap.containsKey(leagueId)){
       print('League missing ' + leagueId.toString());
+      return null;
     }
 
     League li = AppContext.allLeaguesMap[leagueId];

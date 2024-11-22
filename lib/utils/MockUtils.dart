@@ -116,7 +116,7 @@ class MockUtils {
     }
     MatchOdds mockOdds1 = mockOdds(team1, team2, eventId, odd1, oddx, odd2, oddO25, oddU25);
 
-    MatchEvent event = MatchEvent(eventId: eventId, homeTeam: team1 , awayTeam : team2, status: _status, status_more: _status_more, start_at: '2022-10-13 15:00:00');
+    MatchEvent event = MatchEvent(eventId: eventId, leagueId: 1, homeTeam: team1 , awayTeam : team2, status: _status, status_more: _status_more, start_at: '2022-10-13 15:00:00');
     event.timeDetails = details;
     event.odds = mockOdds1;
     event.lasted_period = _lastedPeriod;

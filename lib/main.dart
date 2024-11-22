@@ -8,6 +8,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_app/pages/ParentPage.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 
 import 'dart:async';
@@ -25,7 +26,7 @@ bool isFlutterLocalNotificationsInitialized = false;
 
 
 /// Initialize the [FlutterLocalNotificationsPlugin] package.
-late FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin;
+ FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -58,7 +59,7 @@ Future<void> setupFlutterNotifications() async {
     importance: Importance.high,
   );
 
-  flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
+  // flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
 
   /// Create an Android Notification Channel.
   ///
@@ -68,6 +69,15 @@ Future<void> setupFlutterNotifications() async {
       .resolvePlatformSpecificImplementation<
       AndroidFlutterLocalNotificationsPlugin>()
       ?.createNotificationChannel(channel);
+
+
+  // Initialize FlutterLocalNotificationsPlugin
+  var initializationSettingsAndroid = AndroidInitializationSettings('notification_icon');
+  var initializationSettings = InitializationSettings(
+    android: initializationSettingsAndroid,
+  );
+
+  await flutterLocalNotificationsPlugin.initialize(initializationSettings);
 
   /// Update the iOS foreground notification presentation options to allow
   /// heads up notifications.
@@ -103,17 +113,17 @@ class MyApp extends StatelessWidget {
  */
 @pragma('vm:entry-point') // avoid discarding during tree shake
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
-    await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-    await setupFlutterNotifications();
+    //await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+    //await setupFlutterNotifications();
 
-    sharedPrefs.init();
-    sharedPrefs.reload();
+
     handleIncomingTopicMessageWhenInBackground(message);
   }
 
   void handleIncomingTopicMessageWhenInBackground(RemoteMessage message) async{
-
-    var favEventIds = sharedPrefs.getListByKey(sp_fav_event_ids);
+    final prefs = await SharedPreferences.getInstance();
+    prefs.reload();
+    var favEventIds = prefs.getStringList(sp_fav_event_ids) ?? <String>[];
     if (favEventIds.isEmpty){
       return;
     }
@@ -121,13 +131,16 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
     final payload = message.data;
     final String msgId = message.messageId.toString();
     try {
-      final jsonValues = json.decode(payload['changeEvent']);
-      ChangeEventSoccer changeEventSoccer = ChangeEventSoccer.fromJson(
-          jsonValues);
+      // final jsonValues = json.decode(payload['changeEvent']);
+      if (payload['changeEvent'] == null){
+        return;
+      }
+
+      ChangeEventSoccer changeEventSoccer = ChangeEventSoccer.fromJson(payload);
       for (String fav in favEventIds){
        int favEventId = int.parse(fav);
 
-      if (favEventId != changeEventSoccer.eventId){
+      if (favEventId == changeEventSoccer.eventId){
       flutterLocalNotificationsPlugin.show(
         Random().nextInt(10000000),
         changeEventSoccer.changeEvent.displayName,
@@ -135,9 +148,10 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
         const NotificationDetails(
           iOS: DarwinNotificationDetails(),//TODO: needs setup for IOS
           android: AndroidNotificationDetails(
-            'my_foreground',
-            'MY FOREGROUND SERVICE',
-            icon: 'https://xscore.cc/resb/league/europe-uefa-champions-league.png',//  '@mipmap/ic_launcher',
+            'high_importance_channel', // id
+            'High Importance Notifications',
+            // 'MY FOREGROUND SERVICE',
+            icon: 'notification_icon',//  '@mipmap/ic_launcher',
             priority: Priority.high,
             ongoing: false,
           ),
@@ -154,10 +168,10 @@ String notificationBodyFrom(ChangeEventSoccer changeEventSoccer) {
   switch (changeEventSoccer.changeEvent){
     // case ChangeEvent.FULL_TIME:
     //   return '${changeEventSoccer.homeTeam.name} ${changeEventSoccer.homeTeamScore.current} - ${changeEventSoccer.awayTeamScore.current} ${changeEventSoccer.awayTeam.name}';
-    // case ChangeEvent.HOME_GOAL:
-    //   return '${changeEventSoccer.homeTeam.name} ${changeEventSoccer.homeTeamScore.current} - ${changeEventSoccer.awayTeamScore.current} ${changeEventSoccer.awayTeam.name}';
-    // case ChangeEvent.AWAY_GOAL:
-    //   return '${changeEventSoccer.homeTeam.name} ${changeEventSoccer.homeTeamScore.current} - ${changeEventSoccer.awayTeamScore.current} ${changeEventSoccer.awayTeam.name}';
+    case ChangeEvent.HOME_GOAL:
+      return '${changeEventSoccer.homeTeamScore} - ${changeEventSoccer.awayTeamScore}';
+    case ChangeEvent.AWAY_GOAL:
+      return '${changeEventSoccer.homeTeamScore} - ${changeEventSoccer.awayTeamScore}';
     // case ChangeEvent.HALF_TIME:
     //   return 'Half time ${changeEventSoccer.homeTeamScore.current} - ${changeEventSoccer.awayTeamScore.current}';
     // case ChangeEvent.HOME_RED_CARD:

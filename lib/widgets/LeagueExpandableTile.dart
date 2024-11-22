@@ -26,9 +26,10 @@ class LeagueExpandableTile extends StatefulWidget {
 
   final List<String> favourites;
 
+  bool expandAll;
 
   LeagueExpandableTile(
-      {Key ?key, required this.league, required this.events, required this.selectedOdds, required this.callbackForOdds, required this.favourites})
+      {Key ?key, required this.league, required this.events, required this.selectedOdds, required this.callbackForOdds, required this.favourites, required this.expandAll})
       : super(key: key);
 
   @override
@@ -48,6 +49,7 @@ class LeagueExpandableTile extends StatefulWidget {
 
     late List<String> favourites;
 
+    late bool expandAll;
 
     @override
     void initState() {
@@ -61,6 +63,7 @@ class LeagueExpandableTile extends StatefulWidget {
       selectedOdds = widget.selectedOdds;
       callbackForOdds = widget.callbackForOdds;
       favourites = widget.favourites;
+      expandAll = widget.expandAll;
 
       return Theme(
         key: UniqueKey(),
@@ -75,7 +78,7 @@ class LeagueExpandableTile extends StatefulWidget {
                     maintainState: false,
                     iconColor: Colors.transparent,
                     collapsedIconColor: Colors.transparent,
-                    initiallyExpanded: true,
+                    initiallyExpanded: expandAll,
                     collapsedBackgroundColor: Colors.yellow[50],
                     backgroundColor: Colors.yellow[50],
                     subtitle: Text(league.league.name, style: const TextStyle(color: Colors.black, fontWeight: FontWeight.w700, fontSize: 12),),

@@ -31,7 +31,7 @@ class DialogTabbedLoginOrRegister extends StatelessWidget {
       child:
 
       Scaffold(
-        resizeToAvoidBottomInset: false,
+        // resizeToAvoidBottomInset: false,
 
           appBar: AppBar(
             toolbarHeight: 0,

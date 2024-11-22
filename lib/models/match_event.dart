@@ -15,6 +15,7 @@ class MatchEvent{
 
   MatchEvent({
     required this.eventId,
+		required this.leagueId,
     required this.homeTeam,
     required this.awayTeam,
     required this.status,
@@ -26,6 +27,8 @@ class MatchEvent{
   Map<String, String> ?translations;
 
   int eventId;
+
+  int leagueId;
 
   String display_status = Constants.empty;
 

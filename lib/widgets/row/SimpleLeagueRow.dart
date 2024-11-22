@@ -121,17 +121,18 @@ class SimpleLeagueRowState extends State<SimpleLeagueRow> with SingleTickerProvi
                     Column(
 
                         children: [
-                          Row(
-                          children:[
+                          // Row(
+                          // children:[
                           Align(
                             alignment: Alignment.centerLeft,
                             child:
-                            Text(league.name + league.league_id.toString(),
+                            Text(league.name,
                                 style: const TextStyle(
                                   overflow: TextOverflow.ellipsis,
                                     fontWeight: FontWeight.bold, fontSize: 14, color: Colors.black)),
                           ),
-                         ] ),
+                         // ]
+                         //  ),
 
                           Row(
                               children:[

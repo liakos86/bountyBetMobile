@@ -2,6 +2,7 @@
 class JsonConstants {
   static const String changeEvent = 'changeEvent';
   static const String eventId = 'event_id';
+  static const String leagueId = 'league_id';
   static const String id = 'id';
   static const String section = 'section';
   static const String name = 'name';
