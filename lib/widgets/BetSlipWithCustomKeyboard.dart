@@ -89,7 +89,7 @@ class BetSlipWithCustomKeyboardState extends State<BetSlipWithCustomKeyboard>{
                 Expanded( flex:2 ,
 
                 child: Padding(
-                    padding: EdgeInsets.all(4),
+                    padding: const EdgeInsets.all(4),
                     child:Align(alignment: Alignment.centerLeft,
                     child: Text('${selectedOdds.length} selections @ ${BetUtils.finalOddOf(selectedOdds).toStringAsFixed(2)}'))
                 )
@@ -98,7 +98,7 @@ class BetSlipWithCustomKeyboardState extends State<BetSlipWithCustomKeyboard>{
                 Expanded( flex:2 ,
                 child:
                     Padding(
-                      padding: EdgeInsets.all(4),
+                      padding: const EdgeInsets.all(4),
                     child:
                     Row(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -152,17 +152,6 @@ class BetSlipWithCustomKeyboardState extends State<BetSlipWithCustomKeyboard>{
                     )
                 ),
 
-                // Expanded( flex:1 ,
-                //
-                //     child: Padding(
-                //         padding: const EdgeInsets.all(2),
-                //         child:Align(alignment: Alignment.centerLeft,
-                //             child: Text(errorMsg, style: const TextStyle(fontWeight: FontWeight.w600, color: Colors.red ),)
-                //     )
-                // )
-                // ),
-
-
                 Expanded( flex:2 ,
                   child:
 
@@ -171,7 +160,7 @@ class BetSlipWithCustomKeyboardState extends State<BetSlipWithCustomKeyboard>{
                         shape: MaterialStateProperty.all<RoundedRectangleBorder>(
                             RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(4.0),
-                                side: BorderSide(color: Colors.black)
+                                side: const BorderSide(color: Colors.black)
                             )
                         ),
                         foregroundColor: MaterialStateProperty.all<Color>(Colors.white),
@@ -182,14 +171,8 @@ class BetSlipWithCustomKeyboardState extends State<BetSlipWithCustomKeyboard>{
 
                         Fluttertoast.showToast(msg: 'Please select a positive bet amount');
 
-                        // setState(() {
-                        //   errorMsg = 'Please select a positive bet amount';
-                        // });
-
                         return;
                       }
-
-                      //BetPlacementStatus betPlacementStatus = BetPlacementStatus.FAIL_GENERIC;
 
                       Future<BetPlacementStatus> betPlacementStatusFuture = callbackForBetPlacement.call(bettingAmount);
                       betPlacementStatusFuture.then((betPlacementStatus) =>
@@ -197,17 +180,11 @@ class BetSlipWithCustomKeyboardState extends State<BetSlipWithCustomKeyboard>{
                         if (betPlacementStatus == BetPlacementStatus.PLACED){
                           Fluttertoast.showToast(
                               msg: 'Bet placed successfully'),
-
-                          // errorMsg = Constants.empty,
                           Navigator.pop(context)
                         } else
                           {
                             Fluttertoast.showToast(
                                 msg: betPlacementStatus.statusText)
-                            // setState(() {
-                            // errorMsg = betPlacementStatus.statusText;
-                            // })
-                            // }
                           }
                       }
 
@@ -224,12 +201,6 @@ class BetSlipWithCustomKeyboardState extends State<BetSlipWithCustomKeyboard>{
   Widget _buildBettingOddRow(UserPrediction bettingOdd) {
 
     return SelectedOddRow(key: UniqueKey(), prediction: bettingOdd, callback: (odd) => removePrediction(odd));
-    return UserPredictionRow(key: UniqueKey(), prediction: bettingOdd, callback: (odd) => removePrediction(odd));
-
-
-    // return SelectedOddRow(key: UniqueKey(), prediction: bettingOdd, callback: (odd) =>
-    //     removePrediction(odd)
-    // );
   }
 
   removePrediction(UserPrediction bettingOdd){

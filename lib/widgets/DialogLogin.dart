@@ -4,6 +4,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_app/examples/util/encryption.dart';
 import 'package:http/http.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
 
 import '../models/User.dart';
 import '../models/constants/UrlConstants.dart';
@@ -37,8 +39,15 @@ class DialogLogin extends StatefulWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
+    return
+      Padding(padding: const EdgeInsets.all(6),
+    child:
+
+
+    SingleChildScrollView(
+    child:
+
+    Column(children:[
 
         Text(errorMsg, style: TextStyle(color: Colors.red)),
 
@@ -55,22 +64,28 @@ class DialogLogin extends StatefulWidget {
 
         TextField(
 
+          obscureText: true,
           controller: null,
           onChanged: (text){
             this.password = text;
           },
-          decoration: InputDecoration(
+          decoration: const InputDecoration(
             border: OutlineInputBorder(),
             hintText: 'your password',
           ),
         ),
 
+
+
+    SizedBox(
+    width: double.infinity,
+    child:
         TextButton(
           style: ButtonStyle(
               shape: MaterialStateProperty.all<RoundedRectangleBorder>(
                   RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(4.0),
-                      side: BorderSide(color: Colors.black)
+                      side: const BorderSide(color: Colors.black)
                   )
               ),
               foregroundColor: MaterialStateProperty.all<Color>(Colors.white),
@@ -79,10 +94,11 @@ class DialogLogin extends StatefulWidget {
           onPressed: () {
             loginWith(emailOrUsername, password);
           },
-          child: Text('Login'),
+          child: Text(AppLocalizations.of(context)!.login),
         )
-
+    )
       ],
+    ))
 
     );
   }

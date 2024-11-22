@@ -1,5 +1,7 @@
 import 'dart:convert';
 
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_app/examples/util/encryption.dart';
@@ -11,8 +13,6 @@ import '../models/constants/Constants.dart';
 import '../models/constants/UrlConstants.dart';
 
 class DialogRegister extends StatefulWidget {
-
-
 
   Function callback = (User user) => {};
 
@@ -40,12 +40,19 @@ class DialogRegisterState extends State<DialogRegister> {
 
   @override
   Widget build(BuildContext context) {
+
     return
 
-      Column(
-        children: [
+    Padding(padding: const EdgeInsets.all(6),
+      child:
 
-          Text(errorMsg, style: TextStyle(color: Colors.red),),
+
+      SingleChildScrollView(
+         child:
+
+             Column(children:[
+
+          Text(errorMsg, style: const TextStyle(color: Colors.red),),
 
           TextField(
             controller: null,
@@ -59,6 +66,7 @@ class DialogRegisterState extends State<DialogRegister> {
           ),
 
           TextField(
+            obscureText: true,
             controller: null,
             onChanged: (text) {
               this.username = text;
@@ -70,7 +78,6 @@ class DialogRegisterState extends State<DialogRegister> {
           ),
 
           TextField(
-
             controller: null,
             onChanged: (text) {
               this.password = text;
@@ -81,12 +88,16 @@ class DialogRegisterState extends State<DialogRegister> {
             ),
           ),
 
-          TextButton(
+          SizedBox(
+              width: double.infinity,
+            child:
+              TextButton(
+
           style: ButtonStyle(
           shape: MaterialStateProperty.all<RoundedRectangleBorder>(
           RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(4.0),
-          side: BorderSide(color: Colors.black)
+          side: const BorderSide(color: Colors.black)
           )
           ),
           foregroundColor: MaterialStateProperty.all<Color>(Colors.white),
@@ -96,12 +107,14 @@ class DialogRegisterState extends State<DialogRegister> {
 
               registerWith(email, password, username);
             },
-            child: Text('Register'),
+            child: Text(AppLocalizations.of(context)!.register),
           )
-
-        ],
-
-      );
+    )
+      // )
+      ])
+        // ],
+// ])
+      ));
   }
 
   void registerWith(String email, String password, String username) async {

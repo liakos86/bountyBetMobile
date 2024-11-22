@@ -5,6 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_app/widgets/DialogLogin.dart';
 
 import 'DialogRegister.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
 
 
 class DialogTabbedLoginOrRegister extends StatelessWidget {
@@ -45,8 +47,8 @@ class DialogTabbedLoginOrRegister extends StatelessWidget {
                 unselectedLabelColor: Colors.grey.withOpacity(0.5),
 
               tabs: [
-                Tab(text: 'Login'),
-                Tab(text: 'Register'),
+                Tab(text: AppLocalizations.of(context)!.login),
+                Tab(text: AppLocalizations.of(context)!.register),
 
               ],
             ),

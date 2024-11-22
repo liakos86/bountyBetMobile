@@ -265,27 +265,28 @@ class ParentPageState extends State<ParentPage> with WidgetsBindingObserver {
               children: [pagesList[0], pagesList[1], pagesList[2], pagesList[3], pagesList[4]]),
 
       bottomNavigationBar: BottomNavigationBar(
-        selectedFontSize: 20,
+        selectedFontSize: 18,
         unselectedFontSize: 12,
         type: BottomNavigationBarType.fixed,
-        backgroundColor: Colors.blueAccent,
+        backgroundColor: Colors.black87,
         fixedColor: Colors.white,
+        unselectedItemColor: Colors.white60,
         currentIndex: selectedPageIndex,
         items: const [
           BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: 'Odds'
+            icon: ImageIcon(AssetImage('assets/images/calendar-100.png')),//  Icon(Icons.home),
+            label: 'Calendar'
           ),
           BottomNavigationBarItem(
-              icon: Icon(Icons.live_help),
+              icon: ImageIcon(AssetImage('assets/images/live-100.png')),
               label: 'Live'
           ),
           BottomNavigationBarItem(
-              icon: Icon(Icons.favorite),
+              icon: ImageIcon(AssetImage('assets/images/leaders-100.png')),//  Icon(Icons.home),
               label: 'Leaders'
           ),
           BottomNavigationBarItem(
-              icon: Icon(Icons.my_library_music),
+              icon: ImageIcon(AssetImage('assets/images/money-bag-100.png')),//  Icon(Icons.home),
               label: 'My bets'
           ),
           BottomNavigationBarItem(
@@ -660,9 +661,9 @@ class ParentPageState extends State<ParentPage> with WidgetsBindingObserver {
     showDialog(context: context, builder: (context) =>
 
         AlertDialog(
-          title: const Text('Welcome'),
+          // title: const Text('Welcome'),
           backgroundColor: Colors.blueAccent,
-          titleTextStyle: const TextStyle(color: Colors.white, fontSize: 20),
+          // titleTextStyle: const TextStyle(color: Colors.white, fontSize: 20),
           insetPadding: EdgeInsets.zero,
           contentPadding: const EdgeInsets.all(2.0),
           buttonPadding: EdgeInsets.zero,

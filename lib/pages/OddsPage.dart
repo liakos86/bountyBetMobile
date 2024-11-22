@@ -2,6 +2,9 @@ import 'dart:async';
 import 'dart:collection';
 import 'dart:convert';
 
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_app/enums/BetPlacementStatus.dart';
@@ -15,6 +18,7 @@ import 'package:flutter_app/widgets/BetSlipWithCustomKeyboard.dart';
 import 'package:flutter_app/widgets/LeagueExpandableTile.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart';
+import 'package:intl/intl.dart';
 
 import '../models/League.dart';
 import '../models/UserBet.dart';
@@ -75,9 +79,9 @@ class OddsPageState extends State<OddsPage>{
     tabAlignment: TabAlignment.center,
     unselectedLabelColor: Colors.black54.withOpacity(0.2),
     tabs: [
-      Tab(text: AppContext.eventsPerDayMap.entries.elementAt(2).key),
-      Tab(text: AppContext.eventsPerDayMap.entries.elementAt(1).key),
-      Tab(text: AppContext.eventsPerDayMap.entries.elementAt(0).key),
+      Tab(text: getDateWithOffset(-1)),
+      Tab(text: AppLocalizations.of(context)!.today),
+      Tab(text: getDateWithOffset(1)),
     ],
   );
 
@@ -108,7 +112,7 @@ class OddsPageState extends State<OddsPage>{
 
       Scaffold(
 
-        backgroundColor: Colors.white,
+        backgroundColor: Colors.grey[100],
 
           appBar: AppBar(
             toolbarHeight: 0,
@@ -116,7 +120,7 @@ class OddsPageState extends State<OddsPage>{
             PreferredSize(
               preferredSize: _tabBar.preferredSize,
               child: ColoredBox(
-                color: Colors.yellow.shade100,
+                color: Colors.green.shade200,
                 child: _tabBar,
               ),
             ),
@@ -236,7 +240,6 @@ class OddsPageState extends State<OddsPage>{
 
   void fixOddsCallback(UserPrediction selectedOdd) {
 
-    print('after click BUILDING ' + AppContext.eventsPerDayMap['0'].length.toString());
     if (selectedOdds.contains(selectedOdd)){
       selectedOdds.remove(selectedOdd);
     }else{
@@ -255,16 +258,9 @@ class OddsPageState extends State<OddsPage>{
       selectedOdds.add(selectedOdd);
     }
 
-
-    print('after click BUILDING ' + AppContext.eventsPerDayMap['0'].length.toString());
-
-
     setState(() =>
       selectedOdds
     );
-
-    print('after click BUILDING ' + AppContext.eventsPerDayMap['0'].length.toString());
-
 
   }
 
@@ -335,6 +331,19 @@ class OddsPageState extends State<OddsPage>{
   favourites() {
     sharedPrefs.reload();
     return sharedPrefs.getListByKey(sp_fav_event_ids);
+  }
+
+  String getDateWithOffset(int offset) {
+    // Get today's date
+    DateTime today = DateTime.now();
+
+    // Calculate the new date by adding the offset
+    DateTime newDate = today.add(Duration(days: offset));
+
+    // Format the new date in "DD/MM" format
+    String formattedDate = DateFormat('dd/MM').format(newDate);
+
+    return formattedDate;
   }
 
 }

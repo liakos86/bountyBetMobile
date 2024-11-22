@@ -35,5 +35,11 @@
 
     "monthlybetswon" : "Monthly bets won:",
 
-    "monthlypredswon" : "Monthly correct predictions:"
+    "monthlypredswon" : "Monthly correct predictions:",
+
+    "today" : "Today",
+
+     "login" : "Login",
+
+     "register" : "Register"
 }
