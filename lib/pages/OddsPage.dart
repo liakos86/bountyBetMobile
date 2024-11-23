@@ -148,7 +148,7 @@ class OddsPageState extends State<OddsPage>{
                   key: const PageStorageKey<String>(
                       'pageOdds0'),
                   // controller: _scrollController0,
-                  padding: const EdgeInsets.all(8),
+                  padding: const EdgeInsets.all(0),
                   itemCount: AppContext.eventsPerDayMap.entries.elementAt(2).value.length,
                   itemBuilder: (context, item) {
                     return _buildRow(AppContext.eventsPerDayMap.entries.elementAt(2).value[item], item);
@@ -158,7 +158,7 @@ class OddsPageState extends State<OddsPage>{
                   key: const PageStorageKey<String>(
                       'pageOdds1'),
                  // controller: _scrollController1,
-                  padding: const EdgeInsets.all(8),
+                  padding: const EdgeInsets.all(0),
                   itemCount: AppContext.eventsPerDayMap.entries.elementAt(1).value.length,
                   itemBuilder: (context, item) {
                     return _buildRow(AppContext.eventsPerDayMap.entries.elementAt(1).value[item], item);
@@ -169,7 +169,7 @@ class OddsPageState extends State<OddsPage>{
                   key: const PageStorageKey<String>(
                       'pageOdds2'),
                 // controller: _scrollController2,
-                  padding: const EdgeInsets.all(8),
+                  padding: const EdgeInsets.all(0),
                   itemCount: AppContext.eventsPerDayMap.entries.elementAt(0).value.length,
                   itemBuilder: (context, item) {
                     return _buildRow(AppContext.eventsPerDayMap.entries.elementAt(0).value[item], item);

@@ -236,7 +236,7 @@ class ParentPageState extends State<ParentPage> with WidgetsBindingObserver {
         leading:
 
             Padding(
-              padding: const EdgeInsets.all(8),
+             padding: const EdgeInsets.all(6),
               child:
 
                   FloatingActionButton(
@@ -397,7 +397,7 @@ class ParentPageState extends State<ParentPage> with WidgetsBindingObserver {
       } catch (e) {
 
         print('ERROR REST ---- MOCKING............');
-        Map<String, List<LeagueWithData>> validData = new Map();// MockUtils().mockLeaguesMap(AppContext.eventsPerDayMap, false);
+        Map<String, List<LeagueWithData>> validData =  MockUtils().mockLeaguesMap(AppContext.eventsPerDayMap, false);
         return validData;
       }
 
@@ -631,6 +631,9 @@ class ParentPageState extends State<ParentPage> with WidgetsBindingObserver {
         checkForOddsRemoval(existingLeague.events);
       }
     }
+
+    sortLeagues();
+    updatePageStates();
   }
 
     void updateLiveLeagueMatches(Map<int, MatchEvent> incomingLiveMap) {

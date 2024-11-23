@@ -82,10 +82,8 @@ class LiveMatchRowState extends State<LiveMatchRow> {
                     GestureDetector(
                         onTap: () async =>{
 
-                          // if (await NotificationService.checkPermission()){
                           if ((await checkFirebasePermission()).authorizationStatus == AuthorizationStatus.authorized){
 
-                            //if (await sharedPrefs.isFavEvent(gameWithOdds.eventId.toString())){
                             if (gameWithOdds.isFavourite){
                               sharedPrefs.removeFavEvent(gameWithOdds.eventId.toString()),
                               updateFav(false)
@@ -116,10 +114,8 @@ class LiveMatchRowState extends State<LiveMatchRow> {
                 ),
 
                 Expanded(//second column
-                    flex: 20,
+                    flex: 16,
                     child:
-
-
 
                 GestureDetector(
                   behavior: HitTestBehavior.translucent,
@@ -128,21 +124,15 @@ class LiveMatchRowState extends State<LiveMatchRow> {
                 Navigator.push(
                 context,
                 MaterialPageRoute(
-                // maintainState: false,
-                builder:  (context) =>
-                // StatefulBuilder(
-                //  key: UniqueKey(),
 
-                //  builder: (BuildContext context, StateSetter setState) =>
-                MatchInfoSoccerDetailsPage(key: UniqueKey(), event: gameWithOdds, eventCallback: getEvent)
+                    builder:  (context) =>
+
+                    MatchInfoSoccerDetailsPage(key: UniqueKey(), event: gameWithOdds, eventCallback: getEvent)
                 )
-                //),
                 );
                 },
                 child:
 
-                // Container(//we need this to apply gesture detection everywhere
-                //     child:
                     Column(
                     children: [
                         Align(
@@ -155,14 +145,14 @@ class LiveMatchRowState extends State<LiveMatchRow> {
                                 child:
                       LogoWithName(key: UniqueKey(), name: gameWithOdds.awayTeam.getLocalizedName(), logoUrl: gameWithOdds.awayTeam.logo, redCards: awayRed, logoSize: 24, fontSize: 14,  winnerType: calculateWinnerType(gameWithOdds, 2)),
                             )
-                    ]
-                ))
+                      ]
+                    )
+                )
                         // )
                 ),
-      //), // FIRST COLUMN END
 
                 Expanded(
-                    flex: 4,
+                    flex: 3,
                     child:
 
                 Column(//second column

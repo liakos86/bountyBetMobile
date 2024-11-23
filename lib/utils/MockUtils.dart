@@ -42,7 +42,7 @@ class MockUtils {
 
   List<LeagueWithData> mockLeagues(Map eventsPerDayMap){
     List<int> existingLeaguesIds = <int>[];
-    if (eventsPerDayMap.isNotEmpty) {
+    if (eventsPerDayMap.isNotEmpty && eventsPerDayMap['0'].isNotEmpty) {
       eventsPerDayMap['0']?.forEach((element) {
         existingLeaguesIds.add(element.league_id);
       });
