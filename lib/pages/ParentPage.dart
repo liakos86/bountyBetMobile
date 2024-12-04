@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:collection';
 import 'dart:convert';
 import 'dart:io';
+import 'dart:ui';
 import 'package:collection/collection.dart';
 
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -16,6 +17,7 @@ import 'package:flutter_app/models/context/AppContext.dart';
 import 'package:flutter_app/pages/LeaguesInfoPage.dart';
 import 'package:flutter_app/pages/OddsPage.dart';
 import 'package:flutter_app/widgets/DialogTabbedLoginOrRegister.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -115,6 +117,7 @@ class ParentPageState extends State<ParentPage> with WidgetsBindingObserver {
       pagesList.add(MyBetsPage(key: betsPageKey, user: AppContext.user, loginOrRegisterCallback: promptLoginOrRegister));
       pagesList.add(LeaguesInfoPage(key: leaguesPageKey));
 
+      updateUserFromServer();
 
       getLeaguesAsync(null)
           .then((leaguesMap) => updateLeagues(leaguesMap))
@@ -122,14 +125,15 @@ class ParentPageState extends State<ParentPage> with WidgetsBindingObserver {
           .then((leagueEventsMap) => updateLeagueMatches(leagueEventsMap)));
 
 
-     Timer.periodic(const Duration(seconds: 10), (timer) {
-       getLeagueLiveEventsAsync(timer).then((leaguesMap) =>
-         updateLiveLeagueMatches(leaguesMap)
-     );
+     Timer.periodic(const Duration(seconds: 20), (timer) {
+       getLeaguesAsync(null)
+           .then((leaguesMap) => updateLeagues(leaguesMap)
+       );
      }
      );
 
-      Timer.periodic(const Duration(seconds: 600), (timer) {
+
+      Timer.periodic(const Duration(seconds: 20), (timer) {
         getLeagueEventsAsync(timer).then((leaguesMap) =>
             updateLeagueMatches(leaguesMap)
           );
@@ -137,13 +141,20 @@ class ParentPageState extends State<ParentPage> with WidgetsBindingObserver {
       );
 
 
-      getUserAsync().then((value) =>
-      {
-        if (value != null){
-          updateUser(value)
-        }
-      }
-      );
+     Timer.periodic(const Duration(seconds: 10), (timer) {
+
+       if (AppContext.liveLeagues.isEmpty){
+         return;
+       }
+       getLeagueLiveEventsAsync(timer).then((leaguesMap) =>
+           updateLiveLeagueMatches(leaguesMap)
+       );
+     }
+     );
+
+     Timer.periodic(const Duration(seconds: 30), (timer) {
+       updateUserFromServer();
+     });
 
      Timer.periodic(const Duration(seconds: 30), (timer) {
 
@@ -207,6 +218,10 @@ class ParentPageState extends State<ParentPage> with WidgetsBindingObserver {
 
     appBarTitle = '${AppContext.user.username}(${AppContext.user.balance.toStringAsFixed(2)})';
 
+    if (AppContext.user.userPosition > 0){
+      appBarTitle = appBarTitle +  ' pos(${AppContext.user.userPosition})';
+    }
+
     setState(() {
       AppContext.user;
       appBarTitle;
@@ -223,20 +238,20 @@ class ParentPageState extends State<ParentPage> with WidgetsBindingObserver {
 
     return Scaffold(
       appBar: AppBar(
-
+        // toolbarHeight: 2,
         bottom: PreferredSize(
             preferredSize: const Size.fromHeight(2.0),
             child: Container(
               color: Colors.grey.shade500,
-              height: 1.0,
+             height: 1.0,
             )),
           title: Text(appBarTitle) ,
-        titleTextStyle: const TextStyle(color: Colors.black87, fontSize: 20),
-        backgroundColor: Colors.deepOrange.shade100,
+        titleTextStyle: const TextStyle(color: Colors.white70, fontSize: 20, fontWeight: FontWeight.bold),
+        backgroundColor: Colors.black87,
         leading:
 
             Padding(
-             padding: const EdgeInsets.all(6),
+             padding: const EdgeInsets.all(4),
               child:
 
                   FloatingActionButton(
@@ -365,7 +380,7 @@ class ParentPageState extends State<ParentPage> with WidgetsBindingObserver {
       var responseDec = await jsonDecode(userResponse.body);
       return User.fromJson(responseDec);
     } catch (e) {
-      print(e);
+      Fluttertoast.showToast(msg:  'USER   ' +e.toString());
       return null;
     }
   }
@@ -378,7 +393,7 @@ class ParentPageState extends State<ParentPage> with WidgetsBindingObserver {
       Response liveMatchesResponse = await get(Uri.parse(UrlConstants.GET_LIVE_EVENTS)).timeout(const Duration(seconds: 10));
       jsonMatchesData = await jsonDecode(liveMatchesResponse.body) as Map;
     } catch (e) {
-
+      Fluttertoast.showToast(msg:  'LIVE   ' +e.toString());
       print('ERROR REST ---- MOCKING............');
       Map<int, MatchEvent> validData = new Map();// MockUtils().mockLeaguesMap(AppContext.eventsPerDayMap, false);
       return validData;
@@ -392,10 +407,10 @@ class ParentPageState extends State<ParentPage> with WidgetsBindingObserver {
       Map jsonLeaguesData = LinkedHashMap();
 
       try {
-        Response leaguesResponse = await get(Uri.parse(UrlConstants.GET_LEAGUE_EVENTS)).timeout(const Duration(seconds: 10));
+        Response leaguesResponse = await get(Uri.parse(UrlConstants.GET_LEAGUE_EVENTS)).timeout(const Duration(seconds: 6));
         jsonLeaguesData = await jsonDecode(leaguesResponse.body) as Map;
       } catch (e) {
-
+        Fluttertoast.showToast(msg: 'EVENTS   ' +e.toString());
         print('ERROR REST ---- MOCKING............');
         Map<String, List<LeagueWithData>> validData =  MockUtils().mockLeaguesMap(AppContext.eventsPerDayMap, false);
         return validData;
@@ -413,7 +428,7 @@ class ParentPageState extends State<ParentPage> with WidgetsBindingObserver {
       Iterable leaguesIterable = json.decode(leaguesResponse.body);
       jsonLeaguesData = List<League>.from(leaguesIterable.map((model)=> JsonHelper.leagueFromJson(model)));
     } catch (e) {
-
+      Fluttertoast.showToast(msg:  'LEAGUES   ' +e.toString());
       print('ERROR REST ---- LEAGUES MOCKING............');
 
     }
@@ -517,11 +532,7 @@ class ParentPageState extends State<ParentPage> with WidgetsBindingObserver {
 
       var leaguesWithDataJson = dailyLeagues.value;
 
-
       MatchEvent? leagueObj = await JsonHelper.eventFromJson(leaguesWithDataJson);
-      if (leagueObj == null){
-        continue;
-      }
 
       newEventsPerDayMap.putIfAbsent(day, ()=> leagueObj);
     }
@@ -542,123 +553,112 @@ class ParentPageState extends State<ParentPage> with WidgetsBindingObserver {
       return; //TODO maybe empty everything?
     }
 
-    if (AppContext.eventsPerDayMap.isEmpty) { //first incoming matches
-      AppContext.eventsPerDayMap['-1'] =
-      incomingLeaguesMap[MatchConstants.KEY_TODAY];
-      AppContext.eventsPerDayMap[MatchConstants.KEY_TODAY] =
-      incomingLeaguesMap[MatchConstants.KEY_TODAY];
-      AppContext.eventsPerDayMap['1'] =
-      incomingLeaguesMap[MatchConstants.KEY_TODAY];
+    AppContext.eventsPerDayMap['-1'] =
+    incomingLeaguesMap[MatchConstants.KEY_TODAY];
 
-      for (LeagueWithData league in AppContext.eventsPerDayMap[MatchConstants
-          .KEY_TODAY]) {
-        if (league.liveEvents.isEmpty) {
-          continue;
-        }
+    AppContext.eventsPerDayMap['1'] =
+    incomingLeaguesMap[MatchConstants.KEY_TOMORROW];
 
-        AppContext.liveLeagues.add(league);
-      }
+    // if (AppContext.eventsPerDayMap.isEmpty) { //first incoming matches
+    //   AppContext.eventsPerDayMap['-1'] =
+    //   incomingLeaguesMap[MatchConstants.KEY_TODAY];
+    //   AppContext.eventsPerDayMap[MatchConstants.KEY_TODAY] =
+    //   incomingLeaguesMap[MatchConstants.KEY_TODAY];
+    //   AppContext.eventsPerDayMap['1'] =
+    //   incomingLeaguesMap[MatchConstants.KEY_TODAY];
+    //
+    //   for (LeagueWithData league in AppContext.eventsPerDayMap[MatchConstants
+    //       .KEY_TODAY]) {
+    //     if (league.liveEvents.isEmpty) {
+    //       continue;
+    //     }
+    //
+    //     AppContext.liveLeagues.add(league);
+    //   }
+    //
+    //   sortLeagues();
+    //   updatePageStates();
+    //
+    //   return;
+    // }
 
-      sortLeagues();
-      updatePageStates();
 
-      return;
-    }
+    List<LeagueWithData> existingTodayLeagues = AppContext.eventsPerDayMap[MatchConstants.KEY_TODAY];
+    List<LeagueWithData> incomingTodayLeagues = incomingLeaguesMap[MatchConstants.KEY_TODAY]!;
 
+    print("existing " + existingTodayLeagues.length.toString() + " incoming " + incomingTodayLeagues.length.toString() );
 
-    List<LeagueWithData> existingTodayLeagues = AppContext
-        .eventsPerDayMap[MatchConstants.KEY_TODAY];
-    List<
-        LeagueWithData> incomingTodayLeagues = incomingLeaguesMap[MatchConstants
-        .KEY_TODAY]!;
+    updateExistingMatchDataFromIncoming(existingTodayLeagues, incomingTodayLeagues);
+    print("upd existing " + existingTodayLeagues.length.toString() + " incoming " + incomingTodayLeagues.length.toString() );
 
-    for (LeagueWithData incomingLeague in incomingTodayLeagues) {
-      var existingLeague = existingTodayLeagues.firstWhere((
-          element) => element == incomingLeague,
-          orElse: () => LeagueWithData.defLeague());
+    updateExistingMatchDataFromIncomingMissing(existingTodayLeagues, incomingTodayLeagues);
 
-      //missing league
-      if (existingLeague == LeagueWithData.defLeague()) {
-        existingTodayLeagues.add(incomingLeague);
-
-        if (incomingLeague.liveEvents.isNotEmpty) {
-          AppContext.liveLeagues.add(incomingLeague);
-        }
-
-        continue;
-      }
-
-      List<MatchEvent> existingLiveEventsOfLeague = existingLeague.liveEvents;
-      List<MatchEvent> incomingLiveEventsOfLeague = incomingLeague.liveEvents;
-
-      for (MatchEvent existingEvent in List.of(
-          existingLiveEventsOfLeague)) { // remove it or copy the fields
-        if (!incomingLiveEventsOfLeague.contains(existingEvent)) {
-          existingLiveEventsOfLeague.remove(existingEvent);
-          checkForOddsRemoval([existingEvent]);
-        } else {
-          //copy fields
-          MatchEvent incomingEvent = incomingLiveEventsOfLeague.firstWhere((
-              element) => element == existingEvent);
-          existingEvent.copyFrom(incomingEvent);
-          existingEvent
-              .calculateLiveMinute(); //TODO: do it with timer in live page
-        }
-      }
-
-      for (MatchEvent incomingEvent in incomingLiveEventsOfLeague) { //add if missing
-        if (!existingLiveEventsOfLeague.contains(incomingEvent)) {
-          existingLiveEventsOfLeague.add(incomingEvent);
-          incomingEvent
-              .calculateLiveMinute(); //TODO: do it with timer in live page
-        }
-      }
-    }
-
-    for (LeagueWithData existingLeague in List.of(
-        existingTodayLeagues)) { //league has to be removed cause new leagues do not contain it
-      var incomingLeague = incomingTodayLeagues.firstWhere((
-          element) => element == existingLeague,
-          orElse: () => LeagueWithData.defLeague());
-
-      if (incomingLeague == LeagueWithData.defLeague()) {
-        existingTodayLeagues.remove(existingLeague);
-
-        if (AppContext.liveLeagues.contains(existingLeague)) {
-          AppContext.liveLeagues.remove(existingLeague);
-        }
-
-        checkForOddsRemoval(existingLeague.events);
-      }
+    for (var element in existingTodayLeagues) {
+      //for (var element in element.events) {element.calculateLiveMinute();}
+      for (var element in element.liveEvents) {element.calculateLiveMinute();}
     }
 
     sortLeagues();
     updatePageStates();
   }
 
-    void updateLiveLeagueMatches(Map<int, MatchEvent> incomingLiveMap) {
+    void updateLiveLeagueMatches(Map<int, MatchEvent> incomingLiveEventsMap) {
 
-      if (incomingLiveMap.isEmpty) {
-        return;//TODO maybe empty everything?
-      }
+      if (incomingLiveEventsMap.isEmpty) {
+        AppContext.liveLeagues.clear();
+      }else {
 
-      for (MapEntry incomingLiveEntry in  incomingLiveMap.entries ){
-        bool leagueExists = false;
-        for (LeagueWithData lwt in List.of(AppContext.liveLeagues)){
-            if (lwt.liveEvents.contains(incomingLiveEntry.value)){
-              leagueExists = true;
-              MatchEvent existing = lwt.liveEvents.firstWhere((element) => element.eventId == incomingLiveEntry.key);
-              existing.copyFrom(incomingLiveEntry.value);
+        Set<int> incomingLiveLeagueIds = Set();
+
+        for (MapEntry incomingLiveEventEntry in incomingLiveEventsMap.entries) {
+          MatchEvent incomingLiveEvent = incomingLiveEventEntry.value;
+          incomingLiveLeagueIds.add(incomingLiveEvent.leagueId);
+          bool eventExistsInCache = false;
+
+          for (LeagueWithData lwt in AppContext.liveLeagues) {//incoming exists then copy
+            if (lwt.liveEvents.contains(incomingLiveEventEntry.value)) {
+              eventExistsInCache = true;
+              MatchEvent existing = lwt.liveEvents.firstWhere((
+                  element) => element.eventId == incomingLiveEventEntry.key);
+              existing.copyFrom(incomingLiveEvent);
             }
+
+            if (eventExistsInCache){
+              break;
+            }
+
+          }
+
+          if (!eventExistsInCache) {//means that the related league is also absent
+
+            LeagueWithData leagueWithLiveGameToBeAdded = AppContext.eventsPerDayMap[MatchConstants.KEY_TODAY]
+                .firstWhere((element) =>
+                  element.league.league_id == incomingLiveEventEntry.value.leagueId);
+            leagueWithLiveGameToBeAdded.liveEvents.add(incomingLiveEvent);
+            AppContext.liveLeagues.add(leagueWithLiveGameToBeAdded);
+
+          }
         }
 
-        if (!leagueExists){
-          AppContext.liveLeagues.add( AppContext.eventsPerDayMap[MatchConstants.KEY_TODAY].firstWhere((element) => element.league.league_id == incomingLiveEntry.value.leagueId));
+        for (LeagueWithData lwt in List.of(AppContext.liveLeagues)) {
+          if (!incomingLiveLeagueIds.contains(lwt.league.league_id)){
+            AppContext.liveLeagues.remove(lwt);
+          }
+        }
+
+        for (var element in AppContext.liveLeagues) {
+          for (var element in element.events) {
+            element.calculateLiveMinute();
+          }
+          for (var element in element.liveEvents) {
+            element.calculateLiveMinute();
+          }
         }
       }
 
-      updatePageStates();
 
+      AppContext.liveLeagues.sort();
+      updatePageStates();
   }
 
   void promptLoginOrRegister() {
@@ -844,6 +844,102 @@ void setupFirebaseListeners() async{
     }
 
     return true;
+  }
+
+  void updateExistingMatchDataFromIncoming(List<LeagueWithData> existingTodayLeagues, List<LeagueWithData> incomingTodayLeagues) {
+
+    for (LeagueWithData incomingLeague in List.of(incomingTodayLeagues)) {
+
+      var existingLeague = existingTodayLeagues.firstWhere((
+          element) => element == incomingLeague,
+          orElse: () => LeagueWithData.defLeague());
+
+      //missing league, add it to today leagues, also to live if it has live matches
+      if (existingLeague.league.league_id == -1) {
+       Fluttertoast.showToast(msg: 'New league:' + incomingLeague.league.name);
+
+        existingTodayLeagues.add(incomingLeague);
+
+        if (incomingLeague.liveEvents.isNotEmpty) {
+          AppContext.liveLeagues.add(incomingLeague);
+        }
+
+        continue;
+      }
+
+      List<MatchEvent> existingLiveEventsOfLeague = existingLeague.liveEvents;
+      List<MatchEvent> incomingLiveEventsOfLeague = incomingLeague.liveEvents;
+
+
+      for (MatchEvent existingEvent in List.of(existingLiveEventsOfLeague)) {
+
+        // match was present, but now is not, remove it or copy the fields
+        if (!incomingLiveEventsOfLeague.contains(existingEvent)) {
+          existingLiveEventsOfLeague.remove(existingEvent);
+
+          if(existingLiveEventsOfLeague.isEmpty){
+            AppContext.liveLeagues.remove(existingLeague);
+          }
+
+          checkForOddsRemoval([existingEvent]);
+          Fluttertoast.showToast(msg: 'Event removed from live ' + existingEvent.homeTeam.name);
+        } else {
+          //match was present and is also now, copy fields
+          MatchEvent incomingEvent = incomingLiveEventsOfLeague.firstWhere((
+              element) => element == existingEvent);
+          existingEvent.copyFrom(incomingEvent);
+          incomingLiveEventsOfLeague.remove(incomingEvent);
+        }
+      }
+
+      for (MatchEvent incomingLiveEvent in List.of(incomingLiveEventsOfLeague)) {
+        // match was not existing, add it
+        if (!existingLiveEventsOfLeague.contains(incomingLiveEvent)) {
+          existingLiveEventsOfLeague.add(incomingLiveEvent);
+
+          incomingLiveEventsOfLeague.remove(incomingLiveEvent);
+        }else{
+          //match was present and is also now, copy fields
+          MatchEvent existingEvent  = incomingLiveEventsOfLeague.firstWhere((
+              element) => element == incomingLiveEvent);
+          existingEvent.copyFrom(incomingLiveEvent);
+        }
+      }
+
+    }
+  }
+
+  void updateExistingMatchDataFromIncomingMissing(List<LeagueWithData> existingTodayLeagues, List<LeagueWithData> incomingTodayLeagues) {
+    //league has to be removed cause new leagues do not contain it
+    for (LeagueWithData existingLeague in List.of(existingTodayLeagues)) {
+      var incomingLeague = incomingTodayLeagues.firstWhere((
+          element) => element == existingLeague,
+          orElse: () => LeagueWithData.defLeague());
+
+      if (incomingLeague.league.league_id == -1) {
+        existingTodayLeagues.remove(existingLeague);
+
+        if (AppContext.liveLeagues.contains(existingLeague)) {
+          AppContext.liveLeagues.remove(existingLeague);
+        }
+
+        Fluttertoast.showToast(msg: 'REMOVING LEAGUE ' + existingLeague.league.name);
+
+        checkForOddsRemoval(existingLeague.events);
+      }else{
+
+      }
+    }
+  }
+
+  void updateUserFromServer() {
+    getUserAsync().then((value) =>
+    {
+      if (value != null){
+        updateUser(value)
+      }
+    }
+    );
   }
 
 

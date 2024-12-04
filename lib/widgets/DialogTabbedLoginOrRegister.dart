@@ -11,16 +11,16 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class DialogTabbedLoginOrRegister extends StatelessWidget {
 
-  Function registerCallback = ()=>{ };
+  late final Function registerCallback;
 
-  Function loginCallback = ()=>{ };
+  late final Function loginCallback;
 
   DialogTabbedLoginOrRegister({
     required this.registerCallback,
     required this.loginCallback,
     //setName('Today\'s Odds')
 
-  } ) ;
+  }) ;
 
 
   @override

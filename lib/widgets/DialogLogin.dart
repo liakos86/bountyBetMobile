@@ -54,9 +54,9 @@ class DialogLogin extends StatefulWidget {
         TextField(
           controller: null,
           onChanged: (text){
-            this.emailOrUsername = text;
+            emailOrUsername = text;
           },
-          decoration: InputDecoration(
+          decoration: const InputDecoration(
             border: OutlineInputBorder(),
             hintText: 'email or username',
           ),

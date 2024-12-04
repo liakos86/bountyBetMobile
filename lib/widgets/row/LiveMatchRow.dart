@@ -61,10 +61,8 @@ class LiveMatchRowState extends State<LiveMatchRow> {
 
           decoration: BoxDecoration(color: gameWithOdds.changeEvent == ChangeEvent.NONE ? Colors.white : ( ChangeEvent.isGoal(gameWithOdds.changeEvent) ? Colors.red.shade50 : Colors.blue[200]),
               border: Border(
-              top: BorderSide(width: 0.3, color: Colors.grey.shade600),
-              left: const BorderSide(width: 0, color: Colors.transparent),
-                right: const BorderSide(width: 0, color: Colors.transparent),
-                bottom: BorderSide(width: 0.3, color: Colors.grey.shade600),
+              top: BorderSide(width: 0.6, color: Colors.grey.shade800),
+
                 ), ),
 
           child:
@@ -74,7 +72,7 @@ class LiveMatchRowState extends State<LiveMatchRow> {
               children: [
 
                 Expanded(//first column
-                    flex: 3,
+                    flex: 2,
                     child:
 
                     MatchEventStatus.INPROGRESS.statusStr== gameWithOdds.status ?
@@ -92,10 +90,9 @@ class LiveMatchRowState extends State<LiveMatchRow> {
                               updateFav(true)
                               },
                             ParentPageState.favouritesUpdate(),
-                         }else{
-                            print('no permision')
-                          }
+                         }
                         },
+
                         child:
                     Column(
                         children: [
@@ -114,7 +111,7 @@ class LiveMatchRowState extends State<LiveMatchRow> {
                 ),
 
                 Expanded(//second column
-                    flex: 16,
+                    flex: 15,
                     child:
 
                 GestureDetector(
@@ -172,9 +169,12 @@ class LiveMatchRowState extends State<LiveMatchRow> {
 
                     child:
 
+                   // (MatchEventStatus.fromStatusText(gameWithOdds.status) == MatchEventStatus.INPROGRESS) ?
+
                 Column(// third column
                     children: [
                       Padding(padding: const EdgeInsets.all(6), child:
+
                       Text(textScoreFrom(gameWithOdds.homeTeamScore, gameWithOdds.status, gameWithOdds.lasted_period), style: TextStyle(
                           fontSize: gameWithOdds.changeEvent == ChangeEvent.HOME_GOAL ? 13 : 12,
                           fontWeight:  FontWeight.w900,
@@ -186,7 +186,11 @@ class LiveMatchRowState extends State<LiveMatchRow> {
                           fontWeight: FontWeight.w900,
                           color: gameWithOdds.changeEvent == ChangeEvent.AWAY_GOAL ? Colors.redAccent : Colors.black87),)),
                     ]
-                )), //THIRD COLUMN END
+                )
+
+               // : Container()
+
+                ), //THIRD COLUMN END
 
               ])//parent column end
 
@@ -215,6 +219,7 @@ class LiveMatchRowState extends State<LiveMatchRow> {
     if (score.display == null){
       return '-';
     }
+
 
     return score.display.toString();
 

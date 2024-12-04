@@ -5,5 +5,6 @@ class MatchConstants{
    static const String GMT = "GMT";
 
    static const String KEY_TODAY = '0';
+   static const String KEY_TOMORROW = '1';
 
 }

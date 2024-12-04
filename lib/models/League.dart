@@ -24,7 +24,7 @@ class League implements Comparable<League>{
 
   String name = Constants.empty;
 
-  int league_id = 0;
+  int league_id = -1;
 
   String? logo;
 

@@ -35,7 +35,7 @@ class JsonHelper{
     var awayTeam = event["away_team"];
     var homeTeamScore = event["home_score"];
     var awayTeamScore = event["away_score"];
-    var _changeEvent = event["changeEvent"] as int;
+    var changeEvent = event["changeEvent"] as int;
     int? sportId = event['sportId'];
     sportId ??= 1;
 
@@ -53,7 +53,7 @@ class JsonHelper{
 
     var startAt = event['start_at'];
     MatchEvent match = MatchEvent(eventId: event[JsonConstants.id], leagueId: event[JsonConstants.leagueId], status: event["status"], status_more: event["status_more"]??'-', homeTeam: hTeam, awayTeam: aTeam, start_at: startAt);
-    match.changeEvent = ChangeEvent.ofCode(_changeEvent);
+    match.changeEvent = ChangeEvent.ofCode(changeEvent);
 
 
 
@@ -135,14 +135,14 @@ class JsonHelper{
       match.isFavourite = true;
     }
 
-    match.calculateLiveMinute();
+    // match.calculateLiveMinute();
     return match;
   }
 
   static Future<LeagueWithData?> leagueWithDataFromJson(leagueWithDataJson) async{
 
     List<MatchEvent> matches = <MatchEvent>[];
-    List<MatchEvent> liveMatches = <MatchEvent>[];
+    // List<MatchEvent> liveMatches = <MatchEvent>[];
 
     var jsonLeagueEvents = leagueWithDataJson["matchEvents"];
     for (var jsonEvent in jsonLeagueEvents){
@@ -152,9 +152,9 @@ class JsonHelper{
 
       MatchEvent match = await eventFromJson(jsonEvent);
       matches.add(match);
-      if (MatchEventStatus.INPROGRESS == MatchEventStatus.fromStatusText(match.status)){
-        liveMatches.add(match);
-      }
+      // if (MatchEventStatus.INPROGRESS == MatchEventStatus.fromStatusText(match.status)){
+      //   liveMatches.add(match);
+      // }
     }
 
     // var league = leagueWithDataJson['league'];
@@ -170,7 +170,7 @@ class JsonHelper{
     LeagueWithData l = LeagueWithData(
         league: li,
         events: matches);
-    l.liveEvents = liveMatches;
+    // l.liveEvents = liveMatches;
 
     return l;
   }

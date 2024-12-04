@@ -44,7 +44,7 @@ class MockUtils {
     List<int> existingLeaguesIds = <int>[];
     if (eventsPerDayMap.isNotEmpty && eventsPerDayMap['0'].isNotEmpty) {
       eventsPerDayMap['0']?.forEach((element) {
-        existingLeaguesIds.add(element.league_id);
+        existingLeaguesIds.add(element.league.league_id);
       });
     }else{
       existingLeaguesIds.add(1);
@@ -76,7 +76,7 @@ class MockUtils {
         }
       }
 
-      league.league.logo = "https://tipsscore.com/resb/league/europe-uefa-champions-league.png" ;
+      league.league.logo = "https://xscore.cc/resb/league/europe-uefa-champions-league.png" ;
 
       Section section = Section("Section name"+leagueId.toString());
       league.league.section = section;

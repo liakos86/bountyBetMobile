@@ -35,21 +35,21 @@ class UserBetRow extends StatelessWidget{
       ExpansionTile(
 
       initiallyExpanded: true,
-      tilePadding: const EdgeInsets.all(4),
-      backgroundColor: bet.betStatus == BetStatus.LOST ? Colors.red[100] : (bet.betStatus == BetStatus.WON ? Colors.green[200] : Colors.white),
+      tilePadding: const EdgeInsets.all(2),
+      backgroundColor: Colors.white , //bet.betStatus == BetStatus.LOST ? Colors.red[100] : (bet.betStatus == BetStatus.WON ? Colors.green[200] : Colors.white),
       subtitle: Text('Bet: ${bet.betAmount.toStringAsFixed(2)}'),
       leading:
 
           bet.betStatus==BetStatus.LOST ?
           const Icon( Icons.highlight_remove, color:   Colors.red)
-              : bet.betStatus==BetStatus.WON ?
+              : ( bet.betStatus==BetStatus.WON ?
           const Icon(Icons.check_circle_outline_outlined, color:   Colors.green) :
-          const Icon(Icons.pending_outlined, color:   Colors.black),
+          const Icon(Icons.pending_outlined, color:   Colors.black) ),
 
 
 
       title: Text('Possible earnings: ' + bet.toReturn().toStringAsFixed(2),
-          style: TextStyle(fontSize: 16, color: Colors.black, fontWeight: FontWeight.bold)),
+          style: const TextStyle(fontSize: 14, color: Colors.black87, fontWeight: FontWeight.bold)),
       children: bet.predictions.map((item)=> _buildSelectedOddRow(item)).toList()
     ));
   }

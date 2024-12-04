@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:collection';
 import 'dart:convert';
 
+import 'package:flutter_app/enums/BetStatus.dart';
 import 'package:flutter_app/models/interfaces/StatefulWidgetWithName.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
@@ -95,18 +96,7 @@ class OddsPageState extends State<OddsPage>{
   @override
   Widget build(BuildContext context) {
 
-    if (AppContext.eventsPerDayMap.isEmpty){
-      return  const Align(
-          alignment: Alignment.center,
-          child: SizedBox(
-          width: 100,
-          height: 100,
-          child: CircularProgressIndicator(
-            strokeWidth: 4,
-            color: Colors.blueAccent,
-            backgroundColor: Colors.grey)
-      ));
-    }
+
 
     return
 
@@ -164,6 +154,20 @@ class OddsPageState extends State<OddsPage>{
                     return _buildRow(AppContext.eventsPerDayMap.entries.elementAt(1).value[item], item);
                   }),
 
+    //        (AppContext.eventsPerDayMap.entries.elementAt(0).value.isEmpty) ?
+    //   const Align(
+    // alignment: Alignment.center,
+    // child: SizedBox(
+    // width: 100,
+    // height: 100,
+    // child: CircularProgressIndicator(
+    // strokeWidth: 4,
+    // color: Colors.blueAccent,
+    // backgroundColor: Colors.grey)
+    // ))
+    //
+    //       :
+
 
               ListView.builder(
                   key: const PageStorageKey<String>(
@@ -194,7 +198,7 @@ class OddsPageState extends State<OddsPage>{
               AlertDialog(
 
           insetPadding: EdgeInsets.zero,
-          contentPadding: EdgeInsets.all(2.0),
+          contentPadding: const EdgeInsets.all(2.0),
           buttonPadding: EdgeInsets.zero,
           alignment: Alignment.bottomCenter,
           elevation: 20,
@@ -289,7 +293,7 @@ class OddsPageState extends State<OddsPage>{
     }
 
     //selectedOdds.forEach((element) {element.event = ParentPageState.findEvent(element.eventId);});
-    UserBet newBet = UserBet(userMongoId: mongoUserId , predictions: List.of(selectedOdds), betAmount: bettingAmount);
+    UserBet newBet = UserBet(userMongoId: mongoUserId , predictions: List.of(selectedOdds), betAmount: bettingAmount, betStatus: BetStatus.PENDING);
     var encodedBet = jsonEncode(newBet.toJson());
 
     try {

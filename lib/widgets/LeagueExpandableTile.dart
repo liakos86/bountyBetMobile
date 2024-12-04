@@ -79,7 +79,7 @@ class LeagueExpandableTile extends StatefulWidget {
                     iconColor: Colors.transparent,
                     collapsedIconColor: Colors.transparent,
                     initiallyExpanded: expandAll,
-                    collapsedBackgroundColor: Colors.yellow[50],
+                    collapsedBackgroundColor: Colors.grey.shade200,
                     backgroundColor: Colors.yellow[50],
                     subtitle: Text(league.league.name, style: const TextStyle(color: Colors.black, fontWeight: FontWeight.w700, fontSize: 12),),
                     trailing: Text('(${events.length})', style: const TextStyle(color: Colors.black, fontSize: 10),),
@@ -112,7 +112,7 @@ class LeagueExpandableTile extends StatefulWidget {
     // print('UPCMING ROW BUILDING ' + AppContext.eventsPerDayMap['0'].length.toString());
 
 
-    return UpcomingMatchRow(key: UniqueKey(), gameWithOdds: event, selectedOdds: selectedOdds, callbackForOdds: callbackForOdds);
+    return UpcomingOrEndedMatchRow(key: UniqueKey(), gameWithOdds: event, selectedOdds: selectedOdds, callbackForOdds: callbackForOdds);
   }
 
 }

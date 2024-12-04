@@ -36,6 +36,7 @@ class User{
   int overallLostBets = 0;
   int overallLostPredictions = 0;
 
+  int userPosition = 0;
 
   List<UserBet> userBets = <UserBet>[];
 
@@ -66,6 +67,7 @@ class User{
     user.overallLostPredictions = parsedJson['overallLostEventsCount'];
 
     user.userLevel = UserLevel.ofLevelCode(parsedJson['level']);
+    user.userPosition = parsedJson['position'] as int;
 
     return user;
 

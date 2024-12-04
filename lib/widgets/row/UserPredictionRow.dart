@@ -27,29 +27,31 @@ class UserPredictionRow extends StatelessWidget{
     return Wrap(
 
           children: [
-                Container(
+                // Container(
                     //height: 50,
-                    decoration: BoxDecoration(
-                        color: Colors.white,
-                        gradient: LinearGradient(
-                            begin: Alignment.bottomCenter,
-                            end: Alignment.topCenter,
-                            colors: [
-                              prediction.betPredictionStatus==BetPredictionStatus.LOST ?
+                    // decoration: BoxDecoration(
+                    //     color: Colors.white,
+                    //     gradient: LinearGradient(
+                    //         begin: Alignment.bottomCenter,
+                    //         end: Alignment.topCenter,
+                    //         colors: [
+                    //           prediction.betPredictionStatus==BetPredictionStatus.LOST ?
+                    //
+                    //           Colors.deepOrange.withOpacity(0.1) :
+                    //           (prediction.betPredictionStatus==BetPredictionStatus.WON ? Colors.green.withOpacity(0.2) :
+                    //
+                    //           Colors.transparent),
+                    //
+                    //           Colors.transparent
+                    //         ]
+                    //     )
+                    // ),
 
-                              Colors.red.withOpacity(0.1) :
-                              (prediction.betPredictionStatus==BetPredictionStatus.WON ? Colors.green.withOpacity(0.2) :
-
-                              Colors.transparent),
-
-                              Colors.transparent
-                            ]
-                        )
-                    ),
-
-                  child: Padding(
-                      padding: const EdgeInsets.all(8),
-                      child: Row(children: [
+                  // child:
+                  // Padding(
+                  //     padding: const EdgeInsets.all(0),
+                  //     child:
+                      Row(children: [
 
                         // Expanded(flex: 1, child:
                         //
@@ -109,9 +111,9 @@ class UserPredictionRow extends StatelessWidget{
                       )
 
                       ],)
-                  ),
+                  // ),
 
-                ),
+                //),
 
           ],
       //  )

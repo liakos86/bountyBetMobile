@@ -17,7 +17,6 @@ class MyBetsPage extends StatefulWidgetWithName{
 
   final Function loginOrRegisterCallback;
 
-  //HashMap eventsPerIdMap = HashMap();
 
   @override
   MyBetsPageState createState() => MyBetsPageState(user, loginOrRegisterCallback);
@@ -68,12 +67,15 @@ class MyBetsPageState extends State<MyBetsPage>{
     }
 
     List<UserBet> pendingBets = <UserBet>[];
-    List<UserBet> settledBets = <UserBet>[];
+    List<UserBet> wonBets = <UserBet>[];
+    List<UserBet> lostBets = <UserBet>[];
     for (UserBet bet in user.userBets){
       if (BetStatus.PENDING == bet.betStatus){
         pendingBets.add(bet);
+      }else if (BetStatus.WON == bet.betStatus){
+        wonBets.add(bet);
       }else{
-        settledBets.add(bet);
+        lostBets.add(bet);
       }
 
     }
@@ -82,18 +84,19 @@ class MyBetsPageState extends State<MyBetsPage>{
       length: 3,
       child: Scaffold(
         appBar: AppBar(
-          toolbarHeight: 10,
-         backgroundColor: Colors.blueAccent,
+          toolbarHeight: 2,
+         backgroundColor: Colors.deepOrange.shade100,
+
           bottom: TabBar(
-            labelColor: Colors.white,
-            unselectedLabelColor: Colors.grey[600],
+            labelColor: Colors.black87,
+            unselectedLabelColor: Colors.grey[400],
             indicatorColor: Colors.red,
             indicatorWeight: 8,
 
             tabs: [
-              Tab( text: 'All(${user.userBets.length}}'),
-              Tab( text: 'Open(${pendingBets.length.toString()})',),
-              Tab( text: 'Settled(${settledBets.length.toString()})',),
+              Tab( text: 'Pending(${pendingBets.length.toString()})'),
+              Tab( text: 'Won(${wonBets.length.toString()})',),
+              Tab( text: 'Lost(${lostBets.length.toString()})',),
             ],
           ),
         ),
@@ -108,17 +111,8 @@ class MyBetsPageState extends State<MyBetsPage>{
           children: [
             ListView.builder(
                 key: const PageStorageKey<String>(
-                    'pageBetsAll'),
-                padding: const EdgeInsets.all(8),
-                itemCount: user.userBets.length,
-                itemBuilder: (context, item) {
-                  return _buildUserBetRow(user.userBets[item], 'all$item');
-                }),
-
-            ListView.builder(
-                key: const PageStorageKey<String>(
                     'pageBetsPending'),
-                padding: const EdgeInsets.all(8),
+                // padding: const EdgeInsets.all(8),
                 itemCount: pendingBets.length,
                 itemBuilder: (context, item) {
                   return _buildUserBetRow(pendingBets[item], 'pending$item');
@@ -126,11 +120,20 @@ class MyBetsPageState extends State<MyBetsPage>{
 
             ListView.builder(
                 key: const PageStorageKey<String>(
-                    'pageBetsLost'),
-                padding: const EdgeInsets.all(8),
-                itemCount: settledBets.length,
+                    'pageBetsWon'),
+                // padding: const EdgeInsets.all(8),
+                itemCount: wonBets.length,
                 itemBuilder: (context, item) {
-                  return _buildUserBetRow(settledBets[item], 'settled$item');
+                  return _buildUserBetRow(wonBets[item], 'won$item');
+                }),
+
+            ListView.builder(
+                key: const PageStorageKey<String>(
+                    'pageBetsLost'),
+                // padding: const EdgeInsets.all(8),
+                itemCount: lostBets.length,
+                itemBuilder: (context, item) {
+                  return _buildUserBetRow(lostBets[item], 'lost$item');
                 })
           ],)
             )

@@ -23,14 +23,14 @@ class LeagueWithData implements Comparable<LeagueWithData>{
   @override
   operator == (other) =>
       other is LeagueWithData &&
-          other.league.league_id == league.league_id ;
+          ((other.league.league_id == league.league_id) && league.league_id > 0);
 
   @override
   int get hashCode => league.league_id * 37;
 
   @override
   int compareTo(LeagueWithData other) {
-    return this.league.compareTo(other.league);
+    return league.compareTo(other.league);
   }
 
 

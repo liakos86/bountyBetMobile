@@ -67,47 +67,31 @@ class MatchEvent{
   bool isFavourite = false;
 
 	void calculateLiveMinute() {
-		DateFormat matchTimeFormat = DateFormat(MatchConstants.MATCH_START_TIME_FORMAT);
-		DateTime? currentPeriodStartTime;
 
+		DateTime? currentPeriodStartTime;
 
 		if (timeDetails != null && timeDetails!.currentPeriodStartTimestamp > 0){
 			currentPeriodStartTime = DateTime.fromMillisecondsSinceEpoch(timeDetails!.currentPeriodStartTimestamp * 1000).toLocal();
 		}
 
+
+		DateFormat matchTimeFormat = DateFormat(MatchConstants.MATCH_START_TIME_FORMAT);
 		DateTime matchTime = matchTimeFormat.parseUtc(start_at).toLocal();
 		start_at_local = '${matchTime.hour < 10 ? '0' : Constants.empty}${matchTime.hour}:${matchTime.minute < 10 ? '0' : Constants.empty}${matchTime.minute}' ;
 
 		currentPeriodStartTime ??= matchTime;
 
+		if (homeTeam.name.contains('Liver')){
+			print('STRTED : ' + currentPeriodStartTime.toString());
+		}
+
 		MatchEventStatus? eventStatus = MatchEventStatus.fromStatusText(status);
 		if (! (MatchEventStatus.INPROGRESS == eventStatus)) {
 
 			if (MatchEventStatus.FINISHED == eventStatus){
-				//print(homeTeam.name +  ' stsus more iss:' + status_more);
 				display_status = MatchEventStatusMore.fromStatusMoreText(status_more)!.statusStr;
 				return;
-				// if (lastedPeriod == null){
-				// 	display_status = 'FT';
-				// 	return;
-				// }
-				//
-				// LastedPeriod? lastedPeriodEnum = LastedPeriod.fromStatusText(lastedPeriod!);
-				//
-				// if ( LastedPeriod.PERIOD_2 == lastedPeriodEnum) {
-				// 	display_status = 'FT';
-				// 	return;
-				// }
-				//
-				// if (LastedPeriod.EXTRA_2 == lastedPeriodEnum) {
-				// 	display_status = 'After Extra Time';
-				// 	return;
-				// }
-				//
-				// if (LastedPeriod.PENALTIES == lastedPeriodEnum) {
-				// 	display_status = 'After Penalties';
-				// 	return;
-				// }
+
 			}
 
 			display_status = start_at_local;
@@ -146,19 +130,27 @@ class MatchEvent{
 				display_status = "$minute'";
 			}
 		} else if (MatchEventStatusMore.INPROGRESS_2ND_HALF == (matchEventStatusMore)) {
+
 	 		int firstHalfMinutes = 45;
 
-			int millisecondsSinceMatchStart = DateTime
-					.now()
+			int millisecondsSinceMatchStart = DateTime.now()
 					.millisecondsSinceEpoch - currentPeriodStartTime.millisecondsSinceEpoch;
-			int minute = firstHalfMinutes + (millisecondsSinceMatchStart ~/ 60000);// - 15; // 15 is for half time break
+
+			int minute = firstHalfMinutes + (millisecondsSinceMatchStart ~/ 60000) ;// - 15; // 15 is for half time break
 
 			if (minute > 90) {
-				String injury2nd = (minute - 45).toString();//90).toString();
+
+				if (homeTeam.name.contains('Liver')){
+					print('EXTR : ' + minute.toString());
+				}
+
+
+				String injury2nd = (minute - 90).toString();//90).toString();
 				display_status = "90+$injury2nd";
 			} else {
 				display_status = "$minute'";
 			}
+
 		} else if (MatchEventStatusMore.INPROGRESS_1ST_EXTRA == (matchEventStatusMore)) {// TODO:  extra time etc
 		 int firstMinutes = 90;
 
@@ -209,11 +201,9 @@ class MatchEvent{
   	changeEvent = incomingEvent.changeEvent;
   	homeTeamScore?.copyFrom(incomingEvent.homeTeamScore);
   	awayTeamScore?.copyFrom(incomingEvent.awayTeamScore);
-  	start_at_local = incomingEvent.start_at_local;
-  	display_status = incomingEvent.display_status;
-		if (eventId==2388941){
-			print('aa');
-		}
+  	//start_at_local = incomingEvent.start_at_local;
+  	// display_status = incomingEvent.display_status;
+
   	status = incomingEvent.status;
   	status_more = incomingEvent.status_more;
   	timeDetails = incomingEvent.timeDetails;

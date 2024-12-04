@@ -49,9 +49,8 @@ class AppContext{
     user.balance = value.balance;
     user.mongoUserId = value.mongoUserId;
     user.errorMessage = value.errorMessage;
+    user.userPosition = value.userPosition;
   }
-
-
 
 
 }

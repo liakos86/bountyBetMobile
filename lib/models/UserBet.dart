@@ -16,7 +16,8 @@ class UserBet{
   UserBet({
     required this.userMongoId,
     required this.predictions,
-    required this.betAmount
+    required this.betAmount,
+    required this.betStatus
   } );
 
   double toReturn(){
@@ -42,6 +43,7 @@ class UserBet{
   static UserBet fromJson(Map<String, dynamic> parsedJson){
     return UserBet(userMongoId: parsedJson['mongoUserId'].toString(),
         betAmount: parsedJson['betAmount'] as double,
+        betStatus:  BetStatus.ofStatus(parsedJson['betStatus'] as int),
         predictions:  (parsedJson['predictions'] as List)
             .map((prediction) =>  UserPrediction.fromJson(prediction))
             .toList());
