@@ -2,7 +2,7 @@ class UrlConstants{
 
   //static const SERVER_IP_PLAIN = "liakos86-32935.portmap.host";
 
-  static const SERVER_IP_PLAIN = "192.168.1.5";
+  static const SERVER_IP_PLAIN = "192.168.1.3";
   // static const SERVER_IP_PLAIN = "192.168.1.53";
 
   static const SRV_VERSION = "betCoreServer";
@@ -12,6 +12,7 @@ class UrlConstants{
   static const String GET_LEAGUE_EVENTS = SERVER_IP +  SRV_VERSION + '/betServer/getLeagueEvents';
   static const String GET_LIVE_EVENTS = SERVER_IP +  SRV_VERSION + '/betServer/getLiveEvents';
   static const String GET_LEAGUES = SERVER_IP +  SRV_VERSION + '/betServer/getLeagues';
+  static const String GET_SECTIONS = SERVER_IP +  SRV_VERSION + '/betServer/getSections';
 
   static const String GET_STANDINGS_WITHOUT_TABLES = SERVER_IP +  SRV_VERSION + '/betServer/getStandingsAllWithoutTables';
 

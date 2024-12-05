@@ -4,9 +4,15 @@ import 'package:flutter/widgets.dart';
 
 import '../League.dart';
 import '../LeagueWithData.dart';
+import '../Section.dart';
 import '../User.dart';
 
 class AppContext{
+
+  /*
+   * Map with all the supported sections.
+   */
+  static final Map allSectionsMap = HashMap<int, Section>();
 
   /*
    * Map with all the supported leagues.

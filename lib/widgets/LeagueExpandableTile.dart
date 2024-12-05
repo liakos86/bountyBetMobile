@@ -70,19 +70,21 @@ class LeagueExpandableTile extends StatefulWidget {
         data: Theme.of(context).copyWith(
           listTileTheme: ListTileTheme.of(context).copyWith(
             dense: true,
-          ),
+
+          ) ,
         ),
 
                 child: ExpansionTile(
                     key: UniqueKey(),
                     maintainState: false,
+
                     iconColor: Colors.transparent,
                     collapsedIconColor: Colors.transparent,
                     initiallyExpanded: expandAll,
                     collapsedBackgroundColor: Colors.grey.shade200,
                     backgroundColor: Colors.yellow[50],
-                    subtitle: Text(league.league.name, style: const TextStyle(color: Colors.black, fontWeight: FontWeight.w700, fontSize: 12),),
-                    trailing: Text('(${events.length})', style: const TextStyle(color: Colors.black, fontSize: 10),),
+                    subtitle: Text(league.league.getLocalizedName(), style: const TextStyle(color: Colors.black, fontWeight: FontWeight.w700, fontSize: 10),),
+                    trailing: Text('(${events.length})', style: const TextStyle(color: Colors.black, fontSize: 9),),
                     leading:
 
                     CachedNetworkImage(
@@ -93,8 +95,8 @@ class LeagueExpandableTile extends StatefulWidget {
                       width: 32,
                     ),
 
-                    title: Text(league.league.section.name.toUpperCase(),
-                        style: TextStyle(fontSize: 10, color: Colors.grey[600], fontWeight: FontWeight.bold)),
+                    title: Text(AppContext.allSectionsMap[league.league.section_id].getLocalizedName().toUpperCase(),
+                        style: TextStyle(fontSize: 9, color: Colors.grey[600], fontWeight: FontWeight.bold)),
                     children: events.map((item)=> _buildSelectedOddRow(item)).toList()
                 ),
 

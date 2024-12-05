@@ -7,6 +7,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_app/models/Standing.dart';
+import 'package:flutter_app/models/context/AppContext.dart';
 import '../../models/League.dart';
 import '../../models/Season.dart';
 import '../../models/constants/Constants.dart';
@@ -139,8 +140,8 @@ class SimpleLeagueRowState extends State<SimpleLeagueRow> with SingleTickerProvi
                                 Align(
                                   alignment: Alignment.centerLeft,
                                   child:
-                                  Text(league.section.name ?? 'Section null',
-                                      style: TextStyle(
+                                  Text(AppContext.allSectionsMap[league.section_id].getLocalizedName() ?? 'Section null',
+                                      style: const TextStyle(
                                           fontWeight: FontWeight.normal, fontSize: 12, color: Colors.black)),
                                 ),
                               ] )

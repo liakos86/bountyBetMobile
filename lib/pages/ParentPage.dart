@@ -26,6 +26,7 @@ import '../enums/MatchEventStatus.dart';
 import '../helper/JsonHelper.dart';
 import '../models/ChangeEventSoccer.dart';
 import '../models/League.dart';
+import '../models/Section.dart';
 import '../models/User.dart';
 import '../models/UserPrediction.dart';
 import '../models/constants/MatchConstants.dart';
@@ -119,10 +120,15 @@ class ParentPageState extends State<ParentPage> with WidgetsBindingObserver {
 
       updateUserFromServer();
 
-      getLeaguesAsync(null)
-          .then((leaguesMap) => updateLeagues(leaguesMap))
-          .then((updated) => getLeagueEventsAsync(null)
-          .then((leagueEventsMap) => updateLeagueMatches(leagueEventsMap)));
+      getSectionsAsync(null)
+          .then((sections) => updateSections(sections))
+          .then((updated) => getLeaguesAsync(null))
+          .then((leagues) => updateLeagues(leagues))
+          .then((updated) => getLeagueEventsAsync(null))
+          .then((leagueEventsMap) => updateLeagueMatches(leagueEventsMap))
+          .then((updated) => getLeagueLiveEventsAsync(null))
+          .then((leaguesMap) =>
+          updateLiveLeagueMatches(leaguesMap));
 
 
      Timer.periodic(const Duration(seconds: 20), (timer) {
@@ -407,7 +413,7 @@ class ParentPageState extends State<ParentPage> with WidgetsBindingObserver {
       Map jsonLeaguesData = LinkedHashMap();
 
       try {
-        Response leaguesResponse = await get(Uri.parse(UrlConstants.GET_LEAGUE_EVENTS)).timeout(const Duration(seconds: 6));
+        Response leaguesResponse = await get(Uri.parse(UrlConstants.GET_LEAGUE_EVENTS)).timeout(const Duration(seconds: 10));
         jsonLeaguesData = await jsonDecode(leaguesResponse.body) as Map;
       } catch (e) {
         Fluttertoast.showToast(msg: 'EVENTS   ' +e.toString());
@@ -426,7 +432,7 @@ class ParentPageState extends State<ParentPage> with WidgetsBindingObserver {
     try {
       Response leaguesResponse = await get(Uri.parse(UrlConstants.GET_LEAGUES)).timeout(const Duration(seconds: 10));
       Iterable leaguesIterable = json.decode(leaguesResponse.body);
-      jsonLeaguesData = List<League>.from(leaguesIterable.map((model)=> JsonHelper.leagueFromJson(model)));
+      jsonLeaguesData = List<League>.from(leaguesIterable.map((model)=> League.fromJson(model)));
     } catch (e) {
       Fluttertoast.showToast(msg:  'LEAGUES   ' +e.toString());
       print('ERROR REST ---- LEAGUES MOCKING............');
@@ -435,6 +441,24 @@ class ParentPageState extends State<ParentPage> with WidgetsBindingObserver {
 
     return jsonLeaguesData;
   }
+
+  Future<List<Section>> getSectionsAsync(Timer? timer) async {
+
+    List<Section> jsonSectionsData = <Section>[];
+
+    try {
+      Response sectionsHttpResponse = await get(Uri.parse(UrlConstants.GET_SECTIONS)).timeout(const Duration(seconds: 10));
+      Iterable sectionsIterable = json.decode(sectionsHttpResponse.body);
+      jsonSectionsData = List<Section>.from(sectionsIterable.map((model)=> Section.fromJson(model)));
+    } catch (e) {
+      Fluttertoast.showToast(msg:  'SECTIONS   ' +e.toString());
+      print('ERROR REST ---- SECTIONS MOCKING............');
+
+    }
+
+    return jsonSectionsData;
+  }
+
 
   registedUserCallback(User user) {
 
@@ -532,7 +556,7 @@ class ParentPageState extends State<ParentPage> with WidgetsBindingObserver {
 
       var leaguesWithDataJson = dailyLeagues.value;
 
-      MatchEvent? leagueObj = await JsonHelper.eventFromJson(leaguesWithDataJson);
+      MatchEvent? leagueObj = await MatchEvent.eventFromJson(leaguesWithDataJson);
 
       newEventsPerDayMap.putIfAbsent(day, ()=> leagueObj);
     }
@@ -608,6 +632,7 @@ class ParentPageState extends State<ParentPage> with WidgetsBindingObserver {
         AppContext.liveLeagues.clear();
       }else {
 
+        Set<int> newAddedLeagueIds = Set();
         Set<int> incomingLiveLeagueIds = Set();
 
         for (MapEntry incomingLiveEventEntry in incomingLiveEventsMap.entries) {
@@ -629,14 +654,14 @@ class ParentPageState extends State<ParentPage> with WidgetsBindingObserver {
 
           }
 
-          if (!eventExistsInCache) {//means that the related league is also absent
+          if (!eventExistsInCache && !newAddedLeagueIds.contains(incomingLiveEventEntry.value.leagueId)) {//means that the related league is also absent
 
             LeagueWithData leagueWithLiveGameToBeAdded = AppContext.eventsPerDayMap[MatchConstants.KEY_TODAY]
                 .firstWhere((element) =>
                   element.league.league_id == incomingLiveEventEntry.value.leagueId);
             leagueWithLiveGameToBeAdded.liveEvents.add(incomingLiveEvent);
             AppContext.liveLeagues.add(leagueWithLiveGameToBeAdded);
-
+            newAddedLeagueIds.add(incomingLiveEventEntry.value.leagueId);
           }
         }
 
@@ -841,6 +866,14 @@ void setupFirebaseListeners() async{
   bool updateLeagues(List<League> leagues) {
     for ( League l in leagues){
       AppContext.allLeaguesMap.putIfAbsent(l.league_id, ()=>l);
+    }
+
+    return true;
+  }
+
+  bool updateSections(List<Section> sections) {
+    for ( Section s in sections){
+      AppContext.allSectionsMap.putIfAbsent(s.id, ()=>s);
     }
 
     return true;

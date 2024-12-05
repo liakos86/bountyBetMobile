@@ -67,7 +67,7 @@ class MockUtils {
       var events = <MatchEvent>[];
       Set<MatchEvent> eventsMock = mockEvents(leagueId);
       events.addAll(eventsMock);
-      League leagueInfo = League(  has_logo: true, name: "Mock country"+leagueId.toString(), league_id: leagueId, priority: leagueId);
+      League leagueInfo = League(  has_logo: true, name: "Mock country"+leagueId.toString(), league_id: leagueId, priority: leagueId, section_id: leagueId);
       LeagueWithData league = LeagueWithData(events: events,  league: leagueInfo);
 
       for (MatchEvent event in eventsMock){
@@ -78,8 +78,8 @@ class MockUtils {
 
       league.league.logo = "https://xscore.cc/resb/league/europe-uefa-champions-league.png" ;
 
-      Section section = Section("Section name"+leagueId.toString());
-      league.league.section = section;
+      // Section section = Section(name: "Section name"+leagueId.toString(), id: leagueId, slug: "slug", flag: "flfl", sport_id: 1);
+      league.league.section_id = leagueId;
 
       leagues.add(league);
 

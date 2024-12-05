@@ -48,7 +48,7 @@ class Season{
     season.leagueInfo.has_logo = seasonNew.leagueInfo.has_logo;
     season.leagueInfo.logo = seasonNew.leagueInfo.logo;
     season.leagueInfo.seasonIds.addAll(seasonNew.leagueInfo.seasonIds);
-    season.leagueInfo.translations = seasonNew.leagueInfo.translations;
+    season.leagueInfo.name_translations = seasonNew.leagueInfo.name_translations;
     // season.leagueInfo.translations?.addAll(seasonNew.leagueInfo.translations?);
   }
 
