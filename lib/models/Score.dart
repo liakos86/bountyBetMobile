@@ -1,7 +1,7 @@
 class Score{
 
   // This is the sum score for normal + extra + penalties of the current match
-  int ?current;
+  int current =0;
 
   // This is to be displayed
   int ?display;
@@ -27,6 +27,8 @@ class Score{
   // Extra second half
   int? extra_2;
 
+  Score.def();
+
   Score(
      this.current,
      this.display,
@@ -35,8 +37,8 @@ class Score{
      this.period_2
   );
 
-  void copyFrom(Score? incoming){
-    this.current = incoming?.current;
+  void copyFrom(Score incoming){
+    this.current = incoming.current;
     this.display = incoming?.display;
     this.normal_time = incoming?.normal_time;
     this.period_1 = incoming?.period_1;

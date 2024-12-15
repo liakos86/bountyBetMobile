@@ -29,6 +29,7 @@ import '../models/constants/UrlConstants.dart';
 import '../models/LeagueWithData.dart';
 import '../models/context/AppContext.dart';
 import '../utils/BetUtils.dart';
+import '../utils/SecureUtils.dart';
 
 
 class OddsPage extends StatefulWidgetWithName {
@@ -66,6 +67,8 @@ class OddsPageState extends State<OddsPage>{
   * Required because user can deleted selected odds from the betslip directly.
    */
   late final List<UserPrediction> selectedOdds;// = <UserPrediction>[];
+
+  int selectedIndex = -1;
 
   // Map eventsPerDayMap = LinkedHashMap();
 
@@ -233,7 +236,7 @@ class OddsPageState extends State<OddsPage>{
   }
 
   Widget _buildRow(LeagueWithData league, int item) {
-   return LeagueExpandableTile(key: PageStorageKey<LeagueWithData>(league), league: league, expandAll: false, events: league.events, callbackForOdds: fixOddsCallback, selectedOdds: selectedOdds, favourites: favourites(),);
+   return LeagueExpandableTile(key: PageStorageKey<LeagueWithData>(league), league: league, expandAll: selectedIndex==item, events: league.events, callbackForOdds: fixOddsCallback, selectedOdds: selectedOdds, favourites: favourites(),);
   }
 
   void removeOddCallback(UserPrediction toRemove){
@@ -292,6 +295,16 @@ class OddsPageState extends State<OddsPage>{
       return BetPlacementStatus.FAILED_USER_NOT_VALIDATED;
     }
 
+    if (access_token == null) {
+      access_token = await SecureUtils().retrieveValue(
+          Constants.accessToken);
+      await authorizeAsync();
+      if (access_token == null) {
+        print('COULD NOT AUTHORIZE ********************************************************************');
+        return BetPlacementStatus.FAIL_GENERIC;
+      }
+    }
+
     //selectedOdds.forEach((element) {element.event = ParentPageState.findEvent(element.eventId);});
     UserBet newBet = UserBet(userMongoId: mongoUserId , predictions: List.of(selectedOdds), betAmount: bettingAmount, betStatus: BetStatus.PENDING);
     var encodedBet = jsonEncode(newBet.toJson());
@@ -300,7 +313,8 @@ class OddsPageState extends State<OddsPage>{
       var userResponse = await post(Uri.parse(UrlConstants.POST_PLACE_BET),
           headers: {
             "Accept": "application/json",
-            "Content-Type": "application/json"
+            "Content-Type": "application/json",
+            'Authorization': 'Bearer $access_token'
           },
           body: encodedBet,
           encoding: Encoding.getByName("utf-8")).timeout(
@@ -355,6 +369,16 @@ class OddsPageState extends State<OddsPage>{
     String formattedDate = DateFormat('dd/MM').format(newDate);
 
     return formattedDate;
+  }
+
+  Future<bool> callbackForExpansion(int index) async{
+
+
+    setState(() {
+      selectedIndex = index;
+    });
+
+    return true;
   }
 
 }

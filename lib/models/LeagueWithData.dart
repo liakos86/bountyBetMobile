@@ -18,7 +18,7 @@ class LeagueWithData implements Comparable<LeagueWithData>{
 
   List<MatchEvent> events = <MatchEvent>[];
 
-  List<MatchEvent> liveEvents = <MatchEvent>[];
+  // List<MatchEvent> liveEvents = <MatchEvent>[];
 
   @override
   operator == (other) =>

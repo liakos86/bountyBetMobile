@@ -8,7 +8,10 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 
 import '../models/User.dart';
+import '../models/constants/Constants.dart';
 import '../models/constants/UrlConstants.dart';
+import '../pages/ParentPage.dart';
+import '../utils/SecureUtils.dart';
 
 class DialogLogin extends StatefulWidget {
 
@@ -123,10 +126,22 @@ class DialogLogin extends StatefulWidget {
       }
 
       try {
+
+        if (access_token == null) {
+          access_token = await SecureUtils().retrieveValue(
+              Constants.accessToken);
+          await authorizeAsync();
+          if (access_token == null) {
+            print('register COULD NOT AUTHORIZE ********************************************************************');
+            return;
+          }
+        }
+
         Response loginResponse = await post(Uri.parse(UrlConstants.POST_LOGIN_USER),
             headers: {
               "Accept": "application/json",
-              "Content-Type": "application/json"
+              "Content-Type": "application/json",
+              'Authorization': 'Bearer $access_token'
             },
             body: jsonEncode(toJson(emailOrUsername, password)),
             encoding: Encoding.getByName("utf-8")).timeout(

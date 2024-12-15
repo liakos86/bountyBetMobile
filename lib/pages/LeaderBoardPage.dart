@@ -4,14 +4,19 @@ import 'dart:convert';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_app/models/UserAward.dart';
 import 'package:flutter_app/utils/MockUtils.dart';
 import 'package:http/http.dart';
 
 import '../models/User.dart';
+import '../models/constants/Constants.dart';
 import '../models/constants/UrlConstants.dart';
 import '../models/interfaces/StatefulWidgetWithName.dart';
+import '../utils/SecureUtils.dart';
+import '../widgets/row/LeaderBoardAwardRow.dart';
 import '../widgets/row/LeaderBoardRow.dart';
 import 'LivePage.dart';
+import 'ParentPage.dart';
 
 
 class LeaderBoardPage extends StatefulWidgetWithName {
@@ -92,7 +97,7 @@ class LeaderBoardPageState extends State<LeaderBoardPage>{
                       padding: const EdgeInsets.all(8),
                       itemCount: leaders["1"]?.length,
                       itemBuilder: (context, item) {
-                        return _buildUserRow(leaders["1"]![item],    'all$item');
+                        return _buildAwardRow(leaders["1"]![item],    'all$item');
                       }),
 
 
@@ -116,11 +121,22 @@ class LeaderBoardPageState extends State<LeaderBoardPage>{
 
   void getLeadingUsers() async{
 
+    if (access_token == null) {
+      access_token = await SecureUtils().retrieveValue(
+          Constants.accessToken);
+      await authorizeAsync();
+      if (access_token == null) {
+        print('LEDERS COULD NOT AUTHORIZE ********************************************************************');
+        return ;
+      }
+    }
+
+
     Map leadersMap = LinkedHashMap();
 
     String getLeadersUrl = UrlConstants.GET_LEADERS_URL;
     try {
-      Response leadersResponse = await get(Uri.parse(getLeadersUrl))
+      Response leadersResponse = await get(Uri.parse(getLeadersUrl), headers:  {'Authorization': 'Bearer $access_token'})
           .timeout(const Duration(seconds: 5));
       leadersMap = await jsonDecode(leadersResponse.body) as Map;
 
@@ -157,6 +173,16 @@ class LeaderBoardPageState extends State<LeaderBoardPage>{
   Widget _buildUserRow( User leader, String key) {
 
     return LeaderBoardRow(user: leader, key: PageStorageKey<String>(key));
+
+  }
+
+  Widget _buildAwardRow( User leader, String key) {
+
+    UserAward award = leader.awards.elementAt(0);
+
+    // return LeaderBoardRow(user: leader, key: PageStorageKey<String>(key));
+
+    return LeaderBoardAwardRow(award: award, username: leader.username, key: PageStorageKey<String>(key));
 
   }
 

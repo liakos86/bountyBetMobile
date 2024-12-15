@@ -24,12 +24,16 @@ class LeagueExpandableTile extends StatefulWidget {
 
   final Function(UserPrediction) callbackForOdds;
 
+  // final Function callbackForExpansion;
+
   final List<String> favourites;
 
   bool expandAll;
 
+  // int index;
+
   LeagueExpandableTile(
-      {Key ?key, required this.league, required this.events, required this.selectedOdds, required this.callbackForOdds, required this.favourites, required this.expandAll})
+      {Key ?key, required this.league, required this.events, required this.selectedOdds, required this.callbackForOdds, required this.favourites, required this.expandAll, })
       : super(key: key);
 
   @override
@@ -46,10 +50,14 @@ class LeagueExpandableTile extends StatefulWidget {
     late List<UserPrediction> selectedOdds;
 
     late Function(UserPrediction) callbackForOdds;
+    // late Function callbackForExpansion;
 
     late List<String> favourites;
 
     late bool expandAll;
+
+    // late int pos;
+
 
     @override
     void initState() {
@@ -64,6 +72,8 @@ class LeagueExpandableTile extends StatefulWidget {
       callbackForOdds = widget.callbackForOdds;
       favourites = widget.favourites;
       expandAll = widget.expandAll;
+      // callbackForExpansion = widget.callbackForExpansion;
+      // pos = widget.index;
 
       return Theme(
         key: UniqueKey(),
@@ -97,12 +107,23 @@ class LeagueExpandableTile extends StatefulWidget {
 
                     title: Text(AppContext.allSectionsMap[league.league.section_id].getLocalizedName().toUpperCase(),
                         style: TextStyle(fontSize: 9, color: Colors.grey[600], fontWeight: FontWeight.bold)),
-                    children: events.map((item)=> _buildSelectedOddRow(item)).toList()
+
+                    children: events.map((item)=> _buildSelectedOddRow(item)).toList(),
+
+
+                // onExpansionChanged: (bool expanding) => callExp(expanding)
+
                 ),
 
          //   )
       );
   }
+
+  // callExp(bool exp) async{
+  //     if (exp) {
+  //       callbackForExpansion.call(pos);
+  //     }
+  // }
 
   Widget _buildSelectedOddRow(MatchEvent event) {
     MatchEventStatus? matchEventStatus =  MatchEventStatus.fromStatusText(event.status);
@@ -116,5 +137,7 @@ class LeagueExpandableTile extends StatefulWidget {
 
     return UpcomingOrEndedMatchRow(key: UniqueKey(), gameWithOdds: event, selectedOdds: selectedOdds, callbackForOdds: callbackForOdds);
   }
+
+
 
 }

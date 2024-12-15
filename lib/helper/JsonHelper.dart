@@ -34,7 +34,7 @@ class JsonHelper{
   static Future<LeagueWithData?> leagueWithDataFromJson(leagueWithDataJson) async{
 
     List<MatchEvent> matches = <MatchEvent>[];
-    List<MatchEvent> liveMatches = <MatchEvent>[];
+    // List<MatchEvent> liveMatches = <MatchEvent>[];
 
     var jsonLeagueEvents = leagueWithDataJson["matchEvents"];
     for (var jsonEvent in jsonLeagueEvents){
@@ -44,9 +44,9 @@ class JsonHelper{
 
       MatchEvent match = await MatchEvent. eventFromJson(jsonEvent);
       matches.add(match);
-      if (MatchEventStatus.INPROGRESS == MatchEventStatus.fromStatusText(match.status)){
-        liveMatches.add(match);
-      }
+      // if (MatchEventStatus.INPROGRESS == MatchEventStatus.fromStatusText(match.status)){
+      //   liveMatches.add(match);
+      // }
     }
 
     // var league = leagueWithDataJson['league'];
@@ -62,7 +62,7 @@ class JsonHelper{
     LeagueWithData l = LeagueWithData(
         league: li,
         events: matches);
-    l.liveEvents = liveMatches;
+    // l.liveEvents = liveMatches;
 
     return l;
   }

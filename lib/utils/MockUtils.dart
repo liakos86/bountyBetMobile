@@ -70,11 +70,11 @@ class MockUtils {
       League leagueInfo = League(  has_logo: true, name: "Mock country"+leagueId.toString(), league_id: leagueId, priority: leagueId, section_id: leagueId);
       LeagueWithData league = LeagueWithData(events: events,  league: leagueInfo);
 
-      for (MatchEvent event in eventsMock){
-        if (MatchEventStatus.fromStatusText(event.status) == MatchEventStatus.INPROGRESS) {
-          league.liveEvents.add(event);
-        }
-      }
+      // for (MatchEvent event in eventsMock){
+      //   if (MatchEventStatus.fromStatusText(event.status) == MatchEventStatus.INPROGRESS) {
+      //     league.liveEvents.add(event);
+      //   }
+      // }
 
       league.league.logo = "https://xscore.cc/resb/league/europe-uefa-champions-league.png" ;
 

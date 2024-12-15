@@ -7,7 +7,9 @@ import 'package:flutter_app/utils/SecureUtils.dart';
 import 'package:http/http.dart';
 
 import '../models/User.dart';
+import '../models/constants/Constants.dart';
 import '../models/constants/UrlConstants.dart';
+import '../pages/ParentPage.dart';
 
 class DialogUserRegistered extends StatelessWidget{
 
@@ -48,10 +50,22 @@ class DialogUserRegistered extends StatelessWidget{
       }
 
       try {
+
+        if (access_token == null) {
+          access_token = await SecureUtils().retrieveValue(
+              Constants.accessToken);
+          await authorizeAsync();
+          if (access_token == null) {
+            print('register COULD NOT AUTHORIZE ********************************************************************');
+            return;
+          }
+        }
+
         Response registerResponse = await post(Uri.parse(UrlConstants.POST_REGISTER_USER),
             headers: {
               "Accept": "application/json",
-              "Content-Type": "application/json"
+              "Content-Type": "application/json",
+              'Authorization': 'Bearer $access_token'
             },
             body: jsonEncode(toJson(email, password)),
             encoding: Encoding.getByName("utf-8")).timeout(

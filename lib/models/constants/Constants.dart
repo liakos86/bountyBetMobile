@@ -14,4 +14,5 @@ class Constants {
   static const String assetNoLeagueImage = "assets/images/league_missing.png";
 
 
+  static const String accessToken = 'access_token';
 }

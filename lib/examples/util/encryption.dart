@@ -1,5 +1,15 @@
-import 'package:encrypt/encrypt.dart';
+import 'package:encrypt/encrypt.dart' as enc;
+import 'package:flutter/material.dart';
 import 'package:flutter_app/models/constants/UrlConstants.dart';
+import 'package:flutter_app/utils/SecureUtils.dart';
+
+  String separator = '######';
+
+  Future<String> getToken() async{
+    var deviceIdentifier = await SecureUtils.getDeviceIdentifier();
+    String fullKey = encryptWithAES(UrlConstants.URL_ENC + separator + deviceIdentifier + separator + DateTime.now().millisecondsSinceEpoch.toString(), createKey(UrlConstants.URL_ENC)).base64;
+    return fullKey;
+  }
 
  // String createKey(text1, text2){
  String createKey(String text1){
@@ -27,7 +37,7 @@ String reverse(String s) {
     print('Plain text for encryption: $plainText');
 
     //Encrypt
-    Encrypted encrypted = encryptWithAES(plainText, createKey(UrlConstants.URL_ENC));
+    enc.Encrypted encrypted = encryptWithAES(plainText, createKey(UrlConstants.URL_ENC));
     String encryptedBase64 = encrypted.base64;
     print('Encrypted data in base64 encoding: $encryptedBase64');
 
@@ -37,11 +47,11 @@ String reverse(String s) {
   }
 
   ///Accepts encrypted data and decrypt it. Returns plain text
-  String decryptWithAES(String key, Encrypted encryptedData) {
-    final cipherKey = Key.fromUtf8(key);
+  String decryptWithAES(String key, enc.Encrypted encryptedData) {
+    final cipherKey = enc.Key.fromUtf8(key);
 
-    final encryptService = Encrypter(AES(cipherKey, mode: AESMode.ecb)); //Using AES CBC encryption
-    final initVector = IV.fromUtf8(key.substring(0, 16)); //Here the IV is generated from key. This is for example only. Use some other text or random data as IV for better security.
+    final encryptService = enc.Encrypter(enc.AES(cipherKey, mode: enc.AESMode.ecb)); //Using AES CBC encryption
+    final initVector = enc.IV.fromUtf8(key.substring(0, 16)); //Here the IV is generated from key. This is for example only. Use some other text or random data as IV for better security.
 
     return encryptService.decrypt(encryptedData, iv: initVector);
 
@@ -52,7 +62,7 @@ String reverse(String s) {
   }
 
   ///Encrypts the given plainText using the key. Returns encrypted data
-  Encrypted encryptWithAES(String plainText, String key){
+enc.Encrypted encryptWithAES(String plainText, String key){
       // , String initialKey) {
 
 
@@ -60,14 +70,14 @@ String reverse(String s) {
     plainText = paddedPlainText(plainText);
    // final String key = createKey(plainText, initialKey);
     print('Will encrypt ' + plainText +  ' key is  $key');
-    final cipherKey = Key.fromUtf8(key);
+    final cipherKey = enc.Key.fromUtf8(key);
 
     print ('key after creation is ' + cipherKey.base64);
-    final encryptService = Encrypter(AES(cipherKey, mode: AESMode.ecb));
+    final encryptService = enc.Encrypter(enc.AES(cipherKey, mode: enc.AESMode.ecb));
     // final encryptService = Encrypter(AES(cipherKey, mode: AESMode.cbc));
-    final initVector = IV.fromUtf8(key); //Here the IV is generated from key. This is for example only. Use some other text or random data as IV for better security.
+    final initVector = enc.IV.fromUtf8(key); //Here the IV is generated from key. This is for example only. Use some other text or random data as IV for better security.
 
-    Encrypted encryptedData = encryptService.encrypt(plainText, iv: initVector);
+    enc.Encrypted encryptedData = encryptService.encrypt(plainText, iv: initVector);
     return encryptedData;
   }
 

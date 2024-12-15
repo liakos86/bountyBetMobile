@@ -16,6 +16,7 @@ import 'package:http/http.dart';
 
 import '../models/constants/Constants.dart';
 import '../models/constants/UrlConstants.dart';
+import '../utils/SecureUtils.dart';
 import '../widgets/row/SimpleLeagueRow.dart';
 
 
@@ -107,9 +108,19 @@ class LeaguesInfoPageState extends State<LeaguesInfoPage>{
 
   Future<List<League>> getStandingsWithoutTablesAsync() async{
 
+    if (access_token == null) {
+      access_token = await SecureUtils().retrieveValue(
+          Constants.accessToken);
+      await authorizeAsync();
+      if (access_token == null) {
+        print('LEGUUES COULD NOT AUTHORIZE ********************************************************************');
+        return <League>[];
+      }
+    }
+
     String getStandingsWithoutTablesUrlFinal = UrlConstants.GET_STANDINGS_WITHOUT_TABLES;
     try {
-      Response userResponse = await get(Uri.parse(getStandingsWithoutTablesUrlFinal)).timeout(const Duration(seconds: 5));
+      Response userResponse = await get(Uri.parse(getStandingsWithoutTablesUrlFinal), headers:  {'Authorization': 'Bearer $access_token'}).timeout(const Duration(seconds: 5));
       Iterable responseDec = await jsonDecode(userResponse.body);
       return  List<League>.from(responseDec.map((model) => League.fromJson(model)));
     } catch (e) {

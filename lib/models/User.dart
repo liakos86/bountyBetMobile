@@ -4,6 +4,7 @@ import 'package:flutter_app/models/UserBet.dart';
 import 'package:flutter_app/models/constants/MatchConstants.dart';
 
 import '../enums/UserLevel.dart';
+import 'UserAward.dart';
 import 'constants/Constants.dart';
 
 class User{
@@ -23,6 +24,8 @@ class User{
   String errorMessage = Constants.empty;
 
   double balance = -1;
+
+  List<UserAward> awards = <UserAward>[];
 
   UserLevel userLevel = UserLevel.bettingVisitor;
 
@@ -47,19 +50,26 @@ class User{
       return user;
     }
 
+    List<UserBet> bets = <UserBet>[];
 
-    User user = User(parsedJson['mongoId'].toString(), parsedJson['username'].toString(), parsedJson['balance'] as double,
-        (parsedJson['userBets'] as List)
-            .map((data) =>  UserBet.fromJson(data))
-            .toList()
-           );
+    if (parsedJson['userBets'] != null){
+      bets.addAll( (parsedJson['userBets'] as List)
+          .map((data) =>  UserBet.fromJson(data))
+          .toList()
+      );
+    }
+
+    User user = User(parsedJson['mongoId'].toString(), parsedJson['username'].toString(), parsedJson['balance'] as double, bets);
+
 
     user.validated = parsedJson['validated'] as bool;
     user.email = parsedJson['email'];
-    user.monthlyWonBets = parsedJson['monthlyWonSlipsCount'];
-    user.monthlyWonPredictions = parsedJson['monthlyWonEventsCount'];
-    user.monthlyLostBets = parsedJson['monthlyLostSlipsCount'];
-    user.monthlyLostPredictions = parsedJson['monthlyLostEventsCount'];
+
+
+    user.monthlyWonBets = parsedJson['monthlyWonSlipsCount']??0;
+    user.monthlyWonPredictions = parsedJson['monthlyWonEventsCount']??0;
+    user.monthlyLostBets = parsedJson['monthlyLostSlipsCount']??0;
+    user.monthlyLostPredictions = parsedJson['monthlyLostEventsCount']??0;
 
     user.overallWonBets = parsedJson['overallWonSlipsCount'];
     user.overallWonPredictions = parsedJson['overallWonEventsCount'];
@@ -67,7 +77,14 @@ class User{
     user.overallLostPredictions = parsedJson['overallLostEventsCount'];
 
     user.userLevel = UserLevel.ofLevelCode(parsedJson['level']);
-    user.userPosition = parsedJson['position'] as int;
+    user.userPosition = parsedJson['position']??0 as int ;
+
+    if (parsedJson['userAwards'] != null){
+      user.awards.clear();
+        for (dynamic award in parsedJson['userAwards']){
+          user.awards.add(UserAward.fromJson(award));
+        }
+    }
 
     return user;
 
@@ -90,3 +107,4 @@ class User{
   }
 
 }
+

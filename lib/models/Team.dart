@@ -40,10 +40,6 @@ class Team{
       return name;
     }
 
-    //String? lang = locale?.languageCode;
-    if (locale == null){
-      return name;
-    }
 
     var candidates = locale?.toLowerCase().split(Constants.underscore);
     for (String candidate in candidates!){

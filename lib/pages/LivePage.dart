@@ -2,6 +2,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_app/enums/MatchEventStatus.dart';
 import 'package:flutter_app/helper/SharedPrefs.dart';
 import 'package:flutter_app/models/interfaces/StatefulWidgetWithName.dart';
 
@@ -32,6 +33,8 @@ class LivePageState extends State<LivePage> with WidgetsBindingObserver{
 
   List<String> favourites = <String>[];
 
+  List<LeagueWithData> leaguesWd = <LeagueWithData>[];
+
   @override
   void initState(){
     liveLeagues = widget.liveLeagues;
@@ -43,7 +46,7 @@ class LivePageState extends State<LivePage> with WidgetsBindingObserver{
   Widget build(BuildContext context) {
 
 
-    // List<LeagueWithData> liveLeagues = liveLeagues.where((element) => element.liveEvents.isNotEmpty).toList();// <LeagueWithData>[];
+    leaguesWd = liveLeagues.where((element) => element.events.where((element) => element.status == MatchEventStatus.INPROGRESS.statusStr).toList().isNotEmpty).toList();// <LeagueWithData>[];
 
 
     return Scaffold(
@@ -61,7 +64,7 @@ class LivePageState extends State<LivePage> with WidgetsBindingObserver{
           key: const PageStorageKey<String>(
               'pageLive'),
         // controller: scrollController,
-          itemCount: liveLeagues.length,
+          itemCount: leaguesWd.length,
           itemBuilder: (context, item) {
             return _buildRow(item);
           }),
@@ -70,13 +73,17 @@ class LivePageState extends State<LivePage> with WidgetsBindingObserver{
   }
 
   Widget _buildRow(int item) {
-    LeagueWithData league = liveLeagues[item];
-    return LeagueExpandableTile(key: PageStorageKey<LeagueWithData>(liveLeagues.elementAt(item)), league: league, expandAll: true, events: league.liveEvents, selectedOdds: [], callbackForOdds: (a)=>{}, favourites: favourites);
+    LeagueWithData league = leaguesWd[item];
+    return LeagueExpandableTile(key: PageStorageKey<LeagueWithData>(leaguesWd.elementAt(item)), league: league, expandAll: true, events: league.events.where((element) => element.status == MatchEventStatus.INPROGRESS.statusStr).toList(), selectedOdds: [], callbackForOdds: (a)=>{}, favourites: favourites, );
   }
 
   List<String> getFavourites(){
     sharedPrefs.reload();
     return sharedPrefs.getListByKey(sp_fav_event_ids);
+  }
+
+  callBackForExpansion(int index){
+
   }
   
   

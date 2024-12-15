@@ -32,7 +32,7 @@ class AppContext{
   /*
    * The leagues which contain live games, only with the live games.
    */
-  static final List<LeagueWithData> liveLeagues = <LeagueWithData>[];
+  // static final List<LeagueWithData> liveLeagues = <LeagueWithData>[];
 
   /*
    * The logged user.

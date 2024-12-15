@@ -49,11 +49,11 @@ class MatchEvent implements Comparable<MatchEvent>{
 
   Team homeTeam ;
 
-  Score ?homeTeamScore;
+  Score homeTeamScore = Score.def();
 
   Team awayTeam;
 
-  Score ?awayTeamScore;
+  Score awayTeamScore = Score.def();
 
   MatchOdds? odds;
 
@@ -89,9 +89,7 @@ class MatchEvent implements Comparable<MatchEvent>{
 
 		currentPeriodStartTime ??= matchTime;
 
-		if (homeTeam.name.contains('Liver')){
-			print('STRTED : ' + currentPeriodStartTime.toString());
-		}
+
 
 		MatchEventStatus? eventStatus = MatchEventStatus.fromStatusText(status);
 		if (! (MatchEventStatus.INPROGRESS == eventStatus)) {
@@ -331,8 +329,13 @@ class MatchEvent implements Comparable<MatchEvent>{
 
   void copyFrom(MatchEvent incomingEvent) {
   	changeEvent = incomingEvent.changeEvent;
-  	homeTeamScore?.copyFrom(incomingEvent.homeTeamScore);
-  	awayTeamScore?.copyFrom(incomingEvent.awayTeamScore);
+  	if(homeTeam.name.contains('rsenal')){
+  		int i=0;
+		}
+
+
+  	homeTeamScore.copyFrom(incomingEvent.homeTeamScore);
+  	awayTeamScore.copyFrom(incomingEvent.awayTeamScore);
   	status = incomingEvent.status;
   	status_more = incomingEvent.status_more;
   	timeDetails = incomingEvent.timeDetails;

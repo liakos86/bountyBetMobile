@@ -19,7 +19,7 @@
     }
   }
 
-    print('****** LAsTED PERIOD:' + str);
+    //print('****** LAsTED PERIOD:' + str);
 
   return null;
 }

@@ -147,7 +147,7 @@ import '../LogoWithName.dart';
                                 gameWithOdds.odds?.oddX
                               ],))),
                     Expanded(flex: 4,
-                        child: Padding(padding: EdgeInsets.all(4),
+                        child: Padding(padding: const EdgeInsets.all(4),
                             child: GestureDetectorForOdds(
                               key: UniqueKey(),
                               selectedOdds: selectedOdds,
@@ -160,7 +160,7 @@ import '../LogoWithName.dart';
                                 gameWithOdds.odds?.odd1
                               ],))),
                     Expanded(flex: 5,
-                        child: Padding(padding: EdgeInsets.all(4),
+                        child: Padding(padding: const EdgeInsets.all(4),
                             child: GestureDetectorForOdds(
                               key: UniqueKey(),
                               selectedOdds: selectedOdds,
