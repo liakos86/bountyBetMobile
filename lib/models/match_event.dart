@@ -1,6 +1,9 @@
+import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter_app/models/constants/Constants.dart';
 import 'package:flutter_app/models/match_odds.dart';
 import 'package:intl/intl.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
 
 import '../enums/BetPredictionStatus.dart';
 import '../enums/BetPredictionType.dart';
@@ -73,57 +76,32 @@ class MatchEvent implements Comparable<MatchEvent>{
 
   bool isFavourite = false;
 
-	void calculateLiveMinute() {
+	String calculateLiveMinute(BuildContext context, DateTime startLocal) {
 
-		DateTime? currentPeriodStartTime;
-
-		if (timeDetails != null && timeDetails!.currentPeriodStartTimestamp > 0){
-			currentPeriodStartTime = DateTime.fromMillisecondsSinceEpoch(timeDetails!.currentPeriodStartTimestamp * 1000).toLocal();
+		if (! (MatchEventStatus.INPROGRESS.statusStr == status)) {
+			return 'error not inprog';
 		}
 
-
-		DateFormat matchTimeFormat = DateFormat(MatchConstants.MATCH_START_TIME_FORMAT);
-		DateTime matchTime = matchTimeFormat.parseUtc(start_at).toLocal();
-		startMillis = matchTime.millisecondsSinceEpoch;
-		start_at_local = '${matchTime.hour < 10 ? '0' : Constants.empty}${matchTime.hour}:${matchTime.minute < 10 ? '0' : Constants.empty}${matchTime.minute}' ;
-
-		currentPeriodStartTime ??= matchTime;
-
-
-
-		MatchEventStatus? eventStatus = MatchEventStatus.fromStatusText(status);
-		if (! (MatchEventStatus.INPROGRESS == eventStatus)) {
-
-			if (MatchEventStatus.FINISHED == eventStatus){
-				display_status = MatchEventStatusMore.fromStatusMoreText(status_more)!.statusStr;
-				return;
-
-			}
-
-			display_status = start_at_local;
-			return;
+		if (status_more.isEmpty){
+			return 'no st more';
 		}
 
-
-		MatchEventStatusMore? matchEventStatusMore = MatchEventStatusMore.fromStatusMoreText(status_more);
-		if (matchEventStatusMore == null){
-			return;
+		if (MatchEventStatusMore.INPROGRESS_HALFTIME_EXTRA.statusStr == status_more) {
+			return AppLocalizations.of(context)!.status_half_time_et;
 		}
 
-		if (MatchEventStatusMore.INPROGRESS_HALFTIME == matchEventStatusMore ||
-				MatchEventStatusMore.INPROGRESS_HALFTIME_EXTRA == matchEventStatusMore) {
-			display_status = matchEventStatusMore.statusStr;
-			return;
-		}
-
-	 if (MatchEventStatusMore.INPROGRESS_HALFTIME == matchEventStatusMore) {
+		if (MatchEventStatusMore.INPROGRESS_HALFTIME.statusStr == status_more ) {
 			if (ChangeEvent.SECOND_HALF_START == changeEvent){
-				display_status = '46';
 				changeEvent = ChangeEvent.NONE;
+				return '46';
 			}
-		}else if (MatchEventStatusMore.INPROGRESS_1ST_HALF == matchEventStatusMore) {
 
-			int x = DateTime.now().millisecondsSinceEpoch - currentPeriodStartTime.millisecondsSinceEpoch;
+			return AppLocalizations.of(context)!.status_half_time;
+		}
+
+	 if (MatchEventStatusMore.INPROGRESS_1ST_HALF.statusStr == status_more) {
+
+			int x = DateTime.now().millisecondsSinceEpoch - startLocal.millisecondsSinceEpoch;
 			int minute = x ~/ 60000;
 			if (minute > 45) {
 				String injury1st = Constants.empty;
@@ -131,68 +109,72 @@ class MatchEvent implements Comparable<MatchEvent>{
 					injury1st = (minute - 45).toString();
 				}
 
-				display_status = "45+$injury1st";
-			} else {
-				display_status = "$minute'";
+				return "45+$injury1st";
 			}
-		} else if (MatchEventStatusMore.INPROGRESS_2ND_HALF == (matchEventStatusMore)) {
+
+			return "$minute'";
+
+		}
+
+	 	if (MatchEventStatusMore.INPROGRESS_2ND_HALF.statusStr == status_more) {
 
 	 		int firstHalfMinutes = 45;
 
 			int millisecondsSinceMatchStart = DateTime.now()
-					.millisecondsSinceEpoch - currentPeriodStartTime.millisecondsSinceEpoch;
+					.millisecondsSinceEpoch - startLocal.millisecondsSinceEpoch;
 
 			int minute = firstHalfMinutes + (millisecondsSinceMatchStart ~/ 60000) ;// - 15; // 15 is for half time break
 
 			if (minute > 90) {
-
-				if (homeTeam.name.contains('Liver')){
-					print('EXTR : ' + minute.toString());
-				}
-
-
 				String injury2nd = (minute - 90).toString();//90).toString();
-				display_status = "90+$injury2nd";
-			} else {
-				display_status = "$minute'";
+				return "90+$injury2nd";
 			}
 
-		} else if (MatchEventStatusMore.INPROGRESS_1ST_EXTRA == (matchEventStatusMore)) {// TODO:  extra time etc
+			return "$minute'";
+
+		}
+
+	 	if (MatchEventStatusMore.INPROGRESS_1ST_EXTRA.statusStr == status_more) {// TODO:  extra time etc
 		 int firstMinutes = 90;
 
 		 int millisecondsSinceMatchStart = DateTime
 				 .now()
-				 .millisecondsSinceEpoch - currentPeriodStartTime.millisecondsSinceEpoch;
+				 .millisecondsSinceEpoch - startLocal.millisecondsSinceEpoch;
 
 		 int minute = firstMinutes + (millisecondsSinceMatchStart ~/ 60000);// - 15; // 15 is for half time break
 
 		 if (minute > 105){// 90) {
 			 String injury2nd = (minute - 15).toString();//90).toString();
-			 display_status = "105+$injury2nd";
-		 } else {
-			 display_status = "$minute'";
+			 return  "${AppLocalizations.of(context)!.status_more_et} 105+$injury2nd";
 		 }
-		}else if (MatchEventStatusMore.INPROGRESS_2ND_EXTRA == (matchEventStatusMore)) {// TODO:  extra time etc
+
+		 return "${AppLocalizations.of(context)!.status_more_et} $minute'";
+
+		}
+
+	 	if (MatchEventStatusMore.INPROGRESS_2ND_EXTRA.statusStr == status_more) {// TODO:  extra time etc
 		 int firstMinutes = 105;
 
 		 int millisecondsSinceMatchStart = DateTime
 				 .now()
-				 .millisecondsSinceEpoch - currentPeriodStartTime.millisecondsSinceEpoch;
+				 .millisecondsSinceEpoch - startLocal.millisecondsSinceEpoch;
 
 		 int minute = firstMinutes + (millisecondsSinceMatchStart ~/ 60000);// - 15; // 15 is for half time break
 
 		 if (minute > 120){// 90) {
 			 String injury2nd = (minute - 15).toString();//90).toString();
-			 display_status = "120+$injury2nd";
-		 } else {
-			 display_status = "$minute'";
+			 return "${AppLocalizations.of(context)!.status_more_et} 120+$injury2nd";
 		 }
-	 }else if (MatchEventStatusMore.INPROGRESS_PENALTIES == (matchEventStatusMore)) {
-	 	 display_status = 'Penalty shootout';
-	 } else{
-		 display_status = status_more;
+
+		 return "${AppLocalizations.of(context)!.status_more_et} $minute'";
+
 	 }
 
+	 	if (MatchEventStatusMore.INPROGRESS_PENALTIES.statusStr == status_more) {
+			return AppLocalizations.of(context)!.status_more_pen;
+	 }
+
+	 	return '??' + status_more;
 	}
 
 	@override
@@ -213,7 +195,11 @@ class MatchEvent implements Comparable<MatchEvent>{
 			return -1;
 		}
 
-		return eventId - other.eventId;
+		if (eventId > other.eventId){
+			return -1;
+		}
+
+		return 1;
 
 	}
 
@@ -323,7 +309,7 @@ class MatchEvent implements Comparable<MatchEvent>{
 			match.isFavourite = true;
 		}
 
-		match.calculateLiveMinute();
+		// match.calculateLiveMinute();
 		return match;
 	}
 
@@ -340,6 +326,93 @@ class MatchEvent implements Comparable<MatchEvent>{
   	status_more = incomingEvent.status_more;
   	timeDetails = incomingEvent.timeDetails;
 
+	}
+
+	String? calculateNonLiveStatus(BuildContext context){
+
+		if (status_more.isEmpty){
+			return 'error non live more';
+		}
+
+		//if (MatchEventStatus.FINISHED.statusStr == status){
+			if (MatchEventStatusMore.GAME_FINISHED.statusStr == status_more
+					|| MatchEventStatusMore.ENDED.statusStr == status_more) {
+				return AppLocalizations.of(context)!.status_finished;
+			}
+
+			if (MatchEventStatusMore.AFTER_EXTRA_TIME.statusStr == status_more) {
+				return AppLocalizations.of(context)!.status_more_after_et;
+			}
+
+			if (MatchEventStatusMore.AFTER_PENALTIES.statusStr == status_more) {
+				return AppLocalizations.of(context)!.status_more_after_pen;
+			}
+
+		// }
+
+		if (MatchEventStatus.CANCELLED.statusStr == status){
+			return AppLocalizations.of(context)!.status_cancelled;
+		}
+
+		if (MatchEventStatus.INTERRUPTED.statusStr == status){
+			return AppLocalizations.of(context)!.status_interrupt;
+		}
+
+		if (MatchEventStatus.POSTPONED.statusStr == status){
+			return AppLocalizations.of(context)!.status_postponed;
+		}
+
+		if (MatchEventStatus.SUSPENDED.statusStr == status){
+			return AppLocalizations.of(context)!.status_suspended;
+		}
+
+		if (MatchEventStatus.WILL_CONTINUE.statusStr == status){
+			return AppLocalizations.of(context)!.status_will_cont;
+		}
+
+		if (MatchEventStatus.DELAYED.statusStr == status){
+			return AppLocalizations.of(context)!.status_delayed;
+		}
+
+		if (MatchEventStatus.NOTSTARTED.statusStr == status){
+			return start_at_local;
+		}
+
+		return null;
+
+	}
+
+  void calculateDisplayStatus(BuildContext context) {
+		DateTime currentPeriodStartTime = calculateCurrentPeriodStartTime();
+		String? display = calculateNonLiveStatus(context);
+
+		if (display != null) {
+			display_status = display;
+			return;
+		}
+
+
+		display_status = calculateLiveMinute(context, currentPeriodStartTime);
+	}
+
+  DateTime calculateCurrentPeriodStartTime() {
+
+		DateTime? currentPeriodStartTime;
+
+		if (timeDetails != null && timeDetails!.currentPeriodStartTimestamp > 0){
+			currentPeriodStartTime = DateTime.fromMillisecondsSinceEpoch(timeDetails!.currentPeriodStartTimestamp * 1000).toLocal();
+		}
+
+		DateFormat matchTimeFormat = DateFormat(MatchConstants.MATCH_START_TIME_FORMAT);
+		DateTime matchTime = matchTimeFormat.parseUtc(start_at).toLocal();
+		startMillis = matchTime.millisecondsSinceEpoch;
+		start_at_local = '${matchTime.hour < 10 ? '0' : Constants.empty}${matchTime.hour}:${matchTime.minute < 10 ? '0' : Constants.empty}${matchTime.minute}' ;
+
+		if (currentPeriodStartTime == null){
+			currentPeriodStartTime = matchTime;
+		};
+
+		return currentPeriodStartTime;
 	}
 
 }

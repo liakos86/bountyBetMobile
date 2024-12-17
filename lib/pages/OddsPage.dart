@@ -1,35 +1,27 @@
 import 'dart:async';
-import 'dart:collection';
-import 'dart:convert';
 
 import 'package:flutter_app/enums/BetStatus.dart';
 import 'package:flutter_app/models/interfaces/StatefulWidgetWithName.dart';
+import 'package:flutter_app/utils/client/HttpActionsClient.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_app/enums/BetPlacementStatus.dart';
-import 'package:flutter_app/enums/BetPredictionStatus.dart';
 import 'package:flutter_app/helper/SharedPrefs.dart';
-import 'package:flutter_app/models/User.dart';
 import 'package:flutter_app/models/constants/Constants.dart';
 import 'package:flutter_app/pages/LivePage.dart';
-import 'package:flutter_app/pages/ParentPage.dart';
 import 'package:flutter_app/widgets/BetSlipWithCustomKeyboard.dart';
 import 'package:flutter_app/widgets/LeagueExpandableTile.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:http/http.dart';
 import 'package:intl/intl.dart';
 
-import '../models/League.dart';
 import '../models/UserBet.dart';
 import '../models/UserPrediction.dart';
-import '../models/constants/UrlConstants.dart';
 import '../models/LeagueWithData.dart';
 import '../models/context/AppContext.dart';
 import '../utils/BetUtils.dart';
-import '../utils/SecureUtils.dart';
 
 
 class OddsPage extends StatefulWidgetWithName {
@@ -295,52 +287,21 @@ class OddsPageState extends State<OddsPage>{
       return BetPlacementStatus.FAILED_USER_NOT_VALIDATED;
     }
 
-    if (access_token == null) {
-      access_token = await SecureUtils().retrieveValue(
-          Constants.accessToken);
-      await authorizeAsync();
-      if (access_token == null) {
-        print('COULD NOT AUTHORIZE ********************************************************************');
-        return BetPlacementStatus.FAIL_GENERIC;
-      }
-    }
-
     //selectedOdds.forEach((element) {element.event = ParentPageState.findEvent(element.eventId);});
     UserBet newBet = UserBet(userMongoId: mongoUserId , predictions: List.of(selectedOdds), betAmount: bettingAmount, betStatus: BetStatus.PENDING);
-    var encodedBet = jsonEncode(newBet.toJson());
 
-    try {
-      var userResponse = await post(Uri.parse(UrlConstants.POST_PLACE_BET),
-          headers: {
-            "Accept": "application/json",
-            "Content-Type": "application/json",
-            'Authorization': 'Bearer $access_token'
-          },
-          body: encodedBet,
-          encoding: Encoding.getByName("utf-8")).timeout(
-          const Duration(seconds: 20));
 
-      // var responseDec = jsonDecode(userResponse.body);
-      //User userFromServer = User.fromJson(responseDec);
+      BetPlacementStatus betPlacementStatus = await HttpActionsClient.placeBet(newBet);
 
-      BetPlacementStatus betPlacementStatus = BetPlacementStatus.ofStatusText(userResponse.body);
+      if (betPlacementStatus == BetPlacementStatus.PLACED) {
+        updateUserCallback.call(newBet);
 
-      if (betPlacementStatus != BetPlacementStatus.PLACED){
-        return betPlacementStatus;
+        setState(() {
+          selectedOdds.clear();
+        });
       }
 
-      updateUserCallback.call(newBet);
-
-      setState(() {
-        selectedOdds.clear();
-      });
-
-      return BetPlacementStatus.PLACED;
-
-    }catch(e){
-      print(e);
-      return BetPlacementStatus.FAIL_GENERIC;
-    }
+      return betPlacementStatus;
   }
 
   void alertDialog(String msg) {

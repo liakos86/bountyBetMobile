@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_app/enums/MatchEventStatus.dart';
 import 'package:flutter_app/widgets/GestureDetectorForOdds.dart';
 import 'package:flutter_app/widgets/row/LiveMatchRow.dart';
 
@@ -47,87 +48,12 @@ import '../LogoWithName.dart';
 
             children: [
 
-             if (1 > 2)
-
-                DecoratedBox( //first child
-                    decoration: BoxDecoration(color: Colors.white,
-                      border: Border(
-                        top: BorderSide(
-                            width: 0.3, color: Colors.grey.shade600),
-                        left: const BorderSide(
-                            width: 0, color: Colors.transparent),
-                        right: const BorderSide(
-                            width: 0, color: Colors.transparent),
-                        bottom: BorderSide(
-                            width: 0.3, color: Colors.grey.shade600),
-                      ),
-                    ),
-                    child:
-                    Row( //top father
-                        mainAxisSize: MainAxisSize.max,
-                        children: [
-
-                          //      Expanded(flex:1, child: Container()),
-
-                          // OLA TA CHILDREN PREPEI NA GINOUN EXPANDED!!!!!!!!!!!!!!!
-                          Expanded( //first column
-                              flex: 10,
-                              child:
-                              Column(
-                                  children: [
-                                    Align(
-                                        alignment: Alignment.centerLeft,
-                                        child:
-                                        LogoWithName(key: UniqueKey(),
-                                            logoUrl: gameWithOdds.homeTeam.logo,
-                                            name: gameWithOdds.homeTeam
-                                                .getLocalizedName(),
-                                            redCards: 0,
-                                            logoSize: 24,
-                                            fontSize: 14,
-                                            winnerType: WinnerType.NONE)),
-                                    Align(
-                                        alignment: Alignment.centerLeft,
-                                        child:
-                                        LogoWithName(key: UniqueKey(),
-                                            logoUrl: gameWithOdds.awayTeam.logo,
-                                            name: gameWithOdds.awayTeam
-                                                .getLocalizedName(),
-                                            redCards: 0,
-                                            logoSize: 24,
-                                            fontSize: 14,
-                                            winnerType: WinnerType.NONE)),
-                                  ]
-                              )),
-                          // FIRST COLUMN END
-
-                          Expanded(
-                              flex: 6,
-
-                              child:
-                              Column( //second column
-                                  children: [
-                                    Align(alignment: Alignment.center, child:
-                                    Text(
-                                      (gameWithOdds.start_at_local),
-
-                                      style: const TextStyle(
-                                          fontSize: 12,
-                                          fontWeight: FontWeight.bold,
-                                          color: Colors.redAccent),))
-                                  ]
-                              )),
-                          //SECOND COLUMN END
-                          //RD COLUMN END
-                        ])), //parent column end
-
-
-
-                LiveMatchRow(gameWithOdds: gameWithOdds),
+              LiveMatchRow(gameWithOdds: gameWithOdds),
 
               //ODDS ROW
 
-              if (gameWithOdds.odds != null)
+              if (gameWithOdds.odds != null
+                  && (MatchEventStatus.NOTSTARTED.statusStr ==  gameWithOdds.status))
 
                 Container(color: Colors.white, child:
                 Row(mainAxisSize: MainAxisSize.max,

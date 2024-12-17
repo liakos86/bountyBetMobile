@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_app/examples/util/encryption.dart';
+import 'package:flutter_app/utils/client/HttpActionsClient.dart';
 import 'package:http/http.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
@@ -125,57 +126,17 @@ class DialogLogin extends StatefulWidget {
         return;
       }
 
-      try {
-
-        if (access_token == null) {
-          access_token = await SecureUtils().retrieveValue(
-              Constants.accessToken);
-          await authorizeAsync();
-          if (access_token == null) {
-            print('register COULD NOT AUTHORIZE ********************************************************************');
-            return;
-          }
-        }
-
-        Response loginResponse = await post(Uri.parse(UrlConstants.POST_LOGIN_USER),
-            headers: {
-              "Accept": "application/json",
-              "Content-Type": "application/json",
-              'Authorization': 'Bearer $access_token'
-            },
-            body: jsonEncode(toJson(emailOrUsername, password)),
-            encoding: Encoding.getByName("utf-8")).timeout(
-            const Duration(seconds: 5));
-
-        var responseDec = jsonDecode(loginResponse.body);
-        User userFromServer = User.fromJson(responseDec);
-
+     User? userFromServer = await HttpActionsClient.loginUser(emailOrUsername, password);
+      if (userFromServer != null) {
         callback.call(userFromServer);
-
-      }catch(e){
-
+      }else {
         setState(() {
           errorMsg = 'Login failed server error';
         });
-
-        print(e);
       }
+
     }
 
-    Map<String, dynamic> toJson(emailOrUsername, password) {
-
-      var encryptedWithAES_2 = encryptWithAES(emailOrUsername, createKey(UrlConstants.URL_ENC));
-    var encryptedWithAES = encryptWithAES(password, createKey(encryptedWithAES_2.base64));
-
-    print('sending ' +encryptedWithAES_2.base64 + ' size ' + encryptedWithAES_2.base64.length.toString() );
-    print('sending ' +encryptedWithAES.base64+ ' size ' + encryptedWithAES.base64.length.toString() );
-
-      return {
-        "email": encryptedWithAES_2.base64,
-        "password": encryptedWithAES.base64,
-        "username": emailOrUsername
-      };
-    }
 
 
 

@@ -41,5 +41,23 @@
 
      "login" : "Login",
 
-     "register" : "Register"
+     "register" : "Register",
+
+     "status_suspended" : "Suspended",
+     "status_postponed" : "Postponed",
+     "status_cancelled" : "Cancelled",
+     "status_delayed" : "Delay",
+     "status_will_cont" : "Will cont.",
+     "status_finished" : "FT",
+     "status_half_time" : "HT",
+     "status_half_time_et" : "ET HT",
+     "status_interrupt" : "Interrupted",
+
+     "status_more_et" : "ET",
+        "status_more_pen" : "Pen.",
+        "status_more_after_et" : "After ET",
+        "status_more_after_pen" : "After Pen.",
+        "status_more_walkover" : "Walkover",
+
+     "run_this" : "flutter gen-l10n"
 }

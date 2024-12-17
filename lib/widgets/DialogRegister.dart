@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:flutter_app/utils/client/HttpActionsClient.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import 'package:flutter/cupertino.dart';
@@ -146,20 +147,10 @@ class DialogRegisterState extends State<DialogRegister> {
       return;
     }
 
-    try {
-      Response registerResponse = await post(
-          Uri.parse(UrlConstants.POST_REGISTER_USER),
-          headers: {
-            "Accept": "application/json",
-            "Content-Type": "application/json"
-          },
-          body: jsonEncode(toJson(email, password)),
-          encoding: Encoding.getByName("utf-8")).timeout(
-          const Duration(seconds: 10));
 
-      var responseDec = jsonDecode(registerResponse.body);
-      User userFromServer = User.fromJson(responseDec);
+      User? userFromServer = await HttpActionsClient.register(username, email, password);
 
+    if (userFromServer != null) {
       if (userFromServer.errorMessage != Constants.empty) {
         setState(() {
           errorMsg = userFromServer.errorMessage;
@@ -167,34 +158,31 @@ class DialogRegisterState extends State<DialogRegister> {
 
         return;
       }
-
-
+    }
 
       callback.call(userFromServer);
-    } catch (e) {
-      print(e);
-    }
+
   }
 
-  Map<String, dynamic> toJson(email, password) {
-    // var encryptedWithAES = encryptWithAES(password, email);
-    var encryptedWithAES_2 = encryptWithAES(
-        email, createKey(UrlConstants.URL_ENC));
-    var encryptedWithAES = encryptWithAES(
-        password, createKey(encryptedWithAES_2.base64));
-    // var encryptedWithAES_2 = encryptWithAES(email, encryptedWithAES.base64);
-
-
-    print('sending ' + encryptedWithAES_2.base64 + ' size ' +
-        encryptedWithAES_2.base64.length.toString());
-    print('sending ' + encryptedWithAES.base64 + ' size ' +
-        encryptedWithAES.base64.length.toString());
-
-    return {
-      "email": encryptedWithAES_2.base64,
-      "password": encryptedWithAES.base64,
-      "username": username
-    };
-  }
+  // Map<String, dynamic> toJson(email, password) {
+  //   // var encryptedWithAES = encryptWithAES(password, email);
+  //   var encryptedWithAES_2 = encryptWithAES(
+  //       email, createKey(UrlConstants.URL_ENC));
+  //   var encryptedWithAES = encryptWithAES(
+  //       password, createKey(encryptedWithAES_2.base64));
+  //   // var encryptedWithAES_2 = encryptWithAES(email, encryptedWithAES.base64);
+  //
+  //
+  //   print('sending ' + encryptedWithAES_2.base64 + ' size ' +
+  //       encryptedWithAES_2.base64.length.toString());
+  //   print('sending ' + encryptedWithAES.base64 + ' size ' +
+  //       encryptedWithAES.base64.length.toString());
+  //
+  //   return {
+  //     "email": encryptedWithAES_2.base64,
+  //     "password": encryptedWithAES.base64,
+  //     "username": username
+  //   };
+  // }
 }
 

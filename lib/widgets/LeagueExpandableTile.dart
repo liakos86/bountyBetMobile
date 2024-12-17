@@ -66,6 +66,9 @@ class LeagueExpandableTile extends StatefulWidget {
 
   @override
   Widget build(BuildContext context) {
+
+
+
       league = widget.league;
       events = widget.events;
       selectedOdds = widget.selectedOdds;
@@ -74,6 +77,10 @@ class LeagueExpandableTile extends StatefulWidget {
       expandAll = widget.expandAll;
       // callbackForExpansion = widget.callbackForExpansion;
       // pos = widget.index;
+
+      if (league.league == null){
+        print('NULLllLLLLLLLLLLLL');
+      }
 
       return Theme(
         key: UniqueKey(),
@@ -105,7 +112,7 @@ class LeagueExpandableTile extends StatefulWidget {
                       width: 32,
                     ),
 
-                    title: Text(AppContext.allSectionsMap[league.league.section_id].getLocalizedName().toUpperCase(),
+                    title: Text(AppContext.allSectionsMap[league.league.section_id] != null ?  AppContext.allSectionsMap[league.league.section_id].getLocalizedName().toUpperCase() : 'unknown section: '+league.league.section_id.toString(),
                         style: TextStyle(fontSize: 9, color: Colors.grey[600], fontWeight: FontWeight.bold)),
 
                     children: events.map((item)=> _buildSelectedOddRow(item)).toList(),

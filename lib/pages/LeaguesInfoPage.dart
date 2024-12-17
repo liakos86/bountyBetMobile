@@ -12,6 +12,7 @@ import 'package:flutter_app/models/constants/PageConstants.dart';
 import 'package:flutter_app/models/interfaces/StatefulWidgetWithName.dart';
 import 'package:flutter_app/models/League.dart';
 import 'package:flutter_app/pages/ParentPage.dart';
+import 'package:flutter_app/utils/client/HttpActionsClient.dart';
 import 'package:http/http.dart';
 
 import '../models/constants/Constants.dart';
@@ -40,7 +41,7 @@ class LeaguesInfoPageState extends State<LeaguesInfoPage>{
 
     super.initState();
 
-     getStandingsWithoutTablesAsync().then((leaguesList) =>
+     HttpActionsClient.getStandingsWithoutTablesAsync().then((leaguesList) =>
         updateLeagues(leaguesList));
 
     Timer.periodic(const Duration(seconds: 20), (timer) {
@@ -49,7 +50,7 @@ class LeaguesInfoPageState extends State<LeaguesInfoPage>{
         return;
       }
 
-      getStandingsWithoutTablesAsync().then((leaguesList) =>
+      HttpActionsClient.getStandingsWithoutTablesAsync().then((leaguesList) =>
           updateLeagues(leaguesList));
     });
 
@@ -106,28 +107,6 @@ class LeaguesInfoPageState extends State<LeaguesInfoPage>{
   }
 
 
-  Future<List<League>> getStandingsWithoutTablesAsync() async{
-
-    if (access_token == null) {
-      access_token = await SecureUtils().retrieveValue(
-          Constants.accessToken);
-      await authorizeAsync();
-      if (access_token == null) {
-        print('LEGUUES COULD NOT AUTHORIZE ********************************************************************');
-        return <League>[];
-      }
-    }
-
-    String getStandingsWithoutTablesUrlFinal = UrlConstants.GET_STANDINGS_WITHOUT_TABLES;
-    try {
-      Response userResponse = await get(Uri.parse(getStandingsWithoutTablesUrlFinal), headers:  {'Authorization': 'Bearer $access_token'}).timeout(const Duration(seconds: 5));
-      Iterable responseDec = await jsonDecode(userResponse.body);
-      return  List<League>.from(responseDec.map((model) => League.fromJson(model)));
-    } catch (e) {
-      print(e);
-      return <League>[];
-    }
-  }
 
   updateLeagues(List<League> leaguesList) {
     if ( leaguesList.isEmpty){

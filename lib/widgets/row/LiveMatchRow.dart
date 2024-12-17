@@ -75,7 +75,7 @@ class LiveMatchRowState extends State<LiveMatchRow> {
                     flex: 2,
                     child:
 
-                    MatchEventStatus.INPROGRESS.statusStr== gameWithOdds.status ?
+                    MatchEventStatus.INPROGRESS.statusStr == gameWithOdds.status || MatchEventStatus.NOTSTARTED.statusStr == gameWithOdds.status ?
 
                     GestureDetector(
                         onTap: () async =>{
@@ -111,7 +111,7 @@ class LiveMatchRowState extends State<LiveMatchRow> {
                 ),
 
                 Expanded(//second column
-                    flex: 15,
+                    flex: 14,
                     child:
 
                 GestureDetector(
@@ -135,12 +135,12 @@ class LiveMatchRowState extends State<LiveMatchRow> {
                         Align(
                         alignment: Alignment.centerLeft,
                         child:
-                      LogoWithName(key: UniqueKey(), name: gameWithOdds.homeTeam.getLocalizedName(), logoUrl: gameWithOdds.homeTeam.logo, redCards: homeRed, logoSize: 24, fontSize: 14,  winnerType: calculateWinnerType(gameWithOdds, 1)),
+                      LogoWithName(key: UniqueKey(), name: gameWithOdds.homeTeam.getLocalizedName(), logoUrl: gameWithOdds.homeTeam.logo, redCards: homeRed, logoSize: 20, fontSize: 12,  winnerType: calculateWinnerType(gameWithOdds, 1)),
                         ),
                             Align(
                                 alignment: Alignment.centerLeft,
                                 child:
-                      LogoWithName(key: UniqueKey(), name: gameWithOdds.awayTeam.getLocalizedName(), logoUrl: gameWithOdds.awayTeam.logo, redCards: awayRed, logoSize: 24, fontSize: 14,  winnerType: calculateWinnerType(gameWithOdds, 2)),
+                      LogoWithName(key: UniqueKey(), name: gameWithOdds.awayTeam.getLocalizedName(), logoUrl: gameWithOdds.awayTeam.logo, redCards: awayRed, logoSize: 20, fontSize: 12,  winnerType: calculateWinnerType(gameWithOdds, 2)),
                             )
                       ]
                     )

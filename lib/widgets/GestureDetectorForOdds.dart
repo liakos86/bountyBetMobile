@@ -75,8 +75,8 @@ class GestureDetectorForOddsState extends State<GestureDetectorForOdds>{
                       child:
 
                       Container(
-                        height: 36,
-                        padding: EdgeInsets.all(4),
+                        height: 32,
+                        padding: const EdgeInsets.all(4),
                         decoration: BoxDecoration(
                           border: Border.all(width: 1.5, color: Colors.grey),
                           borderRadius: BorderRadius.all(Radius.circular(8)),

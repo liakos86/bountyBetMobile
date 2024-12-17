@@ -6,6 +6,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_app/models/UserAward.dart';
 import 'package:flutter_app/utils/MockUtils.dart';
+import 'package:flutter_app/utils/client/HttpActionsClient.dart';
 import 'package:http/http.dart';
 
 import '../models/User.dart';
@@ -41,9 +42,9 @@ class LeaderBoardPageState extends State<LeaderBoardPage>{
     leaders['0'] = <User>[];
     leaders['1'] = <User>[];
 
-    getLeadingUsers();
+    getLeaderBoard();
     Timer.periodic(const Duration(seconds: 30), (timer) {(
-        getLeadingUsers()
+        getLeaderBoard()
     );
    }
    );
@@ -108,66 +109,43 @@ class LeaderBoardPageState extends State<LeaderBoardPage>{
     );
 
 
-
-    // return ListView.builder(
-    //     padding: const EdgeInsets.all(8),
-    //     itemCount: leaders['0']?.length,
-    //     itemBuilder: (context, item) {
-    //       return _buildUserRow(item);
-    //     });
-
   }
 
 
-  void getLeadingUsers() async{
+  void getLeaderBoard() async{
 
-    if (access_token == null) {
-      access_token = await SecureUtils().retrieveValue(
-          Constants.accessToken);
-      await authorizeAsync();
-      if (access_token == null) {
-        print('LEDERS COULD NOT AUTHORIZE ********************************************************************');
-        return ;
-      }
-    }
+    Map<String, List<User>> leadersMap = await HttpActionsClient.getLeadingUsers();
 
+    if (leadersMap.isNotEmpty) {
+      for (MapEntry leadersEntry in leadersMap.entries) {
 
-    Map leadersMap = LinkedHashMap();
+          List<User>? existingLeaders = leaders[leadersEntry.key];
+          List<User> incomingLeaders = leadersEntry.value;
+          for (User u in incomingLeaders){
+            if (existingLeaders!.contains(u)){
+              User existing = existingLeaders.where((element) => element.mongoUserId == u.mongoUserId).first;
+              existing.copyBalancesFrom(u);
+            }else{
+              existingLeaders.add(u);
+            }
+          }
 
-    String getLeadersUrl = UrlConstants.GET_LEADERS_URL;
-    try {
-      Response leadersResponse = await get(Uri.parse(getLeadersUrl), headers:  {'Authorization': 'Bearer $access_token'})
-          .timeout(const Duration(seconds: 5));
-      leadersMap = await jsonDecode(leadersResponse.body) as Map;
-
-      //var currentMonthLeadersJson = leadersMap["0"];
-
-      for (MapEntry leadersEntry in  leadersMap.entries) {
-        List<User> currentMonthLeaders = <User>[];
-
-        for (var leaderEntry in leadersEntry.value) {
-          User userFromServer = User.fromJson(leaderEntry);
-          currentMonthLeaders.add(userFromServer);
-        }
+          for (User u in existingLeaders!){
+            if (!incomingLeaders.contains(u)){
+              existingLeaders.remove(u);
+            }
+          }
 
 
-        //TODO copy valus
+          // leaders[leadersEntry.key]?.addAll(leadersEntry.value);
 
-        leaders[leadersEntry.key]?.clear();
-        leaders[leadersEntry.key]?.addAll(currentMonthLeaders);
       }
 
-
-
-    } catch (e) {
-      leaders['0']?.add(MockUtils.mockUser());
-      leaders['1']?.add(MockUtils.mockUser());
-      print(e);
+      setState(() {
+        leaders;
+      });
     }
 
-    setState(() {
-      leaders;
-    });
   }
 
   Widget _buildUserRow( User leader, String key) {

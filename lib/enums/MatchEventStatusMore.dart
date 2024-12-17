@@ -29,13 +29,13 @@
 
   INTERRUPTED(statusStr: "Interrupted"),
 
- POSTPONED(statusStr: "Postponed"),
+  POSTPONED(statusStr: "Postponed"),
 
   AFTER_EXTRA_TIME(statusStr: "AET"),
 
   AFTER_PENALTIES(statusStr: "AP"),
 
-  WALKOVER(statusStr: "Walkover"),
+  WALKOVER(statusStr: "Walkover"), // aney agonos
 
   ABABDONED(statusStr: 'Abandoned'),
 

@@ -106,5 +106,25 @@ class User{
     return '$overallWonPredictions/${overallWonPredictions + overallLostPredictions}';
   }
 
+  void copyBalancesFrom(User u) {
+    balance = u.balance;
+    monthlyLostBets = u.monthlyLostBets;
+    monthlyLostPredictions = u.monthlyLostPredictions;
+    monthlyWonBets = u.monthlyWonBets;
+    monthlyWonPredictions = u.monthlyWonPredictions;
+    overallLostBets = u.overallLostBets;
+    overallLostPredictions = u.overallLostPredictions;
+    overallWonPredictions = u.overallWonPredictions;
+    overallWonBets = u.overallWonBets;
+  }
+
+  @override
+  operator == (other) =>
+      other is User &&
+          other.mongoUserId == mongoUserId ;
+
+  @override
+  int get hashCode => mongoUserId.hashCode ;
+
 }
 

@@ -34,13 +34,24 @@
     "buypreds" : "Αγόρασε τις προβλέψεις του ",
 
     "monthlybetswon" : "Κερδισμένα δελτία μήνα:",
-
     "monthlypredswon" : "Κερδισμένες προβλέψεις μήνα:",
-
     "today" : "Σήμερα",
-
     "login" : "Είσοδος",
+    "register" : "Εγγραφή",
 
-    "register" : "Εγγραφή"
+    "status_postponed" : "Αναβολή",
+    "status_suspended" : "Ματαίωση",
+    "status_cancelled" : "Ακύρωση",
+    "status_delayed" : "Καθυστέρηση",
+    "status_will_cont" : "Διακοπή",
+    "status_interrupt" : "Διακοπή",
+    "status_finished" : "Τελικό",
+    "status_half_time" : "Ημίχρονο",
+    "status_half_time_et" : "Ημίχρονο Παρ.",
 
+    "status_more_et" : "Παρ.",
+     "status_more_pen" : "Πεν.",
+     "status_more_after_et"  : "Παρ.",
+     "status_more_after_pen" : "Πεν.",
+     "status_more_walkover" : "Άνευ αγ."
 }
