@@ -17,6 +17,7 @@ import '../../models/User.dart';
 import '../../models/constants/Constants.dart';
 import '../../models/context/AppContext.dart';
 import '../../models/match_event.dart';
+import '../MockUtils.dart';
 import '../SecureUtils.dart';
 
 
@@ -159,8 +160,11 @@ class HttpActionsClient {
       return leadersMap;
 
     } catch (e) {
+      List<User> mocks = <User>[];
+      mocks.add(MockUtils.mockUser());
+      leadersMap.putIfAbsent('0', () => mocks);
+      leadersMap.putIfAbsent('1', () => mocks);
       print(e);
-      return leadersMap;
     }
 
     return leadersMap;

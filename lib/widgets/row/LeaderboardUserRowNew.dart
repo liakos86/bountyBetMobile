@@ -1,168 +1,299 @@
-import 'dart:ui';
-
-import 'package:animated_background/animated_background.dart';
-import 'package:animated_background/particles.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 
-import '../../models/User.dart';
 
-class LeaderboardUserRowNew extends StatefulWidget {
-
-  final User user;
-
-  final int position;
-
-  LeaderboardUserRowNew({Key ?key, required this.user, required this.position}) : super(key: key);
-
-  @override
-  LeaderboardRowStateNew createState() => LeaderboardRowStateNew(user: user, position: position);
-}
-
-class LeaderboardRowStateNew extends State<LeaderboardUserRowNew>  with SingleTickerProviderStateMixin{
-
-  User user;
-
-  int position;
-
-  LeaderboardRowStateNew({
-    required this.user,
-    required this.position
-  });
-
+class UserRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
 
-    // Defining Particles for animation.
-    ParticleOptions particles =  ParticleOptions(
-      image: position < 4 ? Image.asset('assets/images/$position.png') : null,
-      baseColor: Colors.cyan,
-      spawnOpacity: 0.0,
-      opacityChangeRate: 0.25,
-      minOpacity: 0.1,
-      maxOpacity: 0.3,
-      particleCount: 10,
-      spawnMaxRadius: 15.0,
-      spawnMaxSpeed: 100.0,
-      spawnMinSpeed: 30,
-      spawnMinRadius: 7.0,
+    return Stack(
+        clipBehavior: Clip.none, // Allow positioning outside the container
+        children: [
+
+    // return
+    Container(
+      padding: EdgeInsets.all(12),
+      margin: EdgeInsets.symmetric(vertical: 4, horizontal: 12),
+      decoration: BoxDecoration(
+        color: Color(0xFF1C1C1E), // Dark background color
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Top Row: Profile Picture and Main Info
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // User Image
+              CircleAvatar(
+                radius: 30,
+                backgroundImage: NetworkImage(
+                  'https://xscore.cc/resb/team/asteras-tripolis.png',
+                ),
+              ),
+              SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Username and Flag
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          'gap',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        Row(
+                          children: [
+                            Icon(Icons.flag, color: Colors.blue, size: 16),
+                            SizedBox(width: 4),
+                            Text(
+                              'Greece',
+                              style: TextStyle(
+                                color: Colors.white70,
+                                fontSize: 14,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                    SizedBox(height: 8),
+
+                _buildTiltedStatRow(),
+
+
+                  ],
+                ),
+              ),
+
+            ],
+          ),
+          SizedBox(height: 12),
+
+
+          // Additional Stats
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              _buildSmallStatBox('18%', 'ROI\nYield'),
+              _buildSmallStatBox('2.08', 'Avg\nOdds'),
+              _buildSmallStatBox('6.20', 'High\nOdds'),
+              _buildSmallStatBox('60%', 'Last10\nTips'),
+              _buildSmallStatBox('58%', 'Last100\nTips'),
+            ],
+          ),
+          SizedBox(height: 16),
+
+          // Last 5 Tips Section
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center, // Align icons to the center
+
+            children: [
+              _buildTipIcon(Icons.check, Colors.black54, Colors.greenAccent),
+              _buildTipIcon(Icons.check, Colors.black54, Colors.greenAccent),
+              _buildTipIcon(Icons.check, Colors.black54, Colors.greenAccent),
+              _buildTipIcon(Icons.check, Colors.black54, Colors.greenAccent),
+              _buildTipIcon(Icons.stop, Colors.white, Colors.red),
+            ],
+          ),
+        ],
+      ),
+    ),
+
+          // Small Green Box at Top-Left Corner
+          Positioned(
+            top: 10, // Slightly above the container
+            left: 0, // Slightly left of the container
+            child:
+
+            _buildTiltedPosition('1')
+
+            // Container(
+            //   width: 40,
+            //   height: 40,
+            //   decoration: BoxDecoration(
+            //     color: Color(0xFF1C8D73), // Green background color
+            //     shape: BoxShape.circle, // Circular box
+            //   ),
+            //   child: Center(
+            //     child: Text(
+            //       '1',
+            //       style: TextStyle(
+            //         color: Colors.white,
+            //         fontSize: 16,
+            //         fontWeight: FontWeight.bold,
+            //       ),
+            //     ),
+            //   ),
+            // ),
+          ),
+        ],
     );
+  }
 
 
+
+
+
+
+  Widget _buildTiltedStatRow() {
     return
 
-      Container(
-          height: 120,
-          color: Colors.white,
+      Transform(
+        transform: Matrix4.skewX(-0.2), // Tilt the container
+        child: Container(
+          padding: EdgeInsets.symmetric(vertical: 12, horizontal: 10),
+          margin: EdgeInsets.symmetric(horizontal: 4),
+          decoration: BoxDecoration(
+            color: Color(0xFF1C8D73), // Background color of the parallelogram
+            borderRadius: BorderRadius.circular(8),
+          ),
           child:
 
-    Card(
-      color: Colors.white,
-      child:
-      AnimatedBackground(
-        vsync: this,
-        behaviour: RandomParticleBehaviour(options: particles),
-        child:
-      Padding(
-        padding: EdgeInsets.only(
-            top: 6.0, left: 6.0, right: 6.0, bottom: 6.0),
-        child:
-        Theme(
-          data: ThemeData().copyWith(dividerColor: Colors.transparent),
-          child:
+          Row(
+            children: [
+              _buildTiltedStatBox('518 / 921', 'Win/Loss', 3),
+              _buildTiltedStatBox('56%', '', 2),
+              _buildTiltedStatBox('1.862', 'Tendex', 2),
+            ],
+          ),
 
-              Column(
 
-                children: [
 
-    Expanded( //first column
-    flex: 4,
-    child:
-
-         Row(
-            children : [
-           Expanded( //first column
-           flex: 2,
-           child:
-            Stack(
-              children: <Widget>[
-                Center(
-                  child: CircularProgressIndicator(
-                    strokeWidth: 3,
-                    color: Colors.green, backgroundColor: Colors.red[100],
-                    value: 0.4,
-                  ),
-                ),
-                const Center(child: Text("40%")),
-              ],
-            )
         ),
+      );
+  }
 
-              Expanded( //first column
-                  flex: 8,
-                  child:
-                  Text(user.username)
-              )
+  Widget _buildTiltedPosition(String text) {
+    return
 
+      Transform(
+        transform: Matrix4.skewX(-0.2), // Tilt the container
+        child: Container(
+          padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+          // margin: EdgeInsets.symmetric(horizontal: 4),
+          decoration: BoxDecoration(
+            color: Color(0xFF1C8D73), // Background color of the parallelogram
+            borderRadius: BorderRadius.circular(8),
+          ),
+          child:
 
-        ],
+          Text(text, style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Colors.white),)
 
-          )),
+        ),
+      );
+  }
 
-      Expanded( //first column
-        flex: 2,
+  Widget _buildTiltedStatBox(String value, String label, int flex) {
+    return
+      Expanded(flex: flex,
+
         child:
 
-        //  children: <Widget>[
-            Stack(
-              children: <Widget>[
-                SizedBox(
-                  height: 20,
-                  child: LinearProgressIndicator(
-                    borderRadius: const BorderRadius.all(Radius.circular(8)),
+        Column(
 
-                    value: user.monthlyWonBets+user.monthlyLostBets == 0 ? 0 : user.monthlyWonBets/(user.monthlyWonBets+user.monthlyLostBets),
-                    backgroundColor: Colors.red[100],
-                    valueColor: AlwaysStoppedAnimation<Color>(Colors.greenAccent),
-                  ),
-                ),
-                Align(child:  Text( (' BetSlips Month: ${user.monthlyWonBets}/${user.monthlyWonBets+user.monthlyLostBets} '
-                    'Overall: ${user.overallWonBets}/${user.overallWonBets+user.overallLostBets}'),
-                  style: const TextStyle(
-                      fontSize: 10,
-                      fontWeight: FontWeight.normal,
-                      color: Colors.black),), alignment: Alignment.center,),
-              ],
-            )),
-
-          Expanded( //first column
-            flex: 2,
-            child:
-            Stack(
-              children: <Widget>[
-                SizedBox(
-                  height: 20,
-                  child: LinearProgressIndicator(
-                    borderRadius: const BorderRadius.all(Radius.circular(8)),
-                    value: (user.monthlyWonPredictions+user.monthlyLostPredictions == 0 ? 0 : user.monthlyWonPredictions/(user.monthlyWonPredictions+user.monthlyLostPredictions)),
-                    backgroundColor: Colors.red[100],
-                    valueColor: AlwaysStoppedAnimation<Color>(Colors.greenAccent),
-                  ),
-                ),
-                Align(child:  Text( ('Predictions Month: ${user.monthlyWonPredictions}/${user.monthlyWonPredictions+user.monthlyLostPredictions} '
-                    'Overall: ${user.overallWonPredictions}/${user.overallWonPredictions+user.overallLostPredictions}'),
-                  style: const TextStyle(
-                      fontSize: 10,
-                      fontWeight: FontWeight.normal,
-                      color: Colors.black),), alignment: Alignment.center,),
-              ],
-            )),
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Text(
+              value,
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 14,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            if (label.isNotEmpty )
+            Text(
+              label,
+              style: TextStyle(
+                color: Colors.white70,
+                fontSize: 12,
+              ),
+            ),
           ],
         ),
-      ),
-      )) ));
+      // ),
+    // )
+    );
   }
-}
 
+
+  Widget _buildStatBox(String value, String label) {
+    return Expanded(
+      flex: 1,
+      child: Column(
+        children: [
+          Text(
+            value,
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          SizedBox(height: 4),
+          Text(
+            label,
+            style: TextStyle(
+              color: Colors.grey,
+              fontSize: 12,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSmallStatBox(String value, String label) {
+    return Expanded(
+      flex: 1,
+    child: Column(
+    // return Column(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        Text(
+          value,
+          style: TextStyle(
+            color: Colors.white,
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
+            fontStyle: FontStyle.italic
+          ),
+        ),
+        // SizedBox(height: 2),
+        Text(
+          label,
+          style: TextStyle(
+            color: Colors.grey,
+            fontSize: 12,
+          ),
+        ),
+      ],
+    ));
+  }
+
+  Widget _buildTipIcon(IconData icon, Color color, Color backGr) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 6),
+      child: Container(
+        width: 24,
+        height: 24,
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          color: backGr,// Color(0xFF2C2C2E), // Background color for circular icon
+        ),
+        child: Icon(icon, color: color, size: 18),
+      ),
+    );
+  }
+
+}
 
