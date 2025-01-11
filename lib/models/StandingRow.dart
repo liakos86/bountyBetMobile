@@ -10,6 +10,15 @@ class StandingRow implements Comparable<StandingRow>{
 
   int away_points =0;
 
+  int wins_total=0;
+
+  int losses_total=0;
+  int draws_total=0;
+
+
+  String goals_total='';
+
+
   Team team ;
 
   StandingRow({required this.team});

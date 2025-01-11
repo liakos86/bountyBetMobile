@@ -10,10 +10,11 @@ import '../models/LeagueWithData.dart';
 import '../models/constants/MatchConstants.dart';
 import '../models/context/AppContext.dart';
 import '../widgets/LeagueExpandableTile.dart';
+import '../widgets/row/DialogProgressBarWithText.dart';
 
 final pageBucket = PageStorageBucket();
 
-class LivePage extends StatefulWidgetWithName {
+class LivePage extends StatefulWidget{//}WithName {
 
   @override
   LivePageState createState() => LivePageState();
@@ -42,8 +43,14 @@ class LivePageState extends State<LivePage> with WidgetsBindingObserver{
     super.initState();
   }
 
+
   @override
   Widget build(BuildContext context) {
+
+
+    if (liveLeagues.isEmpty){
+      return const DialogProgressText(text: 'Loading...');
+    }
 
 
     leaguesWd = liveLeagues.where((element) => element.events.where((element) => element.status == MatchEventStatus.INPROGRESS.statusStr).toList().isNotEmpty).toList();// <LeagueWithData>[];
@@ -74,7 +81,7 @@ class LivePageState extends State<LivePage> with WidgetsBindingObserver{
 
   Widget _buildRow(int item) {
     LeagueWithData league = leaguesWd[item];
-    return LeagueExpandableTile(key: PageStorageKey<LeagueWithData>(leaguesWd.elementAt(item)), league: league, expandAll: true, events: league.events.where((element) => element.status == MatchEventStatus.INPROGRESS.statusStr).toList(), selectedOdds: [], callbackForOdds: (a)=>{}, favourites: favourites, );
+    return LeagueExpandableTile(key: PageStorageKey<LeagueWithData>(leaguesWd.elementAt(item)),  league: league, isAlwaysExpanded: true,  expandAll: true, events: league.events.where((element) => element.status == MatchEventStatus.INPROGRESS.statusStr).toList(), selectedOdds: [], callbackForOdds: (a)=>{}, favourites: favourites, );
   }
 
   List<String> getFavourites(){

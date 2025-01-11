@@ -67,7 +67,7 @@ class MockUtils {
       var events = <MatchEvent>[];
       Set<MatchEvent> eventsMock = mockEvents(leagueId);
       events.addAll(eventsMock);
-      League leagueInfo = League(  has_logo: true, name: "Mock country"+leagueId.toString(), league_id: leagueId, priority: leagueId, section_id: leagueId);
+      League leagueInfo = League(   name: "Mock country"+leagueId.toString(), league_id: leagueId, priority: leagueId, section_id: leagueId);
       LeagueWithData league = LeagueWithData(events: events,  league: leagueInfo);
 
       // for (MatchEvent event in eventsMock){
@@ -184,7 +184,9 @@ class MockUtils {
   // }
 
   Team newTeam(String teamName) {
-    return Team(Random().nextInt(10000000), teamName, LOGO_BASE_URL + teamName.split('_')[0] + ".png");
+    Team t =  Team(Random().nextInt(10000000), teamName);
+    t.logo = LOGO_BASE_URL + teamName.split('_')[0] + ".png";
+    return t;
   }
 
   // pickTeam() {

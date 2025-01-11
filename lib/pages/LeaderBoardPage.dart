@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_app/models/UserAward.dart';
 import 'package:flutter_app/utils/MockUtils.dart';
 import 'package:flutter_app/utils/client/HttpActionsClient.dart';
+import 'package:flutter_app/widgets/row/LeaderboardUserRowNew.dart';
 import 'package:http/http.dart';
 
 import '../models/User.dart';
@@ -20,11 +21,11 @@ import 'LivePage.dart';
 import 'ParentPage.dart';
 
 
-class LeaderBoardPage extends StatefulWidgetWithName {
+class LeaderBoardPage extends StatefulWidget{//}WithName {
 
-  LeaderBoardPage(){
-    setName('Leaderboard');
-  }
+  // LeaderBoardPage(){
+  //   setName('Leaderboard');
+  // }
 
   @override
   LeaderBoardPageState createState() => LeaderBoardPageState();
@@ -58,6 +59,7 @@ class LeaderBoardPageState extends State<LeaderBoardPage>{
     return DefaultTabController(
       length: 2,
       child: Scaffold(
+        backgroundColor: Colors.black,
           appBar: AppBar(
             toolbarHeight: 2,
             backgroundColor: Colors.deepOrange.shade100,
@@ -92,9 +94,10 @@ class LeaderBoardPageState extends State<LeaderBoardPage>{
                         return _buildUserRow(leaders["0"]![item],    'curr$item');
                       }),
 
+
                   ListView.builder(
                       key: const PageStorageKey<String>(
-                          'pageLeadeAll'),
+                          'pageLeaderAll'),
                       padding: const EdgeInsets.all(8),
                       itemCount: leaders["1"]?.length,
                       itemBuilder: (context, item) {
@@ -130,7 +133,7 @@ class LeaderBoardPageState extends State<LeaderBoardPage>{
             }
           }
 
-          for (User u in existingLeaders!){
+          for (User u in List.of(existingLeaders!)){
             if (!incomingLeaders.contains(u)){
               existingLeaders.remove(u);
             }
@@ -150,7 +153,8 @@ class LeaderBoardPageState extends State<LeaderBoardPage>{
 
   Widget _buildUserRow( User leader, String key) {
 
-    return LeaderBoardRow(user: leader, key: PageStorageKey<String>(key));
+    // return LeaderBoardRow(user: leader, key: PageStorageKey<String>(key));
+    return LeaderBoardUserFullInfoRow(user: leader, key: PageStorageKey<String>(key));
 
   }
 

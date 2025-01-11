@@ -214,16 +214,9 @@ class MatchEvent implements Comparable<MatchEvent>{
 		sportId ??= 1;
 
 
-		Team hTeam = Team(homeTeam[JsonConstants.id], homeTeam["name"], homeTeam["logo"]);
-		Team aTeam = Team(awayTeam[JsonConstants.id], awayTeam["name"], awayTeam["logo"]);
+		Team hTeam = Team.fromJson(homeTeam);
+		Team aTeam = Team.fromJson(awayTeam);
 
-		if (homeTeam['name_translations'] != null){
-			hTeam.name_translations = homeTeam['name_translations'];
-		}
-
-		if (awayTeam['name_translations'] != null){
-			aTeam.name_translations = awayTeam['name_translations'];
-		}
 
 		var startAt = event['start_at'];
 		MatchEvent match = MatchEvent(eventId: event[JsonConstants.id], leagueId: event[JsonConstants.leagueId], status: event["status"], status_more: event["status_more"]??'-', homeTeam: hTeam, awayTeam: aTeam, start_at: startAt);

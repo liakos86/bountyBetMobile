@@ -8,17 +8,19 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_app/models/StandingRow.dart';
 import 'package:flutter_app/models/interfaces/StatefulWidgetWithName.dart';
+import 'package:flutter_app/utils/client/HttpActionsClient.dart';
 import 'package:http/http.dart';
 
 import '../models/Season.dart';
 import '../models/Standing.dart';
+import '../models/constants/ColorConstants.dart';
 import '../models/constants/Constants.dart';
 import '../models/constants/UrlConstants.dart';
 import '../models/LeagueWithData.dart';
 import '../widgets/row/LeagueStandingRow.dart';
 
 
-class LeagueStandingPage extends StatefulWidgetWithName {
+class LeagueStandingPage extends StatefulWidget{//}WithName {
 
   @override
   LeagueStandingPageState createState() => LeagueStandingPageState(leagueId, seasonId);
@@ -54,15 +56,14 @@ class LeagueStandingPageState extends State<LeagueStandingPage>{
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
 
-    getSeasonStandings(leagueId, seasonId).then((season) =>
+    HttpActionsClient.getSeasonStandings(leagueId, seasonId).then((season) =>
         updateStateFor(season));
 
     Timer.periodic(const Duration(seconds: 120), (timer) {
 
-      getSeasonStandings(leagueId, seasonId).then((season) =>
+      HttpActionsClient.getSeasonStandings(leagueId, seasonId).then((season) =>
           updateStateFor(season));
 
     });
@@ -73,37 +74,75 @@ class LeagueStandingPageState extends State<LeagueStandingPage>{
   Widget build(BuildContext context) {
 
     if (season.id < 0){
-      return Text('WAITING.......');
+      return const CircularProgressIndicator(color: Color(ColorConstants.my_green),);
     }
 
     return
 
     Scaffold(
-      appBar: AppBar(title: Text(season.leagueInfo.name)),
+      appBar: AppBar(title:
+
+
+
+      Text(season.leagueInfo.name)),
       body:
+
+
+
+
       Column(
       children: [
         Expanded(
           flex: 1,
-          child: Row(
+          child:
+          Container(
+              padding: const EdgeInsets.only(left: 12, right: 12),
+              margin: const EdgeInsets.symmetric(vertical: 2, horizontal: 6),
+              decoration: BoxDecoration(
+                color:  Colors.black87,
+                 // Dark background color
+                borderRadius: BorderRadius.circular(12),
+              ),
+
+          child:
+
+          const Row(
+            // mainAxisSize: MainAxisSize.max,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
 
             children: [
 
-              CachedNetworkImage(
-                imageUrl: season.leagueInfo.logo! ?? "",
-                placeholder: (context, url) => Image.asset(Constants.assetNoLeagueImage, width: 64, height: 64,),
-                errorWidget: (context, url, error) => Image.asset(Constants.assetNoLeagueImage, width: 64, height: 64,),
-                height: 32,
-                width: 32,
-              )
+            Expanded(
+            flex: 5,
+            child:
+              Text('#', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Color(ColorConstants.my_green)),)),
+
+
+            Expanded(
+              flex: 1,
+              child:
+              Text('W-D-L', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Color(ColorConstants.my_green)),)),
+
+
+              Expanded(
+                  flex: 1,
+                  child:
+              Text('GF:GA', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Color(ColorConstants.my_green)),)),
+
+            Expanded(
+              flex: 1,
+              child:
+
+              Text('Points', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Color(ColorConstants.my_green)),)),
+
 
             ],
 
           ),
-        ),
+        )),
 
         Expanded(
-        flex: 4,
+        flex: 9,
         child:
         ListView.builder(
                     padding: const EdgeInsets.all(8),
@@ -112,7 +151,11 @@ class LeagueStandingPageState extends State<LeagueStandingPage>{
                       return _buildRow(season.standing.standingRows[item]);
                     })
         )
-    ] ));
+    ]
+              )
+
+
+    );
 
   }
 
@@ -121,18 +164,7 @@ class LeagueStandingPageState extends State<LeagueStandingPage>{
     return LeagueStandingRow(key: UniqueKey(), standing: row, );
   }
 
-  Future<Season> getSeasonStandings(int leagueId, int seasonId) async {
-    String getSeasonUrlFinal = UrlConstants.GET_SEASON_STANDINGS.replaceFirst("{1}", leagueId.toString()).replaceFirst("{2}", seasonId.toString());
 
-    try {
-      Response userResponse = await get(Uri.parse(getSeasonUrlFinal)).timeout(const Duration(seconds: 5));
-      var responseDec = await jsonDecode(userResponse.body);
-      return  Season.seasonFromJson(responseDec);
-    } catch (e) {
-      print(e);
-      return Season.defSeason();
-    }
-  }
 
   updateStateFor(seasonNew) {
     if (seasonNew == null){

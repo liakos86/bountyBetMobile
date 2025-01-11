@@ -11,7 +11,7 @@ import '../widgets/row/UserBetRow.dart';
 import 'LivePage.dart';
 
 
-class MyBetsPage extends StatefulWidgetWithName{
+class MyBetsPage extends StatefulWidget{//}WithName{
 
   final User user;
 
@@ -79,6 +79,10 @@ class MyBetsPageState extends State<MyBetsPage>{
       }
 
     }
+
+    pendingBets.sort();
+    wonBets.sort();
+    lostBets.sort();
 
     return DefaultTabController(
       length: 3,

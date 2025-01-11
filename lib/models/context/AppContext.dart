@@ -17,7 +17,7 @@ class AppContext{
   /*
    * Map with all the supported leagues.
    */
-  static final Map allLeaguesMap = HashMap<int, League>();
+  static final Map<int, League> allLeaguesMap = HashMap<int, League>();
 
   /*
    * Map with keys the dates and values the List of leagues for each date.

@@ -1,5 +1,8 @@
 import 'dart:math';
 
+import 'package:connectivity_plus/connectivity_plus.dart';
+import 'package:flutter_app/models/constants/ColorConstants.dart';
+import 'package:flutter_app/utils/client/HttpActionsClient.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -7,6 +10,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_app/pages/ParentPage.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 
@@ -28,6 +32,11 @@ bool isFlutterLocalNotificationsInitialized = false;
  FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
 
 Future<void> main() async {
+
+
+
+
+  // HttpActionsClient.listenConnChanges();
   WidgetsFlutterBinding.ensureInitialized();
 
   //init firebase
@@ -97,7 +106,7 @@ class MyApp extends StatelessWidget {
       localizationsDelegates: AppLocalizations.localizationsDelegates, // <--- add this
       supportedLocales: AppLocalizations.supportedLocales, // <--- add this
 
-      theme: ThemeData(primaryColor: Colors.green[900]),
+      theme: ThemeData(primaryColor: const Color(ColorConstants.my_green)),
       home: ParentPage(),
     );
   }

@@ -1,18 +1,16 @@
-import 'dart:io';
 import 'dart:ui';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_app/models/match_event.dart';
-import 'package:flutter_app/widgets/row/LiveMatchRow.dart';
+import 'package:flutter_app/widgets/row/UpcomingMatchRowTilted.dart';
 
-import '../enums/MatchEventStatus.dart';
 import '../models/UserPrediction.dart';
 import '../models/constants/Constants.dart';
 import '../models/LeagueWithData.dart';
 import '../models/context/AppContext.dart';
-import 'row/UpcomingMatchRow.dart';
+import '../utils/cache/CustomCacheManager.dart';
 
 class LeagueExpandableTile extends StatefulWidget {
 
@@ -28,12 +26,14 @@ class LeagueExpandableTile extends StatefulWidget {
 
   final List<String> favourites;
 
-  bool expandAll;
+  final bool expandAll;
+
+  final bool isAlwaysExpanded;
 
   // int index;
 
-  LeagueExpandableTile(
-      {Key ?key, required this.league, required this.events, required this.selectedOdds, required this.callbackForOdds, required this.favourites, required this.expandAll, })
+  const LeagueExpandableTile(
+      {Key ?key, required this.league, required this.isAlwaysExpanded, required this.events, required this.selectedOdds, required this.callbackForOdds, required this.favourites, required this.expandAll, })
       : super(key: key);
 
   @override
@@ -42,6 +42,8 @@ class LeagueExpandableTile extends StatefulWidget {
   }
 
   class LeagueExpandableTileState extends State<LeagueExpandableTile>{
+
+    // final ExpansionTileController controller = ExpansionTileController();
 
     late LeagueWithData league;
 
@@ -56,6 +58,8 @@ class LeagueExpandableTile extends StatefulWidget {
 
     late bool expandAll;
 
+    late bool isAlwaysExpanded;
+
     // late int pos;
 
 
@@ -68,6 +72,7 @@ class LeagueExpandableTile extends StatefulWidget {
   Widget build(BuildContext context) {
 
 
+      isAlwaysExpanded = widget.isAlwaysExpanded;
 
       league = widget.league;
       events = widget.events;
@@ -78,10 +83,6 @@ class LeagueExpandableTile extends StatefulWidget {
       // callbackForExpansion = widget.callbackForExpansion;
       // pos = widget.index;
 
-      if (league.league == null){
-        print('NULLllLLLLLLLLLLLL');
-      }
-
       return Theme(
         key: UniqueKey(),
         data: Theme.of(context).copyWith(
@@ -91,36 +92,45 @@ class LeagueExpandableTile extends StatefulWidget {
           ) ,
         ),
 
-                child: ExpansionTile(
-                    key: UniqueKey(),
-                    maintainState: false,
+                child:
 
-                    iconColor: Colors.transparent,
-                    collapsedIconColor: Colors.transparent,
-                    initiallyExpanded: expandAll,
-                    collapsedBackgroundColor: Colors.grey.shade200,
-                    backgroundColor: Colors.yellow[50],
-                    subtitle: Text(league.league.getLocalizedName(), style: const TextStyle(color: Colors.black, fontWeight: FontWeight.w700, fontSize: 10),),
-                    trailing: Text('(${events.length})', style: const TextStyle(color: Colors.black, fontSize: 9),),
-                    leading:
+            ExpansionTile(
+    // controller: controller,
+    key: UniqueKey(),
+    // maintainState: false,
 
-                    CachedNetworkImage(
-                      imageUrl: league.league.logo ?? Constants.noImageUrl,
-                      placeholder: (context, url) => Image.asset(Constants.assetNoLeagueImage, width: 32, height: 32,),
-                      errorWidget: (context, url, error) => Image.asset(Constants.assetNoLeagueImage, width: 32, height: 32,),
-                      height: 32,
-                      width: 32,
-                    ),
+    onExpansionChanged: (expanded) {
 
-                    title: Text(AppContext.allSectionsMap[league.league.section_id] != null ?  AppContext.allSectionsMap[league.league.section_id].getLocalizedName().toUpperCase() : 'unknown section: '+league.league.section_id.toString(),
-                        style: TextStyle(fontSize: 9, color: Colors.grey[600], fontWeight: FontWeight.bold)),
+    },
 
-                    children: events.map((item)=> _buildSelectedOddRow(item)).toList(),
+    iconColor: Colors.transparent,
+    collapsedIconColor: Colors.transparent,
+    initiallyExpanded: expandAll,
+    collapsedBackgroundColor: Colors.grey.shade200,
+    backgroundColor: Colors.yellow[50],
+    subtitle: Text(league.league.getLocalizedName(), style: const TextStyle(color: Colors.black, fontWeight: FontWeight.w700, fontSize: 10),),
+    trailing: Text('(${events.length})', style: const TextStyle(color: Colors.black, fontSize: 9),),
+    leading:
+
+    CachedNetworkImage(
+      cacheManager: CustomCacheManager(),
+    imageUrl: league.league.logo ?? Constants.noImageUrl,
+    placeholder: (context, url) => Image.asset(Constants.assetNoLeagueImage, width: 32, height: 32,),
+    errorWidget: (context, url, error) => Image.asset(Constants.assetNoLeagueImage, width: 32, height: 32,),
+    height: 32,
+    width: 32,
+    ),
+
+    title: Text(AppContext.allSectionsMap[league.league.section_id] != null ? AppContext.allSectionsMap[league.league.section_id].getLocalizedName().toUpperCase() : 'unknown section: '+league.league.section_id.toString(),
+    style: TextStyle(fontSize: 9, color: Colors.grey[600], fontWeight: FontWeight.bold)),
+
+    children: events.map((item)=> _buildSelectedOddRow(item)).toList(),
 
 
-                // onExpansionChanged: (bool expanding) => callExp(expanding)
+    // onExpansionChanged: (bool expanding) => callExp(expanding)
 
-                ),
+
+    ),
 
          //   )
       );
@@ -133,16 +143,17 @@ class LeagueExpandableTile extends StatefulWidget {
   // }
 
   Widget _buildSelectedOddRow(MatchEvent event) {
-    MatchEventStatus? matchEventStatus =  MatchEventStatus.fromStatusText(event.status);
-    if (matchEventStatus == MatchEventStatus.INPROGRESS || matchEventStatus == MatchEventStatus.FINISHED
-        || matchEventStatus == MatchEventStatus.POSTPONED || matchEventStatus == MatchEventStatus.CANCELLED) {
-      return LiveMatchRow(key: UniqueKey(), gameWithOdds: event);
-    }
+    // MatchEventStatus? matchEventStatus =  MatchEventStatus.fromStatusText(event.status);
+    // if (matchEventStatus == MatchEventStatus.INPROGRESS || matchEventStatus == MatchEventStatus.FINISHED
+    //     || matchEventStatus == MatchEventStatus.POSTPONED || matchEventStatus == MatchEventStatus.CANCELLED) {
+    //   return LiveMatchRow(key: UniqueKey(), gameWithOdds: event);
+    // }
 
     // print('UPCMING ROW BUILDING ' + AppContext.eventsPerDayMap['0'].length.toString());
 
 
-    return UpcomingOrEndedMatchRow(key: UniqueKey(), gameWithOdds: event, selectedOdds: selectedOdds, callbackForOdds: callbackForOdds);
+    // return UpcomingOrEndedMatchRow(key: UniqueKey(), gameWithOdds: event, selectedOdds: selectedOdds, callbackForOdds: callbackForOdds);
+    return UpcomingOrEndedMatchRowTilted(key: UniqueKey(), gameWithOdds: event, selectedOdds: selectedOdds, callbackForOdds: callbackForOdds);
   }
 
 

@@ -47,31 +47,31 @@ class MatchEventIncidentSoccer implements Comparable{
 
   static fromJson(model) {
     MatchEventIncidentSoccer incident = new MatchEventIncidentSoccer(
-        id: int.parse(model[JsonConstants.id]),
-        event_id: int.parse(model[JsonConstants.eventId]), incident_type: model['incident_type'],
-        time: int.parse(model['time']), order: int.parse(model['order']));
+        id: (model[JsonConstants.id]),
+        event_id: (model[JsonConstants.eventId]), incident_type: model['incident_type'],
+        time: (model['time']), order: (model['order']));
 
     if (model['time_over']  != null) {
-      incident.time_over = int.parse( model['time_over'] ) ; // value for injury time
+      incident.time_over = ( model['time_over'] ) ; // value for injury time
     }
 
 
     incident.text = model[JsonConstants.text]; // e.g. regular or penalty or ownGoal for goal, HT or FT
 
     if (model['scoring_team']  != null) {
-      incident.scoring_team = int.parse(model['scoring_team']); //null for injury time
+      incident.scoring_team = (model['scoring_team']); //null for injury time
     }
 
     if (model['player_team']  != null) {
-      incident.player_team = int.parse(model['player_team']); // 1 or 2 or null
+      incident.player_team = (model['player_team']); // 1 or 2 or null
     }
 
     if (model[JsonConstants.homeScore]  != null) {
-      incident.home_score = int.parse(model[JsonConstants.homeScore]);
+      incident.home_score = (model[JsonConstants.homeScore]);
     }
 
     if (model[JsonConstants.awayScore]  != null) {
-      incident.away_score = int.parse(model[JsonConstants.awayScore]);
+      incident.away_score = (model[JsonConstants.awayScore]);
     }
 
     incident.card_type = model['card_type']; // "Yellow"
@@ -79,7 +79,7 @@ class MatchEventIncidentSoccer implements Comparable{
     incident.reason = model['reason']; //"foul" , "time_wasting", "Argument", "woodwork"
 
     if (model['length']  != null) {
-      incident.length = int.parse(model['length']); // ????
+      incident.length = (model['length']); // ????
     }
 
     incident.player = Player.fromJson(model['player']);
@@ -89,7 +89,16 @@ class MatchEventIncidentSoccer implements Comparable{
    return incident;
   }
 
+  @override
+  operator == (other) =>
+      other is MatchEventIncidentSoccer &&
+          other.id == id ;
 
+  @override
+  int get hashCode => id * 37;
 
+  void copyFrom(MatchEventIncidentSoccer meis) {
+
+  }
 
 }

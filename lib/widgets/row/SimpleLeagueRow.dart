@@ -1,18 +1,17 @@
 
-
-import 'package:animated_background/animated_background.dart';
-import 'package:animated_background/particles.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_app/models/Standing.dart';
+import 'package:flutter_app/models/constants/UrlConstants.dart';
 import 'package:flutter_app/models/context/AppContext.dart';
 import '../../models/League.dart';
 import '../../models/Season.dart';
 import '../../models/constants/Constants.dart';
 import '../../models/LeagueWithData.dart';
 import '../../pages/LeagueStandingPage.dart';
+import '../../utils/cache/CustomCacheManager.dart';
 
 class SimpleLeagueRow extends StatefulWidget {
 
@@ -20,12 +19,12 @@ class SimpleLeagueRow extends StatefulWidget {
   // final League league;
   final League league;
 
-  final ParticleOptions particles;
+  // final ParticleOptions particles;
 
-  SimpleLeagueRow({Key ?key, required this.league, required this.particles}) : super(key: key);
+  SimpleLeagueRow({Key ?key, required this.league}) : super(key: key);
 
   @override
-  SimpleLeagueRowState createState() => SimpleLeagueRowState(league: league, particles: particles);
+  SimpleLeagueRowState createState() => SimpleLeagueRowState(league: league);
 }
 
 class SimpleLeagueRowState extends State<SimpleLeagueRow> with SingleTickerProviderStateMixin {
@@ -33,11 +32,11 @@ class SimpleLeagueRowState extends State<SimpleLeagueRow> with SingleTickerProvi
   League league;
   // Season season;
 
-  ParticleOptions particles;
+  // ParticleOptions particles;
 
   SimpleLeagueRowState({
     required this.league,
-    required this.particles
+    // required this.particles
   });
 
 
@@ -48,10 +47,10 @@ class SimpleLeagueRowState extends State<SimpleLeagueRow> with SingleTickerProvi
 
       SizedBox(height: 64,
           child:
-      AnimatedBackground(
-        vsync: this,
-        behaviour: RandomParticleBehaviour(options: particles),
-        child:
+      // AnimatedBackground(
+      //   vsync: this,
+      //   behaviour: RandomParticleBehaviour(options: particles),
+      //   child:
 
       GestureDetector(
         onTap: () {
@@ -127,31 +126,72 @@ class SimpleLeagueRowState extends State<SimpleLeagueRow> with SingleTickerProvi
                           Align(
                             alignment: Alignment.centerLeft,
                             child:
-                            Text(league.name,
-                                style: const TextStyle(
-                                  overflow: TextOverflow.ellipsis,
-                                    fontWeight: FontWeight.bold, fontSize: 14, color: Colors.black)),
-                          ),
+                                Text(
+                                   league.getLocalizedName(),
+                                  style: const TextStyle(fontSize: 16, color: Colors.black87)
+                                ),
+                            ),
+
+
+                            // Text(league.name,
+                            //     style: const TextStyle(
+                            //       overflow: TextOverflow.ellipsis,
+                            //         fontWeight: FontWeight.bold, fontSize: 14, color: Colors.black)),
+
                          // ]
                          //  ),
 
-                          Row(
-                              children:[
+                          // Row(
+                          //     children:[
                                 Align(
                                   alignment: Alignment.centerLeft,
                                   child:
-                                  Text(AppContext.allSectionsMap[league.section_id].getLocalizedName() ?? 'Section null',
+
+                                  RichText(
+                                      text: TextSpan(
+                                        children: [
+
+                                  WidgetSpan(
+                                      child:
+                                      CachedNetworkImage(
+                                        cacheManager: CustomCacheManager(),
+                                        imageUrl: UrlConstants.LOGO_BASE_URL + AppContext.allSectionsMap[league.section_id].flag +'.png' ?? '',
+                                        placeholder: (context, url) => Image.asset(Constants.assetNoLeagueImage, width: 32, height: 32,),
+                                        errorWidget: (context, url, error) => Image.asset(Constants.assetNoLeagueImage, width: 32, height: 32,),
+                                        height: 16,
+                                        width: 16,
+                                      )
+
+                                  ),
+
+                                    const WidgetSpan(
+                                        child: Padding(padding: EdgeInsets.only(left: 6),)
+
+                                    ),
+
+                                  TextSpan(
+
+                                    text:
+                                  AppContext.allSectionsMap[league.section_id].getLocalizedName() ?? 'Section null',
                                       style: const TextStyle(
                                           fontWeight: FontWeight.normal, fontSize: 12, color: Colors.black)),
-                                ),
-                              ] )
-                        ]
+
+                              ]
+                          )
+
                     )),
 
-              ])//parent column end
+                        ]
+                          )
+                  )
+                          ]
 
-      ))
-      ));
+
+      // )
+    ))
+
+    )
+      );
   }
 
 }

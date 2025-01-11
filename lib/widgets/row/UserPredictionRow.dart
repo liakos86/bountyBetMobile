@@ -9,8 +9,9 @@ import 'package:flutter_app/widgets/LogoWithName.dart';
 
 import '../../enums/Sport.dart';
 import '../../models/UserPrediction.dart';
+import '../../models/constants/ColorConstants.dart';
 
-class UserPredictionRow extends StatelessWidget{
+class UserPredictionRow extends StatefulWidget {
 
   final UserPrediction prediction;
 
@@ -23,7 +24,21 @@ class UserPredictionRow extends StatelessWidget{
   }) : super(key: key);
 
   @override
+  UserPredictionRowState createState() => UserPredictionRowState();
+
+}
+
+class UserPredictionRowState extends State<UserPredictionRow>{
+
+  late UserPrediction prediction;
+
+  late Function(UserPrediction)? callback;
+
+  @override
   Widget build(BuildContext context) {
+    prediction = widget.prediction;
+    callback = widget.callback;
+
     return Wrap(
 
           children: [
@@ -86,12 +101,15 @@ class UserPredictionRow extends StatelessWidget{
 
                       Expanded(flex: 1, child:
 
+
                           callback == null ?
                           (
+                              prediction.betPredictionStatus==BetPredictionStatus.WITHDRAWN ?
+                              const Icon( Icons.timer, color:   Colors.black45) :
                         prediction.betPredictionStatus==BetPredictionStatus.LOST ?
                         const Icon( Icons.highlight_remove, color:   Colors.red)
                             : prediction.betPredictionStatus==BetPredictionStatus.WON ?
-                        const Icon(Icons.check_circle_outline_outlined, color:   Colors.green) :
+                        const Icon(Icons.check_circle_outline_outlined, color:   const Color(ColorConstants.my_green)) :
                         const Icon(Icons.pending_outlined, color:   Colors.black)
                           ) :
 

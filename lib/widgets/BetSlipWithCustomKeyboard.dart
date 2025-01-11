@@ -9,6 +9,7 @@ import 'package:flutter_app/widgets/row/UserPredictionRow.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
 import '../models/UserPrediction.dart';
+import '../models/constants/ColorConstants.dart';
 import '../models/constants/Constants.dart';
 import '../models/match_event.dart';
 import './row/SelectedOddRow.dart';
@@ -16,24 +17,27 @@ import './row/SelectedOddRow.dart';
 
 class BetSlipWithCustomKeyboard extends StatefulWidget {
 
+  late final double initialHeight;
 
   late final List<UserPrediction> selectedOdds;
 
   /*
    * Input
    */
-  late final Function(UserPrediction) callbackForBetRemoval;
+  late final Function(UserPrediction?) callbackForBetRemoval;
 
   late final Function(double) callbackForBetPlacement;
 
-  BetSlipWithCustomKeyboard({Key? key, required this.selectedOdds, required this.callbackForBetPlacement, required this.callbackForBetRemoval}) : super (key: key);
+  BetSlipWithCustomKeyboard({Key? key, required this.initialHeight, required this.selectedOdds, required this.callbackForBetPlacement, required this.callbackForBetRemoval}) : super (key: key);
 
   @override
-  BetSlipWithCustomKeyboardState createState() => BetSlipWithCustomKeyboardState(selectedOdds, callbackForBetPlacement, callbackForBetRemoval);
+  BetSlipWithCustomKeyboardState createState() => BetSlipWithCustomKeyboardState(initialHeight, selectedOdds, callbackForBetPlacement, callbackForBetRemoval);
 
 }
 
 class BetSlipWithCustomKeyboardState extends State<BetSlipWithCustomKeyboard>{
+
+  BetPlacementStatus betPlacementStatus = BetPlacementStatus.PENDING;
 
   TextEditingController betAmountController = TextEditingController();
   /*
@@ -41,10 +45,12 @@ class BetSlipWithCustomKeyboardState extends State<BetSlipWithCustomKeyboard>{
    */
   Function(double) callbackForBetPlacement;
 
+  double initialHeight;
+
   /*
    * Input
    */
-  Function(UserPrediction) callbackForBetRemoval;
+  Function(UserPrediction?) callbackForBetRemoval;
 
   List<UserPrediction> selectedOdds;
 
@@ -53,12 +59,14 @@ class BetSlipWithCustomKeyboardState extends State<BetSlipWithCustomKeyboard>{
   // String errorMsg = Constants.empty;
 
   BetSlipWithCustomKeyboardState(
+     this.initialHeight,
      this.selectedOdds,
      this.callbackForBetPlacement,
      this.callbackForBetRemoval);
 
   @override
   void initState() {
+    initialHeight = widget.initialHeight;
     selectedOdds = widget.selectedOdds;
     callbackForBetRemoval = widget.callbackForBetRemoval;
     callbackForBetPlacement = widget.callbackForBetPlacement;
@@ -71,49 +79,137 @@ class BetSlipWithCustomKeyboardState extends State<BetSlipWithCustomKeyboard>{
 
     return
 
-    Container(color: Colors.white, child:
+    SizedBox(
+        height: initialHeight,
 
-          Flex(
-            direction: Axis.vertical,
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children : [
-                Expanded( flex:16 ,  child: ListView.builder(
-                    padding: const EdgeInsets.all(8),
+        child:
+    Column( children:
+      [
+        if (betPlacementStatus == BetPlacementStatus.PLACED  )
+
+        Expanded(
+          flex:  3 ,
+          child:
+              Container(
+                color:  const Color(ColorConstants.my_green) ,
+                child:
+                    Row(
+                      children:[
+                        Expanded(flex:1,
+          child:
+
+          Padding(
+            padding: const EdgeInsets.all(4),
+            child: 
+              
+              RichText(
+                  text:  TextSpan(
+                    children: [
+                      const WidgetSpan(
+                          child: Icon(Icons.check_circle, color: Colors.white,)
+                      ),
+                      TextSpan(
+                        style: const TextStyle(fontSize: 16),
+                        text: ('${selectedOdds.length} selections @ ${BetUtils.finalOddOf(selectedOdds).toStringAsFixed(2)} to return: ${(bettingAmount * BetUtils.finalOddOf(selectedOdds)).toStringAsFixed(2)}'),
+                      ),
+                    ],
+                  )
+              )
+
+                 
+          )
+
+                    )
+  ]
+                    ),
+        )),
+
+
+                Expanded( flex:10,
+                    child: ListView.builder(
+                    padding: const EdgeInsets.all(2),
                     itemCount: selectedOdds.length,
                     itemBuilder: (context, item) {
                       return _buildBettingOddRow(selectedOdds[item]);
                     })
                 ),
 
-                Expanded( flex:2 ,
+              // Expanded(
+              //   flex: 2,
+              //   child:
+              //   Row(
+              //     children: [
+              //       Align(alignment: Alignment.centerLeft,
+              //           child: Text('${selectedOdds.length} selections @ ${BetUtils.finalOddOf(selectedOdds).toStringAsFixed(2)}',
+              //             style: const TextStyle(color: Colors.white),)),
+              //       const Spacer(),
+              //       Align(alignment: Alignment.centerLeft,
+              //           child:
+              //           Text('To return: ${(bettingAmount * BetUtils.finalOddOf(selectedOdds)).toStringAsFixed(2)}',
+              //             style: const TextStyle(color: Colors.white),)
+              //       ),
+              //     ],
+              //   ),
+              // ),
 
-                child: Padding(
-                    padding: const EdgeInsets.all(4),
-                    child:Align(alignment: Alignment.centerLeft,
-                    child: Text('${selectedOdds.length} selections @ ${BetUtils.finalOddOf(selectedOdds).toStringAsFixed(2)}'))
-                )
-                ),
+        betPlacementStatus == BetPlacementStatus.PLACED ?
 
-                Expanded( flex:2 ,
+        Expanded(
+            flex: 3,
+            child:
+    Row(
+      mainAxisSize: MainAxisSize.max,
+    children: [
+      Expanded(
+    flex:1,
+    child:
+            TextButton(
+              style: ButtonStyle(
+                  shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                      RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(4.0),
+                          side: const BorderSide(color: Colors.black)
+                      )
+                  ),
+                  foregroundColor: MaterialStateProperty.all<Color>(Colors.white),
+                  backgroundColor: MaterialStateProperty.all<Color>(const Color(ColorConstants.my_green))
+              ),
+              onPressed: () {
+
+                callbackForBetRemoval.call(null);
+
+              },
+              child: const Text('Close'),
+            )
+      )
+    ]
+    )
+
+        )
+
+        :
+
+          Expanded(
+            flex: 3,
                 child:
+
                     Padding(
                       padding: const EdgeInsets.all(4),
                     child:
                     Row(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
-                        Expanded(flex: 1, child: Align(alignment: Alignment.centerLeft, child: Text('To return: ${(bettingAmount * BetUtils.finalOddOf(selectedOdds)).toStringAsFixed(2)}'))),
-                        Expanded(flex: 1,
-                          child:
 
+                        Expanded(flex: 3,
+                          child:
 
                           Align(alignment: Alignment.centerRight,
                               child: TextField(
+                                cursorColor: Colors.white,
+
+                            style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
                             controller: betAmountController,
                             keyboardType: TextInputType.number,
                             inputFormatters: [FilteringTextInputFormatter.digitsOnly, LengthLimitingTextInputFormatter(9)],
-
 
                             onChanged:
                                 (text) {
@@ -124,7 +220,6 @@ class BetSlipWithCustomKeyboardState extends State<BetSlipWithCustomKeyboard>{
                                   bettingAmount = 0;
                                   return;
                                 }
-
 
                                 bettingAmount = double.parse(text);
 
@@ -141,66 +236,79 @@ class BetSlipWithCustomKeyboardState extends State<BetSlipWithCustomKeyboard>{
                               isDense: true,
                               hintText: 'Amount',
 
+
                             ),
                           )
                           ),
 
 
                         ),
+
+                        (betPlacementStatus != BetPlacementStatus.PLACED) ?
+
+                        Expanded(flex: 5, child: TextButton(
+                          style: ButtonStyle(
+                              shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                                  RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(4.0),
+                                      side: const BorderSide(color: Colors.black)
+                                  )
+                              ),
+                              foregroundColor: MaterialStateProperty.all<Color>(Colors.white),
+                              backgroundColor: MaterialStateProperty.all<Color>(Colors.red.shade500)
+                          ),
+                          onPressed: () {
+                            if (bettingAmount <= 0){
+
+                              Fluttertoast.showToast(msg: 'Please select a positive bet amount');
+
+                              return;
+                            }
+
+                            Future<BetPlacementStatus> betPlacementStatusFuture = callbackForBetPlacement.call(bettingAmount);
+                            betPlacementStatusFuture.then((betPlacementStatus) =>
+                            {
+
+                              refreshStateAfterBet(betPlacementStatus)
+
+                            }
+
+                            );
+
+                          },
+                          child:  Text('Place bet${bettingAmount > 0 ? ' returning ${(bettingAmount * BetUtils.finalOddOf(selectedOdds)).toStringAsFixed(2)}' : ''}'),
+                        ),)
+
+                            :
+                        Expanded(flex: 1, child: TextButton(
+                          style: ButtonStyle(
+                              shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                                  RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(4.0),
+                                      side: const BorderSide(color: Colors.black)
+                                  )
+                              ),
+                              foregroundColor: MaterialStateProperty.all<Color>(Colors.white),
+                              backgroundColor: MaterialStateProperty.all<Color>(Colors.red.shade500)
+                          ),
+                          onPressed: () {
+                           Navigator.pop(context);
+
+                          },
+                          child: const Text('Close'),
+                        ),)
+
                       ],
                       )
                     )
                 ),
-
-                Expanded( flex:2 ,
-                  child:
-
-                  TextButton(
-                    style: ButtonStyle(
-                        shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-                            RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(4.0),
-                                side: const BorderSide(color: Colors.black)
-                            )
-                        ),
-                        foregroundColor: MaterialStateProperty.all<Color>(Colors.white),
-                        backgroundColor: MaterialStateProperty.all<Color>(Colors.red.shade500)
-                    ),
-                    onPressed: () {
-                      if (bettingAmount <= 0){
-
-                        Fluttertoast.showToast(msg: 'Please select a positive bet amount');
-
-                        return;
-                      }
-
-                      Future<BetPlacementStatus> betPlacementStatusFuture = callbackForBetPlacement.call(bettingAmount);
-                      betPlacementStatusFuture.then((betPlacementStatus) =>
-                      {
-                        if (betPlacementStatus == BetPlacementStatus.PLACED){
-                          Fluttertoast.showToast(
-                              msg: 'Bet placed successfully'),
-                          Navigator.pop(context)
-                        } else
-                          {
-                            Fluttertoast.showToast(
-                                msg: betPlacementStatus.statusText)
-                          }
-                      }
-
-                      );
-
-                    },
-                    child: const Text('Place Bet'),
-                  ),
-                )
               ]
           ));
   }
 
   Widget _buildBettingOddRow(UserPrediction bettingOdd) {
 
-    return SelectedOddRow(key: UniqueKey(), prediction: bettingOdd, callback: (odd) => removePrediction(odd));
+    return SelectedOddRow(key: UniqueKey(), betPlacementStatus: betPlacementStatus,  prediction: bettingOdd, callback: (odd) => removePrediction(odd));
   }
 
   removePrediction(UserPrediction bettingOdd){
@@ -208,7 +316,16 @@ class BetSlipWithCustomKeyboardState extends State<BetSlipWithCustomKeyboard>{
 
     setState(() {
       selectedOdds.remove(bettingOdd);
+      initialHeight = initialHeight - 100;
     });
+
+  }
+
+  refreshStateAfterBet(BetPlacementStatus betPlacementSt) {
+    setState(() {
+      betPlacementStatus = betPlacementSt;
+    });
+
 
   }
 

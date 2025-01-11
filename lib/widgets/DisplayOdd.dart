@@ -7,6 +7,7 @@ import 'package:flutter_app/pages/OddsPage.dart';
 
 import '../enums/BetPredictionType.dart';
 import '../models/UserPrediction.dart';
+import '../models/constants/ColorConstants.dart';
 import '../models/match_event.dart';
 
 class DisplayOdd extends StatelessWidget {
@@ -35,7 +36,7 @@ class DisplayOdd extends StatelessWidget {
               border: Border.all(width: 1, color: Colors.grey),
               borderRadius: const BorderRadius.all(Radius.circular(8)),
               color: betPredictionType == (prediction.betPredictionType)
-                  ? Colors.blueAccent
+                  ?  const Color(ColorConstants.my_green)  // Colors.blueAccent
                   : Colors.grey[100],
             ),
 

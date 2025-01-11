@@ -4,7 +4,9 @@ enum BetStatus{
 
   WON(statusCode: 2),
 
-  LOST(statusCode: 3);
+  LOST(statusCode: 3),
+
+  WITHDRAWN(statusCode: 4);
 
   final int statusCode;
 

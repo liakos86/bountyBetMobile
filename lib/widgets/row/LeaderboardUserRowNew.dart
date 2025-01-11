@@ -1,10 +1,33 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_app/models/constants/ColorConstants.dart';
+
+import '../../models/User.dart';
 
 
-class UserRow extends StatelessWidget {
+class LeaderBoardUserFullInfoRow extends StatefulWidget {
+
+  final User user;
+
+  LeaderBoardUserFullInfoRow({Key ?key, required this.user}) : super(key: key);
+
+  @override
+  LeaderBoardUserFullInfoRowState createState() => LeaderBoardUserFullInfoRowState(user: user);
+}
+
+  class LeaderBoardUserFullInfoRowState extends State<LeaderBoardUserFullInfoRow>{
+
+
+    User user;
+
+    LeaderBoardUserFullInfoRowState({
+      required this.user,
+    });
+
   @override
   Widget build(BuildContext context) {
+
+
 
     return Stack(
         clipBehavior: Clip.none, // Allow positioning outside the container
@@ -12,10 +35,11 @@ class UserRow extends StatelessWidget {
 
     // return
     Container(
-      padding: EdgeInsets.all(12),
-      margin: EdgeInsets.symmetric(vertical: 4, horizontal: 12),
+      padding: const EdgeInsets.all(12),
+      margin: const EdgeInsets.symmetric(vertical: 4, horizontal: 12),
       decoration: BoxDecoration(
-        color: Color(0xFF1C1C1E), // Dark background color
+        color: const Color(ColorConstants.my_dark_grey)
+        , // Dark background color
         borderRadius: BorderRadius.circular(12),
       ),
       child: Column(
@@ -26,13 +50,13 @@ class UserRow extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               // User Image
-              CircleAvatar(
+              const CircleAvatar(
                 radius: 30,
                 backgroundImage: NetworkImage(
                   'https://xscore.cc/resb/team/asteras-tripolis.png',
                 ),
               ),
-              SizedBox(width: 12),
+              const SizedBox(width: 12),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -42,14 +66,14 @@ class UserRow extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(
-                          'gap',
-                          style: TextStyle(
+                          user.username.length < 14 ? user.username : '${user.username.substring(0, 12)}..',
+                          style: const TextStyle(
                             color: Colors.white,
                             fontSize: 18,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
-                        Row(
+                        const Row(
                           children: [
                             Icon(Icons.flag, color: Colors.blue, size: 16),
                             SizedBox(width: 4),
@@ -82,8 +106,8 @@ class UserRow extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              _buildSmallStatBox('18%', 'ROI\nYield'),
-              _buildSmallStatBox('2.08', 'Avg\nOdds'),
+              _buildSmallStatBox(user.betPredictionsMonthlyText(), 'Month\nPreds'),
+              _buildSmallStatBox(user.betPredictionsMonthlyPercentageText(), 'Pred\n%'),
               _buildSmallStatBox('6.20', 'High\nOdds'),
               _buildSmallStatBox('60%', 'Last10\nTips'),
               _buildSmallStatBox('58%', 'Last100\nTips'),
@@ -96,11 +120,11 @@ class UserRow extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center, // Align icons to the center
 
             children: [
-              _buildTipIcon(Icons.check, Colors.black54, Colors.greenAccent),
-              _buildTipIcon(Icons.check, Colors.black54, Colors.greenAccent),
-              _buildTipIcon(Icons.check, Colors.black54, Colors.greenAccent),
-              _buildTipIcon(Icons.check, Colors.black54, Colors.greenAccent),
-              _buildTipIcon(Icons.stop, Colors.white, Colors.red),
+              _buildTipIcon(Icons.check, Colors.white, const Color(ColorConstants.my_green)),
+              _buildTipIcon(Icons.check, Colors.white, const Color(ColorConstants.my_green)),
+              _buildTipIcon(Icons.check, Colors.white, const Color(ColorConstants.my_green)),
+              _buildTipIcon(Icons.check, Colors.white, const Color(ColorConstants.my_green)),
+              _buildTipIcon(Icons.close, Colors.white, Colors.red),
             ],
           ),
         ],
@@ -113,26 +137,9 @@ class UserRow extends StatelessWidget {
             left: 0, // Slightly left of the container
             child:
 
-            _buildTiltedPosition('1')
+            _buildTiltedPosition(user.userPosition.toString())
 
-            // Container(
-            //   width: 40,
-            //   height: 40,
-            //   decoration: BoxDecoration(
-            //     color: Color(0xFF1C8D73), // Green background color
-            //     shape: BoxShape.circle, // Circular box
-            //   ),
-            //   child: Center(
-            //     child: Text(
-            //       '1',
-            //       style: TextStyle(
-            //         color: Colors.white,
-            //         fontSize: 16,
-            //         fontWeight: FontWeight.bold,
-            //       ),
-            //     ),
-            //   ),
-            // ),
+
           ),
         ],
     );
@@ -149,19 +156,19 @@ class UserRow extends StatelessWidget {
       Transform(
         transform: Matrix4.skewX(-0.2), // Tilt the container
         child: Container(
-          padding: EdgeInsets.symmetric(vertical: 12, horizontal: 10),
-          margin: EdgeInsets.symmetric(horizontal: 4),
+          padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 10),
+          margin: const EdgeInsets.symmetric(horizontal: 4),
           decoration: BoxDecoration(
-            color: Color(0xFF1C8D73), // Background color of the parallelogram
+            color: const Color(ColorConstants.my_green), // Background color of the parallelogram
             borderRadius: BorderRadius.circular(8),
           ),
           child:
 
           Row(
             children: [
-              _buildTiltedStatBox('518 / 921', 'Win/Loss', 3),
-              _buildTiltedStatBox('56%', '', 2),
-              _buildTiltedStatBox('1.862', 'Tendex', 2),
+              _buildTiltedStatBox(user.betSlipsMonthlyText(), 'Won Slips', 3),
+              _buildTiltedStatBox(user.betSlipsMonthlyPercentageText(), '', 2),
+              _buildTiltedStatBox(user.balance.toStringAsFixed(0), 'Credits', 2),
             ],
           ),
 
@@ -177,15 +184,15 @@ class UserRow extends StatelessWidget {
       Transform(
         transform: Matrix4.skewX(-0.2), // Tilt the container
         child: Container(
-          padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
           // margin: EdgeInsets.symmetric(horizontal: 4),
           decoration: BoxDecoration(
-            color: Color(0xFF1C8D73), // Background color of the parallelogram
+            color: const Color(ColorConstants.my_green), // Background color of the parallelogram
             borderRadius: BorderRadius.circular(8),
           ),
           child:
 
-          Text(text, style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Colors.white),)
+          Text(text, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Colors.white),)
 
         ),
       );
@@ -261,9 +268,9 @@ class UserRow extends StatelessWidget {
       children: [
         Text(
           value,
-          style: TextStyle(
+          style: const TextStyle(
             color: Colors.white,
-            fontSize: 20,
+            fontSize: 18,
             fontWeight: FontWeight.bold,
             fontStyle: FontStyle.italic
           ),
@@ -294,6 +301,8 @@ class UserRow extends StatelessWidget {
       ),
     );
   }
+
+
 
 }
 

@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter_app/models/MatchEventStatisticsWithIncidents.dart';
+import 'package:flutter_app/utils/client/HttpActionsClient.dart';
 import 'package:flutter_app/widgets/row/SoccerStatisticRow.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
@@ -169,21 +170,44 @@ class MatchInfoSoccerDetailsPageState extends State<MatchInfoSoccerDetailsPage>{
 
   void updateEvent() async{
 
-    MatchEventStatisticsWithIncidents newIncidents = await getStatisticsAsync();
-    if ( newIncidents.incidents.data.isNotEmpty){
-      incidents.clear();
-      incidents.addAll(newIncidents.incidents.data);
+    MatchEventStatisticsWithIncidents newIncidents = await HttpActionsClient.getStatisticsAsync(event.eventId);
+    var incomingIncidents = newIncidents.incidents.data;
+    var incomingStats = newIncidents.statistics.data;
+    for (MatchEventIncidentSoccer meis in incomingIncidents){
+
+      if (!incidents.contains(meis)){
+        // print('adding incident ' + meis.incident_type);
+        incidents.add(meis);
+      }else{
+        var firstWhere = incidents.firstWhere((element) => element.id == meis.id);
+        firstWhere.copyFrom(meis);
+      }
+
+
     }
 
-    if ( newIncidents.statistics.data.isNotEmpty){
-      statistics.clear();
-      statistics.addAll(newIncidents.statistics.data);
+    for (MatchEventStatisticSoccer meis in incomingStats){
+      if (meis.period == 'all' &&
+          ( meis.name == "fouls" || meis.name == 'free_kicks' || meis.name ==  "passes" || meis.name == 'throw_ins'
+       || meis.name == "expected_goals"  || meis.name =="corner_kicks"   || meis.name =="offsides"  || meis.name =='yellow_cards' || meis.name =="ball_possession")) {
+        if (!statistics.contains(meis)) {
+          // print('adding stat ' + meis.group);
+          statistics.add(meis);
+        } else {
+          var firstWhere = statistics.firstWhere((element) =>
+          element.id == meis.id);
+          firstWhere.copyFrom(meis);
+        }
+      }
+
+
     }
 
 
     if (!mounted){
       return;
     }
+
 
     setState(() {
       incidents;
@@ -193,23 +217,7 @@ class MatchInfoSoccerDetailsPageState extends State<MatchInfoSoccerDetailsPage>{
   }
 
 
-  Future<MatchEventStatisticsWithIncidents> getStatisticsAsync() async{
 
-    // return <MatchEventStatisticSoccer>[];
-
-    String getStatsUrlFinal = UrlConstants.GET_EVENT_STATISTICS_URL + event.eventId.toString();
-    try {
-      Response response = await get(Uri.parse(getStatsUrlFinal)).timeout(const Duration(seconds: 3));
-      var responseDec = await jsonDecode(response.body);
-      return MatchEventStatisticsWithIncidents.fromJson(responseDec);
-      // Iterable l = await json.decode(response.body);
-      // List<MatchEventStatisticSoccer> incidents = List<MatchEventStatisticSoccer>.from(l.map((model)=> MatchEventStatisticSoccer.fromJson(model)));
-      // return incidents;
-    } catch (e) {
-      print('STATS ERRROR ' + e.toString());
-      return MatchEventStatisticsWithIncidents();
-    }
-  }
 
 
 

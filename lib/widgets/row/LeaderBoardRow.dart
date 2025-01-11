@@ -13,6 +13,7 @@ import '../../models/User.dart';
 import '../../models/constants/Constants.dart';
 import '../../models/LeagueWithData.dart';
 import '../../pages/LeagueStandingPage.dart';
+import '../../utils/cache/CustomCacheManager.dart';
 
 class LeaderBoardRow extends StatefulWidget {
 
@@ -162,6 +163,7 @@ class LeaderBoardRowState extends State<LeaderBoardRow> {
 
 
                           child: CachedNetworkImage(
+                            cacheManager: CustomCacheManager(),
                             imageUrl: 'https://xscore.cc/resb/team/asteras-tripolis.png',
                             placeholder: (context, url) => Image.asset(Constants.assetNoLeagueImage, width: 32, height: 32,),
                             errorWidget: (context, url, error) => Image.asset(Constants.assetNoLeagueImage, width: 32, height: 32,),

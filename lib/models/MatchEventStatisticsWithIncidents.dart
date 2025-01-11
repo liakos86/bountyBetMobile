@@ -53,7 +53,7 @@ class MatchEventStatisticsWithIncidents{
 
   static MatchEventStatisticsWithIncidents fromJson(responseDec) {
       MatchEventStatisticsWithIncidents m = MatchEventStatisticsWithIncidents();
-      m.eventId = int.parse(responseDec['eventId']);
+      m.eventId = (responseDec['eventId']);
       m.statistics = MatchEventStatisticsSoccer.fromJson(responseDec['matchEventStatistics']);
       m.incidents = MatchEventIncidentsSoccer.fromJson(responseDec['matchEventIncidents']);
      return m;

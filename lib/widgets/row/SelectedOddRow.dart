@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_app/enums/BetPlacementStatus.dart';
 import 'package:flutter_app/enums/BetPredictionType.dart';
 import 'package:flutter_app/enums/WinnerType.dart';
 import 'package:flutter_app/models/match_odds.dart';
@@ -8,6 +9,7 @@ import 'package:flutter_app/widgets/DisplayOdd.dart';
 import 'package:flutter_app/widgets/GestureDetectorForOdds.dart';
 
 import '../../models/UserPrediction.dart';
+import '../../models/constants/ColorConstants.dart';
 import '../../models/match_event.dart';
 import '../LogoWithName.dart';
 
@@ -19,30 +21,12 @@ class SelectedOddRow extends StatelessWidget {
 
   final Function(UserPrediction)? callback;
 
+  final BetPlacementStatus betPlacementStatus;
+
 
   SelectedOddRow({Key ?key,
-    //required this.gameWithOdds,
-    required this.prediction, required this.callback}) : super(key: key);
+    required this.prediction, required this.betPlacementStatus, required this.callback}) : super(key: key);
 
-  // @override
-  // SelectedOddRowState createState() => SelectedOddRowState(//gameWithOdds: gameWithOdds,
-  //     prediction: prediction, callback: callback);
-
-// }
-
-// class SelectedOddRowState extends State<SelectedOddRow> {
-//
-//   UserPrediction prediction;
-//
-//   Function(UserPrediction)? callback;
-//
-//   // MatchEvent gameWithOdds;
-//
-//   SelectedOddRowState({
-//     required this.prediction,
-//     // required this.gameWithOdds,
-//     required this.callback
-//   });
 
   @override
   Widget build(BuildContext context) {
@@ -51,21 +35,25 @@ class SelectedOddRow extends StatelessWidget {
 
     return
 
+      Stack(
+          clipBehavior: Clip.none, // Allow positioning outside the container
+          children: [
+
+      Container(
+      padding: const EdgeInsets.all(2),
+    margin: const EdgeInsets.symmetric(vertical: 4, horizontal: 12),
+    decoration: BoxDecoration(
+    color: const Color(ColorConstants.my_dark_grey)
+    , // Dark background color
+    borderRadius: BorderRadius.circular(12),
+    ),
+    child:
+
       Wrap(//top parent
           spacing: 0,
 
           children: [
 
-            DecoratedBox(//first child
-                decoration: BoxDecoration(color: Colors.white ,
-                  //  borderRadius: BorderRadius.only(topLeft:  Radius.circular(2), topRight:  Radius.circular(2)),
-                  border: Border(
-                    top: BorderSide(width: 0.3, color: Colors.grey.shade600),
-                    left: BorderSide(width: 0, color: Colors.transparent),
-                    right: BorderSide(width: 0, color: Colors.transparent),
-                    bottom: BorderSide(width: 0.3, color: Colors.grey.shade600),
-                  ), ),
-                child:
                 Row( //top father
                     mainAxisSize: MainAxisSize.max,
                     children: [
@@ -75,18 +63,41 @@ class SelectedOddRow extends StatelessWidget {
                           child:
                           Column(
                               children: [
+                                Padding(padding: const EdgeInsets.only(left:12),
+                                child:
                                 Align(
                                     alignment: Alignment.centerLeft,
                                     child:
                                     LogoWithName(key: UniqueKey(),
-                                      logoUrl: prediction.homeTeam.logo, name: prediction.homeTeam.getLocalizedName(), redCards: 0, logoSize: 18, fontSize: 10, winnerType: WinnerType.NONE,)),
+                                      logoUrl: prediction.homeTeam.logo, name: prediction.homeTeam.getLocalizedName(), redCards: 0, logoSize: 18, fontSize: 10, winnerType: WinnerType.NONE,))
+                                ),
+
+                                Padding(padding: const EdgeInsets.only(left:12),
+                                child:
                                 Align(
                                     alignment: Alignment.centerLeft,
                                     child:
                                     LogoWithName(key: UniqueKey(),
-                                      logoUrl: prediction.awayTeam.logo, name: prediction.awayTeam.getLocalizedName(), redCards: 0, logoSize: 18, fontSize: 10,  winnerType: WinnerType.NONE)),
+                                      logoUrl: prediction.awayTeam.logo, name: prediction.awayTeam.getLocalizedName(), redCards: 0, logoSize: 18, fontSize: 10,  winnerType: WinnerType.NONE)
+                                )),
                               ]
-                          )), // FIRST COLUMN END
+                          )),
+
+                          Expanded(
+                            flex:5,
+                              child:
+
+                              BetPredictionType.HOME_WIN.betPredictionCode == prediction.betPredictionType?.betPredictionCode ?
+                              DisplayOdd(betPredictionType: BetPredictionType.HOME_WIN, prediction: prediction, odd: gameWithOdds.odds?.odd1)
+                                  :
+                              BetPredictionType.AWAY_WIN.betPredictionCode == prediction.betPredictionType?.betPredictionCode ?
+                              DisplayOdd(betPredictionType: BetPredictionType.AWAY_WIN, prediction: prediction, odd: gameWithOdds.odds?.odd2)
+                                  :
+                              BetPredictionType.DRAW.betPredictionCode == prediction.betPredictionType?.betPredictionCode ?
+                              DisplayOdd(betPredictionType: BetPredictionType.DRAW, prediction: prediction, odd: gameWithOdds.odds?.oddX)
+                                  : const Text('-')
+                          )
+                          , // FIRST COLUMN END
 
                       Expanded(
                           flex: 6,
@@ -101,34 +112,117 @@ class SelectedOddRow extends StatelessWidget {
                                   style: const TextStyle(
                                       fontSize: 8,
                                       fontWeight: FontWeight.bold,
-                                      color: Colors.redAccent),))
+                                      color: Colors.white),))
                               ]
                           )), //SECOND COLUMN END
                       //RD COLUMN END
-                    ])), //parent column end
+                    ]
+      // )
+      ), //parent column end
 
-            //ODDS ROW
-              Container(color: Colors.white, child:
-              Row(mainAxisSize: MainAxisSize.max,
-                children: [
-                  //1
-                  Expanded(flex: 5,
-                      child: DisplayOdd(betPredictionType: BetPredictionType.HOME_WIN, prediction: prediction, odd: gameWithOdds.odds?.odd1)
-                  ),
-
-                  //X
-                  Expanded(flex: 5,
-                      child: DisplayOdd(betPredictionType: BetPredictionType.DRAW, prediction: prediction, odd: gameWithOdds.odds?.oddX)
-                  ),
-
-                  //2
-                  Expanded(flex: 5,
-                      child: DisplayOdd(betPredictionType: BetPredictionType.AWAY_WIN, prediction: prediction, odd: gameWithOdds.odds?.odd2)
-                  ),
-                ],
-              )),
           ]
-      );
+      )
+
+    ),
+
+            if (betPlacementStatus != BetPlacementStatus.PLACED)
+
+            Positioned(
+                top: 10, // Slightly above the container
+                left: -10, // Slightly left of the container
+                child:
+
+                _buildRemoveButton()
+
+
+            ),
+
+
+
+          ]);
+  }
+
+
+  _buildRemoveButton() {
+
+
+      return
+        // Transform(
+        //     transform: Matrix4.skewX(-0.2), // Tilt the container
+        //     child: Container(
+        //         padding: EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+        //         // margin: EdgeInsets.symmetric(horizontal: 4),
+        //         decoration: BoxDecoration(
+        //             color: Colors.white,
+        //             // Background color of the parallelogram
+        //             borderRadius: BorderRadius.circular(8),
+        //             border: Border.all(color: Colors.black87, width: 1)
+        //         ),
+        //         child:
+
+        RawMaterialButton(
+          onPressed:  ()=> {callback?.call(prediction)},
+          fillColor: Colors.red, // Background color
+          shape: const CircleBorder(), // Ensures a circular button
+          constraints: const BoxConstraints.tightFor(
+            width: 30, // Custom smaller size
+            height: 30,
+          ),
+          child: const Icon(
+            Icons.delete, // Icon for delete action
+            size: 20, // Smaller icon size
+            color: Colors.white, // Icon color
+          ),
+        );
+
+        FloatingActionButton(
+          backgroundColor: Colors.red,
+          mini: true,
+          heroTag: 'btnDeletePred${prediction.eventId}',
+          foregroundColor: Colors.white,
+          onPressed: ()=> {callback?.call(prediction)},
+          child: const Icon(
+            Icons.delete, // Trash bin icon for better visual clarity
+            size: 24, // Adjust size if needed
+          ),
+        );
+
+    FloatingActionButton(
+
+      backgroundColor: Colors.red,
+      mini: true,
+
+    heroTag: 'btnDeletePred${prediction.eventId}',
+    foregroundColor: Colors.white,
+    onPressed: ()=> {callback?.call(prediction)},
+
+      child: const Text('X', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold))
+    );
+
+
+                // GestureDetector(
+                //     onTap: () async =>
+                //     {
+                //
+                //       callback?.call(prediction)
+                //     },
+                //
+                //     child:
+                //     Column(
+                //         children: [
+                //           Align(
+                //             alignment: Alignment.center,
+                //             child:
+                //
+                //             const Icon(Icons.delete_outline, color: Colors.red,)
+                //
+                //           )
+                //         ]
+                //     )
+                // )
+        //     )
+        // );
+
   }
 
 }

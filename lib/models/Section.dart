@@ -8,16 +8,16 @@ class Section{
   String name;
   int id;
   int sport_id;
-  String? slug;
+  // String? slug;
   String? flag;
 
   Map<String, dynamic> ?name_translations;
 
-  Section({ required this.id, required this.name, required this.sport_id, required this.flag, required this.slug});
+  Section({ required this.id, required this.name, required this.sport_id, required this.flag});
 
   static Section fromJson(sectionJson) {
 
-      Section section = Section(name: sectionJson['name'], id: sectionJson['id'], sport_id: sectionJson['sport_id'], flag: sectionJson['flag'], slug: sectionJson['slug']);
+      Section section = Section(name: sectionJson['name'], id: sectionJson['id'], sport_id: sectionJson['sport_id'], flag: sectionJson['flag']);
 
       if (sectionJson['name_translations'] != null){
         section.name_translations = sectionJson['name_translations'];

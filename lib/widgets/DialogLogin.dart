@@ -2,17 +2,11 @@ import 'dart:convert';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_app/examples/util/encryption.dart';
 import 'package:flutter_app/utils/client/HttpActionsClient.dart';
-import 'package:http/http.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 
 import '../models/User.dart';
-import '../models/constants/Constants.dart';
-import '../models/constants/UrlConstants.dart';
-import '../pages/ParentPage.dart';
-import '../utils/SecureUtils.dart';
 
 class DialogLogin extends StatefulWidget {
 
@@ -53,7 +47,7 @@ class DialogLogin extends StatefulWidget {
 
     Column(children:[
 
-        Text(errorMsg, style: TextStyle(color: Colors.red)),
+        Text(errorMsg, style: const TextStyle(color: Colors.red)),
 
         TextField(
           controller: null,
@@ -71,7 +65,7 @@ class DialogLogin extends StatefulWidget {
           obscureText: true,
           controller: null,
           onChanged: (text){
-            this.password = text;
+            password = text;
           },
           decoration: const InputDecoration(
             border: OutlineInputBorder(),
@@ -117,7 +111,7 @@ class DialogLogin extends StatefulWidget {
         return;
       }
 
-      if (password.length < 1 ){
+      if (password.isEmpty ){
 
         setState(() {
           errorMsg = 'Invalid username or password';
@@ -127,17 +121,12 @@ class DialogLogin extends StatefulWidget {
       }
 
      User? userFromServer = await HttpActionsClient.loginUser(emailOrUsername, password);
-      if (userFromServer != null) {
+      if (userFromServer != null && userFromServer.errorMessage.isEmpty) {
         callback.call(userFromServer);
       }else {
         setState(() {
-          errorMsg = 'Login failed server error';
+          errorMsg = userFromServer == null || userFromServer.errorMessage.isEmpty ? 'Login failed server error' : userFromServer.errorMessage;
         });
       }
-
     }
-
-
-
-
 }

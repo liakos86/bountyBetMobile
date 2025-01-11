@@ -3,7 +3,7 @@ import 'dart:convert';
 import '../enums/BetStatus.dart';
 import 'UserPrediction.dart';
 
-class UserBet{
+class UserBet implements Comparable<UserBet>{
 
   String userMongoId;
 
@@ -11,13 +11,16 @@ class UserBet{
 
   double betAmount;
 
+  int betPlacementMillis;
+
   BetStatus betStatus = BetStatus.PENDING;
 
   UserBet({
     required this.userMongoId,
     required this.predictions,
     required this.betAmount,
-    required this.betStatus
+    required this.betStatus,
+    required this.betPlacementMillis
   } );
 
   double toReturn(){
@@ -44,9 +47,23 @@ class UserBet{
     return UserBet(userMongoId: parsedJson['mongoUserId'].toString(),
         betAmount: parsedJson['betAmount'] as double,
         betStatus:  BetStatus.ofStatus(parsedJson['betStatus'] as int),
+        betPlacementMillis: parsedJson['betPlacementMillis'],
         predictions:  (parsedJson['predictions'] as List)
             .map((prediction) =>  UserPrediction.fromJson(prediction))
             .toList());
+  }
+
+  @override
+  int compareTo(UserBet other){
+    if (betPlacementMillis > other.betPlacementMillis){
+      return -1;
+    }
+
+    if (betPlacementMillis < other.betPlacementMillis){
+      return 1;
+    }
+
+    return 1;
   }
 
 

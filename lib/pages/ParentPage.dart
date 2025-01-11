@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 import 'dart:ui';
 import 'package:collection/collection.dart';
+import 'package:connectivity_plus/connectivity_plus.dart';
 
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
@@ -15,6 +16,8 @@ import 'package:flutter_app/pages/LeaguesInfoPage.dart';
 import 'package:flutter_app/pages/OddsPage.dart';
 import 'package:flutter_app/utils/client/HttpActionsClient.dart';
 import 'package:flutter_app/widgets/DialogTabbedLoginOrRegister.dart';
+import 'package:flutter_app/widgets/row/DialogProgressBarWithText.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../enums/ChangeEvent.dart';
@@ -24,6 +27,7 @@ import '../models/League.dart';
 import '../models/Section.dart';
 import '../models/User.dart';
 import '../models/UserPrediction.dart';
+import '../models/constants/ColorConstants.dart';
 import '../models/constants/MatchConstants.dart';
 import '../models/match_event.dart';
 import '../widgets/DialogUserRegistered.dart';
@@ -51,9 +55,6 @@ import 'MyBetsPage.dart';
  * 5. Leagues' info page
  */
 class ParentPageState extends State<ParentPage> with WidgetsBindingObserver {
-
-
-
 
   String appBarTitle = 'FantasyBet';
 
@@ -83,8 +84,18 @@ class ParentPageState extends State<ParentPage> with WidgetsBindingObserver {
   static GlobalKey oddsPageKey = GlobalKey();
   static GlobalKey livePageKey = GlobalKey();
   static GlobalKey betsPageKey = GlobalKey();
-  static GlobalKey leaderboardPageKey = GlobalKey();
+  static GlobalKey leaderBoardPageKey = GlobalKey();
   static GlobalKey leaguesPageKey = GlobalKey();
+
+  updateConnState(bool conn){
+
+    if (!conn) {
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+        content: Text('Network connection lost'), showCloseIcon: true, duration: Duration(seconds: 5),
+      ));
+    }
+
+  }
 
   /*
    * Fetch the leagues async
@@ -93,6 +104,8 @@ class ParentPageState extends State<ParentPage> with WidgetsBindingObserver {
    */
   @override
   void initState() {
+
+    HttpActionsClient.listenConnChanges(updateConnState);
 
 
      AppContext.eventsPerDayMap. putIfAbsent('-1', () => <LeagueWithData>[]);
@@ -105,13 +118,13 @@ class ParentPageState extends State<ParentPage> with WidgetsBindingObserver {
     WidgetsBinding.instance
         .addPostFrameCallback((_) => setLocale(context));
 
-      pagesList.add(OddsPage(key: oddsPageKey, updateUserCallback: updateUserCallBack, selectedOdds: selectedOdds));
+      pagesList.add(OddsPage(key: oddsPageKey, updateUserCallback: updateUserCallBack, loginUserCallback: loginUserCallback, registerUserCallback: registerUserCallback, selectedOdds: selectedOdds));
       // pagesList.add(OddsPage(key: oddsPageKey, updateUserCallback: updateUserCallBack, eventsPerDayMap: AppContext.eventsPerDayMap, selectedOdds: selectedOdds));
       pagesList.add(LivePage(key: livePageKey, liveLeagues: AppContext.eventsPerDayMap['0']));
       // pagesList.add(LivePage(key: livePageKey));
       pagesList.add(LeaderBoardPage());
       pagesList.add(MyBetsPage(key: betsPageKey, user: AppContext.user, loginOrRegisterCallback: promptLoginOrRegister));
-      pagesList.add(LeaguesInfoPage(key: leaguesPageKey));
+      pagesList.add(LeaguesInfoPage(key: leaguesPageKey, leagues: AppContext.allLeaguesMap));
 
 
       // SecureUtils().deleteValue(Constants.accessToken);
@@ -132,9 +145,8 @@ class ParentPageState extends State<ParentPage> with WidgetsBindingObserver {
       .then((value) => updateUserFromServer()));
 
 
-     Timer.periodic(const Duration(seconds: 30), (timer) {
-       HttpActionsClient.getSectionsAsync(null)
-           .then((secMap) => updateSections(secMap)
+     Timer.periodic(const Duration(seconds: 10), (timer) {
+       HttpActionsClient.getSectionsAsync(null).then((secMap) => updateSections(secMap)
        );
      }
      );
@@ -186,10 +198,6 @@ class ParentPageState extends State<ParentPage> with WidgetsBindingObserver {
   @override
   void didChangeLocales(List<Locale>? locales) {
     super.didChangeLocales(locales);
-    //
-    // setState(() {
-    //   locale = locales?.first ?? locale;
-    // });
   }
 
   setLocale(BuildContext context) {
@@ -240,27 +248,35 @@ class ParentPageState extends State<ParentPage> with WidgetsBindingObserver {
   @override
   Widget build(BuildContext context) {
 
+
+
+
     return Scaffold(
       appBar: AppBar(
         // toolbarHeight: 2,
         bottom: PreferredSize(
             preferredSize: const Size.fromHeight(2.0),
-            child: Container(
+            child:
+
+          Container(
               color: Colors.grey.shade500,
              height: 1.0,
-            )),
+            )
+
+      ),
           title:RichText(
             text:  TextSpan(
               children: [
                 const WidgetSpan(
-                  child: ImageIcon(AssetImage('assets/images/money-bag-100.png'), color: Colors.green,)// Icon(Icons.attach_money_outlined, size: 24, color: Colors.green,),
+                  child: ImageIcon(AssetImage('assets/images/money-bag-100.png'), color: Color(ColorConstants.my_green),)
                 ),
                 TextSpan(
                   text: appBarTitle,
                 ),
               ],
             ),
-          ),// Text(appBarTitle) ,
+          ),
+          // Text(appBarTitle) ,
         titleTextStyle: const TextStyle(color: Colors.white70, fontSize: 20, fontWeight: FontWeight.bold),
         backgroundColor: Colors.black87,
         leading:
@@ -272,7 +288,7 @@ class ParentPageState extends State<ParentPage> with WidgetsBindingObserver {
                   FloatingActionButton(
                       heroTag: 'btnParentLogin',
                       onPressed: promptLoginOrRegister,
-                      backgroundColor: Colors.green,
+                      backgroundColor: const Color(ColorConstants.my_green),
                       foregroundColor: Colors.black,
                       mini: true, child:
                         AppContext.user.mongoUserId == Constants.defMongoUserId ?
@@ -393,125 +409,7 @@ class ParentPageState extends State<ParentPage> with WidgetsBindingObserver {
     return await HttpActionsClient.getUserAsync(mongoId);
   }
 
-  // Future<Map<int, MatchEvent>> getLeagueLiveEventsAsync(Timer? timer) async {
-  //
-  //   Map jsonMatchesData = LinkedHashMap();
-  //
-  //   try {
-  //     if (access_token == null) {
-  //       access_token = await SecureUtils().retrieveValue(
-  //           Constants.accessToken);
-  //       await authorizeAsync();
-  //       if (access_token == null) {
-  //         print('COULD NOT AUTHORIZE ********************************************************************');
-  //         return new Map();
-  //       }
-  //     }
-  //
-  //     Response liveMatchesResponse = await get(Uri.parse(UrlConstants.GET_LIVE_EVENTS), headers:  {'Authorization': 'Bearer $access_token'}).timeout(const Duration(seconds: 10));
-  //     jsonMatchesData = await jsonDecode(liveMatchesResponse.body) as Map;
-  //   } catch (e) {
-  //     // Fluttertoast.showToast(msg:  'LIVE   ' +e.toString());
-  //     print('ERROR REST ---- MOCKING............');
-  //     Map<int, MatchEvent> validData = new Map();// MockUtils().mockLeaguesMap(AppContext.eventsPerDayMap, false);
-  //     return validData;
-  //   }
-  //
-  //
-  //   return await convertJsonLiveMatchesToObjects(jsonMatchesData);
-  // }
-
-  // Future<Map<String, List<LeagueWithData>>> getLeagueEventsAsync(Timer? timer) async {
-  //
-  //     Map jsonLeaguesData = LinkedHashMap();
-  //
-  //     try {
-  //       if (access_token == null) {
-  //         access_token = await SecureUtils().retrieveValue(
-  //             Constants.accessToken);
-  //         await authorizeAsync();
-  //         if (access_token == null) {
-  //           print('COULD NOT AUTHORIZE ********************************************************************');
-  //           return new Map();
-  //         }
-  //       }
-  //
-  //       Response leaguesResponse = await get(Uri.parse(UrlConstants.GET_LEAGUE_EVENTS), headers:  {'Authorization': 'Bearer $access_token'}).timeout(const Duration(seconds: 10));
-  //       jsonLeaguesData = await jsonDecode(leaguesResponse.body) as Map;
-  //     } catch (e) {
-  //       // Fluttertoast.showToast(msg: 'EVENTS   ' +e.toString());
-  //       print('ERROR REST ---- MOCKING............');
-  //       Map<String, List<LeagueWithData>> validData = Map();//  MockUtils().mockLeaguesMap(AppContext.eventsPerDayMap, false);
-  //       return validData;
-  //     }
-  //
-  //     return await convertJsonLeaguesToObjects(jsonLeaguesData);
-  // }
-
-  // Future<List<League>> getLeaguesAsync(Timer? timer) async {
-  //
-  //   List<League> jsonLeaguesData = <League>[];
-  //
-  //   try {
-  //     if (access_token == null) {
-  //       access_token = await SecureUtils().retrieveValue(
-  //           Constants.accessToken);
-  //       await authorizeAsync();
-  //       if (access_token == null) {
-  //         print('COULD NOT AUTHORIZE ********************************************************************');
-  //         return jsonLeaguesData;
-  //       }
-  //     }
-  //
-  //     Response leaguesResponse = await get(Uri.parse(UrlConstants.GET_LEAGUES), headers:  {'Authorization': 'Bearer $access_token'}).timeout(const Duration(seconds: 10));
-  //     Iterable leaguesIterable = json.decode(leaguesResponse.body);
-  //     jsonLeaguesData = List<League>.from(leaguesIterable.map((model)=> League.fromJson(model)));
-  //   } catch (e) {
-  //     // Fluttertoast.showToast(msg:  'LEAGUES   ' +e.toString());
-  //     print('ERROR REST ---- LEAGUES MOCKING............');
-  //
-  //   }
-  //
-  //   return jsonLeaguesData;
-  // }
-
-  // Future<List<Section>> getSectionsAsync(Timer? timer) async {
-  //
-  //   List<Section> jsonSectionsData = <Section>[];
-  //
-  //   try {
-  //
-  //     if (access_token == null) {
-  //       access_token = await SecureUtils().retrieveValue(
-  //           Constants.accessToken);
-  //
-  //       if (access_token == null) {
-  //         print('COULD NOT AUTHORIZE ********************************************************************');
-  //         return jsonSectionsData;
-  //       }
-  //     }
-  //
-  //         print('TOKEN ' + access_token!);
-  //
-  //
-  //     String url = UrlConstants.GET_SECTIONS;
-  //     Response sectionsHttpResponse = await get(Uri.parse(url),
-  //         headers:  {'Authorization': 'Bearer $access_token'}).timeout(const Duration(seconds: 10));
-  //     Iterable sectionsIterable = json.decode(sectionsHttpResponse.body);
-  //     jsonSectionsData = List<Section>.from(sectionsIterable.map((model)=> Section.fromJson(model)));
-  //   } catch (e) {
-  //     // Fluttertoast.showToast(msg:  'SECTIONS   ' +e.toString());
-  //     print('ERROR REST ---- SECTIONS MOCKING............');
-  //
-  //   }
-  //
-  //   return jsonSectionsData;
-  // }
-
-
-
-
-  registedUserCallback(User user) {
+  registerUserCallback(User user) {
 
       Navigator.pop(context);
 
@@ -578,42 +476,6 @@ class ParentPageState extends State<ParentPage> with WidgetsBindingObserver {
       //     elevation: 20,
       //   ));
   }
-
-  // Future<Map<String, List<LeagueWithData>>> convertJsonLeaguesToObjects(Map jsonLeaguesData) async{
-  //   Map<String, List<LeagueWithData>> newEventsPerDayMap = LinkedHashMap();
-  //   for (MapEntry dailyLeagues in  jsonLeaguesData.entries) {
-  //     String day = dailyLeagues.key;
-  //
-  //     var leaguesWithDataJson = dailyLeagues.value;
-  //     List<LeagueWithData> leaguesWithData = <LeagueWithData>[];
-  //     for (var leagueWithData in leaguesWithDataJson) {
-  //       LeagueWithData? leagueObj = await JsonHelper.leagueWithDataFromJson(leagueWithData);
-  //       if (leagueObj == null){
-  //         continue;
-  //       }
-  //       leaguesWithData.add(leagueObj);
-  //     }
-  //
-  //     newEventsPerDayMap.putIfAbsent(day, ()=> leaguesWithData);
-  //   }
-  //
-  //   return newEventsPerDayMap;
-  // }
-
-  // Future<Map<int, MatchEvent>> convertJsonLiveMatchesToObjects(Map jsonLeaguesData) async{
-  //   Map<int, MatchEvent> newEventsPerDayMap = LinkedHashMap();
-  //   for (MapEntry dailyLeagues in  jsonLeaguesData.entries) {
-  //     int day = int.parse(dailyLeagues.key);
-  //
-  //     var leaguesWithDataJson = dailyLeagues.value;
-  //
-  //     MatchEvent? leagueObj = await MatchEvent.eventFromJson(leaguesWithDataJson);
-  //
-  //     newEventsPerDayMap.putIfAbsent(day, ()=> leagueObj);
-  //   }
-  //
-  //   return newEventsPerDayMap;
-  // }
 
   /*
    * Every X seconds we receive Map which contains all the league matches per day.
@@ -742,47 +604,48 @@ class ParentPageState extends State<ParentPage> with WidgetsBindingObserver {
   void promptLoginOrRegister() {
     showDialog(context: context, builder: (context) =>
 
-        AlertDialog(
-          // title: const Text('Welcome'),
-          backgroundColor: Colors.blueAccent,
-          // titleTextStyle: const TextStyle(color: Colors.white, fontSize: 20),
-          insetPadding: EdgeInsets.zero,
-          contentPadding: const EdgeInsets.all(2.0),
-          buttonPadding: EdgeInsets.zero,
-          alignment: Alignment.bottomCenter,
-          elevation: 20,
-          shape: const RoundedRectangleBorder(
-              borderRadius:
-              BorderRadius.only(topLeft:
-              Radius.circular(10.0), topRight: Radius.circular(10.0))),
-          content:
+        // AlertDialog(
+        //   // title: const Text('Welcome'),
+        //   backgroundColor: Colors.blueAccent,
+        //   // titleTextStyle: const TextStyle(color: Colors.white, fontSize: 20),
+        //   insetPadding: EdgeInsets.zero,
+        //   contentPadding: const EdgeInsets.all(2.0),
+        //   buttonPadding: EdgeInsets.zero,
+        //   alignment: Alignment.bottomCenter,
+        //   elevation: 20,
+        //   shape: const RoundedRectangleBorder(
+        //       borderRadius:
+        //       BorderRadius.only(topLeft:
+        //       Radius.circular(10.0), topRight: Radius.circular(10.0))),
+        //   content:
+        //
+        //   Builder(
+        //       builder: (context) {
+        //         // Get available height and width of the build area of this widget. Make a choice depending on the size.
+        //         var height = MediaQuery
+        //             .of(context)
+        //             .size
+        //             .height * (2 / 3);
+        //         var width = MediaQuery
+        //             .of(context)
+        //             .size
+        //             .width;
+        //         return SizedBox(width: width, height: height,
+        //             child:
 
-          Builder(
-              builder: (context) {
-                // Get available height and width of the build area of this widget. Make a choice depending on the size.
-                var height = MediaQuery
-                    .of(context)
-                    .size
-                    .height * (2 / 3);
-                var width = MediaQuery
-                    .of(context)
-                    .size
-                    .width;
-                return SizedBox(width: width, height: height,
-                    child:
 
-                    AppContext.user.mongoUserId == Constants.defMongoUserId ?
 
                     DialogTabbedLoginOrRegister(
-                      registerCallback: registedUserCallback,
+                      registerCallback: registerUserCallback,
                       loginCallback: loginUserCallback,
                     )
-                        :
-                        Text('Hello ' + AppContext.user.username)
-
-                );
-              }
-        )));
+                        // :
+                        // Text('Hello ' + AppContext.user.username)
+        //
+        //         );
+        //       }
+        // ))
+    );
   }
 
   void updateLiveMatches(eventsPerDayMap) {}
@@ -867,9 +730,9 @@ void setupFirebaseListeners() async{
   }
 
   void sortLeagues() {
-    AppContext.eventsPerDayMap.entries.forEach((element) {
+    for (var element in AppContext.eventsPerDayMap.entries) {
       element.value.sort();
-    });
+    }
 
     // AppContext.liveLeagues.sort();
 
@@ -886,9 +749,9 @@ void setupFirebaseListeners() async{
       AppContext.eventsPerDayMap['0'];
     });
 
-    // leaguesPageKey.currentState?.setState(() {
-    //   allLeagues;
-    // });
+    leaguesPageKey.currentState?.setState(() {
+      AppContext.allLeaguesMap;
+    });
   }
 
   void checkForOddsRemoval(List<MatchEvent> events) {
@@ -918,10 +781,10 @@ void setupFirebaseListeners() async{
 
   bool updateLeagues(List<League> leagues) {
     for ( League l in leagues){
-
-
       AppContext.allLeaguesMap.putIfAbsent(l.league_id, ()=>l);
     }
+
+    updatePageStates();
 
     return true;
   }
@@ -946,27 +809,9 @@ void setupFirebaseListeners() async{
 
       //missing league, add it to today leagues, also to live if it has live matches
       if (existingLeague.league.league_id == -1) {
-       // Fluttertoast.showToast(msg: 'New league:' + incomingLeague.league.name);
-
         existingTodayLeagues.add(incomingLeague);
-
-        // List<MatchEvent> liveIncoming = incomingLeague.events.where((element) => element.status == MatchEventStatus.INPROGRESS.statusStr).toList();
-        // if (!AppContext.liveLeagues.contains(incomingLeague) && liveIncoming.isNotEmpty) {
-        //   AppContext.liveLeagues.add(incomingLeague);
-        // }
-
         continue;
       }
-
-
-      // List<MatchEvent> existingLiveEventsOfLeague = existingLeague.events;
-
-
-      // List<MatchEvent> existingLiveEventsOfLeague = existingLeague.events.where((element) => element.status == MatchEventStatus.INPROGRESS.statusStr).toList();
-      // List<MatchEvent> incomingLiveEventsOfLeague = incomingLeague.events.where((element) => element.status == MatchEventStatus.INPROGRESS.statusStr).toList();
-
-      // List<MatchEvent> incomingLiveEventsOfLeague = incomingLeague.events;
-
 
       for (MatchEvent existingEvent in List.of(existingLeague.events)) {
 

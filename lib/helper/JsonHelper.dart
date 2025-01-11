@@ -57,10 +57,10 @@ class JsonHelper{
       return null;
     }
 
-    League li = AppContext.allLeaguesMap[leagueId];
+    League? le = AppContext.allLeaguesMap[leagueId];
 
     LeagueWithData l = LeagueWithData(
-        league: li,
+        league: le??League.defConst(),
         events: matches);
     // l.liveEvents = liveMatches;
 

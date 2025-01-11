@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'StandingRow.dart';
 import 'Team.dart';
 import 'constants/JsonConstants.dart';
@@ -20,18 +22,24 @@ class Standing{
     var stRows = standing['standings_rows'];
     for (var stRow in stRows){
 
-      print('checking row ' + stRow['position'].toString());
+      // print('checking row ' + stRow['position'].toString());
 
       var teamJson = stRow['team'];
-      Team hTeam = Team(teamJson[JsonConstants.id], teamJson["name"], teamJson["logo"]);
-      if (teamJson['name_translations'] != null){
-        hTeam.name_translations = teamJson['name_translations'];
-      }
+      Team hTeam = Team.fromJson(teamJson);
+
 
       StandingRow row = StandingRow(team: hTeam);
-      row.away_points = int.parse( stRow['away_points']);
-      row.home_points = int.parse(stRow['home_points']);
       row.position = stRow['position'];
+
+
+      Map<String, dynamic> fields = stRow['fields'];
+
+
+      row.draws_total = int.parse(fields['draws_total']);
+      row.wins_total = int.parse(fields['wins_total']);
+      row.losses_total = int.parse(fields['losses_total']);
+      row.goals_total = (fields['goals_total']);
+      row.points = int.parse(fields['points_total']);
       rows.add(row);
     }
 

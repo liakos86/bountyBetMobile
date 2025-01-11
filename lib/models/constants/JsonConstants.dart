@@ -8,7 +8,7 @@ class JsonConstants {
   static const String name = 'name';
   static const String priority = 'priority';
   static const String logo = 'logo';
-  static const String hasLogo = 'has_logo';
+  // static const String hasLogo = 'has_logo';
   static const String data = 'data';
   static const String text = 'text';
   static const String homeScore = 'home_score';

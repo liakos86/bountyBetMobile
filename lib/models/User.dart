@@ -94,12 +94,28 @@ class User{
     return '$monthlyWonBets/${monthlyWonBets + monthlyLostBets}';
   }
 
+  String betSlipsMonthlyPercentageText(){
+    if (monthlyWonBets + monthlyLostBets == 0){
+      return '0%';
+    }
+
+    return '${(monthlyWonBets / (monthlyWonBets + monthlyLostBets)).toStringAsFixed(2)}%';
+  }
+
   String betSlipsOverallText(){
     return '$overallWonBets/${overallWonBets + overallLostBets}';
   }
 
   String betPredictionsMonthlyText(){
     return '$monthlyWonPredictions/${monthlyWonPredictions + monthlyLostPredictions}';
+  }
+
+  String betPredictionsMonthlyPercentageText(){
+    if (monthlyWonPredictions + monthlyLostPredictions == 0){
+      return '0%';
+    }
+
+    return '${((monthlyWonPredictions/monthlyWonPredictions + monthlyLostPredictions)).toStringAsFixed(1)}%';
   }
 
   String betPredictionsOverallText(){

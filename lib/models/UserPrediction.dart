@@ -64,8 +64,8 @@ class UserPrediction{
         value: parsedJson['oddValue'] as double,
         betPredictionStatus: BetPredictionStatus.ofStatus(int.parse(parsedJson['predictionStatus'])),
         betPredictionType:  BetPredictionType.of(int.parse(parsedJson['predictionCategory']), int.parse(parsedJson['predictionType'])),
-        homeTeam: Team(homeTeam[JsonConstants.id], homeTeam["name"], homeTeam["logo"]),
-        awayTeam: Team(awayTeam[JsonConstants.id], awayTeam["name"], awayTeam["logo"]),
+        homeTeam: Team.fromJson(homeTeam),
+        awayTeam: Team.fromJson(awayTeam),
         sportId: parsedJson['sportId'] as int
     );
 

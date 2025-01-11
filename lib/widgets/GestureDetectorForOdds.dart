@@ -6,6 +6,7 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_app/pages/OddsPage.dart';
 
 import '../models/UserPrediction.dart';
+import '../models/constants/ColorConstants.dart';
 import '../models/match_event.dart';
 
 class GestureDetectorForOdds extends StatefulWidget {
@@ -73,7 +74,9 @@ class GestureDetectorForOddsState extends State<GestureDetectorForOdds>{
                       },
 
                       child:
-
+                      Transform(
+                      transform: Matrix4.skewX(-0.2),
+                      child:
                       Container(
                         height: 32,
                         padding: const EdgeInsets.all(4),
@@ -81,7 +84,7 @@ class GestureDetectorForOddsState extends State<GestureDetectorForOdds>{
                           border: Border.all(width: 1.5, color: Colors.grey),
                           borderRadius: BorderRadius.all(Radius.circular(8)),
                           color: selectedOdds.contains(prediction)
-                              ? Colors.blueAccent
+                              ? const Color(ColorConstants.my_green)
                               : Colors.grey[100],
                         ),
 
@@ -101,9 +104,31 @@ class GestureDetectorForOddsState extends State<GestureDetectorForOdds>{
                           )
                               ])
                       )
+    )
     );
 
   }
+
+  Widget _buildTiltedPosition(String text) {
+    return
+
+      Transform(
+        transform: Matrix4.skewX(-0.2), // Tilt the container
+        child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+            // margin: EdgeInsets.symmetric(horizontal: 4),
+            decoration: BoxDecoration(
+              color: const Color(ColorConstants.my_green), // Background color of the parallelogram
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child:
+
+            Text(text, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Colors.white),)
+
+        ),
+      );
+  }
+
 
 
 }

@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_app/enums/BetPredictionStatus.dart';
 
 import '../../models/UserPrediction.dart';
+import '../../models/constants/ColorConstants.dart';
 
 class UserBetPredictionRow extends StatelessWidget{
 
@@ -66,7 +67,7 @@ class UserBetPredictionRow extends StatelessWidget{
 
                     Icon(
                       Icons.pending,
-                      color:  prediction.betPredictionStatus == BetPredictionStatus.LOST ? Colors.red : (prediction.betPredictionStatus == BetPredictionStatus.WON  ? Colors.green : null)
+                      color:  prediction.betPredictionStatus == BetPredictionStatus.LOST ? Colors.red : (prediction.betPredictionStatus == BetPredictionStatus.WON  ? const Color(ColorConstants.my_green) : null)
                     ),
                     SizedBox(width: 10),
                     Column(
@@ -74,9 +75,9 @@ class UserBetPredictionRow extends StatelessWidget{
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: [
                         Text('${prediction.homeTeam.getLocalizedName()} - ${prediction.awayTeam.getLocalizedName()}',
-                          style: TextStyle(fontSize: 15, color: Colors.black),),
+                          style: const TextStyle(fontSize: 15, color: Colors.black),),
                         Text('${prediction.betPredictionType} @ ${prediction.value.toStringAsFixed(2)}',
-                          style: TextStyle(fontSize: 15, color: Colors.green[700]),)
+                          style: const TextStyle(fontSize: 15, color: Color(ColorConstants.my_green)),)
                       ],
                     ),
 

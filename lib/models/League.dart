@@ -14,7 +14,7 @@ class League implements Comparable<League>{
     required this.name,
     required this.league_id,
     required this.section_id,
-    required this.has_logo,
+    // required this.has_logo,
     required this.priority
   });
 
@@ -24,7 +24,7 @@ class League implements Comparable<League>{
 
   int section_id = -1;
 
-  bool has_logo = false;
+  // bool has_logo = false;
 
   String name = Constants.empty;
 
@@ -43,7 +43,7 @@ class League implements Comparable<League>{
         name: league[JsonConstants.name],
         league_id: league[JsonConstants.id],
         section_id: league[JsonConstants.sectionId],
-        has_logo: league[JsonConstants.hasLogo],
+        // has_logo: league[JsonConstants.hasLogo],
         priority: league[JsonConstants.priority]
     );
 

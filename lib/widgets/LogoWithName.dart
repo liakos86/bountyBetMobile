@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 
 import '../enums/WinnerType.dart';
 import '../models/constants/Constants.dart';
+import '../utils/cache/CustomCacheManager.dart';
 
 
 class LogoWithName extends StatefulWidget {
@@ -72,6 +73,7 @@ class LogoWithName extends StatefulWidget {
 
             CachedNetworkImage(
               imageUrl: logoUrl,
+              cacheManager: CustomCacheManager(),
               placeholder: (context, url) => Image.asset(Constants.assetNoTeamImage, width: logoSize, height: logoSize,),
               errorWidget: (context, url, error) => Image.asset(Constants.assetNoTeamImage, width: logoSize, height: logoSize,),
               height: logoSize,
@@ -103,7 +105,7 @@ class LogoWithName extends StatefulWidget {
                 Align(
                   alignment: Alignment.centerLeft,
                   child: Text( name + (WinnerType.AFTER == winnerType ? '*' : Constants.empty), overflow: TextOverflow.ellipsis, textAlign: TextAlign.left,
-                    style: TextStyle(fontWeight: WinnerType.NONE == winnerType ? FontWeight.w500 : FontWeight.w900, fontSize: fontSize),)),
+                    style: TextStyle(fontWeight: WinnerType.NONE == winnerType ? FontWeight.w500 : FontWeight.w900, fontSize: fontSize, color: Colors.white),)),
                  ]))),
 
         Expanded(

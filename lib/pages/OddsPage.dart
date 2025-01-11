@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter_app/enums/BetStatus.dart';
 import 'package:flutter_app/models/interfaces/StatefulWidgetWithName.dart';
 import 'package:flutter_app/utils/client/HttpActionsClient.dart';
+import 'package:flutter_app/widgets/DialogTabbedLoginOrRegister.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 
@@ -20,24 +21,28 @@ import 'package:intl/intl.dart';
 import '../models/UserBet.dart';
 import '../models/UserPrediction.dart';
 import '../models/LeagueWithData.dart';
+import '../models/constants/ColorConstants.dart';
 import '../models/context/AppContext.dart';
 import '../utils/BetUtils.dart';
+import '../widgets/row/DialogProgressBarWithText.dart';
 
 
-class OddsPage extends StatefulWidgetWithName {
+class OddsPage extends StatefulWidget{//}WithName {
 
   // final Map eventsPerDayMap;
 
   final Function updateUserCallback;
+  final Function loginUserCallback;
+  final Function registerUserCallback;
 
   final List<UserPrediction> selectedOdds;
 
-  @override
-  StatefulElement createElement() {
-    setName('Today\'s Odds');
-    // TODO: implement createElement
-    return super.createElement();
-  }
+  // @override
+  // StatefulElement createElement() {
+  //   setName('Today\'s Odds');
+  //   // TODO: implement createElement
+  //   return super.createElement();
+  // }
 
   @override
   OddsPageState createState() => OddsPageState();
@@ -45,34 +50,45 @@ class OddsPage extends StatefulWidgetWithName {
   OddsPage({
     Key? key,
     required this.updateUserCallback,
-    // required this.eventsPerDayMap,
+    required this.loginUserCallback,
+    required this.registerUserCallback,
     required this.selectedOdds
-
-
   } ) : super(key: key);
 
 }
 
 class OddsPageState extends State<OddsPage>{
 
+  // late List<ValueNotifier<bool>> expansionStates0 ;
+  // late List<ValueNotifier<bool>> expansionStates1 ;
+  // late List<ValueNotifier<bool>> expansionStates2 ;
+
+
   /*
   * Required because user can deleted selected odds from the betslip directly.
    */
-  late final List<UserPrediction> selectedOdds;// = <UserPrediction>[];
+  late List<UserPrediction> selectedOdds;// = <UserPrediction>[];
 
   int selectedIndex = -1;
 
   // Map eventsPerDayMap = LinkedHashMap();
 
   Function updateUserCallback = ()=>{ };
+  Function loginUserCallback = ()=>{ };
+  Function registerUserCallback = ()=>{ };
 
   @override
   void initState() {
     selectedOdds = widget.selectedOdds;
     // eventsPerDayMap = widget.eventsPerDayMap;
     updateUserCallback = widget.updateUserCallback;
+    loginUserCallback = widget.loginUserCallback;
+    registerUserCallback = widget.registerUserCallback;
+
+
     super.initState();
   }
+
 
   TabBar get _tabBar => TabBar(
     labelStyle: const TextStyle(color: Colors.black87, fontSize: 16, fontWeight: FontWeight.normal),
@@ -90,8 +106,18 @@ class OddsPageState extends State<OddsPage>{
 
   @override
   Widget build(BuildContext context) {
+    bool allEmpty = true;
+    for (String key in AppContext.eventsPerDayMap.keys){
+      if (AppContext.eventsPerDayMap[key].length > 0){
+        allEmpty = false;
+        break;
+      }
 
+    }
 
+    if (allEmpty){
+      return const DialogProgressText(text: 'Loading...');
+    }
 
     return
 
@@ -104,7 +130,7 @@ class OddsPageState extends State<OddsPage>{
 
       Scaffold(
 
-        backgroundColor: Colors.grey[100],
+        backgroundColor: Colors.grey.shade100,
 
           appBar: AppBar(
             toolbarHeight: 0,
@@ -149,20 +175,6 @@ class OddsPageState extends State<OddsPage>{
                     return _buildRow(AppContext.eventsPerDayMap.entries.elementAt(1).value[item], item);
                   }),
 
-    //        (AppContext.eventsPerDayMap.entries.elementAt(0).value.isEmpty) ?
-    //   const Align(
-    // alignment: Alignment.center,
-    // child: SizedBox(
-    // width: 100,
-    // height: 100,
-    // child: CircularProgressIndicator(
-    // strokeWidth: 4,
-    // color: Colors.blueAccent,
-    // backgroundColor: Colors.grey)
-    // ))
-    //
-    //       :
-
 
               ListView.builder(
                   key: const PageStorageKey<String>(
@@ -183,34 +195,44 @@ class OddsPageState extends State<OddsPage>{
           onPressed: ()=> {
 
             if (AppContext.user.mongoUserId != Constants.defMongoUserId && !AppContext.user.validated){
-              alertDialog('Your account requires validation. Please go to ${AppContext.user.email} and validate.')
+              alertDialog('Your account requires validation. Please check your inbox at ${AppContext.user.email} and validate.')
             }else if (AppContext.user.mongoUserId == Constants.defMongoUserId){
-              alertDialog('Please login/register at the top left in order to bet.')
+
+          showDialog(context: context, builder: (context) =>
+
+              DialogTabbedLoginOrRegister(
+                registerCallback: registerUserCallback,
+                loginCallback: loginUserCallback,
+              )
+          )
+
+
+
             } else if (selectedOdds.isNotEmpty)
 
               showDialog(context: context, builder: (context) =>
 
               AlertDialog(
 
+                backgroundColor: Colors.black,
           insetPadding: EdgeInsets.zero,
-          contentPadding: const EdgeInsets.all(2.0),
+          contentPadding: const EdgeInsets.all(0),
           buttonPadding: EdgeInsets.zero,
           alignment: Alignment.bottomCenter,
           elevation: 20,
-          shape: const RoundedRectangleBorder(
-          borderRadius:
-          BorderRadius.only(topLeft:
-          Radius.circular(10.0), topRight: Radius.circular(10.0))),
-          content: Builder(
+          content:
+
+          Builder(
           builder: (context) {
           // Get available height and width of the build area of this widget. Make a choice depending on the size.
-          var height = MediaQuery.of(context).size.height * (2/3);
+          var height =  (selectedOdds.length * 100) + 100 < MediaQuery.of(context).size.height * (2/3) ? ((selectedOdds.length * 100) + 100).toDouble() : MediaQuery.of(context).size.height * (2/3);//  MediaQuery.of(context).size.height * (2/3);
           var width = MediaQuery.of(context).size.width;
 
-          return SizedBox(
+          return
+            SizedBox(
               width: width,
               height: height,
-              child : BetSlipWithCustomKeyboard(key: UniqueKey(), selectedOdds: selectedOdds, callbackForBetPlacement: placeBetCallback, callbackForBetRemoval: removeOddCallback, )
+              child : BetSlipWithCustomKeyboard(key: UniqueKey(), initialHeight: height, selectedOdds: selectedOdds, callbackForBetPlacement: placeBetCallback, callbackForBetRemoval: removeOddCallback, )
             );
 
           })
@@ -218,7 +240,7 @@ class OddsPageState extends State<OddsPage>{
           ))
           },
 
-          backgroundColor: Colors.blueAccent,
+          backgroundColor: const Color(ColorConstants.my_green),
 
           child:  Text(BetUtils.finalOddOf(selectedOdds).toStringAsFixed(2), style: TextStyle(fontSize: (BetUtils.finalOddOf(selectedOdds )  < 100) ? 16 : (BetUtils.finalOddOf(selectedOdds )  < 1000) ? 15 : 12)),
         ),
@@ -228,11 +250,17 @@ class OddsPageState extends State<OddsPage>{
   }
 
   Widget _buildRow(LeagueWithData league, int item) {
-   return LeagueExpandableTile(key: PageStorageKey<LeagueWithData>(league), league: league, expandAll: selectedIndex==item, events: league.events, callbackForOdds: fixOddsCallback, selectedOdds: selectedOdds, favourites: favourites(),);
+   return LeagueExpandableTile(key: PageStorageKey<LeagueWithData>(league),  isAlwaysExpanded: false, league: league, expandAll: selectedIndex==item, events: league.events, callbackForOdds: fixOddsCallback, selectedOdds: selectedOdds, favourites: favourites(),);
   }
 
-  void removeOddCallback(UserPrediction toRemove){
-    selectedOdds.remove(toRemove);
+  void removeOddCallback(UserPrediction? toRemove){
+
+    if (toRemove == null){
+      selectedOdds.clear();
+    }else{
+      selectedOdds.remove(toRemove);
+    }
+
 
     setState(() {
       selectedOdds;
@@ -271,7 +299,7 @@ class OddsPageState extends State<OddsPage>{
   }
 
   Future<BetPlacementStatus> placeBetCallback(double bettingAmount) async {
-    if (bettingAmount <= 0 ){
+    if (bettingAmount <= 0 || bettingAmount > AppContext.user.balance){
       return BetPlacementStatus.FAILED_INSUFFICIENT_FUNDS;
     }
 
@@ -288,7 +316,7 @@ class OddsPageState extends State<OddsPage>{
     }
 
     //selectedOdds.forEach((element) {element.event = ParentPageState.findEvent(element.eventId);});
-    UserBet newBet = UserBet(userMongoId: mongoUserId , predictions: List.of(selectedOdds), betAmount: bettingAmount, betStatus: BetStatus.PENDING);
+    UserBet newBet = UserBet(userMongoId: mongoUserId , predictions: List.of(selectedOdds), betAmount: bettingAmount, betStatus: BetStatus.PENDING, betPlacementMillis: 0);
 
 
       BetPlacementStatus betPlacementStatus = await HttpActionsClient.placeBet(newBet);
@@ -296,13 +324,23 @@ class OddsPageState extends State<OddsPage>{
       if (betPlacementStatus == BetPlacementStatus.PLACED) {
         updateUserCallback.call(newBet);
 
-        setState(() {
-          selectedOdds.clear();
-        });
+        // setState(() {
+        //   selectedOdds.clear();
+        // });
       }
+
+    if (betPlacementStatus == BetPlacementStatus.FAILED_MATCH_IN_PROGRESS) {
+
+      Fluttertoast.showToast(msg: 'Cannot place bet. Match in progress.');
+      // setState(() {
+      //   selectedOdds.clear();
+      // });
+    }
 
       return betPlacementStatus;
   }
+
+
 
   void alertDialog(String msg) {
     showDialog(context: context, builder: (context) =>
