@@ -50,9 +50,9 @@ class SoccerStatisticRowState extends State<SoccerStatisticRow> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
 
-                      Align(alignment: Alignment.topLeft, child: Text(statistic.home)),
-                      Align(alignment: Alignment.topCenter, child: Text( StatisticsNameType.getLocalizedString(context, statistic.name))),
-                      Align(alignment: Alignment.topRight, child: Text(statistic.away)),
+                      Align(alignment: Alignment.topLeft, child: Text(statistic.home, style: const TextStyle(color: Colors.white),)),
+                      Align(alignment: Alignment.topCenter, child: Text( StatisticsNameType.getLocalizedString(context, statistic.name), style: const TextStyle(color: Colors.white),)),
+                      Align(alignment: Alignment.topRight, child: Text(statistic.away, style: const TextStyle(color: Colors.white),)),
 
                 ]
                 ),

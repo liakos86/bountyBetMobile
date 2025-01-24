@@ -37,6 +37,8 @@ class BetSlipWithCustomKeyboard extends StatefulWidget {
 
 class BetSlipWithCustomKeyboardState extends State<BetSlipWithCustomKeyboard>{
 
+  bool executingCall = false;
+
   BetPlacementStatus betPlacementStatus = BetPlacementStatus.PENDING;
 
   TextEditingController betAmountController = TextEditingController();
@@ -133,24 +135,6 @@ class BetSlipWithCustomKeyboardState extends State<BetSlipWithCustomKeyboard>{
                       return _buildBettingOddRow(selectedOdds[item]);
                     })
                 ),
-
-              // Expanded(
-              //   flex: 2,
-              //   child:
-              //   Row(
-              //     children: [
-              //       Align(alignment: Alignment.centerLeft,
-              //           child: Text('${selectedOdds.length} selections @ ${BetUtils.finalOddOf(selectedOdds).toStringAsFixed(2)}',
-              //             style: const TextStyle(color: Colors.white),)),
-              //       const Spacer(),
-              //       Align(alignment: Alignment.centerLeft,
-              //           child:
-              //           Text('To return: ${(bettingAmount * BetUtils.finalOddOf(selectedOdds)).toStringAsFixed(2)}',
-              //             style: const TextStyle(color: Colors.white),)
-              //       ),
-              //     ],
-              //   ),
-              // ),
 
         betPlacementStatus == BetPlacementStatus.PLACED ?
 
@@ -259,11 +243,17 @@ class BetSlipWithCustomKeyboardState extends State<BetSlipWithCustomKeyboard>{
                           ),
                           onPressed: () {
                             if (bettingAmount <= 0){
-
                               Fluttertoast.showToast(msg: 'Please select a positive bet amount');
-
                               return;
                             }
+
+                            if (executingCall){
+                              return;
+                            }
+
+                            setState(() {
+                              executingCall = true;
+                            });
 
                             Future<BetPlacementStatus> betPlacementStatusFuture = callbackForBetPlacement.call(bettingAmount);
                             betPlacementStatusFuture.then((betPlacementStatus) =>
@@ -276,7 +266,7 @@ class BetSlipWithCustomKeyboardState extends State<BetSlipWithCustomKeyboard>{
                             );
 
                           },
-                          child:  Text('Place bet${bettingAmount > 0 ? ' returning ${(bettingAmount * BetUtils.finalOddOf(selectedOdds)).toStringAsFixed(2)}' : ''}'),
+                          child: executingCall ? const CircularProgressIndicator() : Text('Place bet${bettingAmount > 0 ? ' returning ${(bettingAmount * BetUtils.finalOddOf(selectedOdds)).toStringAsFixed(2)}' : ''}'),
                         ),)
 
                             :
@@ -323,6 +313,7 @@ class BetSlipWithCustomKeyboardState extends State<BetSlipWithCustomKeyboard>{
 
   refreshStateAfterBet(BetPlacementStatus betPlacementSt) {
     setState(() {
+      executingCall = false;
       betPlacementStatus = betPlacementSt;
     });
 

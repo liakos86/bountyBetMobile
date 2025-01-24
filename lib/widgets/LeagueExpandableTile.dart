@@ -3,6 +3,7 @@ import 'dart:ui';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_app/enums/MatchEventStatus.dart';
 import 'package:flutter_app/models/match_event.dart';
 import 'package:flutter_app/widgets/row/UpcomingMatchRowTilted.dart';
 
@@ -109,7 +110,57 @@ class LeagueExpandableTile extends StatefulWidget {
     collapsedBackgroundColor: Colors.grey.shade200,
     backgroundColor: Colors.yellow[50],
     subtitle: Text(league.league.getLocalizedName(), style: const TextStyle(color: Colors.black, fontWeight: FontWeight.w700, fontSize: 10),),
-    trailing: Text('(${events.length})', style: const TextStyle(color: Colors.black, fontSize: 9),),
+    trailing:
+
+        Row(
+          mainAxisSize: MainAxisSize.min,
+    children:[
+    Container(
+      width: 20, // Adjust width for rectangle shape
+      height: 20, // Adjust height for rectangle shape
+      alignment: Alignment.center,
+      decoration: BoxDecoration(
+        color: Colors.white,
+        border: Border.all( // Adding border to the first container
+          color: Colors.black, // Border color
+          width: 0.5, // Border width
+        ),
+        borderRadius: BorderRadius.circular(4), // Optional rounded corners
+      ),
+      child: Text(
+        '${events.length}',
+        style: const TextStyle(
+          color: Colors.red,
+          fontWeight: FontWeight.bold,
+        ),
+      ),
+    ),
+                const SizedBox(width: 4),
+      Container(
+        width: 20, // Adjust width for rectangle shape
+        height: 20, // Adjust height for rectangle shape
+        alignment: Alignment.center,
+        decoration: BoxDecoration(
+          color: Colors.red,
+          border: Border.all( // Adding border to the first container
+            color: Colors.black, // Border color
+            width: 0.5, // Border width
+          ),
+          borderRadius: BorderRadius.circular(4), // Optional rounded corners
+        ),
+        child: Text(
+          '${events.where((element) => element.status == MatchEventStatus.INPROGRESS.statusStr).length}',
+          style: const TextStyle(
+            color: Colors.white,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+      ),
+
+    ]
+        ),
+
+    // Text('(${events.length})', style: const TextStyle(color: Colors.black, fontSize: 9),),
     leading:
 
     CachedNetworkImage(

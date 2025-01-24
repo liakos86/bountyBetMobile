@@ -129,7 +129,7 @@ class SelectedOddRow extends StatelessWidget {
 
             Positioned(
                 top: 10, // Slightly above the container
-                left: -10, // Slightly left of the container
+                right: -5, // Slightly left of the container
                 child:
 
                 _buildRemoveButton()
@@ -145,21 +145,7 @@ class SelectedOddRow extends StatelessWidget {
 
   _buildRemoveButton() {
 
-
       return
-        // Transform(
-        //     transform: Matrix4.skewX(-0.2), // Tilt the container
-        //     child: Container(
-        //         padding: EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-        //         // margin: EdgeInsets.symmetric(horizontal: 4),
-        //         decoration: BoxDecoration(
-        //             color: Colors.white,
-        //             // Background color of the parallelogram
-        //             borderRadius: BorderRadius.circular(8),
-        //             border: Border.all(color: Colors.black87, width: 1)
-        //         ),
-        //         child:
-
         RawMaterialButton(
           onPressed:  ()=> {callback?.call(prediction)},
           fillColor: Colors.red, // Background color
@@ -169,60 +155,11 @@ class SelectedOddRow extends StatelessWidget {
             height: 30,
           ),
           child: const Icon(
-            Icons.delete, // Icon for delete action
+            Icons.close, // Icon for delete action
             size: 20, // Smaller icon size
             color: Colors.white, // Icon color
           ),
         );
-
-        FloatingActionButton(
-          backgroundColor: Colors.red,
-          mini: true,
-          heroTag: 'btnDeletePred${prediction.eventId}',
-          foregroundColor: Colors.white,
-          onPressed: ()=> {callback?.call(prediction)},
-          child: const Icon(
-            Icons.delete, // Trash bin icon for better visual clarity
-            size: 24, // Adjust size if needed
-          ),
-        );
-
-    FloatingActionButton(
-
-      backgroundColor: Colors.red,
-      mini: true,
-
-    heroTag: 'btnDeletePred${prediction.eventId}',
-    foregroundColor: Colors.white,
-    onPressed: ()=> {callback?.call(prediction)},
-
-      child: const Text('X', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold))
-    );
-
-
-                // GestureDetector(
-                //     onTap: () async =>
-                //     {
-                //
-                //       callback?.call(prediction)
-                //     },
-                //
-                //     child:
-                //     Column(
-                //         children: [
-                //           Align(
-                //             alignment: Alignment.center,
-                //             child:
-                //
-                //             const Icon(Icons.delete_outline, color: Colors.red,)
-                //
-                //           )
-                //         ]
-                //     )
-                // )
-        //     )
-        // );
-
   }
 
 }

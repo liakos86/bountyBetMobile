@@ -318,6 +318,7 @@ class MatchEvent implements Comparable<MatchEvent>{
   	status = incomingEvent.status;
   	status_more = incomingEvent.status_more;
   	timeDetails = incomingEvent.timeDetails;
+  	lasted_period = incomingEvent.lasted_period;
 
 	}
 

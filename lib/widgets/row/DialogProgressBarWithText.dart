@@ -27,9 +27,7 @@ class DialogProgressText extends StatefulWidget {
     @override
     Widget build(BuildContext context) {
       return
-        Positioned(
-      top: 200,
-      child:
+
         AlertDialog(
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(20.0),
@@ -48,7 +46,7 @@ class DialogProgressText extends StatefulWidget {
             ],
           ),
         ),
-      )
+
         );
     }
 

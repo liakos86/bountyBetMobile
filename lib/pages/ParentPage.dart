@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:io';
 import 'dart:ui';
 import 'package:collection/collection.dart';
-import 'package:connectivity_plus/connectivity_plus.dart';
 
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
@@ -16,8 +15,7 @@ import 'package:flutter_app/pages/LeaguesInfoPage.dart';
 import 'package:flutter_app/pages/OddsPage.dart';
 import 'package:flutter_app/utils/client/HttpActionsClient.dart';
 import 'package:flutter_app/widgets/DialogTabbedLoginOrRegister.dart';
-import 'package:flutter_app/widgets/row/DialogProgressBarWithText.dart';
-import 'package:fluttertoast/fluttertoast.dart';
+
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../enums/ChangeEvent.dart';
@@ -68,6 +66,8 @@ class ParentPageState extends State<ParentPage> with WidgetsBindingObserver {
    */
   static int selectedPageIndex = 0;
 
+  bool isMinimized = false;
+
   /*
    * List of odds in the betslip.
    */
@@ -105,7 +105,7 @@ class ParentPageState extends State<ParentPage> with WidgetsBindingObserver {
   @override
   void initState() {
 
-    HttpActionsClient.listenConnChanges(updateConnState);
+      HttpActionsClient.listenConnChanges(updateConnState);
 
 
      AppContext.eventsPerDayMap. putIfAbsent('-1', () => <LeagueWithData>[]);
@@ -114,25 +114,20 @@ class ParentPageState extends State<ParentPage> with WidgetsBindingObserver {
 
 
     WidgetsBinding.instance.addObserver(this);
+
     super.initState();
+
     WidgetsBinding.instance
         .addPostFrameCallback((_) => setLocale(context));
 
       pagesList.add(OddsPage(key: oddsPageKey, updateUserCallback: updateUserCallBack, loginUserCallback: loginUserCallback, registerUserCallback: registerUserCallback, selectedOdds: selectedOdds));
-      // pagesList.add(OddsPage(key: oddsPageKey, updateUserCallback: updateUserCallBack, eventsPerDayMap: AppContext.eventsPerDayMap, selectedOdds: selectedOdds));
       pagesList.add(LivePage(key: livePageKey, liveLeagues: AppContext.eventsPerDayMap['0']));
-      // pagesList.add(LivePage(key: livePageKey));
       pagesList.add(LeaderBoardPage());
       pagesList.add(MyBetsPage(key: betsPageKey, user: AppContext.user, loginOrRegisterCallback: promptLoginOrRegister));
       pagesList.add(LeaguesInfoPage(key: leaguesPageKey, leagues: AppContext.allLeaguesMap));
 
-
-      // SecureUtils().deleteValue(Constants.accessToken);
-
       HttpActionsClient.authorizeAsync().then((a) =>
 
-     //  updateUserFromServer();
-     //
       HttpActionsClient.getSectionsAsync(null)
           .then((sections) => updateSections(sections))
           .then((updated) => HttpActionsClient.getLeaguesAsync(null))
@@ -146,24 +141,30 @@ class ParentPageState extends State<ParentPage> with WidgetsBindingObserver {
 
 
      Timer.periodic(const Duration(seconds: 10), (timer) {
-       HttpActionsClient.getSectionsAsync(null).then((secMap) => updateSections(secMap)
+       if (!isMinimized) {
+         HttpActionsClient.getSectionsAsync(null).then((secMap) => updateSections(secMap)
        );
+       }
      }
      );
 
 
      Timer.periodic(const Duration(seconds: 20), (timer) {
-       HttpActionsClient.getLeaguesAsync(null)
+       if (!isMinimized) {
+         HttpActionsClient.getLeaguesAsync(null)
            .then((leaguesMap) => updateLeagues(leaguesMap)
        );
+       }
      }
      );
 
 
       Timer.periodic(const Duration(seconds: 20), (timer) {
-        HttpActionsClient.getLeagueEventsAsync(timer).then((leaguesMap) =>
+        if (!isMinimized) {
+          HttpActionsClient.getLeagueEventsAsync(timer).then((leaguesMap) =>
             updateLeagueMatches(leaguesMap)
           );
+        }
         }
       );
 
@@ -173,14 +174,19 @@ class ParentPageState extends State<ParentPage> with WidgetsBindingObserver {
        if (AppContext.eventsPerDayMap['0'].isEmpty){
          return;
        }
-       HttpActionsClient.getLeagueLiveEventsAsync(timer).then((leaguesMap) =>
+
+       if (!isMinimized) {
+         HttpActionsClient.getLeagueLiveEventsAsync(timer).then((leaguesMap) =>
            updateLiveLeagueMatches(leaguesMap)
        );
+       }
      }
      );
 
      Timer.periodic(const Duration(seconds: 30), (timer) {
-       updateUserFromServer();
+       if (!isMinimized) {
+         updateUserFromServer();
+       }
      });
 
 
@@ -193,6 +199,23 @@ class ParentPageState extends State<ParentPage> with WidgetsBindingObserver {
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
     super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    super.didChangeAppLifecycleState(state);
+
+    if (state == AppLifecycleState.paused) {
+      // App is minimized or moved to the background
+      setState(() {
+        isMinimized = true;
+      });
+    } else if (state == AppLifecycleState.resumed) {
+      // App is active again
+      setState(() {
+        isMinimized = false;
+      });
+    }
   }
 
   @override
@@ -234,6 +257,12 @@ class ParentPageState extends State<ParentPage> with WidgetsBindingObserver {
       appBarTitle = ' pos(${AppContext.user.userPosition})$appBarTitle'  ;
     }
 
+    if (!mounted){
+      print('not mounted');
+      return;
+    }
+
+
     setState(() {
       AppContext.user;
       appBarTitle;
@@ -260,19 +289,30 @@ class ParentPageState extends State<ParentPage> with WidgetsBindingObserver {
 
           Container(
               color: Colors.grey.shade500,
-             height: 1.0,
+             height: 0.0,
             )
 
       ),
           title:RichText(
             text:  TextSpan(
               children: [
-                const WidgetSpan(
-                  child: ImageIcon(AssetImage('assets/images/money-bag-100.png'), color: Color(ColorConstants.my_green),)
-                ),
+
                 TextSpan(
                   text: appBarTitle,
                 ),
+
+                if (AppContext.user.balance < 1000 )
+                 WidgetSpan(
+                  child: FloatingActionButton(
+                      heroTag: 'btnTopUp',
+                      onPressed: promptDialogTopup,
+                      backgroundColor: const Color(ColorConstants.my_green),
+                      foregroundColor: Colors.black,
+                      mini: true, child:
+
+                  const Icon(Icons.monetization_on_outlined, color: Colors.white))
+                )
+
               ],
             ),
           ),
@@ -719,6 +759,12 @@ void setupFirebaseListeners() async{
       parentEvent.awayTeamScore?.current = changeEventSoccer.awayTeamScore;
     }
 
+    if (!mounted){
+      print('not mounted');
+      return;
+    }
+
+
     oddsPageKey.currentState?.setState(() {
       AppContext.eventsPerDayMap;
     });
@@ -740,6 +786,12 @@ void setupFirebaseListeners() async{
   }
 
   void updatePageStates() {
+    if (!mounted){
+      print('not mounted');
+      return;
+    }
+
+
     oddsPageKey.currentState?.setState(() {
       AppContext.eventsPerDayMap;
     });
@@ -886,6 +938,9 @@ void setupFirebaseListeners() async{
   }
 
 
+
+  void promptDialogTopup() {
+  }
 }
 
 

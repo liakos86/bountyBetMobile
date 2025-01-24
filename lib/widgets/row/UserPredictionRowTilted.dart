@@ -148,7 +148,7 @@ class UserPredictionRowTiltedState extends State<UserPredictionRowTilted>{
         child: prediction.betPredictionStatus==BetPredictionStatus.WON ?
         const Icon(Icons.check, color: Colors.white, size: 18)
             : prediction.betPredictionStatus==BetPredictionStatus.LOST ?
-        const Icon(Icons.highlight_remove, color: Colors.white, size: 18)
+        const Icon(Icons.close, color: Colors.white, size: 18)
             : prediction.betPredictionStatus==BetPredictionStatus.PENDING ?
         const Icon(Icons.downloading_rounded, color: Colors.white, size: 18)
             :

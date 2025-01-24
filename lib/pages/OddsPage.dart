@@ -24,6 +24,7 @@ import '../models/LeagueWithData.dart';
 import '../models/constants/ColorConstants.dart';
 import '../models/context/AppContext.dart';
 import '../utils/BetUtils.dart';
+import '../widgets/CustomTabIcon.dart';
 import '../widgets/row/DialogProgressBarWithText.dart';
 
 
@@ -57,12 +58,9 @@ class OddsPage extends StatefulWidget{//}WithName {
 
 }
 
-class OddsPageState extends State<OddsPage>{
+class OddsPageState extends State<OddsPage> with SingleTickerProviderStateMixin{
 
-  // late List<ValueNotifier<bool>> expansionStates0 ;
-  // late List<ValueNotifier<bool>> expansionStates1 ;
-  // late List<ValueNotifier<bool>> expansionStates2 ;
-
+  bool isMinimized = false;
 
   /*
   * Required because user can deleted selected odds from the betslip directly.
@@ -71,11 +69,18 @@ class OddsPageState extends State<OddsPage>{
 
   int selectedIndex = -1;
 
-  // Map eventsPerDayMap = LinkedHashMap();
-
   Function updateUserCallback = ()=>{ };
   Function loginUserCallback = ()=>{ };
   Function registerUserCallback = ()=>{ };
+
+  late TabController _tabController;
+
+  @override
+  void dispose() {
+    _tabController.dispose();
+
+    super.dispose();
+  }
 
   @override
   void initState() {
@@ -85,27 +90,22 @@ class OddsPageState extends State<OddsPage>{
     loginUserCallback = widget.loginUserCallback;
     registerUserCallback = widget.registerUserCallback;
 
+    _tabController = TabController(length: 5, vsync: this, initialIndex: 2);
+    _tabController.addListener(() {
+      setState(() {});
+    });
 
     super.initState();
   }
 
 
-  TabBar get _tabBar => TabBar(
-    labelStyle: const TextStyle(color: Colors.black87, fontSize: 16, fontWeight: FontWeight.normal),
-    isScrollable: true,
-    indicatorColor: Colors.redAccent,
-    indicatorWeight: 6,
-    tabAlignment: TabAlignment.center,
-    unselectedLabelColor: Colors.black54.withOpacity(0.2),
-    tabs: [
-      Tab(text: getDateWithOffset(-1)),
-      Tab(text: AppLocalizations.of(context)!.today),
-      Tab(text: getDateWithOffset(1)),
-    ],
-  );
-
   @override
   Widget build(BuildContext context) {
+    const int items = 5;
+    double width = MediaQuery.of(context).size.width;
+    const double labelPadding = 4;
+    double labelWidth = (width - (labelPadding * (items - 1)))  / items;
+
     bool allEmpty = true;
     for (String key in AppContext.eventsPerDayMap.keys){
       if (AppContext.eventsPerDayMap[key].length > 0){
@@ -116,32 +116,58 @@ class OddsPageState extends State<OddsPage>{
     }
 
     if (allEmpty){
+      // Fluttertoast.showToast(msg: 'LOADING', toastLength: Toast.LENGTH_LONG);
       return const DialogProgressText(text: 'Loading...');
     }
 
     return
 
 
-    DefaultTabController(
-      initialIndex: 1,
-      length: AppContext.eventsPerDayMap.keys.length,
-
-      child:
-
       Scaffold(
 
         backgroundColor: Colors.grey.shade100,
 
           appBar: AppBar(
-            toolbarHeight: 0,
+            toolbarHeight: 5,
+            backgroundColor: Colors.black87,
+
             bottom:
-            PreferredSize(
-              preferredSize: _tabBar.preferredSize,
-              child: ColoredBox(
-                color: Colors.deepOrange.shade100,
-                child: _tabBar,
-              ),
-            ),
+                TabBar(
+                labelPadding: const EdgeInsets.symmetric(horizontal: labelPadding),
+                indicator: const BoxDecoration(),
+                controller: _tabController,
+
+                isScrollable: true,
+                // indicatorColor: Colors.redAccent,
+                // indicatorWeight: 6,
+                tabAlignment: TabAlignment.center,
+                // unselectedLabelColor: Colors.black54.withOpacity(0.2),
+
+                tabs: [
+                  CustomTabIcon(width: labelWidth, text: getDateWithOffset(-2), isSelected: _tabController.index == 0,),
+                  CustomTabIcon(width: labelWidth, text: getDateWithOffset(-1), isSelected: _tabController.index == 1,),
+                  CustomTabIcon(width: labelWidth, text: AppLocalizations.of(context)!.today, isSelected: _tabController.index == 2,),
+                  CustomTabIcon(width: labelWidth, text: getDateWithOffset(1), isSelected: _tabController.index == 3,),
+                  CustomTabIcon(width: labelWidth, text: getDateWithOffset(2), isSelected: _tabController.index == 4,),
+                ],
+
+                onTap: (index) {
+                  setState(() {
+                  _tabController.index = index;
+                  });
+                }
+
+          )
+
+
+
+            // PreferredSize(
+            //   preferredSize: _tabBar.preferredSize,
+            //   child: ColoredBox(
+            //     color: Colors.deepOrange.shade100,
+            //     child: _tabBar,
+            //   ),
+            // ),
 
       ),
 
@@ -152,6 +178,7 @@ class OddsPageState extends State<OddsPage>{
           bucket: pageBucket,
           child:
           TabBarView(
+            controller: _tabController,
             children: [
 
               ListView.builder(
@@ -175,10 +202,30 @@ class OddsPageState extends State<OddsPage>{
                     return _buildRow(AppContext.eventsPerDayMap.entries.elementAt(1).value[item], item);
                   }),
 
-
               ListView.builder(
                   key: const PageStorageKey<String>(
                       'pageOdds2'),
+                  // controller: _scrollController1,
+                  padding: const EdgeInsets.all(0),
+                  itemCount: AppContext.eventsPerDayMap.entries.elementAt(1).value.length,
+                  itemBuilder: (context, item) {
+                    return _buildRow(AppContext.eventsPerDayMap.entries.elementAt(1).value[item], item);
+                  }),
+
+              ListView.builder(
+                  key: const PageStorageKey<String>(
+                      'pageOdds3'),
+                  // controller: _scrollController1,
+                  padding: const EdgeInsets.all(0),
+                  itemCount: AppContext.eventsPerDayMap.entries.elementAt(1).value.length,
+                  itemBuilder: (context, item) {
+                    return _buildRow(AppContext.eventsPerDayMap.entries.elementAt(1).value[item], item);
+                  }),
+
+
+              ListView.builder(
+                  key: const PageStorageKey<String>(
+                      'pageOdds4'),
                 // controller: _scrollController2,
                   padding: const EdgeInsets.all(0),
                   itemCount: AppContext.eventsPerDayMap.entries.elementAt(0).value.length,
@@ -245,7 +292,7 @@ class OddsPageState extends State<OddsPage>{
           child:  Text(BetUtils.finalOddOf(selectedOdds).toStringAsFixed(2), style: TextStyle(fontSize: (BetUtils.finalOddOf(selectedOdds )  < 100) ? 16 : (BetUtils.finalOddOf(selectedOdds )  < 1000) ? 15 : 12)),
         ),
 
-      ),
+      // ),
     );
   }
 

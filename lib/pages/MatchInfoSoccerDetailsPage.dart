@@ -19,6 +19,7 @@ import 'package:http/http.dart';
 
 import '../models/constants/UrlConstants.dart';
 import '../models/match_event.dart';
+import '../widgets/CustomTabIcon.dart';
 import '../widgets/MatchScoreMiddleText.dart';
 import '../widgets/row/SoccerStatPeriodRow.dart';
 import '../widgets/row/SoccerIncidentRow.dart';
@@ -38,7 +39,7 @@ class MatchInfoSoccerDetailsPage extends StatefulWidget{
 
 }
 
-class MatchInfoSoccerDetailsPageState extends State<MatchInfoSoccerDetailsPage>{
+class MatchInfoSoccerDetailsPageState extends State<MatchInfoSoccerDetailsPage> with SingleTickerProviderStateMixin{
 
   late MatchEvent event;
 
@@ -49,11 +50,24 @@ class MatchInfoSoccerDetailsPageState extends State<MatchInfoSoccerDetailsPage>{
 
   GlobalKey middleKey = GlobalKey();
 
+  late TabController _tabController;
+
+  @override
+  void dispose() {
+    _tabController.dispose();
+    super.dispose();
+  }
+
   @override
   void initState() {
     super.initState();
     event = widget.event;
     eventCallback = widget.eventCallback;
+
+    _tabController = TabController(length: 2, vsync: this);
+    _tabController.addListener(() {
+      setState(() {});
+    });
 
     updateEvent();
     Timer.periodic(const Duration(seconds: 10), (timer) {
@@ -66,6 +80,11 @@ class MatchInfoSoccerDetailsPageState extends State<MatchInfoSoccerDetailsPage>{
 
   @override
   Widget build(BuildContext context) {
+
+    const int items = 2;
+    double width = MediaQuery.of(context).size.width;
+    const double labelPadding = 16;
+    double labelWidth = (width - (labelPadding * (items - 1))) / items;
 
     return
 
@@ -106,26 +125,38 @@ class MatchInfoSoccerDetailsPageState extends State<MatchInfoSoccerDetailsPage>{
 
 
         DefaultTabController(
-          length: 2,
+          length: items,
           child: Scaffold(
-            backgroundColor: Colors.grey[50],
+            backgroundColor: Colors.black87,
               appBar: AppBar(
-                toolbarHeight: 0,
-                backgroundColor: Colors.white,
+                toolbarHeight: 5,
+                backgroundColor: Colors.black87,
                 bottom: TabBar(
-                  labelColor: Colors.black,
-                  unselectedLabelColor: Colors.grey[500],
-                  indicatorColor: Colors.black,
-                  indicatorWeight: 2,
+                  indicator: const BoxDecoration(),
+                  controller: _tabController,
+                  labelPadding: const EdgeInsets.symmetric(horizontal: labelPadding),
+                  // labelColor: Colors.black,
+                  // unselectedLabelColor: Colors.grey[500],
+                  // indicatorColor: Colors.black,
+                  // indicatorWeight: 2,
 
-                  tabs:  [
-                   Tab(text: AppLocalizations.of(context)!.incidents),
-                   const Tab(text: 'Statistics',),
-                  ],
+                    tabs: [
+                      CustomTabIcon(width: labelWidth, text: AppLocalizations.of(context)!.incidents, isSelected: _tabController.index == 0,),
+                      CustomTabIcon(width: labelWidth, text: 'statistics', isSelected: _tabController.index == 1,),
+                    ],
+
+                    onTap: (index) {
+                      setState(() {
+                        _tabController.index = index;
+                      });
+                    }
+
+
                 ),
               ),
 
               body: TabBarView(
+                controller: _tabController,
                 children: [
                   ListView.builder(
                       key: const PageStorageKey<String>(
@@ -170,6 +201,10 @@ class MatchInfoSoccerDetailsPageState extends State<MatchInfoSoccerDetailsPage>{
 
   void updateEvent() async{
 
+    if (!mounted){
+      return;
+    }
+
     MatchEventStatisticsWithIncidents newIncidents = await HttpActionsClient.getStatisticsAsync(event.eventId);
     var incomingIncidents = newIncidents.incidents.data;
     var incomingStats = newIncidents.statistics.data;
@@ -204,9 +239,7 @@ class MatchInfoSoccerDetailsPageState extends State<MatchInfoSoccerDetailsPage>{
     }
 
 
-    if (!mounted){
-      return;
-    }
+
 
 
     setState(() {

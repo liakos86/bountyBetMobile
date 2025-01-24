@@ -1,12 +1,14 @@
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_app/enums/BetStatus.dart';
 import 'package:flutter_app/models/UserBet.dart';
 
 import '../models/User.dart';
 import '../models/constants/Constants.dart';
 import '../models/interfaces/StatefulWidgetWithName.dart';
+import '../widgets/CustomTabIcon.dart';
 import '../widgets/row/UserBetRow.dart';
 import 'LivePage.dart';
 
@@ -31,7 +33,7 @@ class MyBetsPage extends StatefulWidget{//}WithName{
 
 }
 
-class MyBetsPageState extends State<MyBetsPage>{
+class MyBetsPageState extends State<MyBetsPage>  with SingleTickerProviderStateMixin{
 
   User user;
 
@@ -39,10 +41,22 @@ class MyBetsPageState extends State<MyBetsPage>{
 
   MyBetsPageState(this.user, this.loginOrRegisterCallback);
 
+  late TabController _tabController;
+
+  @override
+  void dispose() {
+    _tabController.dispose();
+    super.dispose();
+  }
+
   @override
   void initState(){
     user = widget.user;
     loginOrRegisterCallback = widget.loginOrRegisterCallback;
+    _tabController = TabController(length: 3, vsync: this);
+    _tabController.addListener(() {
+      setState(() {});
+    });
     super.initState();
   }
 
@@ -84,25 +98,42 @@ class MyBetsPageState extends State<MyBetsPage>{
     wonBets.sort();
     lostBets.sort();
 
+   const int items = 4;
+   double width = MediaQuery.of(context).size.width;
+   const double labelPadding = 4;
+   double labelWidth = (width - (labelPadding * (items - 1))) / items;
+
     return DefaultTabController(
-      length: 3,
+      length: items,
       child: Scaffold(
         appBar: AppBar(
-          toolbarHeight: 2,
-         backgroundColor: Colors.deepOrange.shade100,
+          toolbarHeight: 5,
+         backgroundColor: Colors.black87,
 
           bottom: TabBar(
-            labelColor: Colors.black87,
-            unselectedLabelColor: Colors.grey[400],
-            indicatorColor: Colors.red,
-            indicatorWeight: 8,
+              // isScrollable: true,
+              labelPadding: const EdgeInsets.symmetric(horizontal: labelPadding),
+            indicator: const BoxDecoration(),
+            controller: _tabController,
+            //labelColor: Colors.black87,
+            //unselectedLabelColor: Colors.grey[400],
+            //indicatorColor: Colors.red,
+            //indicatorWeight: 8,
 
             tabs: [
-              Tab( text: 'Pending(${pendingBets.length.toString()})'),
-              Tab( text: 'Won(${wonBets.length.toString()})',),
-              Tab( text: 'Lost(${lostBets.length.toString()})',),
+              CustomTabIcon(width: labelWidth, text: 'Pending(${pendingBets.length.toString()})', isSelected: _tabController.index == 0,),
+              CustomTabIcon(width: labelWidth,  text: 'Won(${wonBets.length.toString()})', isSelected: _tabController.index == 1,),
+              CustomTabIcon(width: labelWidth,  text: 'Lost(${lostBets.length.toString()})', isSelected: _tabController.index == 2,),
             ],
+
+            onTap: (index) {
+              setState(() {
+                _tabController.index = index;
+              });
+            }
           ),
+
+
         ),
 
         body:
@@ -112,6 +143,7 @@ class MyBetsPageState extends State<MyBetsPage>{
           bucket: pageBucket,
         child:
         TabBarView(
+          controller: _tabController,
           children: [
             ListView.builder(
                 key: const PageStorageKey<String>(

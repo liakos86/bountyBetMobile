@@ -7,7 +7,7 @@ import '../enums/UserLevel.dart';
 import 'UserAward.dart';
 import 'constants/Constants.dart';
 
-class User{
+class User implements Comparable<User>{
 
   User.defUser();
 
@@ -41,6 +41,9 @@ class User{
 
   int userPosition = 0;
 
+  double betAmountOverall = 0;
+  double betAmountMonthly = 0;
+
   List<UserBet> userBets = <UserBet>[];
 
   static User fromJson(Map<String, dynamic> parsedJson){
@@ -65,6 +68,9 @@ class User{
     user.validated = parsedJson['validated'] as bool;
     user.email = parsedJson['email'];
 
+
+    user.betAmountOverall = parsedJson['overallBetAmount']??0;
+    user.betAmountMonthly = parsedJson['monthlyBetAmount']??0;
 
     user.monthlyWonBets = parsedJson['monthlyWonSlipsCount']??0;
     user.monthlyWonPredictions = parsedJson['monthlyWonEventsCount']??0;
@@ -99,7 +105,15 @@ class User{
       return '0%';
     }
 
-    return '${(monthlyWonBets / (monthlyWonBets + monthlyLostBets)).toStringAsFixed(2)}%';
+    return '${(monthlyWonBets / (monthlyWonBets + monthlyLostBets) * 100).toStringAsFixed(0)}%';
+  }
+
+  String monthlyROIPercentageText(){
+    if (betAmountMonthly == 0){
+      return '0%';
+    }
+
+    return '${((balance - 1000 / (betAmountMonthly)) * 100).toStringAsFixed(0)}%';
   }
 
   String betSlipsOverallText(){
@@ -115,7 +129,7 @@ class User{
       return '0%';
     }
 
-    return '${((monthlyWonPredictions/monthlyWonPredictions + monthlyLostPredictions)).toStringAsFixed(1)}%';
+    return '${((monthlyWonPredictions/(monthlyWonPredictions + monthlyLostPredictions)) * 100).toStringAsFixed(0)}%';
   }
 
   String betPredictionsOverallText(){
@@ -123,6 +137,9 @@ class User{
   }
 
   void copyBalancesFrom(User u) {
+    userPosition = u.userPosition;
+    betAmountMonthly = u.betAmountMonthly;
+    betAmountOverall = u.betAmountOverall;
     balance = u.balance;
     monthlyLostBets = u.monthlyLostBets;
     monthlyLostPredictions = u.monthlyLostPredictions;
@@ -141,6 +158,19 @@ class User{
 
   @override
   int get hashCode => mongoUserId.hashCode ;
+
+  @override
+  int compareTo(User other) {
+    if (this.userPosition > other.userPosition){
+      return 1;
+    }
+
+    if (this.userPosition < other.userPosition){
+      return -1;
+    }
+
+    return 0;
+  }
 
 }
 

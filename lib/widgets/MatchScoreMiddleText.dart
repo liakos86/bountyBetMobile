@@ -32,8 +32,8 @@ class MatchScoreMiddleText extends StatefulWidget {
       children: [
 
         Text(event.start_at_local),// + ':'+ event.startMinute.toString()}'),
-        Text(scoreText(event), style: const TextStyle(fontWeight: FontWeight.w500, fontSize: 40),),
-        //Text('stats')//event.display_status.toString()),
+        Text(scoreText(event), style: const TextStyle(fontWeight: FontWeight.w500, fontSize: 30),),
+        Text(event.display_status),
 
 
       ],

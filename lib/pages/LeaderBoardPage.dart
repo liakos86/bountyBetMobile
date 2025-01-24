@@ -5,6 +5,7 @@ import 'dart:convert';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_app/models/UserAward.dart';
+import 'package:flutter_app/models/context/AppContext.dart';
 import 'package:flutter_app/utils/MockUtils.dart';
 import 'package:flutter_app/utils/client/HttpActionsClient.dart';
 import 'package:flutter_app/widgets/row/LeaderboardUserRowNew.dart';
@@ -15,6 +16,7 @@ import '../models/constants/Constants.dart';
 import '../models/constants/UrlConstants.dart';
 import '../models/interfaces/StatefulWidgetWithName.dart';
 import '../utils/SecureUtils.dart';
+import '../widgets/CustomTabIcon.dart';
 import '../widgets/row/LeaderBoardAwardRow.dart';
 import '../widgets/row/LeaderBoardRow.dart';
 import 'LivePage.dart';
@@ -32,9 +34,37 @@ class LeaderBoardPage extends StatefulWidget{//}WithName {
 
 }
 
-class LeaderBoardPageState extends State<LeaderBoardPage>{
+class LeaderBoardPageState extends State<LeaderBoardPage> with SingleTickerProviderStateMixin, WidgetsBindingObserver {
 
   Map<String, List<User>> leaders = {};
+
+  late TabController _tabController;
+
+  bool isMinimized = false;
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this); // Remove observer
+    _tabController.dispose();
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    super.didChangeAppLifecycleState(state);
+
+    if (state == AppLifecycleState.paused) {
+      // App is minimized or moved to the background
+      setState(() {
+        isMinimized = true;
+      });
+    } else if (state == AppLifecycleState.resumed) {
+      // App is active again
+      setState(() {
+        isMinimized = false;
+      });
+    }
+  }
 
   @override
   void initState() {
@@ -42,6 +72,14 @@ class LeaderBoardPageState extends State<LeaderBoardPage>{
 
     leaders['0'] = <User>[];
     leaders['1'] = <User>[];
+
+    _tabController = TabController(length: 4, vsync: this);
+    _tabController.addListener(() {
+      setState(() {});
+    });
+
+    WidgetsBinding.instance.addObserver(this); // Add observer
+
 
     getLeaderBoard();
     Timer.periodic(const Duration(seconds: 30), (timer) {(
@@ -56,24 +94,44 @@ class LeaderBoardPageState extends State<LeaderBoardPage>{
   @override
   Widget build(BuildContext context) {
 
-    return DefaultTabController(
-      length: 2,
-      child: Scaffold(
+    const int items = 4;
+    double width = MediaQuery.of(context).size.width;
+    const double labelPadding = 4;
+    double labelWidth = (width - (labelPadding * (items - 1))) / items;
+
+
+    return
+      // DefaultTabController(
+      // length: items,
+      // child:
+      Scaffold(
         backgroundColor: Colors.black,
           appBar: AppBar(
-            toolbarHeight: 2,
-            backgroundColor: Colors.deepOrange.shade100,
+            toolbarHeight: 5,
+            backgroundColor: Colors.black87,
             bottom: TabBar(
-              labelColor: Colors.black87,
-              unselectedLabelColor: Colors.grey[400],
-              indicatorColor: Colors.black87,
-              indicatorWeight: 8,
+              // isScrollable: true,
+              labelPadding: const EdgeInsets.symmetric(horizontal: labelPadding),
+              indicator: const BoxDecoration(),
+              controller: _tabController,
+              // labelColor: Colors.black87,
+              // unselectedLabelColor: Colors.grey[400],
+              // indicatorColor: Colors.black87,
+              // indicatorWeight: 8,
 
               tabs: [
-                Tab( text: 'This month'),
-                Tab( text: 'All time'),
+                CustomTabIcon(width: labelWidth, text: 'This month', isSelected: _tabController.index == 0,),
+                CustomTabIcon(width: labelWidth, text: 'All time', isSelected: _tabController.index == 1,),
+                CustomTabIcon(width: labelWidth, text: 'My stats', isSelected: _tabController.index == 2,),
+                CustomTabIcon(width: labelWidth, text: 'Me all time', isSelected: _tabController.index == 3,),
 
               ],
+
+              onTap: (index) {
+                setState(() {
+                  _tabController.index = index;
+                });
+              }
             ),
           ),
 
@@ -84,6 +142,7 @@ class LeaderBoardPageState extends State<LeaderBoardPage>{
               bucket: pageBucket,
               child:
               TabBarView(
+                controller: _tabController,
                 children: [
                   ListView.builder(
                       key: const PageStorageKey<String>(
@@ -104,20 +163,41 @@ class LeaderBoardPageState extends State<LeaderBoardPage>{
                         return _buildAwardRow(leaders["1"]![item],    'all$item');
                       }),
 
+                  ListView.builder(
+                      key: const PageStorageKey<String>(
+                          'pageLeaderCurrMe'),
+                      padding: const EdgeInsets.all(8),
+                      itemCount: 1,
+                      itemBuilder: (context, item) {
+                        return _buildUserRow(AppContext.user,    'currme$item');
+                      }),
+
+                  ListView.builder(
+                      key: const PageStorageKey<String>(
+                          'pageLeaderAllMe'),
+                      padding: const EdgeInsets.all(8),
+                      itemCount: 1,
+                      itemBuilder: (context, item) {
+                        return _buildUserRow(AppContext.user,    'allme$item');
+                      }),
+
 
                 ],)
           )
 
-      ),
+      // ),
     );
 
 
   }
 
-
   void getLeaderBoard() async{
+    if (isMinimized){
+      return;
+    }
 
     Map<String, List<User>> leadersMap = await HttpActionsClient.getLeadingUsers();
+
 
     if (leadersMap.isNotEmpty) {
       for (MapEntry leadersEntry in leadersMap.entries) {
@@ -125,8 +205,8 @@ class LeaderBoardPageState extends State<LeaderBoardPage>{
           List<User>? existingLeaders = leaders[leadersEntry.key];
           List<User> incomingLeaders = leadersEntry.value;
           for (User u in incomingLeaders){
-            if (existingLeaders!.contains(u)){
-              User existing = existingLeaders.where((element) => element.mongoUserId == u.mongoUserId).first;
+            User existing = existingLeaders!.firstWhere((element) => element.mongoUserId == u.mongoUserId, orElse: () => User.defUser(),);
+            if (existing.mongoUserId != Constants.defMongoUserId){
               existing.copyBalancesFrom(u);
             }else{
               existingLeaders.add(u);
@@ -139,10 +219,14 @@ class LeaderBoardPageState extends State<LeaderBoardPage>{
             }
           }
 
-
-          // leaders[leadersEntry.key]?.addAll(leadersEntry.value);
-
+          existingLeaders.sort();
       }
+
+      if (!mounted){
+        print('not mounted');
+        return;
+      }
+
 
       setState(() {
         leaders;
@@ -152,8 +236,6 @@ class LeaderBoardPageState extends State<LeaderBoardPage>{
   }
 
   Widget _buildUserRow( User leader, String key) {
-
-    // return LeaderBoardRow(user: leader, key: PageStorageKey<String>(key));
     return LeaderBoardUserFullInfoRow(user: leader, key: PageStorageKey<String>(key));
 
   }
@@ -161,8 +243,6 @@ class LeaderBoardPageState extends State<LeaderBoardPage>{
   Widget _buildAwardRow( User leader, String key) {
 
     UserAward award = leader.awards.elementAt(0);
-
-    // return LeaderBoardRow(user: leader, key: PageStorageKey<String>(key));
 
     return LeaderBoardAwardRow(award: award, username: leader.username, key: PageStorageKey<String>(key));
 

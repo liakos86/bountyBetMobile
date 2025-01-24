@@ -1,10 +1,12 @@
 enum BetPlacementStatus{
 
+  OFFLINE(statusCode: 0, statusText: "offline"),
+
   PLACED(statusCode: 1, statusText:'\"placed\"'),
 
   FAILED_MATCH_IN_PROGRESS(statusCode:2, statusText:'\"FAILED_MATCH_IN_PROGRESS\"'),
 
-  FAIL_GENERIC(statusCode:3, statusText:'failed'),
+  FAIL_GENERIC(statusCode:3, statusText:'\"failed\"'),
 
   FAILED_INSUFFICIENT_FUNDS(statusCode:4, statusText: '\"failedInsufficient\"'),
 

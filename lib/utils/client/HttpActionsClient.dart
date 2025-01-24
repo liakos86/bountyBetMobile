@@ -95,7 +95,6 @@ class HttpActionsClient {
     if (!connected){
       connected = await checkInternetConnectivity();
       if (!connected){
-        // Fluttertoast.showToast(msg: 'No network connection', toastLength: Toast.LENGTH_LONG);
         return BetPlacementStatus.FAIL_GENERIC;
       }
     }
@@ -253,7 +252,7 @@ class HttpActionsClient {
 
     String getLeadersUrl = UrlConstants.GET_LEADERS_URL;
       Response leadersResponse = await get(Uri.parse(getLeadersUrl), headers:  {'Authorization': 'Bearer $access_token'})
-          .timeout(const Duration(seconds: 5));
+          .timeout(const Duration(seconds: 20));
       Map leadersMapJson = await jsonDecode(leadersResponse.body) as Map<String, dynamic>;
 
       for (MapEntry leadersEntry in  leadersMapJson.entries) {

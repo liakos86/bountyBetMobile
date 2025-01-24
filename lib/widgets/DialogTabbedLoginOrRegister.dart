@@ -1,12 +1,14 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_app/models/constants/ColorConstants.dart';
 import 'package:flutter_app/widgets/DialogLogin.dart';
 
+import 'CustomTabIcon.dart';
 import 'DialogRegister.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 
-class DialogTabbedLoginOrRegister extends StatelessWidget {
+class DialogTabbedLoginOrRegister extends StatefulWidget {
 
   late final Function registerCallback;
 
@@ -17,17 +19,61 @@ class DialogTabbedLoginOrRegister extends StatelessWidget {
     required this.loginCallback,
     //setName('Today\'s Odds')
 
-  }) ;
+  });
+
+  @override
+  State<StatefulWidget> createState() => DialogTabbedLoginOrRegisterState(registerCallback: registerCallback, loginCallback: loginCallback);
+
+}
+
+class DialogTabbedLoginOrRegisterState extends State<DialogTabbedLoginOrRegister>  with SingleTickerProviderStateMixin{
+
+  DialogTabbedLoginOrRegisterState({
+    required this.registerCallback,
+    required this.loginCallback,
+    //setName('Today\'s Odds')
+
+  });
+
+  late  Function registerCallback;
+
+  late  Function loginCallback;
+
+  late TabController _tabController;
 
 
   @override
+  void dispose() {
+    _tabController.dispose();
+    super.dispose();
+  }
+
+  @override
+  void initState() {
+    loginCallback = widget.loginCallback;
+    registerCallback = widget.registerCallback;
+
+    _tabController = TabController(length: 2, vsync: this, initialIndex: 1);
+    _tabController.addListener(() {
+      setState(() {});
+    });
+
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
+
+    const int items = 2;
+    double width = MediaQuery.of(context).size.width;
+    const double labelPadding = 4;
+    double labelWidth = (width / items ) - (labelPadding*items);
 
     return
 
       AlertDialog(
         // title: const Text('Welcome'),
-          backgroundColor: Colors.blueAccent,
+          backgroundColor: const Color(ColorConstants.my_dark_grey),
           // titleTextStyle: const TextStyle(color: Colors.white, fontSize: 20),
           insetPadding: EdgeInsets.zero,
           contentPadding: const EdgeInsets.all(2.0),
@@ -57,36 +103,44 @@ class DialogTabbedLoginOrRegister extends StatelessWidget {
 
 
       DefaultTabController(
-      initialIndex: 1,
-      length: 2,
-
-      child:
+        length: 2,
+        child:
 
       Scaffold(
-        // resizeToAvoidBottomInset: false,
 
           appBar: AppBar(
-            toolbarHeight: 0,
+            backgroundColor: const Color(ColorConstants.my_dark_grey),
+            toolbarHeight: 5,
             bottom:
 
               TabBar(
 
-                isScrollable: false,
-                indicatorColor: Colors.red,
-                indicatorWeight: 2,
-                unselectedLabelColor: Colors.grey.withOpacity(0.5),
+                labelPadding: const EdgeInsets.symmetric(horizontal: labelPadding),
+                indicator: const BoxDecoration(),
+                controller: _tabController,
+                tabAlignment: TabAlignment.center,
+
+
+                isScrollable: true,
+
 
               tabs: [
-                Tab(text: AppLocalizations.of(context)!.login),
-                Tab(text: AppLocalizations.of(context)!.register),
-
+                CustomTabIcon(width: labelWidth, text: AppLocalizations.of(context)!.login, isSelected: _tabController.index == 0,),
+                CustomTabIcon(width: labelWidth, text: AppLocalizations.of(context)!.register, isSelected: _tabController.index == 1,),
               ],
+
+              onTap: (index) {
+                setState(() {
+                  _tabController.index = index;
+                });
+              }
             ),
 
 
       ),
 
           body: TabBarView(
+            controller: _tabController,
             children: [
               DialogLogin(callback: loginCallback),
 
@@ -102,10 +156,6 @@ class DialogTabbedLoginOrRegister extends StatelessWidget {
       );
           }
           ));
-
-
-
-
   }
 
 

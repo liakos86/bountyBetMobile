@@ -3,8 +3,6 @@ class UrlConstants{
   //static const SERVER_IP_PLAIN = "liakos86-32935.portmap.host";
 
   static const SERVER_IP_PLAIN = "192.168.1.7";
-  // static const SERVER_IP_PLAIN = "192.168.220.70";
-  // static const SERVER_IP_PLAIN = "192.168.1.53";
 
   static const SRV_VERSION = "betCoreServer";
 
@@ -20,13 +18,14 @@ class UrlConstants{
 
   static const String GET_SEASON_STANDINGS = SERVER_IP +  SRV_VERSION + '/betServer/getStandingsOfSeason/{1}/{2}';
 
-  static const String GET_SPECIFIC_LIVE = SERVER_IP +  SRV_VERSION + '/betServer/getLiveSpecific';
+  // static const String GET_SPECIFIC_LIVE = SERVER_IP +  SRV_VERSION + '/betServer/getLiveSpecific';
 
   static const String GET_LEADERS_URL = SERVER_IP + SRV_VERSION + '/betServer/getLeaderBoard';
 
   static const POST_PLACE_BET = SERVER_IP + SRV_VERSION + '/betServer/placeBet';
 
   static const GET_USER_URL = SERVER_IP + SRV_VERSION + '/betServer/getUser/';
+
   static const GET_EVENT_STATISTICS_URL = SERVER_IP + SRV_VERSION + '/betServer/getEventStatistics/';
 
   static const POST_REGISTER_USER = SERVER_IP + SRV_VERSION + '/betServer/registerUser';

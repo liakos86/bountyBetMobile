@@ -1,17 +1,10 @@
-import 'dart:convert';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_app/examples/util/encryption.dart';
 import 'package:flutter_app/models/UserBet.dart';
-import 'package:flutter_app/utils/SecureUtils.dart';
-import 'package:http/http.dart';
 
-import '../models/User.dart';
 import '../models/UserPrediction.dart';
-import '../models/constants/UrlConstants.dart';
 import './row/UserBetPredictionRow.dart';
-import 'row/UserPlacedBetPredictionRow.dart';
 
 class DialogSuccessfulBet extends StatelessWidget{
 

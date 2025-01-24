@@ -125,7 +125,7 @@ class LiveMatchRowTiltedState extends State<LiveMatchRowTilted> {
                         style: const TextStyle(
                           fontSize: 12,
                           fontWeight: FontWeight.bold,
-                          color: Colors.redAccent),))
+                          color: Colors.white),))
                     ]
                 )),//SECOND COLUMN END
 
@@ -173,7 +173,7 @@ class LiveMatchRowTiltedState extends State<LiveMatchRowTilted> {
         return '-';
       }
 
-      if (lastedPeriod == null || LastedPeriod.PERIOD_2 == LastedPeriod.fromStatusText(lastedPeriod)) {
+      if (lastedPeriod != null && LastedPeriod.PERIOD_2 == LastedPeriod.fromStatusText(lastedPeriod)) {
         return score.display.toString();
       }
 

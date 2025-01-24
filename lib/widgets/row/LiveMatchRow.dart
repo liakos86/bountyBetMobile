@@ -154,13 +154,13 @@ class LiveMatchRowState extends State<LiveMatchRow> {
 
                 Column(//second column
                     children: [
-                     Padding(padding: const EdgeInsets.all(6), child:
+                     Padding(padding: const EdgeInsets.all(0), child:
                       Text(
                        (gameWithOdds.display_status),
                         style: const TextStyle(
                           fontSize: 12,
                           fontWeight: FontWeight.bold,
-                          color: Colors.redAccent),))
+                          color: Colors.white),))
                     ]
                 )),//SECOND COLUMN END
 
@@ -173,14 +173,14 @@ class LiveMatchRowState extends State<LiveMatchRow> {
 
                 Column(// third column
                     children: [
-                      Padding(padding: const EdgeInsets.all(6), child:
+                      Padding(padding: const EdgeInsets.all(0), child:
 
                       Text(textScoreFrom(gameWithOdds.homeTeamScore, gameWithOdds.status, gameWithOdds.lasted_period), style: TextStyle(
                           fontSize: gameWithOdds.changeEvent == ChangeEvent.HOME_GOAL ? 13 : 12,
                           fontWeight:  FontWeight.w900,
                           color: gameWithOdds.changeEvent == ChangeEvent.HOME_GOAL ? Colors.redAccent : Colors.black87),)),
 
-                      Padding(padding: const EdgeInsets.all(8), child:
+                      Padding(padding: const EdgeInsets.all(0), child:
                       Text(textScoreFrom(gameWithOdds.awayTeamScore, gameWithOdds.status, gameWithOdds.lasted_period), style: TextStyle(
                           fontSize: gameWithOdds.changeEvent == ChangeEvent.AWAY_GOAL ? 13 : 12,
                           fontWeight: FontWeight.w900,
