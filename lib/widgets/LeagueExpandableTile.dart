@@ -115,6 +115,8 @@ class LeagueExpandableTile extends StatefulWidget {
         Row(
           mainAxisSize: MainAxisSize.min,
     children:[
+
+      if (!expandAll)
     Container(
       width: 20, // Adjust width for rectangle shape
       height: 20, // Adjust height for rectangle shape

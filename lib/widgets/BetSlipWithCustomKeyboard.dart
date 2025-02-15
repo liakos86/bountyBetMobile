@@ -39,7 +39,7 @@ class BetSlipWithCustomKeyboardState extends State<BetSlipWithCustomKeyboard>{
 
   bool executingCall = false;
 
-  BetPlacementStatus betPlacementStatus = BetPlacementStatus.PENDING;
+  BetPlacementStatus betPlacementStatus = BetPlacementStatus.FAIL_GENERIC;
 
   TextEditingController betAmountController = TextEditingController();
   /*

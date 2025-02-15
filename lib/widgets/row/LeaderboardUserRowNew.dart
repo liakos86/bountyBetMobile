@@ -215,7 +215,7 @@ class LeaderBoardUserFullInfoRow extends StatefulWidget {
             children: [
               _buildTiltedStatBox(user.betSlipsMonthlyText(), 'Won Slips', 3),
               _buildTiltedStatBox(user.betSlipsMonthlyPercentageText(), 'Slips %', 2),
-              _buildTiltedStatBox(user.balance.toStringAsFixed(0), 'Credits', 2),
+              _buildTiltedStatBox(user.balanceLeaderBoard.toStringAsFixed(0), '\$ Credits', 2),
             ],
           ),
 

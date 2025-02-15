@@ -155,7 +155,8 @@ class DialogTabbedLoginOrRegisterState extends State<DialogTabbedLoginOrRegister
 
       );
           }
-          ));
+          )
+      );
   }
 
 

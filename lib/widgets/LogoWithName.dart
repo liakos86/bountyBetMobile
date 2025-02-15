@@ -25,9 +25,11 @@ class LogoWithName extends StatefulWidget {
 
   final WinnerType winnerType;
 
+  final bool goalScored;
+
   const LogoWithName(
       {Key ?key, required this.logoUrl, required this.logoSize, required this.fontSize,
-        required this.name, required this.redCards, required this.winnerType})
+        required this.name, required this.redCards, required this.winnerType, required this.goalScored})
       : super(key: key);
 
   @override
@@ -49,6 +51,8 @@ class LogoWithName extends StatefulWidget {
 
   late WinnerType winnerType;
 
+  late bool goalScored;
+
   @override
   void initState() {
     super.initState();
@@ -58,6 +62,7 @@ class LogoWithName extends StatefulWidget {
     name = widget.name;
     logoUrl = widget.logoUrl;
     winnerType = widget.winnerType;
+    goalScored = widget.goalScored;
   }
 
   @override
@@ -105,7 +110,7 @@ class LogoWithName extends StatefulWidget {
                 Align(
                   alignment: Alignment.centerLeft,
                   child: Text( name + (WinnerType.AFTER == winnerType ? '*' : Constants.empty), overflow: TextOverflow.ellipsis, textAlign: TextAlign.left,
-                    style: TextStyle(fontWeight: WinnerType.NONE == winnerType ? FontWeight.w500 : FontWeight.w900, fontSize: fontSize, color: Colors.white),)),
+                    style: TextStyle(fontWeight: WinnerType.NONE == winnerType ? FontWeight.w500 : FontWeight.w900, fontSize: fontSize, color: goalScored ? Colors.red : Colors.white),)),
                  ]))),
 
         Expanded(

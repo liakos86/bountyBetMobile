@@ -69,7 +69,7 @@ class SelectedOddRow extends StatelessWidget {
                                     alignment: Alignment.centerLeft,
                                     child:
                                     LogoWithName(key: UniqueKey(),
-                                      logoUrl: prediction.homeTeam.logo, name: prediction.homeTeam.getLocalizedName(), redCards: 0, logoSize: 18, fontSize: 10, winnerType: WinnerType.NONE,))
+                                      goalScored:false, logoUrl: prediction.homeTeam.logo, name: prediction.homeTeam.getLocalizedName(), redCards: 0, logoSize: 18, fontSize: 10, winnerType: WinnerType.NONE,))
                                 ),
 
                                 Padding(padding: const EdgeInsets.only(left:12),
@@ -78,7 +78,7 @@ class SelectedOddRow extends StatelessWidget {
                                     alignment: Alignment.centerLeft,
                                     child:
                                     LogoWithName(key: UniqueKey(),
-                                      logoUrl: prediction.awayTeam.logo, name: prediction.awayTeam.getLocalizedName(), redCards: 0, logoSize: 18, fontSize: 10,  winnerType: WinnerType.NONE)
+                                      goalScored:false, logoUrl: prediction.awayTeam.logo, name: prediction.awayTeam.getLocalizedName(), redCards: 0, logoSize: 18, fontSize: 10,  winnerType: WinnerType.NONE)
                                 )),
                               ]
                           )),

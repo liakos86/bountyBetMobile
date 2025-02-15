@@ -80,8 +80,8 @@ class UserPredictionRowState extends State<UserPredictionRow>{
                           crossAxisAlignment: CrossAxisAlignment.start,
                           mainAxisAlignment: MainAxisAlignment.start,
                           children: [
-                            LogoWithName(logoUrl: prediction.homeTeam.logo, logoSize: 20, fontSize: 12, name: prediction.homeTeam.getLocalizedName(), redCards: 0, winnerType: WinnerType.NONE),
-                            LogoWithName(logoUrl: prediction.awayTeam.logo, logoSize: 20, fontSize: 12, name: prediction.awayTeam.getLocalizedName(), redCards: 0, winnerType: WinnerType.NONE),
+                            LogoWithName(goalScored:false, logoUrl: prediction.homeTeam.logo, logoSize: 20, fontSize: 12, name: prediction.homeTeam.getLocalizedName(), redCards: 0, winnerType: WinnerType.NONE),
+                            LogoWithName(goalScored:false, logoUrl: prediction.awayTeam.logo, logoSize: 20, fontSize: 12, name: prediction.awayTeam.getLocalizedName(), redCards: 0, winnerType: WinnerType.NONE),
 
                           ],
                         )

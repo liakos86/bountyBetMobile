@@ -41,7 +41,14 @@ Future<void> main() async {
 
   //init firebase
   await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
+    name: 'fantasy-tips',
+    // options: DefaultFirebaseOptions.currentPlatform,
+    options: const FirebaseOptions(//google-services file
+      apiKey: 'AIzaSyBwFEXTcO7S2NZ4a-HTgR99rctc2H9-bTQ',
+      appId: '1:485157773987:android:209bdff1f47600ce0b5516',
+      messagingSenderId: '485157773987', // firebase console ->Cloud messaging
+      projectId: 'bountybet-firebase',
+    ),
   );
 
   FirebaseMessaging.onBackgroundMessage( _firebaseMessagingBackgroundHandler );

@@ -2,9 +2,28 @@
   "project_info": {
     "project_number": "485157773987",
     "project_id": "bountybet-firebase",
-    "storage_bucket": "bountybet-firebase.appspot.com"
+    "storage_bucket": "bountybet-firebase.firebasestorage.app"
   },
   "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:485157773987:android:209bdff1f47600ce0b5516",
+        "android_client_info": {
+          "package_name": "com.dev.mules.fantasy.tips"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBwFEXTcO7S2NZ4a-HTgR99rctc2H9-bTQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
     {
       "client_info": {
         "mobilesdk_app_id": "1:485157773987:android:9cceb45c21d1d2b40b5516",

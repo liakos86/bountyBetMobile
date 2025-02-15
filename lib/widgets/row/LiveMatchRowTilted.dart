@@ -9,6 +9,7 @@ import 'package:flutter_app/enums/MatchEventStatus.dart';
 import 'package:flutter_app/pages/MatchInfoSoccerDetailsPage.dart';
 import '../../enums/WinnerType.dart';
 import '../../models/Score.dart';
+import '../../models/constants/Constants.dart';
 import '../../models/match_event.dart';
 import '../LogoWithName.dart';
 
@@ -99,12 +100,12 @@ class LiveMatchRowTiltedState extends State<LiveMatchRowTilted> {
                         Align(
                         alignment: Alignment.centerLeft,
                         child:
-                      LogoWithName(key: UniqueKey(), name: gameWithOdds.homeTeam.getLocalizedName(), logoUrl: gameWithOdds.homeTeam.logo, redCards: homeRed, logoSize: 20, fontSize: 12,  winnerType: calculateWinnerType(gameWithOdds, 1)),
+                      LogoWithName(key: UniqueKey(), name: gameWithOdds.homeTeam.getLocalizedName(), logoUrl: gameWithOdds.homeTeam.logo, redCards: homeRed, logoSize: 20, fontSize: 12,  winnerType: calculateWinnerType(gameWithOdds, 1), goalScored: gameWithOdds.changeEvent == ChangeEvent.HOME_GOAL ),
                         ),
                             Align(
                                 alignment: Alignment.centerLeft,
                                 child:
-                      LogoWithName(key: UniqueKey(), name: gameWithOdds.awayTeam.getLocalizedName(), logoUrl: gameWithOdds.awayTeam.logo, redCards: awayRed, logoSize: 20, fontSize: 12,  winnerType: calculateWinnerType(gameWithOdds, 2)),
+                      LogoWithName(key: UniqueKey(), name: gameWithOdds.awayTeam.getLocalizedName(), logoUrl: gameWithOdds.awayTeam.logo, redCards: awayRed, logoSize: 20, fontSize: 12,  winnerType: calculateWinnerType(gameWithOdds, 2), goalScored: gameWithOdds.changeEvent == ChangeEvent.AWAY_GOAL),
                             )
                       ]
                     )
@@ -140,13 +141,13 @@ class LiveMatchRowTiltedState extends State<LiveMatchRowTilted> {
                     children: [
                       Padding(padding: const EdgeInsets.all(6), child:
 
-                      Text(textScoreFrom(gameWithOdds.homeTeamScore, gameWithOdds.status, gameWithOdds.lasted_period), style: TextStyle(
+                      Text(gameWithOdds.textScore(true), style: TextStyle(
                           fontSize: gameWithOdds.changeEvent == ChangeEvent.HOME_GOAL ? 13 : 12,
                           fontWeight:  FontWeight.w900,
                           color: gameWithOdds.changeEvent == ChangeEvent.HOME_GOAL ? Colors.redAccent : Colors.white),)),
 
                       Padding(padding: const EdgeInsets.all(8), child:
-                      Text(textScoreFrom(gameWithOdds.awayTeamScore, gameWithOdds.status, gameWithOdds.lasted_period), style: TextStyle(
+                      Text(gameWithOdds.textScore(false), style: TextStyle(
                           fontSize: gameWithOdds.changeEvent == ChangeEvent.AWAY_GOAL ? 13 : 12,
                           fontWeight: FontWeight.w900,
                           color: gameWithOdds.changeEvent == ChangeEvent.AWAY_GOAL ? Colors.redAccent : Colors.white),)),
@@ -163,34 +164,7 @@ class LiveMatchRowTiltedState extends State<LiveMatchRowTilted> {
       );
   }
 
-  String textScoreFrom(Score ?score, String status, String? lastedPeriod) {
-    if (score == null){
-      return '-';
-    }
 
-    if (MatchEventStatus.FINISHED == MatchEventStatus.fromStatusText(status)){
-      if (score.display == null) {
-        return '-';
-      }
-
-      if (lastedPeriod != null && LastedPeriod.PERIOD_2 == LastedPeriod.fromStatusText(lastedPeriod)) {
-        return score.display.toString();
-      }
-
-      return '${score.display} (${score.current})';
-
-    }
-
-
-    if (score.display == null){
-      return '-';
-    }
-
-
-    return score.display.toString();
-
-
-  }
 
   WinnerType calculateWinnerType(MatchEvent gameWithOdds, int homeOrAway) {
 

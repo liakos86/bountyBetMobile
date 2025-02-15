@@ -4,6 +4,7 @@ import 'package:flutter_app/enums/BetStatus.dart';
 import 'package:flutter_app/models/interfaces/StatefulWidgetWithName.dart';
 import 'package:flutter_app/utils/client/HttpActionsClient.dart';
 import 'package:flutter_app/widgets/DialogTabbedLoginOrRegister.dart';
+import 'package:flutter_app/widgets/dialog/DialogTextWithButtons.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 
@@ -21,6 +22,7 @@ import 'package:intl/intl.dart';
 import '../models/UserBet.dart';
 import '../models/UserPrediction.dart';
 import '../models/LeagueWithData.dart';
+import '../models/beans/PlaceBetResponseBean.dart';
 import '../models/constants/ColorConstants.dart';
 import '../models/context/AppContext.dart';
 import '../utils/BetUtils.dart';
@@ -35,6 +37,7 @@ class OddsPage extends StatefulWidget{//}WithName {
   final Function updateUserCallback;
   final Function loginUserCallback;
   final Function registerUserCallback;
+  final Function topUpCallback;
 
   final List<UserPrediction> selectedOdds;
 
@@ -53,7 +56,8 @@ class OddsPage extends StatefulWidget{//}WithName {
     required this.updateUserCallback,
     required this.loginUserCallback,
     required this.registerUserCallback,
-    required this.selectedOdds
+    required this.selectedOdds,
+    required this.topUpCallback
   } ) : super(key: key);
 
 }
@@ -72,6 +76,7 @@ class OddsPageState extends State<OddsPage> with SingleTickerProviderStateMixin{
   Function updateUserCallback = ()=>{ };
   Function loginUserCallback = ()=>{ };
   Function registerUserCallback = ()=>{ };
+  Function topUpCallback = ()=>{ };
 
   late TabController _tabController;
 
@@ -89,6 +94,7 @@ class OddsPageState extends State<OddsPage> with SingleTickerProviderStateMixin{
     updateUserCallback = widget.updateUserCallback;
     loginUserCallback = widget.loginUserCallback;
     registerUserCallback = widget.registerUserCallback;
+    topUpCallback = widget.topUpCallback;
 
     _tabController = TabController(length: 5, vsync: this, initialIndex: 2);
     _tabController.addListener(() {
@@ -112,7 +118,6 @@ class OddsPageState extends State<OddsPage> with SingleTickerProviderStateMixin{
         allEmpty = false;
         break;
       }
-
     }
 
     if (allEmpty){
@@ -121,7 +126,6 @@ class OddsPageState extends State<OddsPage> with SingleTickerProviderStateMixin{
     }
 
     return
-
 
       Scaffold(
 
@@ -347,9 +351,10 @@ class OddsPageState extends State<OddsPage> with SingleTickerProviderStateMixin{
 
   Future<BetPlacementStatus> placeBetCallback(double bettingAmount) async {
     if (bettingAmount <= 0 || bettingAmount > AppContext.user.balance){
+      String msg = 'Cannot place bet. insufficient funds.';
+      alertDialogTopUp();
       return BetPlacementStatus.FAILED_INSUFFICIENT_FUNDS;
     }
-
 
     String? mongoUserId = AppContext.user.mongoUserId;
     if (mongoUserId != Constants.defMongoUserId && !AppContext.user.validated){
@@ -362,29 +367,30 @@ class OddsPageState extends State<OddsPage> with SingleTickerProviderStateMixin{
       return BetPlacementStatus.FAILED_USER_NOT_VALIDATED;
     }
 
-    //selectedOdds.forEach((element) {element.event = ParentPageState.findEvent(element.eventId);});
-    UserBet newBet = UserBet(userMongoId: mongoUserId , predictions: List.of(selectedOdds), betAmount: bettingAmount, betStatus: BetStatus.PENDING, betPlacementMillis: 0);
+    UserBet newBet = UserBet(userMongoId: mongoUserId, betId:'', predictions: List.of(selectedOdds), betAmount: bettingAmount, betStatus: BetStatus.PENDING, betPlacementMillis: 0);
 
+    PlaceBetResponseBean responseBean = await HttpActionsClient.placeBet(newBet);
+    BetPlacementStatus betPlacementStatus = BetPlacementStatus.ofStatusText(responseBean.betPlacementStatus);
 
-      BetPlacementStatus betPlacementStatus = await HttpActionsClient.placeBet(newBet);
-
-      if (betPlacementStatus == BetPlacementStatus.PLACED) {
-        updateUserCallback.call(newBet);
-
-        // setState(() {
-        //   selectedOdds.clear();
-        // });
-      }
-
-    if (betPlacementStatus == BetPlacementStatus.FAILED_MATCH_IN_PROGRESS) {
-
-      Fluttertoast.showToast(msg: 'Cannot place bet. Match in progress.');
-      // setState(() {
-      //   selectedOdds.clear();
-      // });
+    if (betPlacementStatus == BetPlacementStatus.PLACED) {
+      newBet.betPlacementStatus = BetPlacementStatus.PLACED;
+      newBet.betId = responseBean.betId;
+      updateUserCallback.call(newBet);
     }
 
-      return betPlacementStatus;
+    if (betPlacementStatus == BetPlacementStatus.FAILED_MATCH_IN_PROGRESS) {
+      Fluttertoast.showToast(msg: 'Cannot place bet. Match in progress.');
+    }
+
+    if (betPlacementStatus == BetPlacementStatus.FAIL_GENERIC) {
+      Fluttertoast.showToast(msg: 'Cannot place bet. Please try again in a while.');
+    }
+
+    if (betPlacementStatus == BetPlacementStatus.FAILED_MATCH_IN_NEXT_MONTH) {
+      Fluttertoast.showToast(msg: 'Cannot place bet. Please do not mix bets in diff months.');
+    }
+
+    return betPlacementStatus;
   }
 
 
@@ -425,6 +431,12 @@ class OddsPageState extends State<OddsPage> with SingleTickerProviderStateMixin{
     });
 
     return true;
+  }
+
+  void alertDialogTopUp() {
+    showDialog(context: context, builder: (context) =>
+      DialogTextWithButtons(topUpCallback: topUpCallback)
+    );
   }
 
 }

@@ -2,7 +2,8 @@ class UrlConstants{
 
   //static const SERVER_IP_PLAIN = "liakos86-32935.portmap.host";
 
-  static const SERVER_IP_PLAIN = "192.168.1.7";
+  // static const SERVER_IP_PLAIN = "192.168.2.2";
+  static const SERVER_IP_PLAIN = "192.168.1.3";
 
   static const SRV_VERSION = "betCoreServer";
 
@@ -31,6 +32,8 @@ class UrlConstants{
   static const POST_REGISTER_USER = SERVER_IP + SRV_VERSION + '/betServer/registerUser';
 
   static const POST_LOGIN_USER = SERVER_IP + SRV_VERSION + '/betServer/loginUser';
+
+  static const POST_VERIFY_PURCHASE = SERVER_IP + SRV_VERSION + '/betServer/verifyPurchase';
 
   static String LOGO_BASE_URL ="https://xscore.cc/resb/team/";
 

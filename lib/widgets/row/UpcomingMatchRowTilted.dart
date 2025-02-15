@@ -53,10 +53,10 @@ import 'LiveMatchRowTilted.dart';
             children: [
 
         Container(
-          padding: EdgeInsets.all(2),
-      margin: EdgeInsets.symmetric(vertical: 4, horizontal: 12),
+          padding: const EdgeInsets.all(2),
+      margin: const EdgeInsets.only(bottom: 2, left: 12, right: 2),
       decoration: BoxDecoration(
-      color: Color(ColorConstants.my_dark_grey)
+      color: const Color(ColorConstants.my_dark_grey)
       , // Dark background color
       borderRadius: BorderRadius.circular(12),
       ),
@@ -127,7 +127,7 @@ import 'LiveMatchRowTilted.dart';
         ),
 
               Positioned(
-                  top: 10, // Slightly above the container
+                  top: 20, // Slightly above the container
                   left: 5, // Slightly left of the container
                   child:
 
@@ -147,7 +147,7 @@ import 'LiveMatchRowTilted.dart';
        Transform(
            transform: Matrix4.skewX(-0.2), // Tilt the container
            child: Container(
-               padding: EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+               padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                // margin: EdgeInsets.symmetric(horizontal: 4),
                decoration: BoxDecoration(
                  color: Colors.white,
@@ -187,9 +187,9 @@ import 'LiveMatchRowTilted.dart';
                            alignment: Alignment.center,
                            child:
                            gameWithOdds.isFavourite ?
-                           const Icon(Icons.star_outlined, color: Colors.yellow,)
+                           const Icon(Icons.star_outlined, color: Colors.red)
                                :
-                           const Icon(Icons.star_border),
+                           const Icon(Icons.star_border, color: Color(ColorConstants.my_dark_grey)),
                          )
                        ]
                    )

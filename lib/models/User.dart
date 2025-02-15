@@ -1,7 +1,6 @@
 import 'dart:convert';
 
 import 'package:flutter_app/models/UserBet.dart';
-import 'package:flutter_app/models/constants/MatchConstants.dart';
 
 import '../enums/UserLevel.dart';
 import 'UserAward.dart';
@@ -11,7 +10,7 @@ class User implements Comparable<User>{
 
   User.defUser();
 
-  User(this.mongoUserId, this.username, this.balance, this.userBets);
+  User(this.mongoUserId, this.username, this.userBets);
 
   String mongoUserId = Constants.defMongoUserId;
 
@@ -24,6 +23,7 @@ class User implements Comparable<User>{
   String errorMessage = Constants.empty;
 
   double balance = -1;
+  double balanceLeaderBoard = -1;
 
   List<UserAward> awards = <UserAward>[];
 
@@ -62,8 +62,15 @@ class User implements Comparable<User>{
       );
     }
 
-    User user = User(parsedJson['mongoId'].toString(), parsedJson['username'].toString(), parsedJson['balance'] as double, bets);
+    User user = User(parsedJson['mongoId'].toString(), parsedJson['username'].toString(), bets);
 
+    if (parsedJson['balanceLeaderBoard'] != null){
+      user.balanceLeaderBoard = parsedJson['balanceLeaderBoard'] as double;
+    }
+
+    if (parsedJson['balance'] != null){
+      user.balance = parsedJson['balance'] as double;
+    }
 
     user.validated = parsedJson['validated'] as bool;
     user.email = parsedJson['email'];
@@ -141,6 +148,7 @@ class User implements Comparable<User>{
     betAmountMonthly = u.betAmountMonthly;
     betAmountOverall = u.betAmountOverall;
     balance = u.balance;
+    balanceLeaderBoard = u.balanceLeaderBoard;
     monthlyLostBets = u.monthlyLostBets;
     monthlyLostPredictions = u.monthlyLostPredictions;
     monthlyWonBets = u.monthlyWonBets;

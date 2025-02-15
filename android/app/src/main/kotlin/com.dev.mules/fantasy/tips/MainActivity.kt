@@ -1,4 +1,4 @@
-package com.testing.flutter_app
+package com.dev.mules.fantasy.tips
 
 import io.flutter.embedding.android.FlutterActivity
 

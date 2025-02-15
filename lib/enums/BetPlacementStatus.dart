@@ -2,17 +2,17 @@ enum BetPlacementStatus{
 
   OFFLINE(statusCode: 0, statusText: "offline"),
 
-  PLACED(statusCode: 1, statusText:'\"placed\"'),
+  PLACED(statusCode: 1, statusText:"placed"),
 
-  FAILED_MATCH_IN_PROGRESS(statusCode:2, statusText:'\"FAILED_MATCH_IN_PROGRESS\"'),
+  FAILED_MATCH_IN_PROGRESS(statusCode:2, statusText:"FAILED_MATCH_IN_PROGRESS"),
 
-  FAIL_GENERIC(statusCode:3, statusText:'\"failed\"'),
+  FAIL_GENERIC(statusCode:3, statusText:'failed'),
 
-  FAILED_INSUFFICIENT_FUNDS(statusCode:4, statusText: '\"failedInsufficient\"'),
+  FAILED_INSUFFICIENT_FUNDS(statusCode:4, statusText: 'failedInsufficient'),
 
-  FAILED_USER_NOT_VALIDATED(statusCode:5, statusText: '\"failedNotValidated\"'),
+  FAILED_USER_NOT_VALIDATED(statusCode:5, statusText: 'failedNotValidated'),
 
-  PENDING(statusCode:6, statusText: '\"pending\"');
+  FAILED_MATCH_IN_NEXT_MONTH(statusCode:6, statusText: 'FAILED_MATCH_IN_NEXT_MONTH');
 
   final int statusCode;
 

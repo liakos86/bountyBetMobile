@@ -2,9 +2,11 @@ import 'dart:collection';
 import 'dart:convert';
 
 import 'package:flutter_app/models/UserBet.dart';
+import 'package:flutter_app/models/beans/PlaceBetResponseBean.dart';
 import 'package:flutter_app/models/constants/UrlConstants.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart';
+import 'package:in_app_purchase/in_app_purchase.dart';
 import 'dart:async';
 
 import '../../enums/BetPlacementStatus.dart';
@@ -44,11 +46,63 @@ class HttpActionsClient {
     return connected;
   }
 
-  static Future<User?> loginUser(String emailOrUsername, String password) async{
+  static Future<bool> verifyPurchase(PurchaseDetails purchaseDetails) async{
     if (!connected){
       connected = await checkInternetConnectivity();
       if (!connected){
         // Fluttertoast.showToast(msg: 'No network connection', toastLength: Toast.LENGTH_LONG);
+        return false;
+      }
+    }
+
+    try {
+
+      if (access_token == null) {
+        access_token = await SecureUtils().retrieveValue(
+            Constants.accessToken);
+        await authorizeAsync();
+        if (access_token == null) {
+          print('register COULD NOT AUTHORIZE ********************************************************************');
+          return false;
+        }
+      }
+
+      var body = {
+        "mongoUserId": AppContext.user.mongoUserId,
+        "purchaseToken": purchaseDetails.verificationData.serverVerificationData,
+        "platform": purchaseDetails.verificationData.source,
+        "productId": purchaseDetails.productID,
+        "status" : purchaseDetails.status.toString()
+      };
+
+      // Fluttertoast.showToast(msg: 'WILL SEND $body');
+
+      Response verificationResponse = await post(Uri.parse(UrlConstants.POST_VERIFY_PURCHASE),
+          headers: {
+            "Accept": "application/json",
+            "Content-Type": "application/json",
+            'Authorization': 'Bearer $access_token'
+          },
+          body: jsonEncode(body),
+          encoding: Encoding.getByName("utf-8")).timeout(
+          const Duration(seconds: 30));
+
+      var responseDec = jsonDecode(verificationResponse.body);
+      // Fluttertoast.showToast(msg: 'Verification from server:${responseDec['verified']}');
+
+      return responseDec['verified'];
+
+    }catch(e){
+      print(e);
+      return false;
+    }
+  }
+
+  static Future<User?> loginUser(String emailOrUsername, String password) async{
+    if (!connected){
+      connected = await checkInternetConnectivity();
+      if (!connected){
+        Fluttertoast.showToast(msg: 'No network connection', toastLength: Toast.LENGTH_LONG);
         return null;
       }
     }
@@ -82,6 +136,7 @@ class HttpActionsClient {
 
     }catch(e){
 
+        Fluttertoast.showToast(msg: 'Failed to login ' + e.toString(), toastLength: Toast.LENGTH_LONG);
 
 
       print(e);
@@ -90,12 +145,13 @@ class HttpActionsClient {
     }
   }
 
-  static Future<BetPlacementStatus> placeBet(UserBet newBet) async {
+  static Future<PlaceBetResponseBean> placeBet(UserBet newBet) async {
 
     if (!connected){
       connected = await checkInternetConnectivity();
       if (!connected){
-        return BetPlacementStatus.FAIL_GENERIC;
+        return PlaceBetResponseBean(betId: '', betPlacementStatus: BetPlacementStatus.FAIL_GENERIC.statusText);
+        // return BetPlacementStatus.FAIL_GENERIC;
       }
     }
 
@@ -109,7 +165,8 @@ class HttpActionsClient {
         await authorizeAsync();
         if (access_token == null) {
           print('COULD NOT AUTHORIZE ********************************************************************');
-          return BetPlacementStatus.FAIL_GENERIC;
+          return PlaceBetResponseBean(betId: '', betPlacementStatus: BetPlacementStatus.FAIL_GENERIC.statusText);
+          // return BetPlacementStatus.FAIL_GENERIC;
         }
       }
       var userResponse = await post(Uri.parse(UrlConstants.POST_PLACE_BET),
@@ -122,15 +179,18 @@ class HttpActionsClient {
           encoding: Encoding.getByName("utf-8")).timeout(
           const Duration(seconds: 20));
 
+    var responseDec = jsonDecode(userResponse.body);
 
-      BetPlacementStatus betPlacementStatus = BetPlacementStatus.ofStatusText(userResponse.body);
+    PlaceBetResponseBean responseBean = PlaceBetResponseBean.fromJson(responseDec);
+    // BetPlacementStatus betPlacementStatus = BetPlacementStatus.ofStatusText(userResponse.body);
 
 
-      return betPlacementStatus;
+    return responseBean;
 
     }catch(e){
       print(e);
-      return BetPlacementStatus.FAIL_GENERIC;
+      return PlaceBetResponseBean(betId: '', betPlacementStatus: BetPlacementStatus.FAIL_GENERIC.statusText);
+      // return BetPlacementStatus.FAIL_GENERIC;
     }
   }
 
@@ -201,31 +261,6 @@ class HttpActionsClient {
       return MatchEventStatisticsWithIncidents();
     }
   }
-
-  // static Future<List<League>> getStandingsWithoutTablesAsync() async{
-  //
-  //   try {
-  //
-  //   if (access_token == null) {
-  //     access_token = await SecureUtils().retrieveValue(
-  //         Constants.accessToken);
-  //     await authorizeAsync();
-  //     if (access_token == null) {
-  //       print('LEGUUES COULD NOT AUTHORIZE ********************************************************************');
-  //       return <League>[];
-  //     }
-  //   }
-  //
-  //   String getStandingsWithoutTablesUrlFinal = UrlConstants.GET_STANDINGS_WITHOUT_TABLES;
-  //     Response userResponse = await get(Uri.parse(getStandingsWithoutTablesUrlFinal), headers:  {'Authorization': 'Bearer $access_token'}).timeout(const Duration(seconds: 5));
-  //     Iterable responseDec = await jsonDecode(userResponse.body);
-  //     return  List<League>.from(responseDec.map((model) => League.fromJson(model)));
-  //   } catch (e) {
-  //     print(e);
-  //     return <League>[];
-  //   }
-  // }
-
 
   static Future<Map<String, List<User>>> getLeadingUsers() async{
 

@@ -8,6 +8,7 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import '../enums/BetPredictionStatus.dart';
 import '../enums/BetPredictionType.dart';
 import '../enums/ChangeEvent.dart';
+import '../enums/LastedPeriod.dart';
 import '../enums/MatchEventStatus.dart';
 import '../enums/MatchEventStatusMore.dart';
 import '../helper/SharedPrefs.dart';
@@ -373,6 +374,37 @@ class MatchEvent implements Comparable<MatchEvent>{
 		}
 
 		return null;
+
+	}
+
+	String textScore(bool home) {
+		Score? score = home ? homeTeamScore : awayTeamScore;
+
+		if (score == null){
+			return Constants.empty;
+		}
+
+		if (MatchEventStatus.FINISHED == MatchEventStatus.fromStatusText(status)){
+			if (score.display == null) {
+				return Constants.empty;
+			}
+
+			if (lasted_period != null && LastedPeriod.PERIOD_2 == LastedPeriod.fromStatusText(lasted_period!)) {
+				return score.display.toString();
+			}
+
+			return '${score.display} (${score.current})';
+
+		}
+
+
+		if (score.display == null){
+			return Constants.empty;
+		}
+
+
+		return score.display.toString();
+
 
 	}
 

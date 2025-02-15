@@ -1,9 +1,13 @@
 import 'dart:convert';
 
+import 'package:flutter_app/enums/BetPlacementStatus.dart';
+
 import '../enums/BetStatus.dart';
 import 'UserPrediction.dart';
 
 class UserBet implements Comparable<UserBet>{
+
+  String betId = '';
 
   String userMongoId;
 
@@ -15,7 +19,15 @@ class UserBet implements Comparable<UserBet>{
 
   BetStatus betStatus = BetStatus.PENDING;
 
+  //TODO add from server
+  //TODO add from server
+  //TODO add from server
+  //TODO add from server
+  //TODO add from server
+  BetPlacementStatus betPlacementStatus = BetPlacementStatus.FAIL_GENERIC;
+
   UserBet({
+    required this.betId,
     required this.userMongoId,
     required this.predictions,
     required this.betAmount,
@@ -44,13 +56,17 @@ class UserBet implements Comparable<UserBet>{
   }
 
   static UserBet fromJson(Map<String, dynamic> parsedJson){
-    return UserBet(userMongoId: parsedJson['mongoUserId'].toString(),
+    UserBet bet =  UserBet(userMongoId: parsedJson['mongoUserId'].toString(),
+        betId: parsedJson['mongoId'].toString() ,
         betAmount: parsedJson['betAmount'] as double,
-        betStatus:  BetStatus.ofStatus(parsedJson['betStatus'] as int),
+        betStatus:  BetStatus.ofStatus(parsedJson['betStatus']),
         betPlacementMillis: parsedJson['betPlacementMillis'],
         predictions:  (parsedJson['predictions'] as List)
             .map((prediction) =>  UserPrediction.fromJson(prediction))
             .toList());
+
+    bet.betPlacementStatus = BetPlacementStatus.ofStatus(parsedJson['betPlacementStatus'] as int);
+    return bet;
   }
 
   @override
@@ -65,6 +81,14 @@ class UserBet implements Comparable<UserBet>{
 
     return 1;
   }
+
+  @override
+  operator == (other) =>
+      other is UserBet &&
+          other.betId == betId ;
+
+  @override
+  int get hashCode => betId.hashCode ;
 
 
 }

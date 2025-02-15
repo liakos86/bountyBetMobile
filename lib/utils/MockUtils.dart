@@ -227,7 +227,8 @@ class MockUtils {
   }
 
   static User mockUser() {
-    User user = User("1234", "Mocker", 10123, <UserBet>[]);
+    User user = User("1234", "Mocker", <UserBet>[]);
+    user.balance = 10012;
     user.monthlyLostBets=1;
     user.monthlyWonBets=2;
     user.monthlyLostPredictions=12;

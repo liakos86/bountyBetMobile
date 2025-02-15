@@ -41,7 +41,7 @@ class UserPrediction{
               other.betPredictionType == betPredictionType;
 
   @override
-  int get hashCode => hashValues(eventId, betPredictionType);
+  int get hashCode => Object.hash(eventId, betPredictionType);
 
   /*
    * We don't need to set a prediction status, the server will always set it to PENDING.

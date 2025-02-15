@@ -11,6 +11,7 @@ import 'package:flutter_app/widgets/LogoWithName.dart';
 import '../../enums/Sport.dart';
 import '../../models/UserPrediction.dart';
 import '../../models/constants/ColorConstants.dart';
+import '../../models/match_event.dart';
 
 class UserPredictionRowTilted extends StatefulWidget {
 
@@ -21,7 +22,7 @@ class UserPredictionRowTilted extends StatefulWidget {
   const UserPredictionRowTilted({
     Key? key,
     required this.prediction,
-    required this.callback
+    required this.callback,
   }) : super(key: key);
 
   @override
@@ -42,10 +43,6 @@ class UserPredictionRowTiltedState extends State<UserPredictionRowTilted>{
 
     return
 
-      // Stack(
-      //     clipBehavior: Clip.none, // Allow positioning outside the container
-      //     children: [
-
       Container(
         padding: const EdgeInsets.all(0),
     margin: const EdgeInsets.symmetric(vertical: 2, horizontal: 4),
@@ -56,22 +53,19 @@ class UserPredictionRowTiltedState extends State<UserPredictionRowTilted>{
     ),
     child:
 
-      Wrap(
+      // Wrap(
 
-          children: [
+          // children: [
 
                       Row(children: [
 
-                      Expanded(flex: 10, child:
-                        //   Padding(
-                        // padding: EdgeInsets.only(left: 16),
-                        //     child:
+                        Expanded(flex: 10, child:
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           mainAxisAlignment: MainAxisAlignment.start,
                           children: [
-                            LogoWithName(logoUrl: prediction.homeTeam.logo, logoSize: 20, fontSize: 12, name: prediction.homeTeam.getLocalizedName(), redCards: 0, winnerType: WinnerType.NONE),
-                            LogoWithName(logoUrl: prediction.awayTeam.logo, logoSize: 20, fontSize: 12, name: prediction.awayTeam.getLocalizedName(), redCards: 0, winnerType: WinnerType.NONE),
+                            LogoWithName(goalScored:false, logoUrl: prediction.homeTeam.logo, logoSize: 20, fontSize: 12, name: prediction.homeTeam.getLocalizedName(), redCards: 0, winnerType: WinnerType.NONE),
+                            LogoWithName(goalScored:false, logoUrl: prediction.awayTeam.logo, logoSize: 20, fontSize: 12, name: prediction.awayTeam.getLocalizedName(), redCards: 0, winnerType: WinnerType.NONE),
 
                           ],
                         )
@@ -91,17 +85,13 @@ class UserPredictionRowTiltedState extends State<UserPredictionRowTilted>{
                         ),
 
 
+                      ],
+                      )
 
-                      ],)
-                  // ),
-
-                //),
-
-          ],
-      //  )
+          // ],
 
 
-    )
+    // )
       );
       //     ,
       //
