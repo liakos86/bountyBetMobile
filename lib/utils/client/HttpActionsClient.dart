@@ -361,7 +361,7 @@ class HttpActionsClient {
   }
 
 
-  static Future<User?> register(String email, String password, String username) async {
+  static Future<User?> register(String username, String email, String password) async {
     if (!connected){
       connected = await checkInternetConnectivity();
       if (!connected){
@@ -501,7 +501,7 @@ class HttpActionsClient {
       Iterable leaguesIterable = json.decode(leaguesResponse.body);
       jsonLeaguesData = List<League>.from(leaguesIterable.map((model)=> League.fromJson(model)));
     } catch (e) {
-      // Fluttertoast.showToast(msg:  'LEAGUES   ' +e.toString());
+      Fluttertoast.showToast(msg:  'LEAGUES   ' +e.toString());
       print('ERROR REST ---- LEAGUES MOCKING............');
 
     }
@@ -601,7 +601,7 @@ class HttpActionsClient {
       access_token = accessTkn;
       return ;
     } catch (e) {
-      // Fluttertoast.showToast(msg:  'AUTHORIZATION   ' +e.toString());
+       Fluttertoast.showToast(msg:  'AUTHORIZATION   ' +e.toString());
       print('ERROR AUTH ---- ............');
     }
 

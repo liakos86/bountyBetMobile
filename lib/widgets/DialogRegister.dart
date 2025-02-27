@@ -43,6 +43,8 @@ class DialogRegisterState extends State<DialogRegister> {
 
   String username = '';
 
+  bool obscureText = true;
+
   @override
   Widget build(BuildContext context) {
 
@@ -61,8 +63,6 @@ class DialogRegisterState extends State<DialogRegister> {
 
              Column(children:[
 
-          Text(errorMsg, style: const TextStyle(color: Colors.red),),
-
           TextField(
             style: const TextStyle(color: Colors.white),
             controller: null,
@@ -78,7 +78,7 @@ class DialogRegisterState extends State<DialogRegister> {
 
           TextField(
             style: const TextStyle(color: Colors.white),
-            obscureText: true,
+
             controller: null,
             onChanged: (text) {
               this.username = text;
@@ -90,18 +90,44 @@ class DialogRegisterState extends State<DialogRegister> {
             ),
           ),
 
-          TextField(
-            style: const TextStyle(color: Colors.white),
-            controller: null,
-            onChanged: (text) {
-              this.password = text;
-            },
-            decoration: const InputDecoration(
-              border: OutlineInputBorder(),
-              hintText: 'your password',
-              hintStyle:  TextStyle(color: Colors.white),
-            ),
-          ),
+               TextField(
+                 style: const TextStyle(color: Colors.white),
+                 obscureText: obscureText,
+                 onChanged: (text) {
+                   password = text;
+                 },
+                 decoration: InputDecoration(
+                   border: const OutlineInputBorder(),
+                   hintText: 'Your password',
+                   hintStyle: const TextStyle(color: Colors.white),
+                   suffixIcon: IconButton(
+                     icon: Icon(
+                       obscureText ? Icons.visibility_off : Icons.visibility,
+                       color: Colors.white,
+                     ),
+                     onPressed: () {
+                       setState(() {
+                         obscureText = !obscureText; // Toggle password visibility
+                       });
+                     },
+                   ),
+                 ),
+               ),
+
+
+          // TextField(
+          //   style: const TextStyle(color: Colors.white),
+          //   controller: null,
+          //   obscureText: true,
+          //   onChanged: (text) {
+          //     this.password = text;
+          //   },
+          //   decoration: const InputDecoration(
+          //     border: OutlineInputBorder(),
+          //     hintText: 'your password',
+          //     hintStyle:  TextStyle(color: Colors.white),
+          //   ),
+          // ),
 
           SizedBox(
               width: double.infinity,
@@ -140,9 +166,11 @@ class DialogRegisterState extends State<DialogRegister> {
   }
 
   void registerWith(String email, String password, String username) async {
-    if (username.length < 5 ) {
 
-      Fluttertoast.showToast(msg: 'Invalid username', toastLength: Toast.LENGTH_LONG);
+    String? userError = validateUsername(username);
+    if (userError != null) {
+
+      Fluttertoast.showToast(msg: userError, toastLength: Toast.LENGTH_LONG);
       setState(() {
         executingCall = false;
         // errorMsg = 'Invalid username';
@@ -151,10 +179,10 @@ class DialogRegisterState extends State<DialogRegister> {
       return;
     }
 
-    if (email.length < 5 ||
-        !email.contains('@gmail.com') ) {
+    String? emailError = validateEmail(email);
+    if (emailError != null) {
 
-      Fluttertoast.showToast(msg: 'Invalid email', toastLength: Toast.LENGTH_LONG);
+      Fluttertoast.showToast(msg: emailError, toastLength: Toast.LENGTH_LONG);
 
       setState(() {
         executingCall = false;
@@ -164,9 +192,10 @@ class DialogRegisterState extends State<DialogRegister> {
       return;
     }
 
-    if (password.length < 8) {
+    String? passError = validatePassword(password);
+    if (passError != null) {
 
-      Fluttertoast.showToast(msg: 'Invalid password', toastLength: Toast.LENGTH_LONG);
+      Fluttertoast.showToast(msg: passError, toastLength: Toast.LENGTH_LONG);
       setState(() {
         executingCall = false;
         // errorMsg = 'Invalid password';
@@ -203,6 +232,55 @@ class DialogRegisterState extends State<DialogRegister> {
       callback.call(userFromServer);
 
   }
+
+  String? validatePassword(String password) {
+    // Check length
+    if (password.length < 6 || password.length > 12) {
+      return "Password must be between 6 and 12 characters long.";
+    }
+
+    // Check for at least one number
+    if (!RegExp(r'[0-9]').hasMatch(password)) {
+      return "Password must contain at least one number.";
+    }
+
+    // Check for at least one special character
+    if (!RegExp(r'[!@#$%^&*(),.?":{}|<>]').hasMatch(password)) {
+      return "Password must contain at least one special character.";
+    }
+
+    return null; // Valid password
+  }
+
+  String? validateEmail(String email) {
+    // Regular expression for validating email
+    String pattern =
+        r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$";
+    RegExp regex = RegExp(pattern);
+
+    if (email.isEmpty) {
+      return "Email cannot be empty.";
+    } else if (!regex.hasMatch(email)) {
+      return "Enter a valid email address.";
+    }
+
+    return null; // Valid email
+  }
+
+  String? validateUsername(String username) {
+    // Check length
+    if (username.length < 6 || username.length > 18) {
+      return "Username must be between 6 and 18 characters long.";
+    }
+
+    // Check if it contains only letters and numbers
+    if (!RegExp(r'^[a-zA-Z0-9]+$').hasMatch(username)) {
+      return "Username can only contain letters and numbers.";
+    }
+
+    return null; // Valid username
+  }
+
 
 }
 

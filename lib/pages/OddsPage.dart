@@ -271,6 +271,8 @@ class OddsPageState extends State<OddsPage> with SingleTickerProviderStateMixin{
           buttonPadding: EdgeInsets.zero,
           alignment: Alignment.bottomCenter,
           elevation: 20,
+
+
           content:
 
           Builder(
@@ -351,7 +353,7 @@ class OddsPageState extends State<OddsPage> with SingleTickerProviderStateMixin{
 
   Future<BetPlacementStatus> placeBetCallback(double bettingAmount) async {
     if (bettingAmount <= 0 || bettingAmount > AppContext.user.balance){
-      String msg = 'Cannot place bet. insufficient funds.';
+      //String msg = 'Cannot place bet. insufficient funds.';
       alertDialogTopUp();
       return BetPlacementStatus.FAILED_INSUFFICIENT_FUNDS;
     }

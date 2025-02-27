@@ -81,6 +81,9 @@ class BetSlipWithCustomKeyboardState extends State<BetSlipWithCustomKeyboard>{
 
     return
 
+      Container(
+    color: Colors.yellow[50],
+    child:
     SizedBox(
         height: initialHeight,
 
@@ -93,6 +96,7 @@ class BetSlipWithCustomKeyboardState extends State<BetSlipWithCustomKeyboard>{
           flex:  3 ,
           child:
               Container(
+                height: 50,
                 color:  const Color(ColorConstants.my_green) ,
                 child:
                     Row(
@@ -107,12 +111,16 @@ class BetSlipWithCustomKeyboardState extends State<BetSlipWithCustomKeyboard>{
               RichText(
                   text:  TextSpan(
                     children: [
+
+
                       const WidgetSpan(
+                          alignment: PlaceholderAlignment.middle,
                           child: Icon(Icons.check_circle, color: Colors.white,)
                       ),
+
                       TextSpan(
                         style: const TextStyle(fontSize: 16),
-                        text: ('${selectedOdds.length} selections @ ${BetUtils.finalOddOf(selectedOdds).toStringAsFixed(2)} to return: ${(bettingAmount * BetUtils.finalOddOf(selectedOdds)).toStringAsFixed(2)}'),
+                        text: ('  ${selectedOdds.length} selections to return: ${(bettingAmount * BetUtils.finalOddOf(selectedOdds)).toStringAsFixed(2)}'),
                       ),
                     ],
                   )
@@ -126,8 +134,7 @@ class BetSlipWithCustomKeyboardState extends State<BetSlipWithCustomKeyboard>{
                     ),
         )),
 
-
-                Expanded( flex:10,
+        Expanded( flex:10,
                     child: ListView.builder(
                     padding: const EdgeInsets.all(2),
                     itemCount: selectedOdds.length,
@@ -141,12 +148,21 @@ class BetSlipWithCustomKeyboardState extends State<BetSlipWithCustomKeyboard>{
         Expanded(
             flex: 3,
             child:
-    Row(
-      mainAxisSize: MainAxisSize.max,
-    children: [
-      Expanded(
-    flex:1,
-    child:
+            // Column(
+            //     mainAxisAlignment: MainAxisAlignment.end, // Pushes child to the bottom
+            //     children: [
+             Align(
+            alignment: Alignment.bottomCenter,
+            child:
+            Padding(
+            padding: const EdgeInsets.all(2),
+            child:
+          Row(
+            mainAxisSize: MainAxisSize.max,
+          children: [
+            Expanded(
+          flex:1,
+          child:
             TextButton(
               style: ButtonStyle(
                   shape: MaterialStateProperty.all<RoundedRectangleBorder>(
@@ -168,6 +184,9 @@ class BetSlipWithCustomKeyboardState extends State<BetSlipWithCustomKeyboard>{
       )
     ]
     )
+                  )
+        //    ]
+            )
 
         )
 
@@ -177,8 +196,16 @@ class BetSlipWithCustomKeyboardState extends State<BetSlipWithCustomKeyboard>{
             flex: 3,
                 child:
 
-                    Padding(
-                      padding: const EdgeInsets.all(4),
+                Align(
+              alignment: Alignment.bottomCenter,
+              child:
+              // Column(
+              // mainAxisAlignment: MainAxisAlignment.end, // Pushes child to the bottom
+              // children: [
+
+
+                Padding(
+                      padding: const EdgeInsets.all(2),
                     child:
                     Row(
                       children: [
@@ -188,9 +215,9 @@ class BetSlipWithCustomKeyboardState extends State<BetSlipWithCustomKeyboard>{
 
                           Align(alignment: Alignment.centerRight,
                               child: TextField(
-                                cursorColor: Colors.white,
+                                cursorColor: Colors.black,
 
-                            style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                            style: const TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
                             controller: betAmountController,
                             keyboardType: TextInputType.number,
                             inputFormatters: [FilteringTextInputFormatter.digitsOnly, LengthLimitingTextInputFormatter(9)],
@@ -258,15 +285,19 @@ class BetSlipWithCustomKeyboardState extends State<BetSlipWithCustomKeyboard>{
                             Future<BetPlacementStatus> betPlacementStatusFuture = callbackForBetPlacement.call(bettingAmount);
                             betPlacementStatusFuture.then((betPlacementStatus) =>
                             {
-
                               refreshStateAfterBet(betPlacementStatus)
-
                             }
 
                             );
 
                           },
-                          child: executingCall ? const CircularProgressIndicator() : Text('Place bet${bettingAmount > 0 ? ' returning ${(bettingAmount * BetUtils.finalOddOf(selectedOdds)).toStringAsFixed(2)}' : ''}'),
+                          child: executingCall ? const SizedBox(
+                            height: 10.0,
+                            width: 10.0,
+                            child: Center(
+                                child: CircularProgressIndicator()
+                            ),
+                          ) : Text('Place bet${bettingAmount > 0 ? ' returning ${(bettingAmount * BetUtils.finalOddOf(selectedOdds)).toStringAsFixed(2)}' : ''}'),
                         ),)
 
                             :
@@ -290,10 +321,14 @@ class BetSlipWithCustomKeyboardState extends State<BetSlipWithCustomKeyboard>{
 
                       ],
                       )
-                    )
+                    ),
+             //   ]
+                )
                 ),
               ]
-          ));
+          )
+        )
+      );
   }
 
   Widget _buildBettingOddRow(UserPrediction bettingOdd) {
