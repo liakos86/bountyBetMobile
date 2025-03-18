@@ -40,7 +40,7 @@ class LeaderboardUserAlertDialog extends StatelessWidget {
             ],)),
 
 
-      (AppContext.user.mongoUserId == Constants.defMongoUserId ||  AppContext.user.mongoUserId != user.mongoUserId) ?
+      (AppContext.user.mongoUserId == Constants.defMongoId ||  AppContext.user.mongoUserId != user.mongoUserId) ?
 
           Expanded( flex: 1, child: Container(width: double.infinity, color: Colors.red, child: TextButton(
 

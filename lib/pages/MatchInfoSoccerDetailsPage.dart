@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:convert';
 
 import 'package:flutter_app/models/MatchEventStatisticsWithIncidents.dart';
 import 'package:flutter_app/utils/client/HttpActionsClient.dart';
@@ -8,16 +7,11 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_app/models/MatchEventIncidentsSoccer.dart';
 import 'package:flutter_app/models/MatchEventStatisticSoccer.dart';
-import 'package:flutter_app/models/MatchEventStatisticsSoccer.dart';
 import 'package:flutter_app/models/constants/MatchIncidentsConstants.dart';
 import 'package:flutter_app/models/MatchEventIncidentSoccer.dart';
-import 'package:flutter_app/utils/MockUtils.dart';
 import 'package:flutter_app/widgets/LogoWithTeamLarge.dart';
-import 'package:http/http.dart';
 
-import '../models/constants/UrlConstants.dart';
 import '../models/match_event.dart';
 import '../widgets/CustomTabIcon.dart';
 import '../widgets/MatchScoreMiddleText.dart';

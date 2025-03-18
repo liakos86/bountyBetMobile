@@ -35,6 +35,8 @@
 
   AFTER_PENALTIES(statusStr: "AP"),
 
+  EXTRA_TIME_HALF_TIME(statusStr: "Extra time halftime"),
+
   WALKOVER(statusStr: "Walkover"), // aney agonos
 
   ABABDONED(statusStr: 'Abandoned'),

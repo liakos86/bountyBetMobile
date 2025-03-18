@@ -66,17 +66,11 @@ class UserBetRow extends StatefulWidget {
       child:
       ExpansionTile(
           backgroundColor: Colors.yellow[50],
-      // controller: controller,
-      //     maintainState: false,
+
       initiallyExpanded: true,
-      // onExpansionChanged: (value) {
-      //   if (!value){
-      //     controller.collapse();
-      //   }
-      // },
 
       tilePadding: const EdgeInsets.only(left: 8),
-      subtitle: Text('$placementTime - Bet: ${bet.betAmount.toStringAsFixed(2)}'),
+      subtitle: Text(maxLines:2, '$placementTime - Bet: ${bet.betAmount.toStringAsFixed(2)} \r\nbetId:${bet.betId}'),
       leading:
 
           bet.betStatus==BetStatus.LOST ?
@@ -94,8 +88,6 @@ class UserBetRow extends StatefulWidget {
   }
 
   Widget _buildSelectedOddRow(UserPrediction bettingOdd) {
-    // return UserBetPredictionRow(prediction: bettingOdd);
-    // return UserPredictionRow(key: UniqueKey(), prediction: bettingOdd, callback: null,);
     return UserPredictionRowTilted(key: UniqueKey(), prediction: bettingOdd, callback: null,);
   }
 

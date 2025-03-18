@@ -59,5 +59,19 @@
         "status_more_after_pen" : "After Pen.",
         "status_more_walkover" : "Walkover",
 
+
+     "january": "Jan",
+       "february": "Feb",
+       "march": "Mar",
+       "april": "Apr",
+       "may": "May",
+       "june": "Jun",
+       "july": "Jul",
+       "august": "Aug",
+       "september": "Sep",
+       "october": "Oct",
+       "november": "Nov",
+       "december": "Dec",
+
      "run_this" : "flutter gen-l10n"
 }

@@ -1,16 +1,9 @@
-import 'dart:convert';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_app/examples/util/encryption.dart';
-import 'package:flutter_app/utils/SecureUtils.dart';
 import 'package:flutter_app/utils/client/HttpActionsClient.dart';
-import 'package:http/http.dart';
 
-import '../models/User.dart';
-import '../models/constants/Constants.dart';
-import '../models/constants/UrlConstants.dart';
-import '../pages/ParentPage.dart';
+import '../models/constants/ColorConstants.dart';
 
 class DialogUserRegistered extends StatelessWidget{
 
@@ -21,28 +14,91 @@ class DialogUserRegistered extends StatelessWidget{
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
+    var width = MediaQuery
+        .of(context)
+        .size
+        .width;
 
-        Text(
-         text, style: TextStyle(color: Colors.black),
-        ),
+    return
 
-        TextButton(
-          style: ButtonStyle(
-              elevation: MaterialStateProperty.all<double>(10),
-              foregroundColor: MaterialStateProperty.all<Color>(Colors.white),
-              backgroundColor: MaterialStateProperty.all<Color>(Colors.red.shade500)
-          ),
-          onPressed: () {
-            Navigator.pop(context);
-          },
-          child: Text('OK'),
-        )
+      AlertDialog(
+        shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(20.0),
+    ),
+    content:
+    Builder(
+    builder: (context) {
+    return SizedBox(width: width,
+    child:
 
-      ],
+     Column(
 
+
+       mainAxisSize: MainAxisSize.min,
+       children: [
+
+         Text(
+           text,
+           style: const TextStyle(fontSize: 16.0),
+         ),
+         const SizedBox(height: 20.0),
+
+         ElevatedButton(
+           onPressed: () {
+             Navigator.pop(context);
+           },
+           style: ElevatedButton.styleFrom(
+             foregroundColor: Colors.white, backgroundColor: const Color(ColorConstants.my_dark_grey),  // Text color
+             shape: RoundedRectangleBorder(
+               borderRadius: BorderRadius.circular(20), // Rounded radius
+             ),
+             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8), // Button size
+           ),
+           child: const Text(
+             'Close',
+             style: TextStyle(
+                 fontSize: 16,
+                 fontWeight: FontWeight.bold,
+                 fontStyle: FontStyle.italic
+             ),
+           ),
+         )
+
+       ]
+
+
+
+
+
+
+       ///////////////////////
+
+      // children: [
+      //
+      //   Text(
+      //    text, style: const TextStyle(color: Colors.black),
+      //   ),
+      //
+      //   TextButton(
+      //     style: ButtonStyle(
+      //         elevation: MaterialStateProperty.all<double>(10),
+      //         foregroundColor: MaterialStateProperty.all<Color>(Colors.white),
+      //         backgroundColor: MaterialStateProperty.all<Color>(Colors.red.shade500)
+      //     ),
+      //     onPressed: () {
+      //       Navigator.pop(context);
+      //     },
+      //     child: Text('OK'),
+      //   )
+      //
+      // ],
+
+    )
     );
+    }
+    )
+      );
+
   }
 
   void registerWith(String email, String password) async{

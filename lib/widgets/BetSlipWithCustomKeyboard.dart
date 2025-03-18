@@ -82,7 +82,7 @@ class BetSlipWithCustomKeyboardState extends State<BetSlipWithCustomKeyboard>{
     return
 
       Container(
-    color: Colors.yellow[50],
+    color: Colors.grey.shade200,
     child:
     SizedBox(
         height: initialHeight,

@@ -39,8 +39,8 @@ class LeaderBoardUserFullInfoRow extends StatefulWidget {
 
     // return
     Container(
-      padding: const EdgeInsets.all(12),
-      margin: const EdgeInsets.symmetric(vertical: 4, horizontal: 12),
+      padding: const EdgeInsets.all(10),
+      margin: const EdgeInsets.symmetric(vertical: 4, horizontal: 0),
       decoration: BoxDecoration(
         color: const Color(ColorConstants.my_dark_grey)
         , // Dark background color
@@ -51,15 +51,22 @@ class LeaderBoardUserFullInfoRow extends StatefulWidget {
         children: [
           // Top Row: Profile Picture and Main Info
           Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
+            //crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+          Container(
+          margin: const EdgeInsets.only(top: 8),
+          child:
+          Align(alignment: Alignment.bottomCenter,
+            child:
               // User Image
               const CircleAvatar(
                 radius: 30,
                 backgroundImage: NetworkImage(
                   'https://xscore.cc/resb/team/asteras-tripolis.png',
                 ),
-              ),
+              )
+          )
+          ),
               const SizedBox(width: 12),
               Expanded(
                 child: Column(
@@ -73,50 +80,15 @@ class LeaderBoardUserFullInfoRow extends StatefulWidget {
                           user.username.length < 25 ? user.username : '${user.username.substring(0, 22)}..',
                           style: const TextStyle(
                             color: Colors.white,
-                            fontSize: 16,
+                            fontSize: 18,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
 
-      // ElevatedButton(
-      //   onPressed: () {
-      //     // Handle button press
-      //     print("Follow button pressed");
-      //   },
-      //   style: ElevatedButton.styleFrom(
-      //     primary: Colors.red[400], // Red color variation
-      //     onPrimary: Colors.white,  // Text color
-      //     shape: RoundedRectangleBorder(
-      //       borderRadius: BorderRadius.circular(20), // Rounded radius
-      //     ),
-      //     padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8), // Button size
-      //   ),
-      //   child: const Text(
-      //     'Follow',
-      //     style: TextStyle(
-      //       fontSize: 16,
-      //       fontWeight: FontWeight.bold,
-      //       fontStyle: FontStyle.italic
-      //     ),
-      //   ),
-      // )
 
-                        // const Row(
-                        //   children: [
-                        //     Icon(Icons.flag, color: Colors.blue, size: 16),
-                        //     SizedBox(width: 4),
-                        //     Text(
-                        //       'Greece',
-                        //       style: TextStyle(
-                        //         color: Colors.white70,
-                        //         fontSize: 14,
-                        //       ),
-                        //     ),
-                        //   ],
-                        // ),
                       ],
                     ),
-                    SizedBox(height: 8),
+                 //   SizedBox(height: 8),
 
                 _buildTiltedStatRow(),
 
@@ -180,7 +152,7 @@ class LeaderBoardUserFullInfoRow extends StatefulWidget {
 
           // Small Green Box at Top-Left Corner
           Positioned(
-            top: 10, // Slightly above the container
+            top: -5, // Slightly above the container
             left: 0, // Slightly left of the container
             child:
 
@@ -234,7 +206,7 @@ class LeaderBoardUserFullInfoRow extends StatefulWidget {
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
           // margin: EdgeInsets.symmetric(horizontal: 4),
           decoration: BoxDecoration(
-            color: const Color(ColorConstants.my_green), // Background color of the parallelogram
+            color: Colors.red, // Background color of the parallelogram
             borderRadius: BorderRadius.circular(8),
           ),
           child:

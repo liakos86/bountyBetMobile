@@ -7,6 +7,7 @@ import 'package:flutter_app/helper/SharedPrefs.dart';
 import 'package:flutter_app/models/interfaces/StatefulWidgetWithName.dart';
 
 import '../models/LeagueWithData.dart';
+import '../models/constants/ColorConstants.dart';
 import '../models/constants/MatchConstants.dart';
 import '../models/context/AppContext.dart';
 import '../widgets/LeagueExpandableTile.dart';
@@ -19,18 +20,18 @@ class LivePage extends StatefulWidget{//}WithName {
   @override
   LivePageState createState() => LivePageState();
 
-  final List<LeagueWithData> liveLeagues;
+  final List<LeagueWithData> allLeagues;
 
   LivePage({
     Key? key,
-    required this.liveLeagues,
+    required this.allLeagues,
   } ) : super(key: key);
 
 }
 
 class LivePageState extends State<LivePage> with WidgetsBindingObserver{
 
-  late List<LeagueWithData> liveLeagues;// = AppContext.eventsPerDayMap[MatchConstants.KEY_TODAY].where((element) => element.liveEvents.isNotEmpty);// <LeagueWithData>[];
+  late List<LeagueWithData> allLeagues;// = AppContext.eventsPerDayMap[MatchConstants.KEY_TODAY].where((element) => element.liveEvents.isNotEmpty);// <LeagueWithData>[];
 
   List<String> favourites = <String>[];
 
@@ -38,7 +39,7 @@ class LivePageState extends State<LivePage> with WidgetsBindingObserver{
 
   @override
   void initState(){
-    liveLeagues = widget.liveLeagues;
+    allLeagues = widget.allLeagues;
     favourites = getFavourites();
     super.initState();
   }
@@ -47,14 +48,35 @@ class LivePageState extends State<LivePage> with WidgetsBindingObserver{
   @override
   Widget build(BuildContext context) {
 
-
-    if (liveLeagues.isEmpty){
+    if (allLeagues.isEmpty){
       return const DialogProgressText(text: 'Loading...');
     }
 
-
-    leaguesWd = liveLeagues.where((element) => element.events.where((element) => element.status == MatchEventStatus.INPROGRESS.statusStr).toList().isNotEmpty).toList();// <LeagueWithData>[];
-
+    leaguesWd = allLeagues.where((element) => element.events.where((element) => element.status == MatchEventStatus.INPROGRESS.statusStr).toList().isNotEmpty).toList();// <LeagueWithData>[];
+    if (leaguesWd.isEmpty){
+      return const Align(alignment: Alignment.center,  child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: <Widget>[
+          // Icon on top
+          Icon(
+            Icons.sports_soccer,  // Built-in Flutter icon
+            size: 120,  // Icon size
+            color: Color(ColorConstants.my_dark_grey), // Icon color
+          ),
+          const SizedBox(height: 20),  // Space between icon and text
+          // Text below the icon
+          const Text(
+            'No live games',
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+              color: Color(ColorConstants.my_dark_grey),
+            ),
+          ),
+        ],
+      )
+      );
+    }
 
     return Scaffold(
 

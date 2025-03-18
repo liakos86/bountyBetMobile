@@ -6,6 +6,7 @@ import '../League.dart';
 import '../LeagueWithData.dart';
 import '../Section.dart';
 import '../User.dart';
+import '../match_event.dart';
 
 class AppContext{
 
@@ -25,16 +26,6 @@ class AppContext{
   static final Map eventsPerDayMap = HashMap<String, List<LeagueWithData>>();
 
   /*
-   * All the leagues with matches etc. All the values of the map above are included here.
-   */
-//  static final List<LeagueWithData> allLeaguesWithData = <LeagueWithData>[];
-
-  /*
-   * The leagues which contain live games, only with the live games.
-   */
-  // static final List<LeagueWithData> liveLeagues = <LeagueWithData>[];
-
-  /*
    * The logged user.
    */
   static User user = User.defUser();
@@ -43,6 +34,22 @@ class AppContext{
 
   void initUser(User userNew){
     user = userNew;
+  }
+
+  static MatchEvent? findEvent(int eventId){
+
+    for (MapEntry dayEntry in eventsPerDayMap.entries){
+      for (LeagueWithData l in dayEntry.value){
+        for (MatchEvent e in l.events){
+          if (eventId == e.eventId){
+            return e;
+          }
+        }
+      }
+    }
+
+    return null;//eventsPerDayMap.entries.first.value.events.first;
+
   }
 
   static void updateUser(User value) {
@@ -56,6 +63,18 @@ class AppContext{
     user.mongoUserId = value.mongoUserId;
     user.errorMessage = value.errorMessage;
     user.userPosition = value.userPosition;
+
+    user.betAmountMonthly = value.betAmountMonthly;
+    user.betAmountOverall = value.betAmountOverall;
+    user.balanceLeaderBoard = value.balanceLeaderBoard;
+    user.monthlyLostBets = value.monthlyLostBets;
+    user.monthlyLostPredictions = value.monthlyLostPredictions;
+    user.monthlyWonBets = value.monthlyWonBets;
+    user.monthlyWonPredictions = value.monthlyWonPredictions;
+    user.overallLostBets = value.overallLostBets;
+    user.overallLostPredictions = value.overallLostPredictions;
+    user.overallWonPredictions = value.overallWonPredictions;
+    user.overallWonBets = value.overallWonBets;
   }
 
 

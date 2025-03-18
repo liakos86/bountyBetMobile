@@ -6,14 +6,10 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_app/examples/util/encryption.dart';
-import 'package:flutter_app/utils/SecureUtils.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:http/http.dart';
 
 import '../models/User.dart';
 import '../models/constants/Constants.dart';
-import '../models/constants/UrlConstants.dart';
 
 class DialogRegister extends StatefulWidget {
 
@@ -48,121 +44,104 @@ class DialogRegisterState extends State<DialogRegister> {
   @override
   Widget build(BuildContext context) {
 
-    return
+    return Container(
+      color: const Color(ColorConstants.my_dark_grey),
+      child: Padding(
+        padding: const EdgeInsets.all(6),
+        child: SingleChildScrollView(
+          child: Column(
+            children: [
+              // Email input field
+              TextField(
+                style: const TextStyle(color: Colors.white),
+                onChanged: (text) {
+                  email = text;
+                },
+                decoration: const InputDecoration(
+                  border: OutlineInputBorder(),
+                  hintText: 'your email',
+                  hintStyle: TextStyle(color: Colors.white),
+                ),
+              ),
+              const SizedBox(height: 2), // Add spacing between fields
 
-    Container(
-    color: const Color(ColorConstants.my_dark_grey),
-    child:
+              // Username input field
+              TextField(
+                style: const TextStyle(color: Colors.white),
+                onChanged: (text) {
+                  username = text;
+                },
+                decoration: const InputDecoration(
+                  border: OutlineInputBorder(),
+                  hintText: 'your username',
+                  hintStyle: TextStyle(color: Colors.white),
+                ),
+              ),
+              const SizedBox(height: 2), // Add spacing between fields
 
-    Padding(padding: const EdgeInsets.all(6),
-      child:
+              // Password input field with visibility toggle
+              TextField(
+                style: const TextStyle(color: Colors.white),
+                obscureText: obscureText,
+                onChanged: (text) {
+                  password = text;
+                },
+                decoration: InputDecoration(
+                  border: const OutlineInputBorder(),
+                  hintText: 'Your password',
+                  hintStyle: const TextStyle(color: Colors.white),
+                  suffixIcon: IconButton(
+                    icon: Icon(
+                      obscureText ? Icons.visibility_off : Icons.visibility,
+                      color: Colors.white,
+                    ),
+                    onPressed: () {
+                      setState(() {
+                        obscureText = !obscureText; // Toggle password visibility
+                      });
+                    },
+                  ),
+                ),
+              ),
+              const SizedBox(height: 4), // Add spacing between fields
 
+              // Register button
+              SizedBox(
+                width: double.infinity,
+                child: TextButton(
+                  style: ButtonStyle(
+                    shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                      RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(4.0),
+                        side: const BorderSide(color: Colors.black),
+                      ),
+                    ),
+                    foregroundColor: MaterialStateProperty.all<Color>(Colors.white),
+                    backgroundColor: MaterialStateProperty.all<Color>(Colors.red.shade500),
+                  ),
+                  onPressed: () {
+                    if (executingCall) {
+                      return;
+                    }
 
-      SingleChildScrollView(
-         child:
+                    setState(() {
+                      executingCall = true;
+                    });
 
-             Column(children:[
-
-          TextField(
-            style: const TextStyle(color: Colors.white),
-            controller: null,
-            onChanged: (text) {
-              this.email = text;
-            },
-            decoration: const InputDecoration(
-              border: OutlineInputBorder(),
-              hintText: 'your email',
-              hintStyle:  TextStyle(color: Colors.white),
-            ),
+                    registerWith(email, password, username);
+                  },
+                  child: executingCall
+                      ? const CircularProgressIndicator()
+                      : Text(AppLocalizations.of(context)!.register),
+                ),
+              ),
+            ],
           ),
-
-          TextField(
-            style: const TextStyle(color: Colors.white),
-
-            controller: null,
-            onChanged: (text) {
-              this.username = text;
-            },
-            decoration: const InputDecoration(
-              border: OutlineInputBorder(),
-              hintText: 'your username',
-              hintStyle:  TextStyle(color: Colors.white),
-            ),
-          ),
-
-               TextField(
-                 style: const TextStyle(color: Colors.white),
-                 obscureText: obscureText,
-                 onChanged: (text) {
-                   password = text;
-                 },
-                 decoration: InputDecoration(
-                   border: const OutlineInputBorder(),
-                   hintText: 'Your password',
-                   hintStyle: const TextStyle(color: Colors.white),
-                   suffixIcon: IconButton(
-                     icon: Icon(
-                       obscureText ? Icons.visibility_off : Icons.visibility,
-                       color: Colors.white,
-                     ),
-                     onPressed: () {
-                       setState(() {
-                         obscureText = !obscureText; // Toggle password visibility
-                       });
-                     },
-                   ),
-                 ),
-               ),
+        ),
+      ),
+    );
 
 
-          // TextField(
-          //   style: const TextStyle(color: Colors.white),
-          //   controller: null,
-          //   obscureText: true,
-          //   onChanged: (text) {
-          //     this.password = text;
-          //   },
-          //   decoration: const InputDecoration(
-          //     border: OutlineInputBorder(),
-          //     hintText: 'your password',
-          //     hintStyle:  TextStyle(color: Colors.white),
-          //   ),
-          // ),
-
-          SizedBox(
-              width: double.infinity,
-            child:
-              TextButton(
-
-          style: ButtonStyle(
-          shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-          RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(4.0),
-          side: const BorderSide(color: Colors.black)
-          )
-          ),
-          foregroundColor: MaterialStateProperty.all<Color>(Colors.white),
-          backgroundColor: MaterialStateProperty.all<Color>(Colors.red.shade500)
-          ),
-          onPressed: () {
-            if (executingCall){
-              return;
-            }
-
-            setState(() {
-              executingCall = true;
-            });
-
-              registerWith(email, password, username);
-            },
-            child: executingCall ? const CircularProgressIndicator() :  Text(AppLocalizations.of(context)!.register),
-          )
-    )
-      // )
-      ])
-        // ],
-// ])
-      )));
   }
 
   void registerWith(String email, String password, String username) async {

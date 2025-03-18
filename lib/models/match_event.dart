@@ -175,6 +175,10 @@ class MatchEvent implements Comparable<MatchEvent>{
 			return AppLocalizations.of(context)!.status_more_pen;
 	 }
 
+		if (MatchEventStatusMore.EXTRA_TIME_HALF_TIME.statusStr == status_more) {
+			return AppLocalizations.of(context)!.status_half_time_et;
+		}
+
 	 	return '??' + status_more;
 	}
 

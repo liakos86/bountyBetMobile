@@ -11,6 +11,7 @@ import 'package:flutter_app/widgets/LogoWithName.dart';
 import '../../enums/Sport.dart';
 import '../../models/UserPrediction.dart';
 import '../../models/constants/ColorConstants.dart';
+import '../../models/context/AppContext.dart';
 import '../../models/match_event.dart';
 
 class UserPredictionRowTilted extends StatefulWidget {
@@ -41,10 +42,12 @@ class UserPredictionRowTiltedState extends State<UserPredictionRowTilted>{
     prediction = widget.prediction;
     callback = widget.callback;
 
+    MatchEvent? event = AppContext.findEvent(prediction.eventId);
+
     return
 
       Container(
-        padding: const EdgeInsets.all(0),
+        padding: const EdgeInsets.all(2),
     margin: const EdgeInsets.symmetric(vertical: 2, horizontal: 4),
     decoration: BoxDecoration(
     color: const Color(ColorConstants.my_dark_grey)
@@ -52,10 +55,6 @@ class UserPredictionRowTiltedState extends State<UserPredictionRowTilted>{
     borderRadius: BorderRadius.circular(12),
     ),
     child:
-
-      // Wrap(
-
-          // children: [
 
                       Row(children: [
 
@@ -72,11 +71,24 @@ class UserPredictionRowTiltedState extends State<UserPredictionRowTilted>{
                       // )
                       ),
 
+
+                      event != null ?
+
+                         Expanded(flex: 3, child:
+                         Text(event!.display_status, style: TextStyle(
+                             fontSize: 10, color: Colors.white))
+                         )
+
+                      : Expanded(flex: 3, child:
+                      SizedBox(width:0)
+                      ),
+                       //},
+
                         Expanded(flex: 4, child:
                         Align(
                           alignment: Alignment.center,
                           child:
-                            DisplayOdd(betPredictionType: prediction.betPredictionType!, prediction: prediction, odd: prediction),
+                          DisplayOdd(betPredictionType: prediction.betPredictionType!, prediction: prediction, odd: prediction),
                         )
                         ),
 

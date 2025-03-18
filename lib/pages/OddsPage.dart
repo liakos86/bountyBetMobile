@@ -245,9 +245,9 @@ class OddsPageState extends State<OddsPage> with SingleTickerProviderStateMixin{
           foregroundColor: Colors.white,
           onPressed: ()=> {
 
-            if (AppContext.user.mongoUserId != Constants.defMongoUserId && !AppContext.user.validated){
+            if (AppContext.user.mongoUserId != Constants.defMongoId && !AppContext.user.validated){
               alertDialog('Your account requires validation. Please check your inbox at ${AppContext.user.email} and validate.')
-            }else if (AppContext.user.mongoUserId == Constants.defMongoUserId){
+            }else if (AppContext.user.mongoUserId == Constants.defMongoId){
 
           showDialog(context: context, builder: (context) =>
 
@@ -359,11 +359,11 @@ class OddsPageState extends State<OddsPage> with SingleTickerProviderStateMixin{
     }
 
     String? mongoUserId = AppContext.user.mongoUserId;
-    if (mongoUserId != Constants.defMongoUserId && !AppContext.user.validated){
+    if (mongoUserId != Constants.defMongoId && !AppContext.user.validated){
       String msg = 'Your account requires validation. Please go to ${AppContext.user.email} and validate.';
       alertDialog(msg);
       return BetPlacementStatus.FAILED_USER_NOT_VALIDATED;
-    }else if (mongoUserId == Constants.defMongoUserId){
+    }else if (mongoUserId == Constants.defMongoId){
       String msg = 'Please login/register at the top left in order to bet.';
       alertDialog(msg);
       return BetPlacementStatus.FAILED_USER_NOT_VALIDATED;
@@ -377,6 +377,7 @@ class OddsPageState extends State<OddsPage> with SingleTickerProviderStateMixin{
     if (betPlacementStatus == BetPlacementStatus.PLACED) {
       newBet.betPlacementStatus = BetPlacementStatus.PLACED;
       newBet.betId = responseBean.betId;
+      newBet.betPlacementMillis = DateTime.now().millisecondsSinceEpoch;
       updateUserCallback.call(newBet);
     }
 
@@ -409,7 +410,9 @@ class OddsPageState extends State<OddsPage> with SingleTickerProviderStateMixin{
 
   favourites() {
     sharedPrefs.reload();
-    return sharedPrefs.getListByKey(sp_fav_event_ids);
+    dynamic favs =  sharedPrefs.getListByKey(sp_fav_event_ids);
+    // Fluttertoast.showToast(msg: 'favs ' + favs.toString());
+    return favs;
   }
 
   String getDateWithOffset(int offset) {

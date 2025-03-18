@@ -10,7 +10,7 @@ import 'package:in_app_purchase/in_app_purchase.dart';
 import 'dart:async';
 
 import '../../enums/BetPlacementStatus.dart';
-import '../../examples/util/encryption.dart';
+// import '../../examples/util/encryption.dart';
 import '../../helper/JsonHelper.dart';
 import '../../models/League.dart';
 import '../../models/LeagueWithData.dart';
@@ -25,6 +25,8 @@ import '../MockUtils.dart';
 import '../SecureUtils.dart';
 import 'package:http/http.dart' as http;
 import 'package:connectivity_plus/connectivity_plus.dart';
+
+import '../encrypt/encryption.dart';
 
 
 
@@ -304,10 +306,10 @@ class HttpActionsClient {
       return leadersMap;
 
     } catch (e) {
-      List<User> mocks = <User>[];
-      mocks.add(MockUtils.mockUser());
-      leadersMap.putIfAbsent('0', () => mocks);
-      leadersMap.putIfAbsent('1', () => mocks);
+      // List<User> mocks = <User>[];
+      // mocks.add(MockUtils.mockUser());
+      // leadersMap.putIfAbsent('0', () => mocks);
+      // leadersMap.putIfAbsent('1', () => mocks);
       print(e);
     }
 
@@ -324,10 +326,6 @@ class HttpActionsClient {
       }
     }
 
-    if (email.length<3 || password.length <= 8){
-      return;
-    }
-
     try {
 
       if (access_token == null) {
@@ -339,6 +337,7 @@ class HttpActionsClient {
           return;
         }
       }
+
 
       Response registerResponse = await post(Uri.parse(UrlConstants.POST_REGISTER_USER),
           headers: {
@@ -427,7 +426,7 @@ class HttpActionsClient {
         }
       }
 
-      Response liveMatchesResponse = await get(Uri.parse(UrlConstants.GET_LIVE_EVENTS), headers:  {'Authorization': 'Bearer $access_token'}).timeout(const Duration(seconds: 10));
+      Response liveMatchesResponse = await get(Uri.parse(UrlConstants.GET_LIVE_EVENTS), headers:  {'Authorization': 'Bearer $access_token'}).timeout(const Duration(seconds: 20));
       jsonMatchesData = await jsonDecode(liveMatchesResponse.body) as Map;
     } catch (e) {
       // Fluttertoast.showToast(msg:  'LIVE   ' +e.toString());
@@ -501,7 +500,12 @@ class HttpActionsClient {
       Iterable leaguesIterable = json.decode(leaguesResponse.body);
       jsonLeaguesData = List<League>.from(leaguesIterable.map((model)=> League.fromJson(model)));
     } catch (e) {
-      Fluttertoast.showToast(msg:  'LEAGUES   ' +e.toString());
+      Fluttertoast.showToast(
+          msg:  'LEAGUES   ' +e.toString(),
+        fontSize: 6
+
+
+      );
       print('ERROR REST ---- LEAGUES MOCKING............');
 
     }
@@ -535,7 +539,7 @@ class HttpActionsClient {
         }
       }
 
-      print('TOKEN ' + access_token!);
+      //print('TOKEN ' + access_token!);
 
 
       String url = UrlConstants.GET_SECTIONS;

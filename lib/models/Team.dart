@@ -8,7 +8,9 @@ import 'constants/JsonConstants.dart';
 
 class Team{
 
-  int id;
+  Team.defTeam();
+
+  int id = 0;
 
   int ?sport_id;
 
@@ -20,7 +22,7 @@ class Team{
 
   // String ?slug;
 
-  String name;
+  String name = 'team';
 
   String ?name_short;
 

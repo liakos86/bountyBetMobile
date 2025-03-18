@@ -6,23 +6,30 @@ import 'package:flutter_app/models/match_event.dart';
 
 import '../enums/BetPredictionStatus.dart';
 import 'Team.dart';
+import 'constants/Constants.dart';
 import 'constants/JsonConstants.dart';
 
 class UserPrediction{
 
+  MatchEvent? event;
+  
+  UserPrediction.defPrediction();
+
+  String mongoId = Constants.defMongoId;
+  
   BetPredictionType? betPredictionType;
 
   BetPredictionStatus betPredictionStatus = BetPredictionStatus.PENDING;
 
-  Team homeTeam;
+  Team homeTeam = Team.defTeam();
 
-  Team awayTeam;
+  Team awayTeam = Team.defTeam();
 
-  int eventId;
+  int eventId = -1;
 
-  int sportId;
+  int sportId = 1;
 
-  double value;
+  double value = 0;
 
   UserPrediction({
     required this.betPredictionType,
@@ -70,6 +77,10 @@ class UserPrediction{
     );
 
     return prediction;
+  }
+
+  void copyFrom(UserPrediction incoming) {
+    betPredictionStatus = incoming.betPredictionStatus;
   }
 
 }

@@ -5,24 +5,9 @@ import 'package:flutter_app/models/constants/PurchaseConstants.dart';
 
 class DialogTextWithButtons extends StatelessWidget{//} StatefulWidget {
 
-  // final String text;
-
   final Function topUpCallback;
 
   const DialogTextWithButtons({super.key, required this.topUpCallback});
-
-
-  // const DialogTextWithButtons({super.key, required this.text});
-
-
-  // @override
-  // State<StatefulWidget> createState() => DialogTextWithButtonsState();
-// }
-
-  // class DialogTextWithButtonsState extends State<DialogTextWithButtons>{
-
-  // late String text;
-
 
     @override
     Widget build(BuildContext context) {
@@ -42,15 +27,8 @@ class DialogTextWithButtons extends StatelessWidget{//} StatefulWidget {
             Builder(
             builder: (context) {
              return SizedBox(width: width,
-
-                  //height: 100,
-
                   child:
 
-
-        // SizedBox(
-        //   width: 10,
-        //   child:
           Column(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -118,15 +96,10 @@ class DialogTextWithButtons extends StatelessWidget{//} StatefulWidget {
                     ),
                   )),
 
-
-
-
                   ]
               ),
 
-          // Row(
-          //   mainAxisSize: MainAxisSize.max,
-          //   children:[
+
               ElevatedButton(
                 onPressed: () {
                   Navigator.pop(context);
@@ -147,7 +120,6 @@ class DialogTextWithButtons extends StatelessWidget{//} StatefulWidget {
                   ),
                 ),
               )
-              // ])
 
         ]
         )
@@ -155,9 +127,6 @@ class DialogTextWithButtons extends StatelessWidget{//} StatefulWidget {
               );
             }
       )
-            // ],
-          // ),
-        // ),
 
         );
     }

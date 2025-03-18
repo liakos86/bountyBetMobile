@@ -53,5 +53,18 @@
      "status_more_pen" : "Πεν.",
      "status_more_after_et"  : "Παρ.",
      "status_more_after_pen" : "Πεν.",
-     "status_more_walkover" : "Άνευ αγ."
+     "status_more_walkover" : "Άνευ αγ.",
+
+     "january": "Ιαν",
+       "february": "Φεβ",
+       "march": "Μαρ",
+       "april": "Απρ",
+       "may": "Μάι",
+       "june": "Ιούν",
+       "july": "Ιούλ",
+       "august": "Αύγ",
+       "september": "Σεπ",
+       "october": "Οκτ",
+       "november": "Νοέ",
+       "december": "Δεκ"
 }

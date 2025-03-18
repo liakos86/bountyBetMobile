@@ -18,14 +18,14 @@ class CustomTabIcon extends StatelessWidget {
     return Container(
       width: width,
       //color: isSelected ? const Color(ColorConstants.my_green) : Colors.grey.shade200,
-      margin: const EdgeInsets.symmetric(vertical: 8.0),
-      padding: const EdgeInsets.all(8.0),
+      margin: const EdgeInsets.symmetric(vertical: 4.0),
+      padding: const EdgeInsets.all(6.0),
       decoration: BoxDecoration(
         color: isSelected ? const Color(ColorConstants.my_green) : Colors.grey[300],
         borderRadius: BorderRadius.circular(50.0),
       ),
 
-      child: Align(alignment: Alignment.center, child: Text(text,maxLines: 1, style: TextStyle( color: isSelected? Colors.white : const Color(ColorConstants.my_dark_grey), fontSize: 12, fontStyle: FontStyle.italic,  fontWeight: isSelected? FontWeight.bold : FontWeight.normal),),)
+      child: Align(alignment: Alignment.center, child: Text(text,maxLines: 1, style: TextStyle( color: isSelected? Colors.white : Colors.grey[500], fontSize: 12, fontStyle: FontStyle.italic,  fontWeight: isSelected? FontWeight.bold : FontWeight.normal),),)
 
     );
   }

@@ -25,6 +25,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import '../enums/ChangeEvent.dart';
 import '../enums/MatchEventStatus.dart';
+import '../helper/SharedPrefs.dart';
 import '../models/ChangeEventSoccer.dart';
 import '../models/League.dart';
 import '../models/Section.dart';
@@ -34,6 +35,7 @@ import '../models/constants/ColorConstants.dart';
 import '../models/constants/MatchConstants.dart';
 import '../models/match_event.dart';
 import '../widgets/DialogUserRegistered.dart';
+import '../widgets/custom/FantasyTipsDrawer.dart';
 import '../widgets/dialog/DialogTextWithButtons.dart';
 import 'LeaderBoardPage.dart';
 import 'LivePage.dart';
@@ -142,9 +144,9 @@ class ParentPageState extends State<ParentPage> with WidgetsBindingObserver {
       .addPostFrameCallback((_) => setLocale(context));
 
   pagesList.add(OddsPage(key: oddsPageKey, updateUserCallback: updateUserCallBack, loginUserCallback: loginUserCallback, registerUserCallback: registerUserCallback, selectedOdds: selectedOdds, topUpCallback: promptDialogTopup));
-  pagesList.add(LivePage(key: livePageKey, liveLeagues: AppContext.eventsPerDayMap['0']));
+  pagesList.add(LivePage(key: livePageKey, allLeagues: AppContext.eventsPerDayMap['0']));
   pagesList.add(LeaderBoardPage());
-  pagesList.add(MyBetsPage(key: betsPageKey, user: AppContext.user, loginOrRegisterCallback: promptLoginOrRegister));
+  pagesList.add(MyBetsPage(key: betsPageKey, loginOrRegisterCallback: promptLoginOrRegister));
   pagesList.add(LeaguesInfoPage(key: leaguesPageKey, leagues: AppContext.allLeaguesMap));
 
 
@@ -275,7 +277,11 @@ class ParentPageState extends State<ParentPage> with WidgetsBindingObserver {
       restorePurchases();
     // }
 
-    if (AppContext.user.userPosition > 0){
+    if (AppContext.user.mongoUserId == User.defUser().mongoUserId ){
+      appBarTitle = 'Football';
+    } else if (!AppContext.user.validated){
+      appBarTitle = '[validation pending]';
+    }else if (AppContext.user.userPosition > 0){
       appBarTitle = ' pos[${AppContext.user.userPosition}]'  ;
     }
 
@@ -285,13 +291,14 @@ class ParentPageState extends State<ParentPage> with WidgetsBindingObserver {
     }
 
 
+    print('TITLE ' + appBarTitle);
     setState(() {
       AppContext.user;
       appBarTitle;
     });
 
     betsPageKey.currentState?.setState(() {
-      AppContext.user;
+      AppContext.user.userBets;
     });
 
   }
@@ -347,7 +354,7 @@ class ParentPageState extends State<ParentPage> with WidgetsBindingObserver {
                 ),
                ]))),
 
-              if (available && products.isNotEmpty && AppContext.user.mongoUserId != Constants.defMongoUserId && AppContext.user.balance < 100000 )
+              if (available && products.isNotEmpty && AppContext.user.mongoUserId != Constants.defMongoId && AppContext.user.validated && AppContext.user.balance < 100000 )
                   ElevatedButton(
                     key: UniqueKey(),
                     onPressed: () {
@@ -377,24 +384,41 @@ class ParentPageState extends State<ParentPage> with WidgetsBindingObserver {
         backgroundColor: Colors.black87,
         leading:
 
-            Padding(
-             padding: const EdgeInsets.all(4),
-              child:
+        Builder(
+            builder: (BuildContext context) {
+    return
 
-                  FloatingActionButton(
-                      heroTag: 'btnParentLogin',
-                      onPressed: promptLoginOrRegister,
-                      backgroundColor: const Color(ColorConstants.my_green),
-                      foregroundColor: Colors.black,
-                      mini: true, child:
-                        AppContext.user.mongoUserId == Constants.defMongoUserId ?
+    Padding(
+    padding: const EdgeInsets.all(4),
+    child:
 
-                          const Icon(Icons.login, color: Colors.white)
-                            :
-                          const Icon(Icons.settings_rounded, color: Colors.white))
+    AppContext.user.mongoUserId == Constants.defMongoId ?
 
-            )
+    FloatingActionButton(
+    heroTag: 'btnParentLogin',
+    onPressed: promptLoginOrRegister,
+    backgroundColor: const Color(ColorConstants.my_green),
+    foregroundColor: Colors.black,
+    mini: true, child:
+    AppContext.user.mongoUserId == Constants.defMongoId ?
 
+    const Icon(Icons.login, color: Colors.white)
+        :
+    const Icon(Icons.settings_rounded, color: Colors.white))
+
+        :
+
+    IconButton(
+    icon: const Icon(Icons.menu),
+    color: Colors.white,// This is the burger icon
+    onPressed: () {
+    Scaffold.of(context).openDrawer(); // Opens the drawer
+    },
+    ),
+
+    );
+    }
+        )
 
       ),
 
@@ -445,52 +469,14 @@ class ParentPageState extends State<ParentPage> with WidgetsBindingObserver {
 
         },
       ),
-    //
-    //   drawer: Drawer( child: ListView(
-    //   // Important: Remove any padding from the ListView.
-    //   padding: EdgeInsets.zero,
-    //   children: [
-    //     const DrawerHeader(
-    //       decoration: BoxDecoration(
-    //         color: Colors.blue,
-    //       ),
-    //       child: Text('Drawer Header'),
-    //     ),
-    //     ListTile(
-    //       title: const Text('Item 1'),
-    //       onTap: () {
-    //         // Update the state of the app.
-    //         // ...
-    //       },
-    //     ),
-    //     ListTile(
-    //       title: const Text('Item 2'),
-    //       onTap: () {
-    //         // Update the state of the app.
-    //         // ...
-    //       },
-    //     ),
-    //   ],
-    // )
-    // )
+
+      drawer: FantasyTipsDrawer(logoutCallback: logoutUser)
+
+
     );
   }
 
-  static MatchEvent findEvent(int eventId){
 
-    for (MapEntry dayEntry in AppContext.eventsPerDayMap.entries){
-      for (LeagueWithData l in dayEntry.value){
-        for (MatchEvent e in l.events){
-          if (eventId == e.eventId){
-            return e;
-          }
-        }
-      }
-    }
-
-    return AppContext.eventsPerDayMap.entries.first.value.events.first;
-
-  }
 
   Future<User?> getUserAsync() async{
     SharedPreferences sh_prefs =  await prefs;
@@ -518,11 +504,8 @@ class ParentPageState extends State<ParentPage> with WidgetsBindingObserver {
 
       showDialog(context: context, builder: (context) =>
 
-          AlertDialog(
-            title: Text('Registration'),
-            content: DialogUserRegistered(text: content),
-            elevation: 20,
-          ));
+          DialogUserRegistered(text: content)
+      );
 
       updateUserMongoId(user);
 
@@ -555,26 +538,10 @@ class ParentPageState extends State<ParentPage> with WidgetsBindingObserver {
 
   updateUserCallBack(UserBet newBet) {
 
-    AppContext.user.userBets.add(newBet);
-    betsPageKey.currentState?.setState(() {
-      AppContext.user;
-    });
-
-    // getUserAsync().then((value) =>
-    // {
-    //   if (value != null){
-    //     updateUser(value)
-    //   }
-    // }
-    // );
-
-      // showDialog(context: context, builder: (context) =>
-      //
-      //   AlertDialog(
-      //     title: Text('Successful bet'),
-      //     content: DialogSuccessfulBet(newBet: newBet),
-      //     elevation: 20,
-      //   ));
+    //AppContext.user.userBets.add(newBet);
+    // betsPageKey.currentState?.setState(() {
+    //   AppContext.user.userBets;
+    // });
   }
 
   /*
@@ -595,30 +562,6 @@ class ParentPageState extends State<ParentPage> with WidgetsBindingObserver {
 
     AppContext.eventsPerDayMap['1'] =
     incomingLeaguesMap[MatchConstants.KEY_TOMORROW];
-
-    // if (AppContext.eventsPerDayMap.isEmpty) { //first incoming matches
-    //   AppContext.eventsPerDayMap['-1'] =
-    //   incomingLeaguesMap[MatchConstants.KEY_TODAY];
-    //   AppContext.eventsPerDayMap[MatchConstants.KEY_TODAY] =
-    //   incomingLeaguesMap[MatchConstants.KEY_TODAY];
-    //   AppContext.eventsPerDayMap['1'] =
-    //   incomingLeaguesMap[MatchConstants.KEY_TODAY];
-    //
-    //   for (LeagueWithData league in AppContext.eventsPerDayMap[MatchConstants
-    //       .KEY_TODAY]) {
-    //     if (league.liveEvents.isEmpty) {
-    //       continue;
-    //     }
-    //
-    //     AppContext.liveLeagues.add(league);
-    //   }
-    //
-    //   sortLeagues();
-    //   updatePageStates();
-    //
-    //   return;
-    // }
-
 
     List<LeagueWithData> existingTodayLeagues = AppContext.eventsPerDayMap[MatchConstants.KEY_TODAY];
     List<LeagueWithData> incomingTodayLeagues = incomingLeaguesMap[MatchConstants.KEY_TODAY]!;
@@ -645,7 +588,7 @@ class ParentPageState extends State<ParentPage> with WidgetsBindingObserver {
         //AppContext.liveLeagues.clear();
       }else {
 
-        Set<int> newAddedLeagueIds = Set();
+        //Set<int> newAddedLeagueIds = Set();
         Set<int> incomingLiveLeagueIds = Set();
 
         for (MapEntry incomingLiveEventEntry in incomingLiveEventsMap.entries) {
@@ -813,7 +756,10 @@ void setupFirebaseListeners() async{
       relevantEvent.awayTeamScore?.current = changeEventSoccer.awayTeamScore;
 
       //TODO should update only one event!
-      MatchEvent parentEvent = ParentPageState.findEvent(changeEventSoccer.eventId);
+      MatchEvent? parentEvent = AppContext.findEvent(changeEventSoccer.eventId);
+      if (parentEvent == null){
+        return;
+      }
       parentEvent.changeEvent = changeEventSoccer.changeEvent;
       parentEvent.homeTeamScore?.current = changeEventSoccer.homeTeamScore;
       parentEvent.awayTeamScore?.current = changeEventSoccer.awayTeamScore;
@@ -908,6 +854,8 @@ void setupFirebaseListeners() async{
       AppContext.allSectionsMap.putIfAbsent(s.id, ()=>s);
     }
 
+    updatePageStates();
+
     return true;
   }
 
@@ -995,6 +943,29 @@ void setupFirebaseListeners() async{
       }
     }
     );
+  }
+
+  void logoutUser() async{
+
+
+    final SharedPreferences shprefs = await prefs;
+    shprefs.remove('mongoId');
+
+    await updateUser(User.defUser());
+
+    betsPageKey.currentState?.setState(() {
+      AppContext.user;
+    });
+
+    leaderBoardPageKey.currentState?.setState(() {
+
+    });
+
+    setState(() {
+      AppContext.user;
+    });
+
+    Navigator.pop(context);
   }
 
   void alertDialogTopUp() {
@@ -1208,33 +1179,6 @@ void setupFirebaseListeners() async{
     return pd;
   }
 
-
-
-
-  // Future<void> checkUndeliveredProducts() async {
-  //   const Set<String> _productIds = {Constants.topup1000, Constants.topup3000};
-  //   SharedPreferences preferences = await prefs;
-  //
-  //   for (String productId in _productIds) {
-  //     String? cachedUndeliveredProd = await preferences.getString("pending_purchase_${productId}");
-  //     if (cachedUndeliveredProd == null) {
-  //       continue;
-  //     }
-  //
-  //     PurchaseDetails purchaseDetails = purchaseDetailsFromJson(
-  //         cachedUndeliveredProd);
-  //
-  //     try {
-  //       bool success = await sendPurchaseToServer(purchaseDetails);
-  //       if (success) {
-  //         Fluttertoast.showToast(msg: "Dealyed Product delivered: ${productId}");
-  //         await preferences.remove("pending_purchase_${productId}");
-  //       }
-  //     } catch (e) {
-  //       Fluttertoast.showToast(msg: "FLED TO DELIVEER");
-  //     }
-  //   }
-  // }
 }
 
 

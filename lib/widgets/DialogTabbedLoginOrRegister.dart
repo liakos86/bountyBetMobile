@@ -53,7 +53,7 @@ class DialogTabbedLoginOrRegisterState extends State<DialogTabbedLoginOrRegister
     loginCallback = widget.loginCallback;
     registerCallback = widget.registerCallback;
 
-    _tabController = TabController(length: 2, vsync: this, initialIndex: 1);
+    _tabController = TabController(length: 2, vsync: this, initialIndex: 0);
     _tabController.addListener(() {
       setState(() {});
     });
@@ -92,15 +92,13 @@ class DialogTabbedLoginOrRegisterState extends State<DialogTabbedLoginOrRegister
       var height = MediaQuery
           .of(context)
           .size
-          .height * (2 / 3);
+          .height * (1 / 2);
       var width = MediaQuery
           .of(context)
           .size
           .width;
       return SizedBox(width: width, height: height,
       child:
-
-
 
       DefaultTabController(
         length: 2,
@@ -125,8 +123,8 @@ class DialogTabbedLoginOrRegisterState extends State<DialogTabbedLoginOrRegister
 
 
               tabs: [
-                CustomTabIcon(width: labelWidth, text: AppLocalizations.of(context)!.login, isSelected: _tabController.index == 0,),
-                CustomTabIcon(width: labelWidth, text: AppLocalizations.of(context)!.register, isSelected: _tabController.index == 1,),
+                CustomTabIcon(width: labelWidth, text: AppLocalizations.of(context)!.register, isSelected: _tabController.index == 0,),
+                CustomTabIcon(width: labelWidth, text: AppLocalizations.of(context)!.login, isSelected: _tabController.index == 1,),
               ],
 
               onTap: (index) {
@@ -142,9 +140,9 @@ class DialogTabbedLoginOrRegisterState extends State<DialogTabbedLoginOrRegister
           body: TabBarView(
             controller: _tabController,
             children: [
-              DialogLogin(callback: loginCallback),
 
               DialogRegister(callback: registerCallback),
+              DialogLogin(callback: loginCallback),
 
             ],),
 

@@ -12,7 +12,7 @@ class User implements Comparable<User>{
 
   User(this.mongoUserId, this.username, this.userBets);
 
-  String mongoUserId = Constants.defMongoUserId;
+  String mongoUserId = Constants.defMongoId;
 
   bool validated = false;
 
@@ -115,12 +115,28 @@ class User implements Comparable<User>{
     return '${(monthlyWonBets / (monthlyWonBets + monthlyLostBets) * 100).toStringAsFixed(0)}%';
   }
 
+  double betSlipsOverallPercentage(){
+    if (overallWonBets + overallLostBets == 0){
+      return 0;
+    }
+
+    return overallWonBets / (overallWonBets + overallLostBets) ;
+  }
+
+  double betPredsOverallPercentage(){
+    if (overallWonPredictions + overallLostPredictions == 0){
+      return 0;
+    }
+
+    return overallWonPredictions / (overallWonPredictions + overallLostPredictions) ;
+  }
+
   String monthlyROIPercentageText(){
     if (betAmountMonthly == 0){
       return '0%';
     }
 
-    return '${((balance - 1000 / (betAmountMonthly)) * 100).toStringAsFixed(0)}%';
+    return '${(( (balance - 1000) / (betAmountMonthly)) * 100).toStringAsFixed(0)}%';
   }
 
   String betSlipsOverallText(){

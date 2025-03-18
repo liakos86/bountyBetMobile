@@ -4,18 +4,21 @@ import 'package:flutter_app/enums/BetPlacementStatus.dart';
 
 import '../enums/BetStatus.dart';
 import 'UserPrediction.dart';
+import 'constants/Constants.dart';
 
 class UserBet implements Comparable<UserBet>{
 
-  String betId = '';
+  UserBet.defBet();
 
-  String userMongoId;
+  String betId = Constants.defMongoId;
 
-  List<UserPrediction> predictions;
+  String userMongoId = Constants.defMongoId;
 
-  double betAmount;
+  List<UserPrediction> predictions = <UserPrediction>[];
 
-  int betPlacementMillis;
+  double betAmount = -1;
+
+  int betPlacementMillis = -1;
 
   BetStatus betStatus = BetStatus.PENDING;
 
@@ -89,6 +92,18 @@ class UserBet implements Comparable<UserBet>{
 
   @override
   int get hashCode => betId.hashCode ;
+
+  void copyFrom(UserBet incomingBet) {
+    betId = incomingBet.betId;
+    betPlacementMillis = incomingBet.betPlacementMillis;
+    betStatus = incomingBet.betStatus;
+
+    for(UserPrediction pred in predictions){
+      UserPrediction incoming = incomingBet.predictions.firstWhere((element) => element.mongoId == pred.mongoId, orElse: () => UserPrediction.defPrediction());
+      pred.copyFrom(incoming);
+    }
+
+  }
 
 
 }

@@ -10,6 +10,7 @@ import 'package:flutter_app/widgets/GestureDetectorForOdds.dart';
 
 import '../../models/UserPrediction.dart';
 import '../../models/constants/ColorConstants.dart';
+import '../../models/context/AppContext.dart';
 import '../../models/match_event.dart';
 import '../LogoWithName.dart';
 
@@ -31,7 +32,7 @@ class SelectedOddRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
 
-    MatchEvent gameWithOdds = ParentPageState.findEvent(prediction.eventId);
+    MatchEvent? gameWithOdds = AppContext.findEvent(prediction.eventId);
 
     return
 
@@ -88,13 +89,13 @@ class SelectedOddRow extends StatelessWidget {
                               child:
 
                               BetPredictionType.HOME_WIN.betPredictionCode == prediction.betPredictionType?.betPredictionCode ?
-                              DisplayOdd(betPredictionType: BetPredictionType.HOME_WIN, prediction: prediction, odd: gameWithOdds.odds?.odd1)
+                              DisplayOdd(betPredictionType: BetPredictionType.HOME_WIN, prediction: prediction, odd: gameWithOdds?.odds?.odd1)
                                   :
                               BetPredictionType.AWAY_WIN.betPredictionCode == prediction.betPredictionType?.betPredictionCode ?
-                              DisplayOdd(betPredictionType: BetPredictionType.AWAY_WIN, prediction: prediction, odd: gameWithOdds.odds?.odd2)
+                              DisplayOdd(betPredictionType: BetPredictionType.AWAY_WIN, prediction: prediction, odd: gameWithOdds?.odds?.odd2)
                                   :
                               BetPredictionType.DRAW.betPredictionCode == prediction.betPredictionType?.betPredictionCode ?
-                              DisplayOdd(betPredictionType: BetPredictionType.DRAW, prediction: prediction, odd: gameWithOdds.odds?.oddX)
+                              DisplayOdd(betPredictionType: BetPredictionType.DRAW, prediction: prediction, odd: gameWithOdds?.odds?.oddX)
                                   : const Text('-')
                           )
                           , // FIRST COLUMN END
@@ -107,7 +108,7 @@ class SelectedOddRow extends StatelessWidget {
                               children: [
                                 Align(alignment: Alignment.center, child:
                                 Text(
-                                  (gameWithOdds.start_at_local),
+                                  (gameWithOdds!.start_at_local),
 
                                   style: const TextStyle(
                                       fontSize: 8,

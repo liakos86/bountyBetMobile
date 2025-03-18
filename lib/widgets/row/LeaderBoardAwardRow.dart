@@ -21,6 +21,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 import '../../models/User.dart';
+import '../../utils/BetUtils.dart';
 
 
 class LeaderBoardAwardRow extends StatefulWidget {
@@ -61,65 +62,62 @@ class LeaderBoardAwardRowState extends State<LeaderBoardAwardRow>{
 
         // return
         Container(
-          padding: EdgeInsets.all(12),
-          margin: EdgeInsets.symmetric(vertical: 4, horizontal: 12),
+          padding: const EdgeInsets.all(10),
+          margin: const EdgeInsets.symmetric(vertical: 4, horizontal: 0),
           decoration: BoxDecoration(
-            color: Color(ColorConstants.my_dark_grey)
+            color: const Color(ColorConstants.my_dark_grey)
             , // Dark background color
             borderRadius: BorderRadius.circular(12),
           ),
-          child: Column(
+          child:
+
+          Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Top Row: Profile Picture and Main Info
+
               Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
+                //crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // User Image
+
+                  Container(
+                  margin: const EdgeInsets.only(top: 8),
+                  child:
+                  Align(alignment: Alignment.bottomCenter,
+                    child:
+                    // User Image
                   CircleAvatar(
                     radius: 30,
                     backgroundImage: NetworkImage(
                       'https://xscore.cc/resb/team/asteras-tripolis.png',
                     ),
+                  )
+                  )
                   ),
-                  SizedBox(width: 12),
+
+                  const SizedBox(width: 12),
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         // Username and Flag
                         Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          //mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             Text(
 
                               username.length > 12 ? '${username.substring(0, 12)}...' : username
                               ,
-
-
-                              style: TextStyle(
+                              style: const TextStyle(
 
                                 color: Colors.white,
                                 fontSize: 18,
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
-                            Row(
-                              children: [
-                                Icon(Icons.flag, color: Colors.blue, size: 16),
-                                SizedBox(width: 4),
-                                Text(
-                                  'Greece',
-                                  style: TextStyle(
-                                    color: Colors.white70,
-                                    fontSize: 14,
-                                  ),
-                                ),
-                              ],
-                            ),
+
                           ],
                         ),
-                        SizedBox(height: 8),
+                        //SizedBox(height: 8),
 
                         _buildTiltedStatRow(),
 
@@ -130,8 +128,7 @@ class LeaderBoardAwardRowState extends State<LeaderBoardAwardRow>{
 
                 ],
               ),
-              SizedBox(height: 12),
-
+              const SizedBox(height: 12),
 
               // Additional Stats
               Row(
@@ -144,31 +141,18 @@ class LeaderBoardAwardRowState extends State<LeaderBoardAwardRow>{
                   _buildSmallStatBox('58%', 'Last100\nTips'),
                 ],
               ),
-              // SizedBox(height: 16),
-              //
-              // // Last 5 Tips Section
-              // Row(
-              //   mainAxisAlignment: MainAxisAlignment.center, // Align icons to the center
-              //
-              //   children: [
-              //     _buildTipIcon(Icons.check, Colors.black54, Colors.greenAccent),
-              //     _buildTipIcon(Icons.check, Colors.black54, Colors.greenAccent),
-              //     _buildTipIcon(Icons.check, Colors.black54, Colors.greenAccent),
-              //     _buildTipIcon(Icons.check, Colors.black54, Colors.greenAccent),
-              //     _buildTipIcon(Icons.stop, Colors.white, Colors.red),
-              //   ],
-              // ),
+
             ],
           ),
         ),
 
         // Small Green Box at Top-Left Corner
         Positioned(
-            top: 10, // Slightly above the container
+            top: -5, // Slightly above the container
             left: 0, // Slightly left of the container
             child:
 
-            _buildTiltedPosition('$awardMonth/$awardYear')
+            _buildTiltedPosition(BetUtils.getLocalizedMonthString(context, awardMonth, awardYear))
 
 
         ),
@@ -176,28 +160,24 @@ class LeaderBoardAwardRowState extends State<LeaderBoardAwardRow>{
     );
   }
 
-
-
-
-
-
   Widget _buildTiltedStatRow() {
     return
 
       Transform(
         transform: Matrix4.skewX(-0.2), // Tilt the container
         child: Container(
-          padding: EdgeInsets.symmetric(vertical: 12, horizontal: 10),
-          margin: EdgeInsets.symmetric(horizontal: 4),
+          padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 10),
+          margin: const EdgeInsets.symmetric(horizontal: 4),
           decoration: BoxDecoration(
-            color: Color(ColorConstants.my_green), // Background color of the parallelogram
+            color: const Color(ColorConstants.my_green), // Background color of the parallelogram
             borderRadius: BorderRadius.circular(8),
           ),
           child:
 
+              //TODO
           Row(
             children: [
-              _buildTiltedStatBox(award.winningBalance.toString(), 'Balance', 3),
+              _buildTiltedStatBox(award.winningBalance.toString(), '\$ Credits', 3),
               _buildTiltedStatBox('56%', '', 2),
               _buildTiltedStatBox('1.862', 'Tendex', 2),
             ],
@@ -215,15 +195,15 @@ class LeaderBoardAwardRowState extends State<LeaderBoardAwardRow>{
       Transform(
         transform: Matrix4.skewX(-0.2), // Tilt the container
         child: Container(
-            padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
             // margin: EdgeInsets.symmetric(horizontal: 4),
             decoration: BoxDecoration(
-              color: Color(ColorConstants.my_green), // Background color of the parallelogram
+              color: Colors.red,//(ColorConstants.my_green), // Background color of the parallelogram
               borderRadius: BorderRadius.circular(8),
             ),
             child:
 
-            Text(text, style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Colors.white),)
+            Text(text, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Colors.white),)
 
         ),
       );
