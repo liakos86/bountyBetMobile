@@ -132,14 +132,14 @@ class LeaderBoardRowState extends State<LeaderBoardRow> {
                                 Align(
                                   alignment: Alignment.centerLeft,
                                   child:
-                                  Text('Monthly balance ${user.balance}' ,
+                                  Text('Monthly balance ${user.balance.balance}' ,
                                       style: const TextStyle(
                                           fontWeight: FontWeight.normal, fontSize: 12, color: Colors.black)),
                                 ),
                                 Align(
                                   alignment: Alignment.centerLeft,
                                   child:
-                                  Text('Monthly form ${user.monthlyWonBets} / ${user.monthlyWonBets+user.monthlyLostBets}' ,
+                                  Text('Monthly form ${user.balance.monthlyWonBets} / ${user.balance.monthlyWonBets+user.balance.monthlyLostBets}' ,
                                       style: const TextStyle(
                                           fontWeight: FontWeight.normal, fontSize: 12, color: Colors.black)),
                                 ),

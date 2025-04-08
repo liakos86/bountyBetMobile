@@ -4,16 +4,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_app/enums/BetPlacementStatus.dart';
 import 'package:flutter_app/utils/BetUtils.dart';
-import 'package:flutter_app/widgets/row/LiveMatchRow.dart';
-import 'package:flutter_app/widgets/row/UserPredictionRow.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 
 import '../models/UserPrediction.dart';
 import '../models/constants/ColorConstants.dart';
 import '../models/constants/Constants.dart';
-import '../models/match_event.dart';
 import './row/SelectedOddRow.dart';
-// import 'SelectedOddRow.dart';
 
 class BetSlipWithCustomKeyboard extends StatefulWidget {
 
@@ -235,8 +230,9 @@ class BetSlipWithCustomKeyboardState extends State<BetSlipWithCustomKeyboard>{
                                 bettingAmount = double.parse(text);
 
                                 if (bettingAmount > Constants.maxBet){
-                                  Fluttertoast.showToast(msg: 'Maximum bet amount is ${Constants.maxBet}');
-                                  // errorMsg = 'Maximum bet amount is ${Constants.maxBet}';
+                                  ScaffoldMessenger.of(context).showSnackBar( const SnackBar(
+                                    content: Text('Maximum bet amount is ${Constants.maxBet}'), showCloseIcon: true, duration: Duration(seconds: 5),
+                                  ));
                                 }
 
                               });
@@ -270,7 +266,9 @@ class BetSlipWithCustomKeyboardState extends State<BetSlipWithCustomKeyboard>{
                           ),
                           onPressed: () {
                             if (bettingAmount <= 0){
-                              Fluttertoast.showToast(msg: 'Please select a positive bet amount');
+                              ScaffoldMessenger.of(context).showSnackBar( const SnackBar(
+                                content: Text('Please select a positive bet amount'), showCloseIcon: true, duration: Duration(seconds: 5),
+                              ));
                               return;
                             }
 

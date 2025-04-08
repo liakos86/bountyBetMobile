@@ -8,5 +8,7 @@ class MatchIncidentsConstants{
 
    static const String PERIOD = "period";
 
+   static const String INJURY = "injuryTime";
+
 
 }

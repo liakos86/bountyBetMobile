@@ -1,16 +1,14 @@
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_app/utils/client/HttpActionsClient.dart';
 
 import '../models/constants/ColorConstants.dart';
 
 class DialogUserRegistered extends StatelessWidget{
 
-  String text ='';
+  final String text;
 
-
-  DialogUserRegistered({required this.text});
+  const DialogUserRegistered({super.key, required this.text});
 
   @override
   Widget build(BuildContext context) {
@@ -66,33 +64,6 @@ class DialogUserRegistered extends StatelessWidget{
 
        ]
 
-
-
-
-
-
-       ///////////////////////
-
-      // children: [
-      //
-      //   Text(
-      //    text, style: const TextStyle(color: Colors.black),
-      //   ),
-      //
-      //   TextButton(
-      //     style: ButtonStyle(
-      //         elevation: MaterialStateProperty.all<double>(10),
-      //         foregroundColor: MaterialStateProperty.all<Color>(Colors.white),
-      //         backgroundColor: MaterialStateProperty.all<Color>(Colors.red.shade500)
-      //     ),
-      //     onPressed: () {
-      //       Navigator.pop(context);
-      //     },
-      //     child: Text('OK'),
-      //   )
-      //
-      // ],
-
     )
     );
     }
@@ -100,16 +71,5 @@ class DialogUserRegistered extends StatelessWidget{
       );
 
   }
-
-  void registerWith(String email, String password) async{
-      if (email.length<3 || !email.contains('@gmail.com') || password.length <= 8){
-        return;
-      }
-
-      await HttpActionsClient.registerWith(email, password);
-
-    }
-
-
 
 }

@@ -1,9 +1,10 @@
-import 'dart:convert';
 
 import 'package:flutter_app/models/UserBet.dart';
 
 import '../enums/UserLevel.dart';
-import 'UserAward.dart';
+import 'FantasyLeague.dart';
+// import 'UserAward.dart';
+import 'UserMonthlyBalance.dart';
 import 'constants/Constants.dart';
 
 class User implements Comparable<User>{
@@ -22,17 +23,12 @@ class User implements Comparable<User>{
 
   String errorMessage = Constants.empty;
 
-  double balance = -1;
-  double balanceLeaderBoard = -1;
+  UserMonthlyBalance balance = UserMonthlyBalance.defBalance();
 
-  List<UserAward> awards = <UserAward>[];
+  List<UserMonthlyBalance> awards = <UserMonthlyBalance>[];
+  List<FantasyLeague> fantasyLeagues = <FantasyLeague>[];
 
   UserLevel userLevel = UserLevel.bettingVisitor;
-
-  int monthlyWonBets = 0;
-  int monthlyWonPredictions = 0;
-  int monthlyLostBets = 0;
-  int monthlyLostPredictions = 0;
 
   int overallWonBets = 0;
   int overallWonPredictions = 0;
@@ -42,7 +38,7 @@ class User implements Comparable<User>{
   int userPosition = 0;
 
   double betAmountOverall = 0;
-  double betAmountMonthly = 0;
+
 
   List<UserBet> userBets = <UserBet>[];
 
@@ -64,25 +60,11 @@ class User implements Comparable<User>{
 
     User user = User(parsedJson['mongoId'].toString(), parsedJson['username'].toString(), bets);
 
-    if (parsedJson['balanceLeaderBoard'] != null){
-      user.balanceLeaderBoard = parsedJson['balanceLeaderBoard'] as double;
-    }
-
-    if (parsedJson['balance'] != null){
-      user.balance = parsedJson['balance'] as double;
-    }
-
     user.validated = parsedJson['validated'] as bool;
     user.email = parsedJson['email'];
 
 
     user.betAmountOverall = parsedJson['overallBetAmount']??0;
-    user.betAmountMonthly = parsedJson['monthlyBetAmount']??0;
-
-    user.monthlyWonBets = parsedJson['monthlyWonSlipsCount']??0;
-    user.monthlyWonPredictions = parsedJson['monthlyWonEventsCount']??0;
-    user.monthlyLostBets = parsedJson['monthlyLostSlipsCount']??0;
-    user.monthlyLostPredictions = parsedJson['monthlyLostEventsCount']??0;
 
     user.overallWonBets = parsedJson['overallWonSlipsCount'];
     user.overallWonPredictions = parsedJson['overallWonEventsCount'];
@@ -92,10 +74,14 @@ class User implements Comparable<User>{
     user.userLevel = UserLevel.ofLevelCode(parsedJson['level']);
     user.userPosition = parsedJson['position']??0 as int ;
 
+    if(parsedJson['balanceObject'] != null) {
+      user.balance = UserMonthlyBalance.fromJson(parsedJson['balanceObject']);
+    }
+
     if (parsedJson['userAwards'] != null){
       user.awards.clear();
         for (dynamic award in parsedJson['userAwards']){
-          user.awards.add(UserAward.fromJson(award));
+          user.awards.add(UserMonthlyBalance.fromJson(award));
         }
     }
 
@@ -103,17 +89,6 @@ class User implements Comparable<User>{
 
   }
 
-  String betSlipsMonthlyText(){
-    return '$monthlyWonBets/${monthlyWonBets + monthlyLostBets}';
-  }
-
-  String betSlipsMonthlyPercentageText(){
-    if (monthlyWonBets + monthlyLostBets == 0){
-      return '0%';
-    }
-
-    return '${(monthlyWonBets / (monthlyWonBets + monthlyLostBets) * 100).toStringAsFixed(0)}%';
-  }
 
   double betSlipsOverallPercentage(){
     if (overallWonBets + overallLostBets == 0){
@@ -131,29 +106,11 @@ class User implements Comparable<User>{
     return overallWonPredictions / (overallWonPredictions + overallLostPredictions) ;
   }
 
-  String monthlyROIPercentageText(){
-    if (betAmountMonthly == 0){
-      return '0%';
-    }
-
-    return '${(( (balance - 1000) / (betAmountMonthly)) * 100).toStringAsFixed(0)}%';
-  }
 
   String betSlipsOverallText(){
     return '$overallWonBets/${overallWonBets + overallLostBets}';
   }
 
-  String betPredictionsMonthlyText(){
-    return '$monthlyWonPredictions/${monthlyWonPredictions + monthlyLostPredictions}';
-  }
-
-  String betPredictionsMonthlyPercentageText(){
-    if (monthlyWonPredictions + monthlyLostPredictions == 0){
-      return '0%';
-    }
-
-    return '${((monthlyWonPredictions/(monthlyWonPredictions + monthlyLostPredictions)) * 100).toStringAsFixed(0)}%';
-  }
 
   String betPredictionsOverallText(){
     return '$overallWonPredictions/${overallWonPredictions + overallLostPredictions}';
@@ -161,18 +118,18 @@ class User implements Comparable<User>{
 
   void copyBalancesFrom(User u) {
     userPosition = u.userPosition;
-    betAmountMonthly = u.betAmountMonthly;
+    email = u.email;
+    validated = u.validated;
+    username = u.username;
+    mongoUserId = u.mongoUserId;
     betAmountOverall = u.betAmountOverall;
-    balance = u.balance;
-    balanceLeaderBoard = u.balanceLeaderBoard;
-    monthlyLostBets = u.monthlyLostBets;
-    monthlyLostPredictions = u.monthlyLostPredictions;
-    monthlyWonBets = u.monthlyWonBets;
-    monthlyWonPredictions = u.monthlyWonPredictions;
     overallLostBets = u.overallLostBets;
     overallLostPredictions = u.overallLostPredictions;
     overallWonPredictions = u.overallWonPredictions;
     overallWonBets = u.overallWonBets;
+    balance.copyBalancesFrom(u.balance);
+    // userBets = u.userBets;
+    copyBets(u.userBets);
   }
 
   @override
@@ -185,15 +142,34 @@ class User implements Comparable<User>{
 
   @override
   int compareTo(User other) {
-    if (this.userPosition > other.userPosition){
-      return 1;
-    }
-
-    if (this.userPosition < other.userPosition){
+    if (this.balance.balanceLeaderBoard > other.balance.balanceLeaderBoard){//if (this.userPosition > other.userPosition){
       return -1;
     }
 
+    if (this.balance.balanceLeaderBoard < other.balance.balanceLeaderBoard){
+      return 1;
+    }
+
     return 0;
+  }
+
+  void copyBets(List<UserBet> incomingBets) {
+    for (UserBet bet in List.of(userBets)){
+      UserBet incoming = incomingBets.firstWhere((element) => element.betId == bet.betId, orElse: () => UserBet.defBet());
+      if (incoming.betId == Constants.defMongoId){
+        userBets.remove(bet);
+      }else{
+        bet.copyFrom(incoming);
+      }
+    }
+
+    for (UserBet incoming in incomingBets){
+      UserBet existing = userBets.firstWhere((element) => element.betId == incoming.betId, orElse: () => UserBet.defBet());
+      if (existing.betId == Constants.defMongoId){
+        userBets.add(incoming);
+      }
+    }
+
   }
 
 }

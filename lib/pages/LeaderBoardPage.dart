@@ -1,35 +1,23 @@
 import 'dart:async';
-import 'dart:collection';
-import 'dart:convert';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_app/models/UserAward.dart';
 import 'package:flutter_app/models/context/AppContext.dart';
-import 'package:flutter_app/utils/MockUtils.dart';
 import 'package:flutter_app/utils/client/HttpActionsClient.dart';
 import 'package:flutter_app/widgets/row/LeaderboardUserRowNew.dart';
-import 'package:http/http.dart';
 
 import '../models/User.dart';
+import '../models/UserMonthlyBalance.dart';
 import '../models/constants/ColorConstants.dart';
 import '../models/constants/Constants.dart';
-import '../models/constants/UrlConstants.dart';
-import '../models/interfaces/StatefulWidgetWithName.dart';
 import '../utils/BetUtils.dart';
-import '../utils/SecureUtils.dart';
 import '../widgets/CustomTabIcon.dart';
 import '../widgets/row/LeaderBoardAwardRow.dart';
-import '../widgets/row/LeaderBoardRow.dart';
 import 'LivePage.dart';
-import 'ParentPage.dart';
 
 
 class LeaderBoardPage extends StatefulWidget{//}WithName {
-
-  // LeaderBoardPage(){
-  //   setName('Leaderboard');
-  // }
 
   @override
   LeaderBoardPageState createState() => LeaderBoardPageState();
@@ -39,6 +27,8 @@ class LeaderBoardPage extends StatefulWidget{//}WithName {
 class LeaderBoardPageState extends State<LeaderBoardPage> with SingleTickerProviderStateMixin, WidgetsBindingObserver {
 
   Map<String, List<User>> leaders = {};
+
+  List<UserMonthlyBalance> balances = <UserMonthlyBalance>[];
 
   late TabController _tabController;
 
@@ -75,7 +65,7 @@ class LeaderBoardPageState extends State<LeaderBoardPage> with SingleTickerProvi
     leaders['0'] = <User>[];
     leaders['1'] = <User>[];
 
-    _tabController = TabController(length: 4, vsync: this);
+    _tabController = TabController(length: 3, vsync: this);
     _tabController.addListener(() {
       setState(() {});
     });
@@ -87,7 +77,13 @@ class LeaderBoardPageState extends State<LeaderBoardPage> with SingleTickerProvi
     Timer.periodic(const Duration(seconds: 30), (timer) {(
         getLeaderBoard()
     );
-   }
+   } );
+
+   getMyBalances();
+    Timer.periodic(const Duration(seconds: 30), (timer) {(
+        getMyBalances()
+    );
+    }
    );
 
 
@@ -96,7 +92,7 @@ class LeaderBoardPageState extends State<LeaderBoardPage> with SingleTickerProvi
   @override
   Widget build(BuildContext context) {
 
-    const int items = 4;
+    const int items = 3;
     double width = MediaQuery.of(context).size.width;
     const double labelPadding = 4;
     double labelWidth = (width - (labelPadding * (items - 1))) / items;
@@ -107,7 +103,7 @@ class LeaderBoardPageState extends State<LeaderBoardPage> with SingleTickerProvi
 
     return
       Scaffold(
-        backgroundColor: Colors.grey.shade200,
+        backgroundColor: Colors.grey.shade50,
           appBar: AppBar(
             toolbarHeight: 5,
             backgroundColor: Colors.black87, // const Color(ColorConstants.my_dark_grey),
@@ -122,7 +118,7 @@ class LeaderBoardPageState extends State<LeaderBoardPage> with SingleTickerProvi
                 CustomTabIcon(width: labelWidth, text: BetUtils.getLocalizedMonthString(context, dt.month, dt.year), isSelected: _tabController.index == 0,),
                 CustomTabIcon(width: labelWidth, text: 'Winners', isSelected: _tabController.index == 1,),
                 CustomTabIcon(width: labelWidth, text: 'My stats', isSelected: _tabController.index == 2,),
-                CustomTabIcon(width: labelWidth, text: 'Me all time', isSelected: _tabController.index == 3,),
+                // CustomTabIcon(width: labelWidth, text: 'Me all time', isSelected: _tabController.index == 3,),
 
               ],
 
@@ -152,10 +148,10 @@ class LeaderBoardPageState extends State<LeaderBoardPage> with SingleTickerProvi
                             children: <Widget>[
                             // Icon on top
                             ImageIcon(size:100, AssetImage('assets/images/leaders-100.png')),
-                            const SizedBox(height: 20),  // Space between icon and text
+                            SizedBox(height: 20),  // Space between icon and text
                             // Text below the icon
-                            const Text(
-                                'Empty leaderboard..',
+                            Text(
+                                'Empty Leader Board..',
                                 style: TextStyle(
                                 fontSize: 16,
                                 fontWeight: FontWeight.bold,
@@ -175,10 +171,9 @@ class LeaderBoardPageState extends State<LeaderBoardPage> with SingleTickerProvi
                       itemCount: leaders["0"]?.length,
                       itemBuilder: (context, item) {
                         User user = leaders["0"]![item];
-                        return _buildUserRow(user, 'curr$item${user.mongoUserId}');
+                        // return _buildUserRow((item+1).toString(), user, 'curr$item${user.mongoUserId}');
+                        return _buildUserRow(user, true, 'curr$item${user.mongoUserId}');
                       }),
-
-
 
 
                   (leaders["1"] == null || leaders["1"]!.isEmpty) ?
@@ -213,7 +208,9 @@ class LeaderBoardPageState extends State<LeaderBoardPage> with SingleTickerProvi
                       itemCount: leaders["1"]?.length,
                       itemBuilder: (context, item) {
                         User user = leaders["1"]![item];
-                        return _buildAwardRow(user,    'all$item${user.mongoUserId}');
+                        // return _buildUserRow(BetUtils.getLocalizedMonthString(context, user.balance.month, user.balance.year), user,    'all$item${user.mongoUserId}');
+                        return _buildUserRow(user, false,   'all$item${user.mongoUserId}');
+                        // return _buildAwardRow(user,    'all$item${user.mongoUserId}');
                       }),
 
 
@@ -242,26 +239,14 @@ class LeaderBoardPageState extends State<LeaderBoardPage> with SingleTickerProvi
 
                       :
 
-
-
                   ListView.builder(
                       key: const PageStorageKey<String>(
                           'pageLeaderCurrMe'),
                       padding: const EdgeInsets.all(8),
-                      itemCount: 1,
+                      itemCount: balances.length,
                       itemBuilder: (context, item) {
-                        User user = AppContext.user;
-                        return _buildUserRow(user,    'currme$item${user.mongoUserId}');
-                      }),
-
-                  ListView.builder(
-                      key: const PageStorageKey<String>(
-                          'pageLeaderAllMe'),
-                      padding: const EdgeInsets.all(8),
-                      itemCount: 1,
-                      itemBuilder: (context, item) {
-                        User user = AppContext.user;
-                        return _buildUserRow(user,    'allme$item${user.mongoUserId}');
+                        UserMonthlyBalance balance = balances.elementAt(item);
+                        return _buildBalanceRow(item, balance,    'currme$item${balance.mongoId}');
                       }),
 
 
@@ -306,7 +291,7 @@ class LeaderBoardPageState extends State<LeaderBoardPage> with SingleTickerProvi
       }
 
       if (!mounted){
-        print('not mounted');
+        // print('not mounted');
         return;
       }
 
@@ -318,17 +303,67 @@ class LeaderBoardPageState extends State<LeaderBoardPage> with SingleTickerProvi
 
   }
 
-  Widget _buildUserRow( User leader, String key) {
-    return LeaderBoardUserFullInfoRow(user: leader, key: PageStorageKey<String>(key));
+  void getMyBalances() async{
+    if (isMinimized || AppContext.user.mongoUserId == Constants.defMongoId){
+      return;
+    }
+
+    List<UserMonthlyBalance> incomingBalances = await HttpActionsClient.getUserBalancesAsync(AppContext.user.mongoUserId);
+
+
+    if (incomingBalances.isNotEmpty) {
+      for (UserMonthlyBalance incomingBalance in incomingBalances) {
+        UserMonthlyBalance existing = balances.firstWhere((element) => element.mongoId == incomingBalance.mongoId, orElse: () => UserMonthlyBalance.defBalance(),);
+          if (existing.mongoId != Constants.defMongoId){
+            existing.copyBalancesFrom(incomingBalance);
+          }else{
+            balances.add(incomingBalance);
+          }
+        }
+
+        for (UserMonthlyBalance existing in List.of(balances)){
+          UserMonthlyBalance incoming = incomingBalances.firstWhere((element) => element.mongoId == existing.mongoId, orElse: () => UserMonthlyBalance.defBalance(),);
+          if (incoming.mongoId == Constants.defMongoId){
+            balances.remove(existing);
+          }
+        }
+
+      balances.sort();
+      }
+
+      if (!mounted){
+        // print('not mounted');
+        return;
+      }
+
+
+      setState(() {
+        balances;
+      });
+    }
+
+
+
+
+  Widget _buildUserRow(User leader, bool isCurrentLeaderBoard, String key) {
+    return LeaderBoardUserFullInfoRow(user: leader, isCurrentLeaderBoard: isCurrentLeaderBoard, key: PageStorageKey<String>(key));
 
   }
 
-  Widget _buildAwardRow( User leader, String key) {
+  // Widget _buildAwardRow( User leader, String key) {
+  //
+  //   UserMonthlyBalance award = leader.balance;
+  //
+  //   return LeaderBoardAwardRow(award: award, username: leader.username, key: PageStorageKey<String>(key));
+  //
+  // }
 
-    UserAward award = leader.awards.elementAt(0);
+  Widget _buildBalanceRow(int item, UserMonthlyBalance balance, String key) {
+    User user = User.defUser();
+    user.username = AppContext.user.username;
+    user.balance = balance;
 
-    return LeaderBoardAwardRow(award: award, username: leader.username, key: PageStorageKey<String>(key));
-
+    return LeaderBoardUserFullInfoRow(user: user, isCurrentLeaderBoard: false, key: PageStorageKey<String>(key));
   }
 
 

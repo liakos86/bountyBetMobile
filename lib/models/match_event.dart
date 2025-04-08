@@ -77,6 +77,15 @@ class MatchEvent implements Comparable<MatchEvent>{
 
   bool isFavourite = false;
 
+  //TODO
+	// "time_details": {
+	// "injuryTime1": 0,
+	// "injuryTime2": 4,
+	// "injuryTime3": 2,
+	// "injuryTime4": 0,
+	// "currentPeriodStartTimestamp": 1741817864
+	// },
+
 	String calculateLiveMinute(BuildContext context, DateTime startLocal) {
 
 		if (! (MatchEventStatus.INPROGRESS.statusStr == status)) {

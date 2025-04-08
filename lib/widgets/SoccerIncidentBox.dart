@@ -25,7 +25,7 @@ class SoccerIncidentBox extends StatelessWidget{
 
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(12),
-        color: Colors.black,
+        color: Colors.white,
         border: Border.all(color: Colors.white, width: 1),
         shape: BoxShape.rectangle
       ),
@@ -41,47 +41,47 @@ class SoccerIncidentBox extends StatelessWidget{
 
     );
   }
+  //
+  // imageFromStatistic() {
+  //   String incident_type = incident.incident_type;
+  //   if ("substitution" == incident_type){
+  //     return Image.network(
+  //       incident.player?.photo ?? Constants.noImageUrl,
+  //       width: 36,
+  //       height: 36
+  //     );
+  //   }
+  //
+  //   IconData icon = Icons.not_interested;
+  //   if ("card" == incident_type){
+  //     if (incident.card_type ==  "Yellow") {
+  //       icon = Icons.add_card;
+  //     }else{
+  //       icon = Icons.error;
+  //     }
+  //   }else if ("goal" == incident_type){
+  //     icon = Icons.sports_soccer;
+  //   }else if ("period" == incident_type){
+  //     icon = Icons.star;
+  //   }else{
+  //     icon = Icons.error;
+  //   }
+  //
+  //   return Icon(
+  //     icon,
+  //     size: 24,
+  //   );
+  //
+  // }
 
-  imageFromStatistic() {
-    String incident_type = incident.incident_type;
-    if ("substitution" == incident_type){
-      return Image.network(
-        incident.player?.photo ?? Constants.noImageUrl,
-        width: 36,
-        height: 36
-      );
-    }
-
-    IconData icon = Icons.not_interested;
-    if ("card" == incident_type){
-      if (incident.card_type ==  "Yellow") {
-        icon = Icons.add_card;
-      }else{
-        icon = Icons.error;
-      }
-    }else if ("goal" == incident_type){
-      icon = Icons.sports_soccer;
-    }else if ("period" == incident_type){
-      icon = Icons.star;
-    }else{
-      icon = Icons.error;
-    }
-
-    return Icon(
-      icon,
-      size: 24,
-    );
-
-  }
-
-  String textFor(MatchEventIncidentSoccer statistic) {
-    String incident_type = statistic.incident_type;
-    if ("substitution" == incident_type){
-      return '${statistic.time}\' ${statistic.player?.name_short}\n(${statistic.player_two_in?.name_short})';
-    }
-
-    return '${statistic.time}\' ${statistic.player?.name_short}';
-  }
+  // String textFor(MatchEventIncidentSoccer statistic) {
+  //   String incident_type = statistic.incident_type;
+  //   if ("substitution" == incident_type){
+  //     return '${statistic.time}\' ${statistic.player?.name_short}\n(${statistic.player_two_in?.name_short})';
+  //   }
+  //
+  //   return '${statistic.time}\' ${statistic.player?.name_short}';
+  // }
 
   homeTeamStat(MatchEventIncidentSoccer statistic) {
     bool home =  statistic.player_team == 1 ||

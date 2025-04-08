@@ -1,8 +1,6 @@
 import 'dart:math';
 
-import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter_app/models/constants/ColorConstants.dart';
-import 'package:flutter_app/utils/client/HttpActionsClient.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -10,16 +8,13 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_app/pages/ParentPage.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 
 import 'dart:async';
 import 'enums/ChangeEvent.dart';
-import 'firebase_options.dart';
 import 'helper/SharedPrefs.dart';
 import 'models/ChangeEventSoccer.dart';
-import 'models/context/AppContext.dart';
 
 
 /// Create a [AndroidNotificationChannel] for heads up notifications
@@ -33,10 +28,6 @@ bool isFlutterLocalNotificationsInitialized = false;
 
 Future<void> main() async {
 
-
-
-
-  // HttpActionsClient.listenConnChanges();
   WidgetsFlutterBinding.ensureInitialized();
 
   //init firebase

@@ -50,10 +50,11 @@ String reverse(String s) {
   String decryptWithAES(String key, enc.Encrypted encryptedData) {
     final cipherKey = enc.Key.fromUtf8(key);
 
+    // final encryptService = enc.Encrypter(enc.AES(cipherKey, mode: enc.AESMode.ecb)); //Using AES CBC encryption
     final encryptService = enc.Encrypter(enc.AES(cipherKey, mode: enc.AESMode.ecb)); //Using AES CBC encryption
-    final initVector = enc.IV.fromUtf8(key.substring(0, 16)); //Here the IV is generated from key. This is for example only. Use some other text or random data as IV for better security.
+    //final initVector = enc.IV.fromUtf8(key.substring(0, 16)); //Here the IV is generated from key. This is for example only. Use some other text or random data as IV for better security.
 
-    return encryptService.decrypt(encryptedData, iv: initVector);
+    return encryptService.decrypt(encryptedData);//, iv: initVector);
 
     // final encryptService = Encrypter(AES(cipherKey, mode: AESMode.cbc)); //Using AES CBC encryption
     // final initVector = IV.fromUtf8(key.substring(0, 16)); //Here the IV is generated from key. This is for example only. Use some other text or random data as IV for better security.
@@ -75,9 +76,9 @@ enc.Encrypted encryptWithAES(String plainText, String key){
     print ('key after creation is ' + cipherKey.base64);
     final encryptService = enc.Encrypter(enc.AES(cipherKey, mode: enc.AESMode.ecb));
     // final encryptService = Encrypter(AES(cipherKey, mode: AESMode.cbc));
-    final initVector = enc.IV.fromUtf8(key); //Here the IV is generated from key. This is for example only. Use some other text or random data as IV for better security.
+    //final initVector = enc.IV.fromUtf8(key); //Here the IV is generated from key. This is for example only. Use some other text or random data as IV for better security.
 
-    enc.Encrypted encryptedData = encryptService.encrypt(plainText, iv: initVector);
+    enc.Encrypted encryptedData = encryptService.encrypt(plainText);//, iv: initVector);
     return encryptedData;
   }
 

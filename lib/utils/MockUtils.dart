@@ -22,6 +22,7 @@ import 'package:intl/intl.dart';
 import '../enums/MatchEventStatus.dart';
 import '../models/Player.dart';
 import '../models/Score.dart';
+import '../models/UserMonthlyBalance.dart';
 import '../models/UserPrediction.dart';
 import '../models/LeagueWithData.dart';
 import '../models/League.dart';
@@ -228,11 +229,8 @@ class MockUtils {
 
   static User mockUser() {
     User user = User("1234", "Mocker", <UserBet>[]);
-    user.balance = 10012;
-    user.monthlyLostBets=1;
-    user.monthlyWonBets=2;
-    user.monthlyLostPredictions=12;
-    user.monthlyWonPredictions=6;
+    user.balance = UserMonthlyBalance.defBalance();
+
     user.overallLostBets=5;
     user.overallWonBets=12;
     user.overallLostPredictions=22;

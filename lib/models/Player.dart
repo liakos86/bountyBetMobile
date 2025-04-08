@@ -39,7 +39,7 @@ class Player{
       return null;
     }
 
-    return Player(id: (model[JsonConstants.id]), sport_id:(model['sport_id']), name: model[JsonConstants.name], name_short: model['name_short'], position: model['position'], has_photo: (model['has_photo'] == 'true' ? true : false), photo: model['photo'], position_name: model['position_name']);
+    return Player(id: (model[JsonConstants.id]), sport_id:(model['sport_id']), name: model[JsonConstants.name], name_short: model['name_short'] ?? 'n/a', position: model['position'] ?? 'n/a', has_photo: (model['has_photo'] == 'true' ? true : false), photo: model['photo'], position_name: model['position_name'] ?? 'n/a');
 
   }
 

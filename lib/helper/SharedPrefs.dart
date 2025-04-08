@@ -25,7 +25,17 @@ class SharedPrefs {
 
   }
 
-  //List<String> get favEventIds => _sharedPrefs?.getStringList(sp_fav_event_ids) ?? <String>[];
+  void appendLeagueId(String value){
+    List<String> current =  _sharedPrefs?.getStringList(sp_fav_league_ids) ?? <String>[];//favEventIds;
+    if (current.contains(value)) {
+      throw new Exception("LEAGUE ALREADY IS FAVOURITE");
+    }
+
+    current.add(value);
+    _sharedPrefs?.setStringList(sp_fav_league_ids, current);
+    //reload();
+
+  }
 
   remove(String key){
     _sharedPrefs?.remove(key);
@@ -34,11 +44,23 @@ class SharedPrefs {
   void removeFavEvent(String value){
     List<String> current =  _sharedPrefs?.getStringList(sp_fav_event_ids) ?? <String>[];//favEventIds;
     if (!current.contains(value)) {
-      throw new Exception("EVENT ALREADY IS FAVOURITE");
+      return;
+      // throw new Exception("EVENT IS NOT FAVOURITE");
     }
 
     current.remove(value);
     _sharedPrefs?.setStringList(sp_fav_event_ids, current);
+    //reload();
+  }
+
+  void removeFavLeague(String value){
+    List<String> current =  _sharedPrefs?.getStringList(sp_fav_league_ids) ?? <String>[];//favEventIds;
+    if (!current.contains(value)) {
+      throw new Exception("LEAGUE IS NOT FAVOURITE");
+    }
+
+    current.remove(value);
+    _sharedPrefs?.setStringList(sp_fav_league_ids, current);
     //reload();
   }
 
@@ -65,3 +87,4 @@ class SharedPrefs {
 final sharedPrefs = SharedPrefs();
 
 const String sp_fav_event_ids = "fav_event_ids";
+const String sp_fav_league_ids = "fav_league_ids";

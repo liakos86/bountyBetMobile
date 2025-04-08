@@ -2,36 +2,50 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_app/enums/BetStatus.dart';
 import 'package:flutter_app/models/constants/ColorConstants.dart';
+import 'package:flutter_app/utils/BetUtils.dart';
 
 import '../../models/User.dart';
 import '../../models/UserBet.dart';
+import '../../models/UserMonthlyBalance.dart';
 
 
 class LeaderBoardUserFullInfoRow extends StatefulWidget {
 
   final User user;
 
-  LeaderBoardUserFullInfoRow({Key ?key, required this.user}) : super(key: key);
+  // final UserMonthlyBalance balance;
+
+  // final String position;
+
+  final bool isCurrentLeaderBoard;
+
+  const LeaderBoardUserFullInfoRow({Key ?key, required this.user, required this.isCurrentLeaderBoard}) : super(key: key);
 
   @override
-  LeaderBoardUserFullInfoRowState createState() => LeaderBoardUserFullInfoRowState(user: user);
+  LeaderBoardUserFullInfoRowState createState() => LeaderBoardUserFullInfoRowState(user: user, isCurrentLeaderBoard: isCurrentLeaderBoard);
+
 }
 
   class LeaderBoardUserFullInfoRowState extends State<LeaderBoardUserFullInfoRow>{
 
-
     User user;
+
+    // String position;
+
+    bool isCurrentLeaderBoard;
+
+    // UserMonthlyBalance balance;
 
     LeaderBoardUserFullInfoRowState({
       required this.user,
+      required this.isCurrentLeaderBoard,
+      // required this.balance
     });
 
   @override
   Widget build(BuildContext context) {
 
     user.userBets.sort();
-
-
 
     return Stack(
         clipBehavior: Clip.none, // Allow positioning outside the container
@@ -41,6 +55,7 @@ class LeaderBoardUserFullInfoRow extends StatefulWidget {
     Container(
       padding: const EdgeInsets.all(10),
       margin: const EdgeInsets.symmetric(vertical: 4, horizontal: 0),
+
       decoration: BoxDecoration(
         color: const Color(ColorConstants.my_dark_grey)
         , // Dark background color
@@ -56,13 +71,13 @@ class LeaderBoardUserFullInfoRow extends StatefulWidget {
           Container(
           margin: const EdgeInsets.only(top: 8),
           child:
-          Align(alignment: Alignment.bottomCenter,
+          const Align(alignment: Alignment.bottomCenter,
             child:
               // User Image
-              const CircleAvatar(
+              CircleAvatar(
                 radius: 30,
                 backgroundImage: NetworkImage(
-                  'https://xscore.cc/resb/team/asteras-tripolis.png',
+                  'https://xscore.cc/resb/league/europe-uefa-champions-league.png',
                 ),
               )
           )
@@ -106,15 +121,18 @@ class LeaderBoardUserFullInfoRow extends StatefulWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              _buildSmallStatBox(user.betPredictionsMonthlyText(), 'Month\nPreds'),
-              _buildSmallStatBox(user.betPredictionsMonthlyPercentageText(), 'Pred\n%'),
-              _buildSmallStatBox(user.monthlyROIPercentageText(), 'ROI\n'),
-              _buildSmallStatBox('60%', 'Last10\nTips'),
+              _buildSmallStatBox(user.balance.betPredictionsMonthlyText(), 'Month\nPreds'),
+              _buildSmallStatBox(user.balance.betPredictionsMonthlyPercentageText(), 'Pred\n%'),
+              _buildSmallStatBox(user.balance.monthlyROIPercentageText(), 'Month\nROI'),
+              _buildSmallStatBox(user.balance.monthlyAmountROIText(), 'Bet\nReturned'),
             ],
           ),
+
+          if (isCurrentLeaderBoard)
           const SizedBox(height: 16),
 
           // Last 5 Tips Section
+          if (isCurrentLeaderBoard)
           Row(
             mainAxisAlignment: MainAxisAlignment.center, // Align icons to the center
 
@@ -156,7 +174,7 @@ class LeaderBoardUserFullInfoRow extends StatefulWidget {
             left: 0, // Slightly left of the container
             child:
 
-            _buildTiltedPosition(user.userPosition.toString())
+            _buildTiltedPosition(isCurrentLeaderBoard ? user.userPosition.toString() : BetUtils.getLocalizedMonthString(context, user.balance.month, user.balance.year))
 
 
           ),
@@ -185,9 +203,9 @@ class LeaderBoardUserFullInfoRow extends StatefulWidget {
 
           Row(
             children: [
-              _buildTiltedStatBox(user.betSlipsMonthlyText(), 'Won Slips', 3),
-              _buildTiltedStatBox(user.betSlipsMonthlyPercentageText(), 'Slips %', 2),
-              _buildTiltedStatBox(user.balanceLeaderBoard.toStringAsFixed(0), '\$ Credits', 2),
+              _buildTiltedStatBox(user.balance.betSlipsMonthlyText(), 'Won Slips', 3, Colors.white),
+              _buildTiltedStatBox(user.balance.betSlipsMonthlyPercentageText(), 'Slips %', 2, Colors.white),
+              _buildTiltedStatBox(user.balance.balanceLeaderBoard.toStringAsFixed(0), '\$ Credits', 2, Colors.amber),
             ],
           ),
 
@@ -217,7 +235,7 @@ class LeaderBoardUserFullInfoRow extends StatefulWidget {
       );
   }
 
-  Widget _buildTiltedStatBox(String value, String label, int flex) {
+  Widget _buildTiltedStatBox(String value, String label, int flex, Color color) {
     return
       Expanded(flex: flex,
 
@@ -231,7 +249,7 @@ class LeaderBoardUserFullInfoRow extends StatefulWidget {
             Text(
               value,
               style: TextStyle(
-                color: Colors.white,
+                color: color,
                 fontSize: 14,
                 fontWeight: FontWeight.bold,
               ),
@@ -240,7 +258,7 @@ class LeaderBoardUserFullInfoRow extends StatefulWidget {
             Text(
               label,
               style: TextStyle(
-                color: Colors.white70,
+                color: color,
                 fontSize: 12,
               ),
             ),
@@ -314,9 +332,9 @@ class LeaderBoardUserFullInfoRow extends StatefulWidget {
         height: 24,
         decoration: BoxDecoration(
           shape: BoxShape.circle,
-          color: bet == null || bet.betStatus == BetStatus.WITHDRAWN ? Colors.grey : bet.betStatus == BetStatus.WON ? const Color(ColorConstants.my_green) : Colors.red,// Color(0xFF2C2C2E), // Background color for circular icon
+          color: bet == null || bet.betStatus == BetStatus.WITHDRAWN ? Colors.blue.shade200 : bet.betStatus == BetStatus.WON ? const Color(ColorConstants.my_green) : Colors.red,// Color(0xFF2C2C2E), // Background color for circular icon
         ),
-        child: Icon(bet == null || bet.betStatus == BetStatus.WITHDRAWN ? Icons.stop : bet.betStatus == BetStatus.WON ? Icons.check :  Icons.close , color: color, size: 18),
+        child: Icon(bet == null || bet.betStatus == BetStatus.WITHDRAWN ? Icons.question_mark : bet.betStatus == BetStatus.WON ? Icons.check :  Icons.close , color: color, size: 18),
       ),
     );
   }

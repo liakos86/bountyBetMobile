@@ -1,6 +1,7 @@
 import 'dart:collection';
 import 'dart:convert';
 
+import 'package:flutter/material.dart';
 import 'package:flutter_app/models/UserBet.dart';
 import 'package:flutter_app/models/beans/PlaceBetResponseBean.dart';
 import 'package:flutter_app/models/constants/UrlConstants.dart';
@@ -10,7 +11,6 @@ import 'package:in_app_purchase/in_app_purchase.dart';
 import 'dart:async';
 
 import '../../enums/BetPlacementStatus.dart';
-// import '../../examples/util/encryption.dart';
 import '../../helper/JsonHelper.dart';
 import '../../models/League.dart';
 import '../../models/LeagueWithData.dart';
@@ -18,10 +18,10 @@ import '../../models/MatchEventStatisticsWithIncidents.dart';
 import '../../models/Season.dart';
 import '../../models/Section.dart';
 import '../../models/User.dart';
+import '../../models/UserMonthlyBalance.dart';
 import '../../models/constants/Constants.dart';
 import '../../models/context/AppContext.dart';
 import '../../models/match_event.dart';
-import '../MockUtils.dart';
 import '../SecureUtils.dart';
 import 'package:http/http.dart' as http;
 import 'package:connectivity_plus/connectivity_plus.dart';
@@ -29,19 +29,15 @@ import 'package:connectivity_plus/connectivity_plus.dart';
 import '../encrypt/encryption.dart';
 
 
-
-
-
 class HttpActionsClient {
 
   static bool connected = false;
-  // static bool offline = false;
 
   static String? access_token;
 
   static Future<bool> onlineCheck() async{
     if (!connected){
-      print('connected = '+connected.toString());
+      // print('connected = '+connected.toString());
       connected = await checkInternetConnectivity();
     }
 
@@ -52,7 +48,6 @@ class HttpActionsClient {
     if (!connected){
       connected = await checkInternetConnectivity();
       if (!connected){
-        // Fluttertoast.showToast(msg: 'No network connection', toastLength: Toast.LENGTH_LONG);
         return false;
       }
     }
@@ -77,8 +72,6 @@ class HttpActionsClient {
         "status" : purchaseDetails.status.toString()
       };
 
-      // Fluttertoast.showToast(msg: 'WILL SEND $body');
-
       Response verificationResponse = await post(Uri.parse(UrlConstants.POST_VERIFY_PURCHASE),
           headers: {
             "Accept": "application/json",
@@ -90,7 +83,6 @@ class HttpActionsClient {
           const Duration(seconds: 30));
 
       var responseDec = jsonDecode(verificationResponse.body);
-      // Fluttertoast.showToast(msg: 'Verification from server:${responseDec['verified']}');
 
       return responseDec['verified'];
 
@@ -104,7 +96,6 @@ class HttpActionsClient {
     if (!connected){
       connected = await checkInternetConnectivity();
       if (!connected){
-        Fluttertoast.showToast(msg: 'No network connection', toastLength: Toast.LENGTH_LONG);
         return null;
       }
     }
@@ -137,13 +128,8 @@ class HttpActionsClient {
       return userFromServer;
 
     }catch(e){
-
-        Fluttertoast.showToast(msg: 'Failed to login ' + e.toString(), toastLength: Toast.LENGTH_LONG);
-
-
       print(e);
       return null;
-
     }
   }
 
@@ -184,15 +170,12 @@ class HttpActionsClient {
     var responseDec = jsonDecode(userResponse.body);
 
     PlaceBetResponseBean responseBean = PlaceBetResponseBean.fromJson(responseDec);
-    // BetPlacementStatus betPlacementStatus = BetPlacementStatus.ofStatusText(userResponse.body);
-
 
     return responseBean;
 
     }catch(e){
-      print(e);
+      // print(e);
       return PlaceBetResponseBean(betId: '', betPlacementStatus: BetPlacementStatus.FAIL_GENERIC.statusText);
-      // return BetPlacementStatus.FAIL_GENERIC;
     }
   }
 
@@ -200,7 +183,6 @@ class HttpActionsClient {
     if (!connected){
       connected = await checkInternetConnectivity();
       if (!connected){
-        // Fluttertoast.showToast(msg: 'No network connection', toastLength: Toast.LENGTH_LONG);
         return Season.defSeason();
       }
     }
@@ -233,11 +215,9 @@ class HttpActionsClient {
     if (!connected){
       connected = await checkInternetConnectivity();
       if (!connected){
-        // Fluttertoast.showToast(msg: 'No network connection', toastLength: Toast.LENGTH_LONG);
         return MatchEventStatisticsWithIncidents();
       }
     }
-    // return <MatchEventStatisticSoccer>[];
 
     String getStatsUrlFinal = UrlConstants.GET_EVENT_STATISTICS_URL + eventId.toString();
     try {
@@ -247,17 +227,18 @@ class HttpActionsClient {
             Constants.accessToken);
         await authorizeAsync();
         if (access_token == null) {
-          print('LEDERS COULD NOT AUTHORIZE ********************************************************************');
+          // print('LEDERS COULD NOT AUTHORIZE ********************************************************************');
           return MatchEventStatisticsWithIncidents();
         }
       }
 
       Response response = await get(Uri.parse(getStatsUrlFinal), headers:  {'Authorization': 'Bearer $access_token'}).timeout(const Duration(seconds: 3));
       var responseDec = await jsonDecode(response.body);
+      if (responseDec == null){
+        return MatchEventStatisticsWithIncidents();
+      }
       return MatchEventStatisticsWithIncidents.fromJson(responseDec);
-      // Iterable l = await json.decode(response.body);
-      // List<MatchEventStatisticSoccer> incidents = List<MatchEventStatisticSoccer>.from(l.map((model)=> MatchEventStatisticSoccer.fromJson(model)));
-      // return incidents;
+
     } catch (e) {
       print('STATS ERRROR ' + e.toString());
       return MatchEventStatisticsWithIncidents();
@@ -270,7 +251,6 @@ class HttpActionsClient {
     if (!connected){
       connected = await checkInternetConnectivity();
       if (!connected){
-        // Fluttertoast.showToast(msg: 'No network connection', toastLength: Toast.LENGTH_LONG);
         return leadersMap;
       }
     }
@@ -282,7 +262,7 @@ class HttpActionsClient {
             Constants.accessToken);
         await authorizeAsync();
         if (access_token == null) {
-          print('LEDERS COULD NOT AUTHORIZE ********************************************************************');
+          // print('LEDERS COULD NOT AUTHORIZE ********************************************************************');
           return leadersMap;
         }
       }
@@ -310,61 +290,17 @@ class HttpActionsClient {
       // mocks.add(MockUtils.mockUser());
       // leadersMap.putIfAbsent('0', () => mocks);
       // leadersMap.putIfAbsent('1', () => mocks);
-      print(e);
+      // print(e);
     }
 
     return leadersMap;
 
   }
 
-  static Future<void> registerWith(String email, String password) async{
-    if (!connected){
-      connected = await checkInternetConnectivity();
-      if (!connected){
-        // Fluttertoast.showToast(msg: 'No network connection', toastLength: Toast.LENGTH_LONG);
-        return;
-      }
-    }
-
-    try {
-
-      if (access_token == null) {
-        access_token = await SecureUtils().retrieveValue(
-            Constants.accessToken);
-        await authorizeAsync();
-        if (access_token == null) {
-          print('register COULD NOT AUTHORIZE ********************************************************************');
-          return;
-        }
-      }
-
-
-      Response registerResponse = await post(Uri.parse(UrlConstants.POST_REGISTER_USER),
-          headers: {
-            "Accept": "application/json",
-            "Content-Type": "application/json",
-            'Authorization': 'Bearer $access_token'
-          },
-          body: jsonEncode(toJsonRegister(email, password)),
-          encoding: Encoding.getByName("utf-8")).timeout(
-          const Duration(seconds: 30));
-
-      var responseDec = jsonDecode(registerResponse.body);
-      User userFromServer = User.fromJson(responseDec);
-
-      //TODO ?
-
-    }catch(e){
-      print(e);
-    }
-  }
-
-
   static Future<User?> register(String username, String email, String password) async {
     if (!connected){
       connected = await checkInternetConnectivity();
       if (!connected){
-        // Fluttertoast.showToast(msg: 'No network connection', toastLength: Toast.LENGTH_LONG);
         return null;
       }
     }
@@ -410,7 +346,6 @@ class HttpActionsClient {
     if (!connected){
       connected = await checkInternetConnectivity();
       if (!connected){
-        // Fluttertoast.showToast(msg: 'No network connection', toastLength: Toast.LENGTH_LONG);
         return Map();
       }
     }
@@ -429,8 +364,7 @@ class HttpActionsClient {
       Response liveMatchesResponse = await get(Uri.parse(UrlConstants.GET_LIVE_EVENTS), headers:  {'Authorization': 'Bearer $access_token'}).timeout(const Duration(seconds: 20));
       jsonMatchesData = await jsonDecode(liveMatchesResponse.body) as Map;
     } catch (e) {
-      // Fluttertoast.showToast(msg:  'LIVE   ' +e.toString());
-      print('ERROR REST ---- MOCKING............');
+      // print('ERROR REST ---- MOCKING............');
       Map<int, MatchEvent> validData = new Map();// MockUtils().mockLeaguesMap(AppContext.eventsPerDayMap, false);
       return validData;
     }
@@ -444,7 +378,6 @@ class HttpActionsClient {
     if (!connected){
       connected = await checkInternetConnectivity();
       if (!connected){
-        // Fluttertoast.showToast(msg: 'No network connection', toastLength: Toast.LENGTH_LONG);
         return Map();
       }
     }
@@ -465,8 +398,7 @@ class HttpActionsClient {
       Response leaguesResponse = await get(Uri.parse(UrlConstants.GET_LEAGUE_EVENTS), headers:  {'Authorization': 'Bearer $access_token'}).timeout(const Duration(seconds: 10));
       jsonLeaguesData = await jsonDecode(leaguesResponse.body) as Map;
     } catch (e) {
-      // Fluttertoast.showToast(msg: 'EVENTS   ' +e.toString());
-      print('ERROR REST ---- MOCKING............');
+      // print('ERROR REST ---- MOCKING............');
       Map<String, List<LeagueWithData>> validData = Map();//  MockUtils().mockLeaguesMap(AppContext.eventsPerDayMap, false);
       return validData;
     }
@@ -480,7 +412,6 @@ class HttpActionsClient {
     if (!connected){
       connected = await checkInternetConnectivity();
       if (!connected){
-        // Fluttertoast.showToast(msg: 'No network connection', toastLength: Toast.LENGTH_LONG);
         return jsonLeaguesData;
       }
     }
@@ -498,31 +429,60 @@ class HttpActionsClient {
 
       Response leaguesResponse = await get(Uri.parse(UrlConstants.GET_LEAGUES), headers:  {'Authorization': 'Bearer $access_token'}).timeout(const Duration(seconds: 10));
       Iterable leaguesIterable = json.decode(leaguesResponse.body);
-      jsonLeaguesData = List<League>.from(leaguesIterable.map((model)=> League.fromJson(model)));
+      jsonLeaguesData = await Future.wait(
+        leaguesIterable.map((model) async => await League.fromJson(model)),
+      );// List<League>.from(leaguesIterable.map((model) async => await League.fromJson(model)));
     } catch (e) {
-      Fluttertoast.showToast(
-          msg:  'LEAGUES   ' +e.toString(),
-        fontSize: 6
+      String msg = e.toString();
 
+      const int lineLength = 30; // Define the line length
 
-      );
+      StringBuffer result = StringBuffer(); // To efficiently build the result string
+      for (int i = 0; i < msg.length; i += lineLength) {
+        result.write(msg.substring(i, i + lineLength > msg.length ? msg.length : i + lineLength));
+        result.write('\n'); // Add a newline after every 30 characters
+      }
+
+      showToastInChunks(e.toString());
       print('ERROR REST ---- LEAGUES MOCKING............');
-
     }
 
     return jsonLeaguesData;
   }
 
+  static Future<void> showToastInChunks(String input) async {
+    const int chunkSize = 28; // Define the chunk size (28 characters)
+
+    // Split the input string into chunks of 28 characters
+    List<String> chunks = [];
+    for (int i = 0; i < input.length; i += chunkSize) {
+      chunks.add(input.substring(i, i + chunkSize > input.length ? input.length : i + chunkSize));
+    }
+
+    // Show each chunk as a FlutterToast with a long duration, waiting between each
+    for (int i = 0; i < chunks.length; i++) {
+      await Fluttertoast.showToast(
+        msg: chunks[i],
+        toastLength: Toast.LENGTH_LONG,
+        gravity: ToastGravity.BOTTOM,
+        timeInSecForIosWeb: 5, // Duration for iOS/web (long duration)
+        backgroundColor: Colors.black,
+        textColor: Colors.white,
+        fontSize: 16.0,
+      );
+
+      // Wait for the toast duration to finish before showing the next one
+      await Future.delayed(Duration(seconds: 5));  // Adjust delay if needed to match the toast length
+    }
+  }
+
 
   static Future<List<Section>> getSectionsAsync(Timer? timer) async {
-
-    // Fluttertoast.showToast(msg: 'Network call', toastLength: Toast.LENGTH_LONG);
 
     List<Section> jsonSectionsData = <Section>[];
     if (!connected){
       connected = await checkInternetConnectivity();
       if (!connected){
-        // Fluttertoast.showToast(msg: 'No network connection', toastLength: Toast.LENGTH_LONG);
         return jsonSectionsData;
       }
     }
@@ -539,9 +499,6 @@ class HttpActionsClient {
         }
       }
 
-      //print('TOKEN ' + access_token!);
-
-
       String url = UrlConstants.GET_SECTIONS;
       Response sectionsHttpResponse = await get(Uri.parse(url),
           headers:  {'Authorization': 'Bearer $access_token'}).timeout(const Duration(seconds: 10));
@@ -551,7 +508,6 @@ class HttpActionsClient {
       if (e is TimeoutException){
         connected = false;
       }
-      // Fluttertoast.showToast(msg:  'SECTIONS   ' +e.toString());
       print('ERROR REST ---- SECTIONS MOCKING............');
 
     }
@@ -564,7 +520,6 @@ class HttpActionsClient {
     if (!connected){
       connected = await checkInternetConnectivity();
       if (!connected){
-        // Fluttertoast.showToast(msg: 'No network connection', toastLength: Toast.LENGTH_LONG);
         return ;
       }
     }
@@ -591,9 +546,7 @@ class HttpActionsClient {
           .timeout(const Duration(seconds: 10));
       var responseDec = await jsonDecode(authHttpResponse.body);
 
-      // SecureUtils
-
-      print(responseDec['access_token']);
+      // print(responseDec['access_token']);
 
       String? accessTkn = (responseDec['access_token']);
       if (accessTkn==null){
@@ -605,7 +558,6 @@ class HttpActionsClient {
       access_token = accessTkn;
       return ;
     } catch (e) {
-       Fluttertoast.showToast(msg:  'AUTHORIZATION   ' +e.toString());
       print('ERROR AUTH ---- ............');
     }
 
@@ -617,8 +569,8 @@ class HttpActionsClient {
     var encryptedWithAES_2 = encryptWithAES(emailOrUsername, createKey(UrlConstants.URL_ENC));
     var encryptedWithAES = encryptWithAES(password, createKey(encryptedWithAES_2.base64));
 
-    print('sending ' +encryptedWithAES_2.base64 + ' size ' + encryptedWithAES_2.base64.length.toString() );
-    print('sending ' +encryptedWithAES.base64+ ' size ' + encryptedWithAES.base64.length.toString() );
+    // print('sending ' +encryptedWithAES_2.base64 + ' size ' + encryptedWithAES_2.base64.length.toString() );
+    // print('sending ' +encryptedWithAES.base64+ ' size ' + encryptedWithAES.base64.length.toString() );
 
     return {
       "email": encryptedWithAES_2.base64,
@@ -635,8 +587,8 @@ class HttpActionsClient {
     // var encryptedWithAES_2 = encryptWithAES(email, encryptedWithAES.base64);
 
 
-    print('sending ' +encryptedWithAES_2.base64 + ' size ' + encryptedWithAES_2.base64.length.toString() );
-    print('sending ' +encryptedWithAES.base64+ ' size ' + encryptedWithAES.base64.length.toString() );
+    // print('sending ' +encryptedWithAES_2.base64 + ' size ' + encryptedWithAES_2.base64.length.toString() );
+    // print('sending ' +encryptedWithAES.base64+ ' size ' + encryptedWithAES.base64.length.toString() );
 
     return {
       "email": encryptedWithAES_2.base64,
@@ -653,10 +605,10 @@ class HttpActionsClient {
     // var encryptedWithAES_2 = encryptWithAES(email, encryptedWithAES.base64);
 
 
-    print('sending ' + encryptedWithAES_2.base64 + ' size ' +
-        encryptedWithAES_2.base64.length.toString());
-    print('sending ' + encryptedWithAES.base64 + ' size ' +
-        encryptedWithAES.base64.length.toString());
+    // print('sending ' + encryptedWithAES_2.base64 + ' size ' +
+    //     encryptedWithAES_2.base64.length.toString());
+    // print('sending ' + encryptedWithAES.base64 + ' size ' +
+    //     encryptedWithAES.base64.length.toString());
 
     return {
       "email": encryptedWithAES_2.base64,
@@ -669,7 +621,6 @@ class HttpActionsClient {
     if (!connected){
       connected = await checkInternetConnectivity();
       if (!connected){
-        // Fluttertoast.showToast(msg: 'No network connection', toastLength: Toast.LENGTH_LONG);
         return null;
       }
     }
@@ -691,8 +642,43 @@ class HttpActionsClient {
       var responseDec = await jsonDecode(userResponse.body);
       return User.fromJson(responseDec);
     } catch (e) {
-      //Fluttertoast.showToast(msg:  'USER   ' +e.toString());
       return null;
+    }
+  }
+
+  static Future<List<UserMonthlyBalance>> getUserBalancesAsync(String mongoId) async{
+    if (!connected){
+      connected = await checkInternetConnectivity();
+      if (!connected){
+        return <UserMonthlyBalance>[];
+      }
+    }
+
+
+    try {
+      if (access_token == null) {
+        access_token = await SecureUtils().retrieveValue(
+            Constants.accessToken);
+        await authorizeAsync();
+        if (access_token == null) {
+          print('COULD NOT AUTHORIZE ********************************************************************');
+          return <UserMonthlyBalance>[];
+        }
+      }
+
+      String getUserUrlFinal = UrlConstants.GET_USER_BALANCES + mongoId;
+      Response userResponse = await get(Uri.parse(getUserUrlFinal), headers:  {'Authorization': 'Bearer $access_token'}).timeout(const Duration(seconds: 30));
+
+      Iterable balancesIterable = json.decode(userResponse.body);
+      List<UserMonthlyBalance> balances = await Future.wait(
+        balancesIterable.map((model) async => await UserMonthlyBalance.fromJson(model)),
+      );
+
+      // print('balances success');
+      return balances;
+    } catch (e) {
+      print('Balance err');
+      return <UserMonthlyBalance>[];
     }
   }
 
@@ -777,13 +763,10 @@ class HttpActionsClient {
         print("Connectivity Result: $result");
         if (result == ConnectivityResult.mobile) {
           connected = true;
-         // Fluttertoast.showToast(msg: "Now connected to a mobile network");
         } else if (result == ConnectivityResult.wifi) {
           connected = true;
-          //Fluttertoast.showToast(msg: "Now connected to a WiFi network");
         } else if (result == ConnectivityResult.none) {
           connected = false;
-          //Fluttertoast.showToast(msg: "Lost internet connection");
         }
 
         updateConnState.call(connected);

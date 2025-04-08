@@ -39,6 +39,8 @@ class MatchInfoSoccerDetailsPageState extends State<MatchInfoSoccerDetailsPage> 
 
   late Function eventCallback;
 
+  MatchEventIncidentSoccer injuriesStatistic = MatchEventIncidentSoccer.defIncident();
+
   List<MatchEventIncidentSoccer> incidents = <MatchEventIncidentSoccer>[];
   List<MatchEventStatisticSoccer> statistics = <MatchEventStatisticSoccer>[];
 
@@ -83,7 +85,7 @@ class MatchInfoSoccerDetailsPageState extends State<MatchInfoSoccerDetailsPage> 
     return
 
       Scaffold(
-      appBar: AppBar(title: Text('${event.homeTeam.getLocalizedName()}  -  ${event.awayTeam.getLocalizedName()}')),
+      appBar: AppBar(title: Text('${event.homeTeam.getLocalizedName()} - ${event.awayTeam.getLocalizedName()}', style: const TextStyle(fontSize: 16))),
     body:
 
     PageStorage(
@@ -98,7 +100,7 @@ class MatchInfoSoccerDetailsPageState extends State<MatchInfoSoccerDetailsPage> 
         Expanded(flex:2,
             child:
                 Container(
-                  color:Colors.grey[100],
+                  color:Colors.grey.shade50,
                 child:
                 Padding(
               padding: const EdgeInsets.only(top: 12, bottom: 12),
@@ -108,7 +110,7 @@ class MatchInfoSoccerDetailsPageState extends State<MatchInfoSoccerDetailsPage> 
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
             LogoWithTeamLarge(team: event.homeTeam),
-            MatchScoreMiddleText(key:middleKey, event: event),
+            MatchScoreMiddleText(key:middleKey, event: event, injuries: injuriesStatistic),
             LogoWithTeamLarge(team: event.awayTeam)
                     ],
         ))
@@ -121,18 +123,14 @@ class MatchInfoSoccerDetailsPageState extends State<MatchInfoSoccerDetailsPage> 
         DefaultTabController(
           length: items,
           child: Scaffold(
-            backgroundColor: Colors.black87,
+            backgroundColor: Colors.white,
               appBar: AppBar(
-                toolbarHeight: 5,
-                backgroundColor: Colors.black87,
+                toolbarHeight: 1,
+                backgroundColor: Colors.grey.shade50,
                 bottom: TabBar(
                   indicator: const BoxDecoration(),
                   controller: _tabController,
                   labelPadding: const EdgeInsets.symmetric(horizontal: labelPadding),
-                  // labelColor: Colors.black,
-                  // unselectedLabelColor: Colors.grey[500],
-                  // indicatorColor: Colors.black,
-                  // indicatorWeight: 2,
 
                     tabs: [
                       CustomTabIcon(width: labelWidth, text: AppLocalizations.of(context)!.incidents, isSelected: _tabController.index == 0,),
@@ -152,6 +150,9 @@ class MatchInfoSoccerDetailsPageState extends State<MatchInfoSoccerDetailsPage> 
               body: TabBarView(
                 controller: _tabController,
                 children: [
+
+                  incidents.isEmpty? const Align(alignment: Alignment.center, child: Text('No incidents yet.') ) :
+
                   ListView.builder(
                       key: const PageStorageKey<String>(
                           'pageDetailsIncidents'),
@@ -159,6 +160,9 @@ class MatchInfoSoccerDetailsPageState extends State<MatchInfoSoccerDetailsPage> 
                       itemBuilder: (context, item) {
                         return _buildIncidentRow(incidents[item]);
                       }),
+
+                  statistics.isEmpty? const Align(alignment: Alignment.center, child: Text('No statistics yet.') ) :
+
                   ListView.builder(
                       key: const PageStorageKey<String>(
                           'pageDetailsStats'),
@@ -200,19 +204,44 @@ class MatchInfoSoccerDetailsPageState extends State<MatchInfoSoccerDetailsPage> 
     }
 
     MatchEventStatisticsWithIncidents newIncidents = await HttpActionsClient.getStatisticsAsync(event.eventId);
+
+    if(newIncidents.eventId == -1){
+      return;
+    }
+
+    newIncidents.incidents.data.sort();
     var incomingIncidents = newIncidents.incidents.data;
     var incomingStats = newIncidents.statistics.data;
-    for (MatchEventIncidentSoccer meis in incomingIncidents){
 
-      if (!incidents.contains(meis)){
-        // print('adding incident ' + meis.incident_type);
-        incidents.add(meis);
-      }else{
-        var firstWhere = incidents.firstWhere((element) => element.id == meis.id);
-        firstWhere.copyFrom(meis);
+    MatchEventIncidentSoccer latestIncomingInjury = MatchEventIncidentSoccer.defIncident();
+
+    for (MatchEventIncidentSoccer meis in incomingIncidents){
+      print("ORDER " + meis.order.toString() + " ID : " + meis.id.toString());
+      if (MatchIncidentsConstants.INJURY == meis.incident_type && meis.order > latestIncomingInjury.order){
+        latestIncomingInjury = meis;
+        continue;
       }
 
+      if (MatchIncidentsConstants.PERIOD == meis.incident_type && meis.order > latestIncomingInjury.order){
+        latestIncomingInjury = MatchEventIncidentSoccer.defIncident();
+      }
 
+      MatchEventIncidentSoccer existingIncident = incidents.firstWhere((element) => element.id == meis.id, orElse: () => MatchEventIncidentSoccer.defIncident());
+      if (existingIncident.id == -1){
+        incidents.add(meis);
+      }else{
+        existingIncident.copyFrom(meis);
+      }
+
+    }
+
+    injuriesStatistic.copyFrom(latestIncomingInjury);
+
+    for (MatchEventIncidentSoccer existing in List.of(incidents)){
+      MatchEventIncidentSoccer incomingIncident = incomingIncidents.firstWhere((element) => element.id == existing.id, orElse: () => MatchEventIncidentSoccer.defIncident());
+      if (incomingIncident.id == -1){
+        incidents.remove(existing);
+      }
     }
 
     for (MatchEventStatisticSoccer meis in incomingStats){
@@ -232,20 +261,11 @@ class MatchInfoSoccerDetailsPageState extends State<MatchInfoSoccerDetailsPage> 
 
     }
 
-
-
-
-
     setState(() {
       incidents;
       statistics;
     });
 
   }
-
-
-
-
-
 
 }

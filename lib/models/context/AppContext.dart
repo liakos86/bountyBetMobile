@@ -53,28 +53,7 @@ class AppContext{
   }
 
   static void updateUser(User value) {
-    user.username = value.username;
-    user.userBets.clear();
-    user.userBets.addAll(value.userBets);
-    user.validated = value.validated;
-
-    user.email = value.email;
-    user.balance = value.balance;
-    user.mongoUserId = value.mongoUserId;
-    user.errorMessage = value.errorMessage;
-    user.userPosition = value.userPosition;
-
-    user.betAmountMonthly = value.betAmountMonthly;
-    user.betAmountOverall = value.betAmountOverall;
-    user.balanceLeaderBoard = value.balanceLeaderBoard;
-    user.monthlyLostBets = value.monthlyLostBets;
-    user.monthlyLostPredictions = value.monthlyLostPredictions;
-    user.monthlyWonBets = value.monthlyWonBets;
-    user.monthlyWonPredictions = value.monthlyWonPredictions;
-    user.overallLostBets = value.overallLostBets;
-    user.overallLostPredictions = value.overallLostPredictions;
-    user.overallWonPredictions = value.overallWonPredictions;
-    user.overallWonBets = value.overallWonBets;
+    user.copyBalancesFrom(value);
   }
 
 

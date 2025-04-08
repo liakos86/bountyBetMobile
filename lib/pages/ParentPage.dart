@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:convert';
 import 'dart:io';
 import 'dart:ui';
 import 'package:collection/collection.dart';
@@ -14,18 +13,16 @@ import 'package:flutter_app/models/constants/JsonConstants.dart';
 import 'package:flutter_app/models/LeagueWithData.dart';
 import 'package:flutter_app/models/constants/PurchaseConstants.dart';
 import 'package:flutter_app/models/context/AppContext.dart';
-import 'package:flutter_app/pages/LeaguesInfoPage.dart';
+// import 'package:flutter_app/pages/LeaguesInfoPage.dart';
 import 'package:flutter_app/pages/OddsPage.dart';
 import 'package:flutter_app/utils/client/HttpActionsClient.dart';
 import 'package:flutter_app/widgets/DialogTabbedLoginOrRegister.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:in_app_purchase/in_app_purchase.dart';
 
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../enums/ChangeEvent.dart';
 import '../enums/MatchEventStatus.dart';
-import '../helper/SharedPrefs.dart';
 import '../models/ChangeEventSoccer.dart';
 import '../models/League.dart';
 import '../models/Section.dart';
@@ -40,6 +37,7 @@ import '../widgets/dialog/DialogTextWithButtons.dart';
 import 'LeaderBoardPage.dart';
 import 'LivePage.dart';
 import 'MyBetsPage.dart';
+import 'MyFantasyLeaguesPage.dart';
 
   /*
    * The current device locale. It can change at any time by user.
@@ -98,7 +96,8 @@ class ParentPageState extends State<ParentPage> with WidgetsBindingObserver {
   static GlobalKey livePageKey = GlobalKey();
   static GlobalKey betsPageKey = GlobalKey();
   static GlobalKey leaderBoardPageKey = GlobalKey();
-  static GlobalKey leaguesPageKey = GlobalKey();
+  static GlobalKey myFantasyLeaguesKey = GlobalKey();
+  // static GlobalKey leaguesPageKey = GlobalKey();
 
   updateConnState(bool conn){
 
@@ -123,9 +122,13 @@ class ParentPageState extends State<ParentPage> with WidgetsBindingObserver {
     subscription = inAppPurchase.purchaseStream.listen((purchaseDetailsList) {
       handlePurchaseUpdates(purchaseDetailsList);
     },onDone: () => subscription?.cancel(), onError: (error) {
-      Fluttertoast.showToast(msg: 'ERROR PUR');
+      if (mounted){
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+          content: Text('Purchase was not completed'), showCloseIcon: true, duration: Duration(seconds: 5),
+        ));
+      }
       // Handle errors during the purchase flow.
-      print('Purchase error: $error');
+      //print('Purchase error: $error');
     });
 
     HttpActionsClient.listenConnChanges(updateConnState);
@@ -147,7 +150,7 @@ class ParentPageState extends State<ParentPage> with WidgetsBindingObserver {
   pagesList.add(LivePage(key: livePageKey, allLeagues: AppContext.eventsPerDayMap['0']));
   pagesList.add(LeaderBoardPage());
   pagesList.add(MyBetsPage(key: betsPageKey, loginOrRegisterCallback: promptLoginOrRegister));
-  pagesList.add(LeaguesInfoPage(key: leaguesPageKey, leagues: AppContext.allLeaguesMap));
+  pagesList.add(MyFantasyLeaguesPage(key: myFantasyLeaguesKey, loginOrRegisterCallback: promptLoginOrRegister));
 
 
   HttpActionsClient.authorizeAsync().then((a) =>
@@ -257,12 +260,16 @@ class ParentPageState extends State<ParentPage> with WidgetsBindingObserver {
   }
 
   static void favouritesUpdate(){
+      sortLeagues();
+
       oddsPageKey.currentState?.setState(() {
         AppContext.eventsPerDayMap;
+        AppContext.allLeaguesMap;
       });
 
       livePageKey.currentState?.setState(() {
-
+        AppContext.eventsPerDayMap;
+        AppContext.allLeaguesMap;
       });
   }
 
@@ -291,7 +298,7 @@ class ParentPageState extends State<ParentPage> with WidgetsBindingObserver {
     }
 
 
-    print('TITLE ' + appBarTitle);
+    //print('TITLE ' + appBarTitle);
     setState(() {
       AppContext.user;
       appBarTitle;
@@ -337,7 +344,7 @@ class ParentPageState extends State<ParentPage> with WidgetsBindingObserver {
 
                 const WidgetSpan(child: SizedBox(width: 8)),
 
-                AppContext.user.balance > 0 ?
+                AppContext.user.balance.balance > 0 ?
                 const WidgetSpan(
                   alignment: PlaceholderAlignment.middle, // Align icon with text
                   child: Icon(
@@ -350,11 +357,11 @@ class ParentPageState extends State<ParentPage> with WidgetsBindingObserver {
               const TextSpan(text: Constants.empty),
 
                 TextSpan(
-                  text: AppContext.user.balance > 0 ? AppContext.user.balance.toStringAsFixed(2) : Constants.empty,
+                  text: AppContext.user.balance.balance > 0 ? AppContext.user.balance.balance.toStringAsFixed(2) : Constants.empty,
                 ),
                ]))),
 
-              if (available && products.isNotEmpty && AppContext.user.mongoUserId != Constants.defMongoId && AppContext.user.validated && AppContext.user.balance < 100000 )
+              if (available && products.isNotEmpty && AppContext.user.mongoUserId != Constants.defMongoId && AppContext.user.validated && AppContext.user.balance.balance < 100000 )
                   ElevatedButton(
                     key: UniqueKey(),
                     onPressed: () {
@@ -458,7 +465,7 @@ class ParentPageState extends State<ParentPage> with WidgetsBindingObserver {
           ),
           BottomNavigationBarItem(
               icon: Icon(Icons.leaderboard),
-              label: 'Leagues'
+              label: 'Fantasy'
           ),
         ],
 
@@ -781,14 +788,11 @@ void setupFirebaseListeners() async{
     });
   }
 
-  void sortLeagues() {
+  static void sortLeagues() {
     for (var element in AppContext.eventsPerDayMap.entries) {
       element.value.sort();
     }
 
-    // AppContext.liveLeagues.sort();
-
-//    AppContext.allLeaguesWithData.sort();
   }
 
   void updatePageStates() {
@@ -807,8 +811,12 @@ void setupFirebaseListeners() async{
       AppContext.eventsPerDayMap['0'];
     });
 
-    leaguesPageKey.currentState?.setState(() {
-      AppContext.allLeaguesMap;
+    // leaguesPageKey.currentState?.setState(() {
+    //   AppContext.allLeaguesMap;
+    // });
+
+    myFantasyLeaguesKey.currentState?.setState(() {
+      AppContext.user;
     });
   }
 
@@ -839,7 +847,12 @@ void setupFirebaseListeners() async{
 
   bool updateLeagues(List<League> leagues) {
     for ( League l in leagues){
-      AppContext.allLeaguesMap.putIfAbsent(l.league_id, ()=>l);
+      if (AppContext.allLeaguesMap.containsKey(l.league_id)){
+        AppContext.allLeaguesMap[l.league_id]?.copyFrom(l);
+      }else {
+        AppContext.allLeaguesMap.putIfAbsent(l.league_id, () => l);
+      }
+
     }
 
     updatePageStates();
@@ -884,7 +897,6 @@ void setupFirebaseListeners() async{
           }
 
           checkForOddsRemoval([existingEvent]);
-          // Fluttertoast.showToast(msg: 'Event removed from live ' + existingEvent.homeTeam.name);
         } else {
           //match was present and is also now, copy fields
           MatchEvent incomingEvent = incomingLeague.events.firstWhere((
@@ -921,11 +933,6 @@ void setupFirebaseListeners() async{
       if (incomingLeague.league.league_id == -1) {
         existingTodayLeagues.remove(existingLeague);
 
-        // if (AppContext.eventsPerDayMap['0'].contains(existingLeague)) {
-        //   AppContext.eventsPerDayMap['0'].remove(existingLeague);
-        // }
-
-        // Fluttertoast.showToast(msg: 'REMOVING LEAGUE ' + existingLeague.league.name);
 
         checkForOddsRemoval(existingLeague.events);
       }else{
@@ -977,7 +984,10 @@ void setupFirebaseListeners() async{
 
   void promptDialogTopup(String productId) {
     if (products.isEmpty){
-      Fluttertoast.showToast(msg: 'No products available');
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+        content: Text('No products available'), showCloseIcon: true, duration: Duration(seconds: 5),
+      ));
+
       return;
     }
 
@@ -989,7 +999,10 @@ void setupFirebaseListeners() async{
     }
 
     if (selected == null) {
-      Fluttertoast.showToast(msg: 'Product not found ' + productId);
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text('Product not found $productId'), showCloseIcon: true, duration: const Duration(seconds: 5),
+      ));
+
       return;
     }
 
@@ -1004,12 +1017,10 @@ void setupFirebaseListeners() async{
       available = isAvailable;
     });
 
-    // Fluttertoast.showToast(msg: 'PURCHSes: ' + isAvailable.toString());
     if (isAvailable) {
 
       final ProductDetailsResponse response = await inAppPurchase.queryProductDetails(PurchaseConstants.productIds);
       if (response.error == null) {
-        // Fluttertoast.showToast(msg: 'PRODUCTS ' + response.productDetails.length.toString());
         setState(() {
           products = response.productDetails;
         });
@@ -1022,11 +1033,10 @@ void setupFirebaseListeners() async{
       purchases.addAll(purchaseDetailsList);
     });
 
-      // Fluttertoast.showToast(msg: 'incoming Purchases size: ${purchaseDetailsList.length}');
     for (final PurchaseDetails purchaseDetails in purchaseDetailsList) {
 
       if (purchaseDetails.status == PurchaseStatus.purchased || purchaseDetails.status == PurchaseStatus.restored) {
-        bool isValid = true; // TODO: server await verifyPurchaseOnServer(purchaseDetails);
+        //bool isValid = true; // TODO: server await verifyPurchaseOnServer(purchaseDetails);
         if (purchaseDetails.pendingCompletePurchase) {
           deliverProduct(purchaseDetails);
         }else{
@@ -1035,11 +1045,12 @@ void setupFirebaseListeners() async{
 
           await androidAddition.consumePurchase(purchaseDetails);
 
-          Fluttertoast.showToast(msg:'Re-consuming product: ${purchaseDetails.productID}');
         }
       } else if (purchaseDetails.status == PurchaseStatus.error) {
         // Handle error
-        Fluttertoast.showToast(msg: 'Purchase Error: ${purchaseDetails.error}');
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text('Purchase Error: ${purchaseDetails.error}'), showCloseIcon: true, duration: const Duration(seconds: 5),
+        ));
       }
     }
   }
@@ -1055,22 +1066,12 @@ void setupFirebaseListeners() async{
    * If server validation fails, we keep the purchase in the shared prefs in order to be retried in 30 seconds.
    */
   Future<void> deliverProduct(PurchaseDetails purchaseDetails) async{
-    var purchaseBeanJson = jsonEncode( purchaseDetailsToJson(purchaseDetails));
-
-    // Fluttertoast.showToast(msg: purchaseBeanJson);
-
-    // SharedPreferences preferences = await prefs;
-    // Save the purchase to retry later in case of server failure
-    // await preferences.setBool(PurchaseConstants.pendingPurchase, true);
 
     try {
       bool success = await sendPurchaseToServer(purchaseDetails);
       if (success) {
-        print("Product delivered: ${purchaseDetails.productID}");
-        // Remove from SharedPreferences after successful delivery
-        // await preferences.remove(PurchaseConstants.pendingPurchase);
-        // Provide the consumable item (e.g., coins or gems)
-        // Acknowledge the purchase to ensure it can be purchased again
+        //print("Product delivered: ${purchaseDetails.productID}");
+
         inAppPurchase.completePurchase(purchaseDetails);
 
         final InAppPurchaseAndroidPlatformAddition  androidAddition =
@@ -1078,25 +1079,24 @@ void setupFirebaseListeners() async{
 
         await androidAddition.consumePurchase(purchaseDetails);
 
-        Fluttertoast.showToast(msg:'Delivered product: ${purchaseDetails.productID}');
-
       } else {
-        Fluttertoast.showToast(msg: "Failed to deliver purchase to the server, retrying later...");
+
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+            content: Text('Please wait while we handle your purchase'),
+            showCloseIcon: true,
+            duration:  Duration(seconds: 5),
+          ));
+        }
+
       }
     } catch (e) {
-      print("Server error: $e, will retry later.");
+      //print("Server error: $e, will retry later.");
     }
 
   }
 
   Future<void> restorePurchases() async {
-
-    // for (PurchaseDetails purchaseDetails in purchases){
-    //   if (purchaseDetails.status == PurchaseStatus.restored && purchaseDetails.pendingCompletePurchase){
-    //     deliverProduct(purchaseDetails);
-    //   }
-    // }
-
 
     await inAppPurchase.restorePurchases();
   }
@@ -1109,9 +1109,7 @@ void setupFirebaseListeners() async{
   Future<bool> sendPurchaseToServer(PurchaseDetails purchase) async {
     // For Google Play
     if (purchase.verificationData.source == 'google_play') {
-      // Fluttertoast.showToast(msg: 'Google play verify to serrver');
       bool verified = await _verifyWithGoogle(purchase);
-      Fluttertoast.showToast(msg: 'Verified::' + verified.toString());
       return verified;
     }
     // For Apple App Store
@@ -1137,46 +1135,6 @@ void setupFirebaseListeners() async{
 
   Future<bool> verifyPurchaseWithServer(PurchaseDetails purchaseDetails) async {
     return await HttpActionsClient.verifyPurchase(purchaseDetails); // Simulating network delay
-  }
-
-
-
-
-  Map<String, dynamic> purchaseDetailsToJson(PurchaseDetails purchase) {
-    return {
-      'productID': purchase.productID,
-      'purchaseID': purchase.purchaseID,
-      'transactionDate': purchase.transactionDate,
-      'status': purchase.status.toString(), // Convert enum to string
-      'verificationData': {
-        'serverVerificationData': purchase.verificationData.serverVerificationData,
-        'localVerificationData': purchase.verificationData.localVerificationData,
-        'source': purchase.verificationData.source,
-      },
-      'pendingCompletePurchase': purchase.pendingCompletePurchase,
-    };
-  }
-
-  PurchaseDetails purchaseDetailsFromJson(String jsonString) {
-    final Map<String, dynamic> data = jsonDecode(jsonString);
-
-    PurchaseDetails pd = PurchaseDetails(
-      productID: data['productID'],
-      purchaseID: data['purchaseID'],
-      transactionDate: data['transactionDate'],
-      status: PurchaseStatus.values.firstWhere(
-            (e) => e.toString() == data['status'],
-        orElse: () => PurchaseStatus.error, // Fallback if status is unknown
-      ),
-      verificationData: PurchaseVerificationData(
-        serverVerificationData: data['verificationData']['serverVerificationData'],
-        localVerificationData: data['verificationData']['localVerificationData'],
-        source: data['verificationData']['source'],
-      ),
-    );
-
-    pd.pendingCompletePurchase =  data['pendingCompletePurchase'];
-    return pd;
   }
 
 }

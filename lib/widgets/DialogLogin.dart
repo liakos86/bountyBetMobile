@@ -1,9 +1,7 @@
-import 'dart:convert';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_app/utils/client/HttpActionsClient.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 
 import '../models/User.dart';
 import '../models/constants/ColorConstants.dart';
@@ -117,9 +115,10 @@ class DialogLoginState extends State<DialogLogin> {
 
   void loginWith(String emailOrUsername, String password) async {
     if (emailOrUsername.length < 5) {
-      Fluttertoast.showToast(
-          msg: 'Username must be at least 5 characters long',
-          toastLength: Toast.LENGTH_LONG);
+
+      ScaffoldMessenger.of(context).showSnackBar( const SnackBar(
+        content: Text('Username must be at least 5 characters long'), showCloseIcon: true, duration: Duration(seconds: 5),
+      ));
 
       setState(() {
         executingCall = false;
@@ -129,8 +128,10 @@ class DialogLoginState extends State<DialogLogin> {
     }
 
     if (password.isEmpty) {
-      Fluttertoast.showToast(
-          msg: 'Invalid username or password', toastLength: Toast.LENGTH_LONG);
+      ScaffoldMessenger.of(context).showSnackBar( const SnackBar(
+        content: Text('Invalid username or password'), showCloseIcon: true, duration: Duration(seconds: 5),
+      ));
+
       setState(() {
         executingCall = false;
       });
@@ -143,13 +144,20 @@ class DialogLoginState extends State<DialogLogin> {
     if (userFromServer != null && userFromServer.errorMessage.isEmpty) {
       callback.call(userFromServer);
     } else {
-      Fluttertoast.showToast(
-          msg: userFromServer == null
+
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar( SnackBar(
+          content: Text(
+            (userFromServer == null)
               ? 'User not found'
               : userFromServer.errorMessage.isEmpty
               ? 'Login failed server error'
-              : userFromServer.errorMessage,
-          toastLength: Toast.LENGTH_LONG);
+              : userFromServer.errorMessage,),
+          showCloseIcon: true,
+          duration: const Duration(seconds: 5),
+        ));
+      }
+
       setState(() {
         executingCall = false;
       });

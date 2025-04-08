@@ -46,16 +46,31 @@ class SecureUtils{
   }
 
   Future<void> storeValue(String key, String value) async {
-    await const FlutterSecureStorage().write(key: key, value: value);
+    const secureStorage = FlutterSecureStorage(
+      aOptions: AndroidOptions(
+        encryptedSharedPreferences: true,
+      ),
+    );
+    await secureStorage.write(key: key, value: value);
   }
 
   Future<String?> retrieveValue(String key) async {
-    String? value = await const FlutterSecureStorage().read(key: key);
+    const secureStorage = FlutterSecureStorage(
+      aOptions: AndroidOptions(
+        encryptedSharedPreferences: true,
+      ),
+    );
+    String? value = await secureStorage.read(key: key);
     return value;
   }
 
   void deleteValue(String accessToken) {
-     const FlutterSecureStorage().delete(key: accessToken);
+    const secureStorage = FlutterSecureStorage(
+      aOptions: AndroidOptions(
+        encryptedSharedPreferences: true,
+      ),
+    );
+     secureStorage.delete(key: accessToken);
 
   }
 

@@ -4,6 +4,7 @@ import 'package:flutter_app/models/constants/Constants.dart';
 import 'package:flutter_app/models/match_event.dart';
 
 // import 'Season.dart';
+import '../helper/SharedPrefs.dart';
 import '../pages/ParentPage.dart';
 import 'Section.dart';
 import 'constants/JsonConstants.dart';
@@ -24,6 +25,7 @@ class League implements Comparable<League>{
 
   int section_id = -1;
 
+  bool isFavourite = false;
   // bool has_logo = false;
 
   String name = Constants.empty;
@@ -38,7 +40,7 @@ class League implements Comparable<League>{
 
   int priority = 0;
 
-  static League fromJson(league) {
+  static Future<League> fromJson(league) async{
     League li = League(
         name: league[JsonConstants.name],
         league_id: league[JsonConstants.id],
@@ -61,6 +63,12 @@ class League implements Comparable<League>{
 
     if (league['name_translations'] != null){
       li.name_translations = league['name_translations'];
+    }
+
+    List<String> favLeagues = await sharedPrefs.getListByKey(sp_fav_league_ids);
+    if (favLeagues.contains(li.league_id.toString())){
+      li.isFavourite = true;
+      li.priority += 10000;
     }
 
     return li;
@@ -116,6 +124,11 @@ class League implements Comparable<League>{
     }
 
     return 0;
+  }
+
+  void copyFrom(League l) {
+    isFavourite = l.isFavourite;
+    priority = l.priority;
   }
 }
 

@@ -5,11 +5,13 @@ import 'Player.dart';
 
 class MatchEventIncidentSoccer implements Comparable{
 
-  int id;
-  int event_id ;
-  String incident_type; //"Card"
-  int time ; //minute
-  int order ;
+  MatchEventIncidentSoccer.defIncident();
+
+  int id = -1;
+  int event_id = -1;
+  String incident_type = 'none'; //"Card"
+  int time = -1; //minute
+  int order = -1;
 
   int? time_over ; // value for injury time
   String? text; // e.g. regular or penalty or ownGoal for goal, HT or FT
@@ -20,7 +22,7 @@ class MatchEventIncidentSoccer implements Comparable{
   String? card_type ; // "Yellow"
   Object? is_missed ; // for penalty? ?
   String? reason ; //"foul" , "time_wasting", "Argument", "woodwork"
-  int? length ; // ????
+  int? length ; // injury time minutes
   Player? player ;
   Player? player_two_in ;// substituted player, or assist player
 
@@ -46,6 +48,7 @@ class MatchEventIncidentSoccer implements Comparable{
   }
 
   static fromJson(model) {
+    print('checking ' + model['incident_type']);
     MatchEventIncidentSoccer incident = new MatchEventIncidentSoccer(
         id: (model[JsonConstants.id]),
         event_id: (model[JsonConstants.eventId]), incident_type: model['incident_type'],
@@ -98,7 +101,12 @@ class MatchEventIncidentSoccer implements Comparable{
   int get hashCode => id * 37;
 
   void copyFrom(MatchEventIncidentSoccer meis) {
-
+      length = meis.length;
+      id = meis.id;
+      event_id = meis.event_id;
+       incident_type = meis.incident_type; //"Card"
+       time = meis.time; //minute
+       order = meis.order;
   }
 
 }

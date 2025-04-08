@@ -75,7 +75,7 @@ class LiveMatchRowTiltedState extends State<LiveMatchRowTilted> {
                   behavior: HitTestBehavior.translucent,
                 onTap: () {
 
-                  if (gameWithOdds.status != MatchEventStatus.INPROGRESS.statusStr){
+                  if (gameWithOdds.status != MatchEventStatus.INPROGRESS.statusStr && gameWithOdds.status != MatchEventStatus.FINISHED.statusStr){
                     return;
                   }
 

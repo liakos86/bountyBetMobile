@@ -26,10 +26,10 @@ class Season{
     required this.standing
   });
 
-  static seasonFromJson(seasonJson) {
+  static seasonFromJson(seasonJson) async {
 //id league_id league standingTable
 
-    League li = League.fromJson(seasonJson['league']);
+    League li = await League.fromJson(seasonJson['league']);
 
     Standing st = Standing.standingFromJson(seasonJson['standingTable']);
 

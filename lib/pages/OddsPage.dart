@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:flutter_app/enums/BetStatus.dart';
-import 'package:flutter_app/models/interfaces/StatefulWidgetWithName.dart';
 import 'package:flutter_app/utils/client/HttpActionsClient.dart';
 import 'package:flutter_app/widgets/DialogTabbedLoginOrRegister.dart';
 import 'package:flutter_app/widgets/dialog/DialogTextWithButtons.dart';
@@ -16,7 +15,6 @@ import 'package:flutter_app/models/constants/Constants.dart';
 import 'package:flutter_app/pages/LivePage.dart';
 import 'package:flutter_app/widgets/BetSlipWithCustomKeyboard.dart';
 import 'package:flutter_app/widgets/LeagueExpandableTile.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl/intl.dart';
 
 import '../models/UserBet.dart';
@@ -121,7 +119,6 @@ class OddsPageState extends State<OddsPage> with SingleTickerProviderStateMixin{
     }
 
     if (allEmpty){
-      // Fluttertoast.showToast(msg: 'LOADING', toastLength: Toast.LENGTH_LONG);
       return const DialogProgressText(text: 'Loading...');
     }
 
@@ -303,7 +300,7 @@ class OddsPageState extends State<OddsPage> with SingleTickerProviderStateMixin{
   }
 
   Widget _buildRow(LeagueWithData league, int item) {
-   return LeagueExpandableTile(key: PageStorageKey<LeagueWithData>(league),  isAlwaysExpanded: false, league: league, expandAll: selectedIndex==item, events: league.events, callbackForOdds: fixOddsCallback, selectedOdds: selectedOdds, favourites: favourites(),);
+   return LeagueExpandableTile(key: PageStorageKey<LeagueWithData>(league),  isAlwaysExpanded: false, leagueWithData: league, expandAll: selectedIndex==item, events: league.events, callbackForOdds: fixOddsCallback, selectedOdds: selectedOdds, favourites: favourites(),);
   }
 
   void removeOddCallback(UserPrediction? toRemove){
@@ -331,8 +328,11 @@ class OddsPageState extends State<OddsPage> with SingleTickerProviderStateMixin{
       selectedOdds.remove(selectedOdd);
     }else{
 
-      if (Constants.MAX_BET_PREDICTIONS == selectedOdds.length){
-        Fluttertoast.showToast(msg: 'Max bets size');
+      if (Constants.MAX_BET_PREDICTIONS < selectedOdds.length){
+        ScaffoldMessenger.of(context).showSnackBar( const SnackBar(
+          content: Text('Max selections size is ${Constants.MAX_BET_PREDICTIONS}'), showCloseIcon: true, duration: Duration(seconds: 5),
+        ));
+
         return;
       }
 
@@ -352,7 +352,7 @@ class OddsPageState extends State<OddsPage> with SingleTickerProviderStateMixin{
   }
 
   Future<BetPlacementStatus> placeBetCallback(double bettingAmount) async {
-    if (bettingAmount <= 0 || bettingAmount > AppContext.user.balance){
+    if (bettingAmount <= 0 || bettingAmount > AppContext.user.balance.balance){
       //String msg = 'Cannot place bet. insufficient funds.';
       alertDialogTopUp();
       return BetPlacementStatus.FAILED_INSUFFICIENT_FUNDS;
@@ -382,15 +382,37 @@ class OddsPageState extends State<OddsPage> with SingleTickerProviderStateMixin{
     }
 
     if (betPlacementStatus == BetPlacementStatus.FAILED_MATCH_IN_PROGRESS) {
-      Fluttertoast.showToast(msg: 'Cannot place bet. Match in progress.');
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+          content: Text(
+              'Cannot place bet. Match in progress.'),
+          showCloseIcon: true,
+          duration: Duration(seconds: 5),
+        ));
+      }
+
     }
 
     if (betPlacementStatus == BetPlacementStatus.FAIL_GENERIC) {
-      Fluttertoast.showToast(msg: 'Cannot place bet. Please try again in a while.');
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+          content: Text(
+              'Cannot place bet. Please try again in a while.'),
+          showCloseIcon: true,
+          duration: Duration(seconds: 5),
+        ));
+      }
     }
 
     if (betPlacementStatus == BetPlacementStatus.FAILED_MATCH_IN_NEXT_MONTH) {
-      Fluttertoast.showToast(msg: 'Cannot place bet. Please do not mix bets in diff months.');
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+          content: Text(
+              'Cannot place bet. Please select predictions only for current month'),
+          showCloseIcon: true,
+          duration: Duration(seconds: 5),
+        ));
+      }
     }
 
     return betPlacementStatus;
@@ -410,9 +432,7 @@ class OddsPageState extends State<OddsPage> with SingleTickerProviderStateMixin{
 
   favourites() {
     sharedPrefs.reload();
-    dynamic favs =  sharedPrefs.getListByKey(sp_fav_event_ids);
-    // Fluttertoast.showToast(msg: 'favs ' + favs.toString());
-    return favs;
+    return  sharedPrefs.getListByKey(sp_fav_event_ids);
   }
 
   String getDateWithOffset(int offset) {

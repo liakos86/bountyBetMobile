@@ -68,7 +68,7 @@ class FantasyTipsDrawer extends StatelessWidget {
                               ),
                             ),
                             const WidgetSpan(child: SizedBox(width: 8)),
-                            AppContext.user.balance > 0
+                            AppContext.user.balance.balance > 0
                                 ? WidgetSpan(
                               alignment: PlaceholderAlignment.middle,
                               child: Icon(
@@ -79,8 +79,8 @@ class FantasyTipsDrawer extends StatelessWidget {
                             )
                                 : const TextSpan(text: Constants.empty),
                             TextSpan(
-                              text: AppContext.user.balance > 0
-                                  ? AppContext.user.balance.toStringAsFixed(2)
+                              text: AppContext.user.balance.balance > 0
+                                  ? AppContext.user.balance.balance.toStringAsFixed(2)
                                   : Constants.empty,
                               style: const TextStyle(
                                 color: Colors.white,
@@ -124,19 +124,21 @@ class FantasyTipsDrawer extends StatelessWidget {
             ),
           ),
 
+              Row(children:[
               Expanded(
                 flex: 1,
-                  child: ProgressBarWithCenteredText(text:'All time bets ${(AppContext.user.betSlipsOverallPercentage() * 100).toStringAsFixed(0)}%', // Display percentage
-                            value: AppContext.user.betSlipsOverallPercentage())
-              ),
+                  child: ProgressBarWithCenteredText(text:'All time bets ${(AppContext.user.betSlipsOverallPercentage() * 100).toStringAsFixed(0)}%  =  ${AppContext.user.betSlipsOverallText()}', // Display percentage
+                            value: AppContext.user.betSlipsOverallPercentage() )
+              )]),
 
               const SizedBox(height: 12),
 
+    Row(children:[
               Expanded(
                   flex: 1,
-                  child: ProgressBarWithCenteredText(text:'All time predictions ${(AppContext.user.betPredsOverallPercentage() * 100).toStringAsFixed(0)}%', // Display percentage
+                  child: ProgressBarWithCenteredText(text:'All time predictions ${(AppContext.user.betPredsOverallPercentage() * 100).toStringAsFixed(0)}%  =  ${AppContext.user.betPredictionsOverallText()}', // Display percentage
                       value: AppContext.user.betSlipsOverallPercentage())
-              ),
+              )]),
 
         ],
       ),

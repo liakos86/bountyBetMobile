@@ -97,6 +97,7 @@ class UserBet implements Comparable<UserBet>{
     betId = incomingBet.betId;
     betPlacementMillis = incomingBet.betPlacementMillis;
     betStatus = incomingBet.betStatus;
+    betAmount = incomingBet.betAmount;
 
     for(UserPrediction pred in predictions){
       UserPrediction incoming = incomingBet.predictions.firstWhere((element) => element.mongoId == pred.mongoId, orElse: () => UserPrediction.defPrediction());

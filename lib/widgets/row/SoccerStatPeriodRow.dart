@@ -28,7 +28,7 @@ class SoccerStatPeriodRow extends StatelessWidget {
                     mainAxisSize: MainAxisSize.max,
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Text(statistic.text! , style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 10),),
+                      Text(statistic.text! == 'PEN' ?  '${statistic.text!}(${statistic.home_score}-${statistic.away_score})' : statistic.text!, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 10),),
                     ]
                 ),
       ));

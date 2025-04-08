@@ -1,4 +1,3 @@
-import 'dart:convert';
 
 import 'package:flutter_app/models/constants/ColorConstants.dart';
 import 'package:flutter_app/utils/client/HttpActionsClient.dart';
@@ -6,7 +5,6 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 
 import '../models/User.dart';
 import '../models/constants/Constants.dart';
@@ -149,10 +147,12 @@ class DialogRegisterState extends State<DialogRegister> {
     String? userError = validateUsername(username);
     if (userError != null) {
 
-      Fluttertoast.showToast(msg: userError, toastLength: Toast.LENGTH_LONG);
+      ScaffoldMessenger.of(context).showSnackBar(  SnackBar(
+        content: Text(userError), showCloseIcon: true, duration: const Duration(seconds: 5),
+      ));
+
       setState(() {
         executingCall = false;
-        // errorMsg = 'Invalid username';
       });
 
       return;
@@ -161,11 +161,12 @@ class DialogRegisterState extends State<DialogRegister> {
     String? emailError = validateEmail(email);
     if (emailError != null) {
 
-      Fluttertoast.showToast(msg: emailError, toastLength: Toast.LENGTH_LONG);
+      ScaffoldMessenger.of(context).showSnackBar( SnackBar(
+        content: Text(emailError), showCloseIcon: true, duration: const Duration(seconds: 5),
+      ));
 
       setState(() {
         executingCall = false;
-        // errorMsg = 'Invalid email';
       });
 
       return;
@@ -174,10 +175,12 @@ class DialogRegisterState extends State<DialogRegister> {
     String? passError = validatePassword(password);
     if (passError != null) {
 
-      Fluttertoast.showToast(msg: passError, toastLength: Toast.LENGTH_LONG);
+      ScaffoldMessenger.of(context).showSnackBar(  SnackBar(
+        content: Text(passError), showCloseIcon: true, duration: const Duration(seconds: 5),
+      ));
+
       setState(() {
         executingCall = false;
-        // errorMsg = 'Invalid password';
       });
 
       return;
@@ -188,10 +191,12 @@ class DialogRegisterState extends State<DialogRegister> {
 
     if (userFromServer != null) {
       if (userFromServer.errorMessage != Constants.empty) {
-        Fluttertoast.showToast(msg: userFromServer.errorMessage, toastLength: Toast.LENGTH_LONG);
+        ScaffoldMessenger.of(context).showSnackBar( SnackBar(
+          content: Text(userFromServer.errorMessage), showCloseIcon: true, duration: const Duration(seconds: 5),
+        ));
+
         setState(() {
           executingCall = false;
-          // errorMsg = userFromServer.errorMessage;
         });
 
         return;
@@ -199,10 +204,17 @@ class DialogRegisterState extends State<DialogRegister> {
     }
 
     if (userFromServer == null){
-      Fluttertoast.showToast(msg: 'Registration failed', toastLength: Toast.LENGTH_LONG);
+
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+          content: Text('Registration failed'),
+          showCloseIcon: true,
+          duration: Duration(seconds: 5),
+        ));
+      }
+
       setState(() {
         executingCall = false;
-        // errorMsg = userFromServer.errorMessage;
       });
 
       return;
