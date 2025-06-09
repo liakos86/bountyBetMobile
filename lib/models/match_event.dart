@@ -242,12 +242,15 @@ class MatchEvent implements Comparable<MatchEvent>{
 		if (eventOdds != null) {
 			var outcome1 = eventOdds["outcome_1"];
 			var outcome1Value = outcome1["value"];
+			var change1 = outcome1["change"] as int;
 
 			var outcomeX = eventOdds["outcome_X"];
 			var outcomeXValue = outcomeX["value"];
+			var changeX = outcomeX["change"] as int;
 
 			var outcome2 = eventOdds["outcome_2"];
 			var outcome2Value = outcome2["value"];
+			var change2 = outcome2["change"] as int;
 
 			MatchOdds odds = MatchOdds(
 					oddO25: UserPrediction(eventId: event[JsonConstants.id],
@@ -256,21 +259,24 @@ class MatchEvent implements Comparable<MatchEvent>{
 							awayTeam: aTeam,
 							betPredictionType: BetPredictionType.OVER_25,
 							betPredictionStatus: BetPredictionStatus.PENDING,
-							value: outcome1Value),
+							value: 1,
+							change: 0),
 					oddU25: UserPrediction(eventId: event[JsonConstants.id],
 							sportId: sportId,
 							homeTeam: hTeam,
 							awayTeam: aTeam,
 							betPredictionType: BetPredictionType.UNDER_25,
 							betPredictionStatus: BetPredictionStatus.PENDING,
-							value: outcome1Value),
+							value: 	1,
+							change: 0),
 					odd1: UserPrediction(eventId: event[JsonConstants.id],
 							sportId: sportId,
 							homeTeam: hTeam,
 							awayTeam: aTeam,
 							betPredictionType: BetPredictionType.HOME_WIN,
 							betPredictionStatus: BetPredictionStatus.PENDING,
-							value: outcome1Value),
+							value: outcome1Value,
+							change: change1),
 					//.toString().replaceAll(',', '.')),
 					oddX: UserPrediction(eventId: event[JsonConstants.id],
 							sportId: sportId,
@@ -278,14 +284,17 @@ class MatchEvent implements Comparable<MatchEvent>{
 							awayTeam: aTeam,
 							betPredictionType: BetPredictionType.DRAW,
 							betPredictionStatus: BetPredictionStatus.PENDING,
-							value: outcomeXValue),
+							value: outcomeXValue,
+							change: changeX),
 					odd2: UserPrediction(eventId: event[JsonConstants.id],
 							sportId: sportId,
 							homeTeam: hTeam,
 							awayTeam: aTeam,
 							betPredictionType: BetPredictionType.AWAY_WIN,
 							betPredictionStatus: BetPredictionStatus.PENDING,
-							value: outcome2Value));
+							value: outcome2Value,
+							change: change2)
+			);
 
 			match.odds = odds;
 		}
@@ -322,11 +331,6 @@ class MatchEvent implements Comparable<MatchEvent>{
 
   void copyFrom(MatchEvent incomingEvent) {
   	changeEvent = incomingEvent.changeEvent;
-  	if(homeTeam.name.contains('rsenal')){
-  		int i=0;
-		}
-
-
   	homeTeamScore.copyFrom(incomingEvent.homeTeamScore);
   	awayTeamScore.copyFrom(incomingEvent.awayTeamScore);
   	status = incomingEvent.status;
@@ -334,6 +338,9 @@ class MatchEvent implements Comparable<MatchEvent>{
   	timeDetails = incomingEvent.timeDetails;
   	lasted_period = incomingEvent.lasted_period;
 
+  	if (odds != null && incomingEvent.odds != null) {
+			odds?.copyFrom(incomingEvent.odds);
+		}
 	}
 
 	String? calculateNonLiveStatus(BuildContext context){
@@ -391,18 +398,19 @@ class MatchEvent implements Comparable<MatchEvent>{
 	}
 
 	String textScore(bool home) {
-		Score? score = home ? homeTeamScore : awayTeamScore;
+		Score score = home ? homeTeamScore : awayTeamScore;
 
-		if (score == null){
-			return Constants.empty;
-		}
+		// if (score == null){
+		// 	return Constants.empty;
+		// }
 
 		if (MatchEventStatus.FINISHED == MatchEventStatus.fromStatusText(status)){
 			if (score.display == null) {
 				return Constants.empty;
 			}
 
-			if (lasted_period != null && LastedPeriod.PERIOD_2 == LastedPeriod.fromStatusText(lasted_period!)) {
+			// if (lasted_period != null && LastedPeriod.PERIOD_2 == LastedPeriod.fromStatusText(lasted_period!)) {
+			if (aggregated_winner_code == null){
 				return score.display.toString();
 			}
 

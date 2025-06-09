@@ -9,6 +9,8 @@ import '../models/UserPrediction.dart';
 import '../models/constants/ColorConstants.dart';
 import '../models/constants/Constants.dart';
 import './row/SelectedOddRow.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
 
 class BetSlipWithCustomKeyboard extends StatefulWidget {
 
@@ -230,18 +232,19 @@ class BetSlipWithCustomKeyboardState extends State<BetSlipWithCustomKeyboard>{
                                 bettingAmount = double.parse(text);
 
                                 if (bettingAmount > Constants.maxBet){
-                                  ScaffoldMessenger.of(context).showSnackBar( const SnackBar(
-                                    content: Text('Maximum bet amount is ${Constants.maxBet}'), showCloseIcon: true, duration: Duration(seconds: 5),
+                                  String text = AppLocalizations.of(context)!.max_bet_amount;
+                                  ScaffoldMessenger.of(context).showSnackBar( SnackBar(
+                                    content: Text('$text ${Constants.maxBet}'), showCloseIcon: true, duration: const Duration(seconds: 5),
                                   ));
                                 }
 
                               });
                             },
-                            decoration: const InputDecoration(
-                              border: OutlineInputBorder(),
-                              contentPadding: EdgeInsets.all(8),
+                            decoration: InputDecoration(
+                              border: const OutlineInputBorder(),
+                              contentPadding: const EdgeInsets.all(8),
                               isDense: true,
-                              hintText: 'Amount',
+                              hintText: AppLocalizations.of(context)!.amount,
 
 
                             ),

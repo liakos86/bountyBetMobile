@@ -66,5 +66,144 @@
        "september": "Σεπ",
        "october": "Οκτ",
        "november": "Νοέ",
-       "december": "Δεκ"
+       "december": "Δεκ",
+
+        "topup_button_text" : "Φόρτιση",
+
+       "close" : "Κλείσιμο",
+
+       "position" : "θέση",
+
+       "validation_pending" : "εκκρεμεί επιβεβαίωση",
+
+       "all_time_bets" : "Συνολικά δελτία",
+
+       "all_time_predictions" : "Συνολικές προβλέψεις",
+
+       "max_bet_amount" : "Το μέγιστο ποντάρισμα είναι",
+
+       "amount" : "Ποσό",
+
+       "place_bet" : "Τοποθέτηση",
+
+       "pending" : "Ανοιχτά",
+
+       "won" : "Κερδισμένα",
+
+       "lost" : "Χαμένα",
+
+       "football" : "Ποδόσφαιρο",
+
+        "view_predictions_text" : "Δες προβλέψεις",
+        "congrats_text" : "Συγχαρητήρια! Πήρες την {position}η θέση με {credits} βαθμούς!",
+        "leaders_previous_month_text" : "Αυτοί είναι οι νικητές του προηγούμενου μήνα! Συνέχισε την προσπάθεια για να βλέπεις και εσύ ΔΩΡΕΑΝ τις προβλέψεις όλων των χρηστών!",
+
+            "@congrats_text": {
+                  "placeholders": {
+                    "position": {},
+                    "credits": {}
+                  }},
+
+
+       "logout_text" : "Είστε βέβαιοι πως θέλετε να αποσυνδεθείτε;",
+       "confirm_button_text" : "Επιβεβαίωση",
+
+        "cancel_button_text" : "Άκύρωση",
+
+        "out_of" : " από ",
+
+        "dont_show_again_checkbox_label" : "μην το ξαναδείξεις",
+
+                "won_slips" : "Δελτία",
+
+                "slips_percent" : "Δελτία %",
+
+                "credits_with_sign" : "$ Υπόλοιπο",
+
+                "empty_list" : "Δεν υπάρχουν δεδομένα",
+
+                "loading" : "Φόρτωση...",
+
+
+       "month_preds" : "Προβλ.\nΜήνα",
+
+       "preds_perc" : "Προβλ.\nΠοσ.",
+
+       "month_roi": "Μήνας\nROI",
+
+       "amount_returned" : "Ποντάρ.\nΕπιστροφή",
+
+       "winners" : "Νικητές",
+
+       "me" : "Εγώ",
+
+       "matches" : "Αγώνες",
+
+       "live" : "Live",
+
+        "leaders" : "Κατάταξη",
+
+        "bets" : "Στοιχήματα",
+
+        "no_pending_bets" : "Δεν υπάρχουν ανοιχτά στοιχήματα",
+
+        "no_lost_bets" : "Δεν υπάρχουν χαμένα στοιχήματα",
+        "no_won_bets" : "Δεν υπάρχουν κερδισμένα στοιχήματα",
+
+       "login_error" : "Σφάλμα σύνδεσης",
+       "login_or_register" : "Συνδεθείτε/Εγγραφείτε (πάνω αριστερά) ώστε να ποντάρετε",
+
+       "login_or_validate" : "Παρακαλούμε συνδεθείτε ή εγγραφείτε",
+
+       "no_live_games" : "Δεν υπάρχουν ζωντανοί αγώνες",
+
+       "max_selection":"Ο μέγιστος αριθμός αγώνων είναι ",
+
+       "match_in_progress" : "Σφάλμα.. υπάρχει αγώνας σε εξέλιξη",
+
+       "cannot_place_bet": "Αποτυχία στοιχήματος. Δοκιμάστε ξανά",
+
+       "preds_next_month" : "Δεν μπορείτε να επιλέξετε αγώνες από τον επόμενο μήνα",
+
+
+       "mail_requires_validation" : "Ο λογαριασμός απαιτεί επαλήθευση. Ελέγξτε τα εισερχόμενα του ",
+
+        "leaderboard_info" : "Οι πρώτοι 5 χρήστες θα έχουν δωρεάν πρόσβαση στις προβλέψεις των χρηστών του επόμενου μήνα! ",
+
+        "leaderboard_info_pos" : "Αυτή τη στιγμή βρίσκεστε στη θέση: ",
+
+        "action" : "Απαιτείται ενέργεια",
+
+        "purchase_error" : "Σφάλμα. Η αγορά δεν ολοκληρώθηκε",
+
+        "purchase_handling" : "Αγορά σε επεξεργασία",
+
+        "login_register" : "Είσοδος/Εγγραφή",
+
+       "topup_text" : "Το παρακάτω εικονικό ποσό μπορεί να χρησιμοποιηθεί όποτε εσείς επιθυμείτε. Δεν συμμετέχει στη μηνιαία βαθμολογία, μέχρι να πονταριστεί (σε οποιαδήποτε απόδοση).",
+
+        "email_verification" : "Ένα email επαλήθευσης έχει σταλεί στο ",
+
+
+         "possible_earnings" : "Πιθανά κέρδη",
+
+         "validation_username" : "Το username πρέπει να είναι τουλάχιστον 5 χαρακτήρες",
+
+         "validation_password_length" : "Το password πρέπει να είναι μεταξύ 6 και 12 χαρακτήρες",
+
+         "validation_password_number" : "Το password πρέπει να περιέχει τουλάχιστον έναν αριθμό",
+
+         "validation_invalid_username" : "Λάθος username ή password",
+
+         "validation_password_special" : "Το password πρέπει να περιέχει τουλάχιστον ένα ειδικό χαρακτήρα: !@#$%^&*(),.?:|<>",
+
+         "validation_invalid_username_length" : "Το username πρέπει να είναι μεταξύ 6 και 18 χαρακτήρες",
+
+        "validation_invalid_username_char" : "Το username μπορεί να περιέχει μόνο γράμματα και αριθμούς",
+
+
+
+         "validation_invalid_email" : "Η διεύθυνση email δεν είναι έγκυρη",
+
+         "email_or_username" : "email ή username"
 }

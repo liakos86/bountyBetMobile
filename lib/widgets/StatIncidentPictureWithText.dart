@@ -182,7 +182,7 @@ class StatIncidentPictureWithText extends StatelessWidget{
 
   playerImageFromStatistic() {
     return CachedNetworkImage(
-      cacheManager: CustomCacheManager(),
+      cacheManager: CustomCacheManager.instance,
       imageUrl: statistic.player?.photo ?? "https://xscore.cc/resb/no-photo.png",
       height: 16,
       width: 16,

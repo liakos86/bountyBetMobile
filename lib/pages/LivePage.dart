@@ -4,12 +4,11 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_app/enums/MatchEventStatus.dart';
 import 'package:flutter_app/helper/SharedPrefs.dart';
-import 'package:flutter_app/models/interfaces/StatefulWidgetWithName.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
 
 import '../models/LeagueWithData.dart';
 import '../models/constants/ColorConstants.dart';
-import '../models/constants/MatchConstants.dart';
-import '../models/context/AppContext.dart';
 import '../widgets/LeagueExpandableTile.dart';
 import '../widgets/row/DialogProgressBarWithText.dart';
 
@@ -49,25 +48,25 @@ class LivePageState extends State<LivePage> with WidgetsBindingObserver{
   Widget build(BuildContext context) {
 
     if (allLeagues.isEmpty){
-      return const DialogProgressText(text: 'Loading...');
+      return DialogProgressText(text:  AppLocalizations.of(context)!.loading);
     }
 
     leaguesWd = allLeagues.where((element) => element.events.where((element) => element.status == MatchEventStatus.INPROGRESS.statusStr).toList().isNotEmpty).toList();// <LeagueWithData>[];
     if (leaguesWd.isEmpty){
-      return const Align(alignment: Alignment.center,  child: Column(
+      return Align(alignment: Alignment.center,  child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
           // Icon on top
-          Icon(
+          const Icon(
             Icons.sports_soccer,  // Built-in Flutter icon
             size: 120,  // Icon size
             color: Color(ColorConstants.my_dark_grey), // Icon color
           ),
           const SizedBox(height: 20),  // Space between icon and text
           // Text below the icon
-          const Text(
-            'No live games',
-            style: TextStyle(
+          Text(
+            AppLocalizations.of(context)!.no_live_games,
+            style: const TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.bold,
               color: Color(ColorConstants.my_dark_grey),

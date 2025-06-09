@@ -151,11 +151,11 @@ class MockUtils {
 
   MatchOdds mockOdds(team1, team2, eventId, _odd1, _oddx, _odd2, _oddO25, _oddU25){
     return MatchOdds(
-        odd1: UserPrediction(sportId:1, homeTeam: team1, awayTeam: team2, betPredictionType: BetPredictionType.HOME_WIN, betPredictionStatus: BetPredictionStatus.PENDING,eventId: eventId, value: _odd1),
-        oddX: UserPrediction(sportId:1, homeTeam: team1, awayTeam: team2, betPredictionType:BetPredictionType.DRAW, betPredictionStatus: BetPredictionStatus.PENDING,eventId: eventId,value: _oddx),
-        odd2: UserPrediction(sportId:1, homeTeam: team1, awayTeam: team2, betPredictionType:BetPredictionType.AWAY_WIN, betPredictionStatus: BetPredictionStatus.PENDING,eventId: eventId,value: _odd2),
-        oddO25: UserPrediction(sportId:1, homeTeam: team1, awayTeam: team2, betPredictionType:BetPredictionType.OVER_25, betPredictionStatus: BetPredictionStatus.PENDING,eventId: eventId,value: _oddO25),
-        oddU25: UserPrediction(sportId:1, homeTeam: team1, awayTeam: team2, betPredictionType:BetPredictionType.UNDER_25, betPredictionStatus: BetPredictionStatus.PENDING, eventId: eventId,value: _oddU25));
+        odd1: UserPrediction(change: 0, sportId:1, homeTeam: team1, awayTeam: team2, betPredictionType: BetPredictionType.HOME_WIN, betPredictionStatus: BetPredictionStatus.PENDING,eventId: eventId, value: _odd1),
+        oddX: UserPrediction(change: 0,sportId:1, homeTeam: team1, awayTeam: team2, betPredictionType:BetPredictionType.DRAW, betPredictionStatus: BetPredictionStatus.PENDING,eventId: eventId,value: _oddx),
+        odd2: UserPrediction(change: 0,sportId:1, homeTeam: team1, awayTeam: team2, betPredictionType:BetPredictionType.AWAY_WIN, betPredictionStatus: BetPredictionStatus.PENDING,eventId: eventId,value: _odd2),
+        oddO25: UserPrediction(change: 0,sportId:1, homeTeam: team1, awayTeam: team2, betPredictionType:BetPredictionType.OVER_25, betPredictionStatus: BetPredictionStatus.PENDING,eventId: eventId,value: _oddO25),
+        oddU25: UserPrediction(change: 0,sportId:1, homeTeam: team1, awayTeam: team2, betPredictionType:BetPredictionType.UNDER_25, betPredictionStatus: BetPredictionStatus.PENDING, eventId: eventId,value: _oddU25));
   }
 
   // User mockUser(Map<String, List<League>> validData) {

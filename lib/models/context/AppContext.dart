@@ -1,7 +1,5 @@
 import 'dart:collection';
 
-import 'package:flutter/widgets.dart';
-
 import '../League.dart';
 import '../LeagueWithData.dart';
 import '../Section.dart';
@@ -32,9 +30,6 @@ class AppContext{
 
   AppContext();
 
-  void initUser(User userNew){
-    user = userNew;
-  }
 
   static MatchEvent? findEvent(int eventId){
 
@@ -51,10 +46,5 @@ class AppContext{
     return null;//eventsPerDayMap.entries.first.value.events.first;
 
   }
-
-  static void updateUser(User value) {
-    user.copyBalancesFrom(value);
-  }
-
 
 }

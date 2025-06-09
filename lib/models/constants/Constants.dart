@@ -1,7 +1,7 @@
 
 class Constants {
-  static const int MAX_BET_PREDICTIONS = 5;
-  static const int maxBet = 999999;
+  static const int MAX_BET_PREDICTIONS = 10;
+  static const int maxBet = 99999;
   static const String defMongoId = 'default';
   static const String empty = '';
   static const String comma = ',';
@@ -15,4 +15,6 @@ class Constants {
 
 
   static const String accessToken = 'access_token';
+
+  static const String mongoId = 'mongoId';
 }

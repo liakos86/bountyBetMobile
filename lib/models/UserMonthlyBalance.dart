@@ -1,9 +1,3 @@
-
-import 'package:flutter_app/models/UserBet.dart';
-
-import '../enums/UserLevel.dart';
-import 'FantasyLeague.dart';
-// import 'UserAward.dart';
 import 'constants/Constants.dart';
 
 class UserMonthlyBalance implements Comparable<UserMonthlyBalance>{
@@ -17,6 +11,10 @@ class UserMonthlyBalance implements Comparable<UserMonthlyBalance>{
   double balanceLeaderBoard = -1;
   int month = 0;
   int year = 0;
+
+  int position = 0;
+  int positionDelta = 0;
+  int totalUsers = 0;
 
   int monthlyWonBets = 0;
   int monthlyWonPredictions = 0;
@@ -50,6 +48,11 @@ class UserMonthlyBalance implements Comparable<UserMonthlyBalance>{
     user.month = parsedJson['month'];
     user.year = parsedJson['year'];
 
+    user.position = parsedJson['position']??0 as int ;
+    user.positionDelta = parsedJson['positionDelta']??0 as int ;
+    user.totalUsers = parsedJson['totalUsers']??0 as int ;
+
+
     return user;
 
   }
@@ -57,6 +60,9 @@ class UserMonthlyBalance implements Comparable<UserMonthlyBalance>{
 
   void copyBalancesFrom(UserMonthlyBalance u) {
     betAmountMonthly = u.betAmountMonthly;
+    position = u.position;
+    positionDelta = u.positionDelta;
+    totalUsers = u.totalUsers;
     month = u.month;
     year = u.year;
     betAmountMonthlyReturned = u.betAmountMonthlyReturned;
@@ -121,12 +127,20 @@ class UserMonthlyBalance implements Comparable<UserMonthlyBalance>{
 
   @override
   int compareTo(UserMonthlyBalance other) {
-    if (this.month < other.month){//if (this.userPosition > other.userPosition){
+    if (year < other.year){
+      return 1;
+    }
+
+    if (year > other.year){
       return -1;
     }
 
-    if (this.month > other.month){
+    if (month < other.month){//if (this.userPosition > other.userPosition){
       return 1;
+    }
+
+    if (month > other.month){
+      return -1;
     }
 
     return 0;

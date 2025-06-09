@@ -2,6 +2,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_app/models/constants/ColorConstants.dart';
 import 'package:flutter_app/models/constants/PurchaseConstants.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
 
 class DialogTextWithConfirmCancel extends StatelessWidget{//} StatefulWidget {
 
@@ -59,11 +61,11 @@ class DialogTextWithConfirmCancel extends StatelessWidget{//} StatefulWidget {
                         ),
                         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8), // Button size
                       ),
-                      child: const Text(
+                      child:  Text(
 
-                        'Confirm',
+                        AppLocalizations.of(context)!.confirm_button_text,
                         maxLines: 1,
-                        style: TextStyle(
+                        style: const TextStyle(
 
                             fontSize: 14,
                             fontWeight: FontWeight.bold,
@@ -72,6 +74,8 @@ class DialogTextWithConfirmCancel extends StatelessWidget{//} StatefulWidget {
                       ),
                     )),
 
+                    const SizedBox(width: 4),
+
                     Expanded(flex:1, child:
                     ElevatedButton(
                       onPressed: () {
@@ -79,16 +83,16 @@ class DialogTextWithConfirmCancel extends StatelessWidget{//} StatefulWidget {
                         Navigator.pop(context);
                       },
                       style: ElevatedButton.styleFrom(
-                        foregroundColor: Colors.white, backgroundColor: Colors.red[400],  // Text color
+                        foregroundColor: Colors.white, backgroundColor:  const Color(ColorConstants.my_dark_grey),  // Text color
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(20), // Rounded radius
                         ),
                         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8), // Button size
                       ),
-                      child: const Text(
-                        'Cancel',
+                      child:  Text(
+                          AppLocalizations.of(context)!.cancel_button_text,
                         maxLines: 1,
-                        style: TextStyle(
+                        style: const TextStyle(
                             fontSize: 14,
                             fontWeight: FontWeight.bold,
                             fontStyle: FontStyle.italic

@@ -98,6 +98,8 @@ class LeagueExpandableTile extends StatefulWidget {
     initiallyExpanded: expandAll,
     collapsedBackgroundColor: Colors.grey.shade200,
     backgroundColor: Colors.yellow[50],
+    // tilePadding: EdgeInsets.zero, // No padding for the tile
+    childrenPadding: EdgeInsets.zero,
     subtitle: Text(leagueWithData.league.getLocalizedName(), style: const TextStyle(color: Colors.black, fontWeight: FontWeight.w700, fontSize: 10),),
     trailing:
 
@@ -180,7 +182,10 @@ class LeagueExpandableTile extends StatefulWidget {
     leading:
 
     CachedNetworkImage(
-      cacheManager: CustomCacheManager(),
+      key: ValueKey(leagueWithData.league.logo),
+      cacheManager: CustomCacheManager.instance,
+      placeholderFadeInDuration: const Duration(milliseconds: 300),
+      fadeInDuration: const Duration(milliseconds: 300),
     imageUrl: leagueWithData.league.logo ?? Constants.noImageUrl,
     placeholder: (context, url) => Image.asset(Constants.assetNoLeagueImage, width: 32, height: 32,),
     errorWidget: (context, url, error) => Image.asset(Constants.assetNoLeagueImage, width: 32, height: 32,),

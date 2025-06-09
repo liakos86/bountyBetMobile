@@ -1,16 +1,21 @@
 import 'dart:ui';
 
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_app/enums/ChangeEvent.dart';
-import 'package:flutter_app/enums/LastedPeriod.dart';
 import 'package:flutter_app/enums/MatchEventStatus.dart';
+import 'package:flutter_app/models/match_odds.dart';
 import 'package:flutter_app/pages/MatchInfoSoccerDetailsPage.dart';
+import '../../enums/BetPredictionType.dart';
+import '../../enums/MatchEventStatusMore.dart';
 import '../../enums/WinnerType.dart';
-import '../../models/Score.dart';
-import '../../models/constants/Constants.dart';
+import '../../helper/SharedPrefs.dart';
+import '../../models/constants/ColorConstants.dart';
 import '../../models/match_event.dart';
+import '../../pages/ParentPage.dart';
+import '../DisplayOdd.dart';
 import '../LogoWithName.dart';
 
 class LiveMatchRowTilted extends StatefulWidget {
@@ -61,15 +66,31 @@ class LiveMatchRowTiltedState extends State<LiveMatchRowTilted> {
               mainAxisSize: MainAxisSize.max,
               children: [
 
+                Expanded(//second column
+                    flex: 2,
+                    child:
+                    ( MatchEventStatus.INPROGRESS.statusStr == gameWithOdds.status || MatchEventStatus.NOTSTARTED.statusStr == gameWithOdds.status ) ?
+                _buildTiltedFavourite()
+                        :
+
+                    (gameWithOdds.odds != null &&  gameWithOdds.winner_code != null) ?
+                        SizedBox(height:60, child:
+              _buildWinnerOdds(gameWithOdds.odds, gameWithOdds.winner_code)
+                        )
+
+                  :
+              const SizedBox(height:42)
+                ),
+
 
 
                 Expanded(//second column
                     flex: 14,
                     child:
 
-                        Padding(
-                          padding: const EdgeInsets.only(left: 16),
-                          child:
+                        // Padding(
+                        //   padding: const EdgeInsets.only(left: 4),
+                        //   child:
 
                 GestureDetector(
                   behavior: HitTestBehavior.translucent,
@@ -110,7 +131,7 @@ class LiveMatchRowTiltedState extends State<LiveMatchRowTilted> {
                       ]
                     )
                 )
-                        )
+                        // )
                         // )
                 ),
 
@@ -168,7 +189,8 @@ class LiveMatchRowTiltedState extends State<LiveMatchRowTilted> {
 
   WinnerType calculateWinnerType(MatchEvent gameWithOdds, int homeOrAway) {
 
-    if (MatchEventStatus.FINISHED != MatchEventStatus.fromStatusText(gameWithOdds.status)) {
+    if (MatchEventStatus.FINISHED != MatchEventStatus.fromStatusText(gameWithOdds.status)
+    && MatchEventStatusMore.ENDED != MatchEventStatusMore.fromStatusMoreText(gameWithOdds.status_more)) {
       return WinnerType.NONE;
     }
 
@@ -195,6 +217,120 @@ class LiveMatchRowTiltedState extends State<LiveMatchRowTilted> {
 
   getEvent(){
     return gameWithOdds;
+  }
+
+  _buildTiltedFavourite() {
+
+      return
+        Transform(
+            transform: Matrix4.skewX(-0.2), // Tilt the container
+            child: Container(
+                margin: const EdgeInsets.only(left:6),
+                //padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                // margin: EdgeInsets.symmetric(horizontal: 4),
+                decoration: BoxDecoration(
+                    color: Colors.white,
+                    // Background color of the parallelogram
+                    borderRadius: BorderRadius.circular(8),
+                    //border: Border.all(color: Colors.black87, width: 1)
+                ),
+                child:
+
+
+                GestureDetector(
+                    onTap: () async =>
+                    {
+
+                      if ((await checkFirebasePermission())
+                          .authorizationStatus ==
+                          AuthorizationStatus.authorized){
+
+                        if (gameWithOdds.isFavourite){
+                          sharedPrefs.removeFavEvent(
+                              gameWithOdds.eventId.toString()),
+                          updateFav(false)
+                        } else
+                          {
+                            sharedPrefs.appendEventId(
+                                gameWithOdds.eventId.toString()),
+                            updateFav(true)
+                          },
+                        ParentPageState.favouritesUpdate(),
+                      }
+                    },
+
+                    child:
+                    Column(
+                        children: [
+                          Align(
+                            alignment: Alignment.center,
+                            child:
+                            gameWithOdds.isFavourite ?
+                            const Icon(Icons.star_outlined, color: Colors.redAccent)
+                                :
+                            const Icon(Icons.star_border, color: Color(ColorConstants.my_dark_grey)),
+                          )
+                        ]
+                    )
+                )
+            )
+        );
+
+  }
+
+  Future<NotificationSettings> checkFirebasePermission() async {
+    FirebaseMessaging messaging = FirebaseMessaging.instance;
+    return await messaging.requestPermission(
+      alert: true,
+      announcement: false,
+      badge: true,
+      carPlay: false,
+      criticalAlert: false,
+      provisional: false,
+      sound: true,
+    );
+  }
+
+  updateFav(bool newfav) {
+    setState(() {
+      gameWithOdds.isFavourite = newfav;
+    });
+  }
+
+  _buildWinnerOdds(MatchOdds? odds, int? winner_code) {
+    return Column(
+        mainAxisSize: MainAxisSize.max,
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      children: [
+        Expanded(flex:1, child:
+        DisplayOdd(betPredictionType: BetPredictionType.HOME_WIN, prediction: winnerPredictionType(winner_code), odd: odds!.odd1)
+        ),
+        Expanded(flex:1, child:
+        DisplayOdd(betPredictionType: BetPredictionType.DRAW, prediction: winnerPredictionType(winner_code), odd: odds!.oddX)
+        ),
+        Expanded(flex:1, child:
+        DisplayOdd(betPredictionType: BetPredictionType.AWAY_WIN, prediction: winnerPredictionType(winner_code), odd: odds!.odd2)
+        ),
+
+      ]
+
+    );
+  }
+
+  winnerPredictionType(int? winner_code) {
+    if (winner_code == 1){
+      return BetPredictionType.HOME_WIN;
+    }
+
+    if (winner_code == 2){
+      return BetPredictionType.AWAY_WIN;
+    }
+
+    if (winner_code == 3){
+      return BetPredictionType.DRAW;
+    }
+
+    return BetPredictionType.OVER_25;
   }
 
 

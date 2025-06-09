@@ -47,10 +47,10 @@ class DialogLoginState extends State<DialogLogin> {
                 onChanged: (text) {
                   emailOrUsername = text;
                 },
-                decoration: const InputDecoration(
-                  border: OutlineInputBorder(),
-                  hintText: 'email or username',
-                  hintStyle: TextStyle(color: Colors.white),
+                decoration:  InputDecoration(
+                  border: const OutlineInputBorder(),
+                  hintText: AppLocalizations.of(context)!.email_or_username,
+                  hintStyle: const TextStyle(color: Colors.white),
                 ),
               ),
               const SizedBox(height: 16), // Add spacing between fields
@@ -64,7 +64,7 @@ class DialogLoginState extends State<DialogLogin> {
                 },
                 decoration: InputDecoration(
                   border: const OutlineInputBorder(),
-                  hintText: 'Your password',
+                  hintText: 'password',
                   hintStyle: const TextStyle(color: Colors.white),
                   suffixIcon: IconButton(
                     icon: Icon(
@@ -116,8 +116,8 @@ class DialogLoginState extends State<DialogLogin> {
   void loginWith(String emailOrUsername, String password) async {
     if (emailOrUsername.length < 5) {
 
-      ScaffoldMessenger.of(context).showSnackBar( const SnackBar(
-        content: Text('Username must be at least 5 characters long'), showCloseIcon: true, duration: Duration(seconds: 5),
+      ScaffoldMessenger.of(context).showSnackBar(  SnackBar(
+        content: Text(AppLocalizations.of(context)!.validation_username), showCloseIcon: true, duration: const Duration(seconds: 5),
       ));
 
       setState(() {
@@ -128,8 +128,8 @@ class DialogLoginState extends State<DialogLogin> {
     }
 
     if (password.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar( const SnackBar(
-        content: Text('Invalid username or password'), showCloseIcon: true, duration: Duration(seconds: 5),
+      ScaffoldMessenger.of(context).showSnackBar(  SnackBar(
+        content: Text(AppLocalizations.of(context)!.validation_invalid_username), showCloseIcon: true, duration: const Duration(seconds: 5),
       ));
 
       setState(() {
@@ -149,9 +149,9 @@ class DialogLoginState extends State<DialogLogin> {
         ScaffoldMessenger.of(context).showSnackBar( SnackBar(
           content: Text(
             (userFromServer == null)
-              ? 'User not found'
+              ? AppLocalizations.of(context)!.validation_invalid_username
               : userFromServer.errorMessage.isEmpty
-              ? 'Login failed server error'
+              ? AppLocalizations.of(context)!.validation_invalid_username
               : userFromServer.errorMessage,),
           showCloseIcon: true,
           duration: const Duration(seconds: 5),

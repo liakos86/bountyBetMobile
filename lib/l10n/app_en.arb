@@ -73,5 +73,131 @@
        "november": "Nov",
        "december": "Dec",
 
+       "topup_text" : "The selected credits can be used whenever you like. They will not affect your leaderboard position, until you place a bet (of any odd).",
+
+        "topup_button_text" : "Top Up",
+
+        "close" : "Close",
+
+        "position" : "pos",
+
+        "validation_pending" : "validation pending",
+
+        "all_time_bets" : "All time bets",
+        "all_time_predictions" : "All time predictions",
+
+          "max_bet_amount" : "Max bet amount is",
+
+        "amount" : "Amount",
+
+        "place_bet" : "Place bet",
+
+       "pending" : "Pending",
+
+       "won" : "Won",
+
+       "lost" : "Lost",
+
+       "football" : "Football",
+
+       "loading" : "Loading...",
+
+       "logout_text" : "Are you sure you want to logout?",
+       "confirm_button_text" : "Confirm",
+       "cancel_button_text" : "Cancel",
+       "view_predictions_text" : "View preds",
+       "congrats_text" : "Congratulations! You finished in position {position} with {credits} credits! You can now view for FREE all the users' predictions for current month!",
+       "leaders_previous_month_text" : "Here are the previous month winners! Keep the good work to be able to view all the users' predictions for free!",
+
+       "dont_show_again_checkbox_label" : "don't show again",
+
+       "out_of" : " out of ",
+
+       "winners" : "Winners",
+       "no_pending_bets" : "No pending bets",
+       "no_lost_bets" : "No lost bets",
+        "no_won_bets" : "No won bets",
+
+       "me" : "My stats",
+
+       "live" : "Live",
+
+       "leaders" : "Leaders",
+
+       "matches" : "Matches",
+
+       "bets" : "My bets",
+
+
+       "email_verification" : "A verification email has been sent to ",
+
+
+        "won_slips" : "Won Slips",
+
+        "slips_percent" : "Slips %",
+
+        "credits_with_sign" : "$ Credits",
+
+        "month_preds" : "Month\nPreds",
+
+        "preds_perc" : "Preds\nPerc",
+
+        "month_roi": "Month\nROI",
+
+        "amount_returned" : "Bet\nReturned",
+
+        "leaderboard_info" : "First 5 users can view all leader board predictions for next month for free! ",
+
+        "leaderboard_info_pos" : "You currently are in position: ",
+
+        "login_error" : "Login Error",
+        "login_or_register" : "Please login/register at the top left in order to bet.",
+        "login_register" : "Login/Register",
+
+
+
+        "mail_requires_validation" : "Your account requires validation. Please check inbox of ",
+
+        "empty_list" : "No data yet...",
+        "no_live_games" : "No live games at the moment",
+
+        "max_selection":"Max selections size is ",
+
+        "cannot_place_bet": "Cannot place bet. Please try again in a while",
+
+        "preds_next_month" : "Cannot place bet. Please select predictions only for current month",
+
+        "match_in_progress" : "Cannot place bet. Match in progress",
+
+        "action" : "Action required",
+
+         "purchase_error" : "Purchase was not completed",
+
+         "purchase_handling" : "Please wait while we handle your purchase",
+
+         "possible_earnings" : "Possible earnings",
+
+
+        "login_or_validate" : "Please login or register",
+
+        "validation_username" : "Username must be at least 5 characters long",
+        "validation_password_length" : "Password must be between 6 and 12 characters long",
+        "validation_password_number" : "Password must contain at least one number",
+        "validation_password_special" : "Password must contain at least one special char: !@#$%^&*(),.?:|<>",
+
+        "validation_invalid_username" : "Invalid username or password",
+        "validation_invalid_username_length" : "Username must be between 6 and 18 characters long",
+        "validation_invalid_username_char" : "Username can only contain letters and numbers",
+        "validation_invalid_email" : "Please enter a valid email address",
+
+        "email_or_username" : "email or username",
+
+
+        "@congrats_text": {
+          "placeholders": {
+            "position": {},
+            "credits": {}
+          }},
+
      "run_this" : "flutter gen-l10n"
 }

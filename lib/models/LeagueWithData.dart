@@ -1,8 +1,6 @@
-import 'package:flutter_app/models/constants/Constants.dart';
 import 'package:flutter_app/models/match_event.dart';
 
-// import 'Season.dart';
-import 'Section.dart';
+
 import 'League.dart';
 
 class LeagueWithData implements Comparable<LeagueWithData>{
@@ -17,8 +15,6 @@ class LeagueWithData implements Comparable<LeagueWithData>{
   League league = League.defConst();
 
   List<MatchEvent> events = <MatchEvent>[];
-
-  // List<MatchEvent> liveEvents = <MatchEvent>[];
 
   @override
   operator == (other) =>

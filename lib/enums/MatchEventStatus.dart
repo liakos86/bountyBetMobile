@@ -5,6 +5,8 @@
 
   CANCELLED(statusStr:"cancelled"),
 
+  CANCELED(statusStr:"canceled"),
+
   NOTSTARTED(statusStr:"notstarted"),
 
   POSTPONED(statusStr:"postponed"),

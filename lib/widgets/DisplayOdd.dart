@@ -12,9 +12,9 @@ import '../models/match_event.dart';
 
 class DisplayOdd extends StatelessWidget {
 
-  final BetPredictionType betPredictionType;
+  final BetPredictionType betPredictionType;//the one to draw
 
-  final UserPrediction prediction;
+  final BetPredictionType prediction;//the selection
 
   final UserPrediction? odd;
 
@@ -28,14 +28,16 @@ class DisplayOdd extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
 
-    return  Padding(padding: const EdgeInsets.all(4),
-        child:        Container(
+    return
+      Padding(padding: const EdgeInsets.all(1),
+        child:
+        Container(
             height: 24,
             padding: const EdgeInsets.all(3),
             decoration: BoxDecoration(
               border: Border.all(width: 1, color: Colors.grey),
               borderRadius: const BorderRadius.all(Radius.circular(8)),
-              color: betPredictionType == (prediction.betPredictionType)
+              color: betPredictionType == (prediction)
                   ?  const Color(ColorConstants.my_green)  // Colors.blueAccent
                   : Colors.grey[100],
             ),
@@ -44,12 +46,12 @@ class DisplayOdd extends StatelessWidget {
             Row(
                 children:[
                   Expanded(flex: 1, child:
-                  Align(alignment: Alignment.centerLeft,  child : Text(betPredictionType.text  , style: TextStyle(fontWeight:FontWeight.bold, fontSize: 8, color: betPredictionType == (prediction.betPredictionType)
+                  Align(alignment: Alignment.centerLeft,  child : Text(betPredictionType.text , maxLines:1, style: TextStyle(fontWeight:FontWeight.bold, fontSize: 8, color: betPredictionType == (prediction)
                       ? Colors.white : Colors.grey[700]), textAlign: TextAlign.left)),
                   ),
 
                   Expanded(flex: 1, child:
-                  Align(alignment: Alignment.centerRight,  child : Text(  (odd?.value.toStringAsFixed(2) ?? 'EEE'), style: TextStyle(fontWeight:FontWeight.bold, fontSize: 8, color: betPredictionType == (prediction.betPredictionType)
+                  Align(alignment: Alignment.centerRight,  child : Text(  (odd?.value.toStringAsFixed(2) ?? 'EEE'), maxLines:1, style: TextStyle( fontWeight:FontWeight.bold, fontSize: 8, color: betPredictionType == (prediction)
                       ? Colors.white : Colors.grey[700]), textAlign: TextAlign.right))
                   )
                 ]

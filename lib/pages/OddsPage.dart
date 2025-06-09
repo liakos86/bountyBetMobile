@@ -17,11 +17,13 @@ import 'package:flutter_app/widgets/BetSlipWithCustomKeyboard.dart';
 import 'package:flutter_app/widgets/LeagueExpandableTile.dart';
 import 'package:intl/intl.dart';
 
+
 import '../models/UserBet.dart';
 import '../models/UserPrediction.dart';
 import '../models/LeagueWithData.dart';
 import '../models/beans/PlaceBetResponseBean.dart';
 import '../models/constants/ColorConstants.dart';
+import '../models/constants/MatchConstants.dart';
 import '../models/context/AppContext.dart';
 import '../utils/BetUtils.dart';
 import '../widgets/CustomTabIcon.dart';
@@ -30,7 +32,6 @@ import '../widgets/row/DialogProgressBarWithText.dart';
 
 class OddsPage extends StatefulWidget{//}WithName {
 
-  // final Map eventsPerDayMap;
 
   final Function updateUserCallback;
   final Function loginUserCallback;
@@ -38,13 +39,6 @@ class OddsPage extends StatefulWidget{//}WithName {
   final Function topUpCallback;
 
   final List<UserPrediction> selectedOdds;
-
-  // @override
-  // StatefulElement createElement() {
-  //   setName('Today\'s Odds');
-  //   // TODO: implement createElement
-  //   return super.createElement();
-  // }
 
   @override
   OddsPageState createState() => OddsPageState();
@@ -88,13 +82,12 @@ class OddsPageState extends State<OddsPage> with SingleTickerProviderStateMixin{
   @override
   void initState() {
     selectedOdds = widget.selectedOdds;
-    // eventsPerDayMap = widget.eventsPerDayMap;
     updateUserCallback = widget.updateUserCallback;
     loginUserCallback = widget.loginUserCallback;
     registerUserCallback = widget.registerUserCallback;
     topUpCallback = widget.topUpCallback;
 
-    _tabController = TabController(length: 5, vsync: this, initialIndex: 2);
+    _tabController = TabController(length: 3, vsync: this, initialIndex: 1);
     _tabController.addListener(() {
       setState(() {});
     });
@@ -105,10 +98,6 @@ class OddsPageState extends State<OddsPage> with SingleTickerProviderStateMixin{
 
   @override
   Widget build(BuildContext context) {
-    const int items = 5;
-    double width = MediaQuery.of(context).size.width;
-    const double labelPadding = 4;
-    double labelWidth = (width - (labelPadding * (items - 1)))  / items;
 
     bool allEmpty = true;
     for (String key in AppContext.eventsPerDayMap.keys){
@@ -119,8 +108,13 @@ class OddsPageState extends State<OddsPage> with SingleTickerProviderStateMixin{
     }
 
     if (allEmpty){
-      return const DialogProgressText(text: 'Loading...');
+      return DialogProgressText(text: AppLocalizations.of(context)!.loading);
     }
+
+    const int items = 3;
+    double width = MediaQuery.of(context).size.width;
+    const double labelPadding = 2;
+    double labelWidth = (width - (labelPadding * (items - 1)))  / items;
 
     return
 
@@ -145,11 +139,11 @@ class OddsPageState extends State<OddsPage> with SingleTickerProviderStateMixin{
                 // unselectedLabelColor: Colors.black54.withOpacity(0.2),
 
                 tabs: [
-                  CustomTabIcon(width: labelWidth, text: getDateWithOffset(-2), isSelected: _tabController.index == 0,),
-                  CustomTabIcon(width: labelWidth, text: getDateWithOffset(-1), isSelected: _tabController.index == 1,),
-                  CustomTabIcon(width: labelWidth, text: AppLocalizations.of(context)!.today, isSelected: _tabController.index == 2,),
-                  CustomTabIcon(width: labelWidth, text: getDateWithOffset(1), isSelected: _tabController.index == 3,),
-                  CustomTabIcon(width: labelWidth, text: getDateWithOffset(2), isSelected: _tabController.index == 4,),
+                  // CustomTabIcon(width: labelWidth, text: getDateWithOffset(-2), isSelected: _tabController.index == 0,),
+                  CustomTabIcon(width: labelWidth, text: getDateWithOffset(-1), isSelected: _tabController.index == 0,),
+                  CustomTabIcon(width: labelWidth, text: AppLocalizations.of(context)!.today, isSelected: _tabController.index == 1,),
+                  CustomTabIcon(width: labelWidth, text: getDateWithOffset(1), isSelected: _tabController.index == 2,),
+                  // CustomTabIcon(width: labelWidth, text: getDateWithOffset(2), isSelected: _tabController.index == 4,),
                 ],
 
                 onTap: (index) {
@@ -159,16 +153,6 @@ class OddsPageState extends State<OddsPage> with SingleTickerProviderStateMixin{
                 }
 
           )
-
-
-
-            // PreferredSize(
-            //   preferredSize: _tabBar.preferredSize,
-            //   child: ColoredBox(
-            //     color: Colors.deepOrange.shade100,
-            //     child: _tabBar,
-            //   ),
-            // ),
 
       ),
 
@@ -188,51 +172,80 @@ class OddsPageState extends State<OddsPage> with SingleTickerProviderStateMixin{
                       'pageOdds0'),
                   // controller: _scrollController0,
                   padding: const EdgeInsets.all(0),
-                  itemCount: AppContext.eventsPerDayMap.entries.elementAt(2).value.length,
+                  // itemCount: AppContext.eventsPerDayMap.entries.elementAt(2).value.length,
+                  itemCount: AppContext.eventsPerDayMap[MatchConstants.KEY_YESTERDAY].length,
                   itemBuilder: (context, item) {
-                    return _buildRow(AppContext.eventsPerDayMap.entries.elementAt(2).value[item], item);
+                    return _buildRow(AppContext.eventsPerDayMap[MatchConstants.KEY_YESTERDAY].elementAt(item), item);
+                    // return _buildRow(AppContext.eventsPerDayMap.entries.elementAt(2).value[item], item);
                   }),
 
               ListView.builder(
+
                   key: const PageStorageKey<String>(
                       'pageOdds1'),
-                 // controller: _scrollController1,
+                  // controller: _scrollController0,
                   padding: const EdgeInsets.all(0),
-                  itemCount: AppContext.eventsPerDayMap.entries.elementAt(1).value.length,
+                  // itemCount: AppContext.eventsPerDayMap.entries.elementAt(2).value.length,
+                  itemCount: AppContext.eventsPerDayMap[MatchConstants.KEY_TODAY].length,
                   itemBuilder: (context, item) {
-                    return _buildRow(AppContext.eventsPerDayMap.entries.elementAt(1).value[item], item);
+                    return _buildRow(AppContext.eventsPerDayMap[MatchConstants.KEY_TODAY].elementAt(item), item);
+                    // return _buildRow(AppContext.eventsPerDayMap.entries.elementAt(2).value[item], item);
                   }),
 
               ListView.builder(
+
                   key: const PageStorageKey<String>(
                       'pageOdds2'),
-                  // controller: _scrollController1,
+                  // controller: _scrollController0,
                   padding: const EdgeInsets.all(0),
-                  itemCount: AppContext.eventsPerDayMap.entries.elementAt(1).value.length,
+                  // itemCount: AppContext.eventsPerDayMap.entries.elementAt(2).value.length,
+                  itemCount: AppContext.eventsPerDayMap[MatchConstants.KEY_TOMORROW].length,
                   itemBuilder: (context, item) {
-                    return _buildRow(AppContext.eventsPerDayMap.entries.elementAt(1).value[item], item);
-                  }),
-
-              ListView.builder(
-                  key: const PageStorageKey<String>(
-                      'pageOdds3'),
-                  // controller: _scrollController1,
-                  padding: const EdgeInsets.all(0),
-                  itemCount: AppContext.eventsPerDayMap.entries.elementAt(1).value.length,
-                  itemBuilder: (context, item) {
-                    return _buildRow(AppContext.eventsPerDayMap.entries.elementAt(1).value[item], item);
+                    return _buildRow(AppContext.eventsPerDayMap[MatchConstants.KEY_TOMORROW].elementAt(item), item);
+                    // return _buildRow(AppContext.eventsPerDayMap.entries.elementAt(2).value[item], item);
                   }),
 
 
-              ListView.builder(
-                  key: const PageStorageKey<String>(
-                      'pageOdds4'),
-                // controller: _scrollController2,
-                  padding: const EdgeInsets.all(0),
-                  itemCount: AppContext.eventsPerDayMap.entries.elementAt(0).value.length,
-                  itemBuilder: (context, item) {
-                    return _buildRow(AppContext.eventsPerDayMap.entries.elementAt(0).value[item], item);
-                  }),
+              // ListView.builder(
+              //     key: const PageStorageKey<String>(
+              //         'pageOdds1'),
+              //    // controller: _scrollController1,
+              //     padding: const EdgeInsets.all(0),
+              //     itemCount: AppContext.eventsPerDayMap.entries.elementAt(1).value.length,
+              //     itemBuilder: (context, item) {
+              //       return _buildRow(AppContext.eventsPerDayMap.entries.elementAt(1).value[item], item);
+              //     }),
+              //
+              // ListView.builder(
+              //     key: const PageStorageKey<String>(
+              //         'pageOdds2'),
+              //     // controller: _scrollController1,
+              //     padding: const EdgeInsets.all(0),
+              //     itemCount: AppContext.eventsPerDayMap.entries.elementAt(1).value.length,
+              //     itemBuilder: (context, item) {
+              //       return _buildRow(AppContext.eventsPerDayMap.entries.elementAt(1).value[item], item);
+              //     }),
+
+              // ListView.builder(
+              //     key: const PageStorageKey<String>(
+              //         'pageOdds3'),
+              //     // controller: _scrollController1,
+              //     padding: const EdgeInsets.all(0),
+              //     itemCount: AppContext.eventsPerDayMap.entries.elementAt(1).value.length,
+              //     itemBuilder: (context, item) {
+              //       return _buildRow(AppContext.eventsPerDayMap.entries.elementAt(1).value[item], item);
+              //     }),
+              //
+              //
+              // ListView.builder(
+              //     key: const PageStorageKey<String>(
+              //         'pageOdds4'),
+              //   // controller: _scrollController2,
+              //     padding: const EdgeInsets.all(0),
+              //     itemCount: AppContext.eventsPerDayMap.entries.elementAt(0).value.length,
+              //     itemBuilder: (context, item) {
+              //       return _buildRow(AppContext.eventsPerDayMap.entries.elementAt(0).value[item], item);
+              //     }),
 
             ],)
           ),
@@ -243,7 +256,7 @@ class OddsPageState extends State<OddsPage> with SingleTickerProviderStateMixin{
           onPressed: ()=> {
 
             if (AppContext.user.mongoUserId != Constants.defMongoId && !AppContext.user.validated){
-              alertDialog('Your account requires validation. Please check your inbox at ${AppContext.user.email} and validate.')
+              alertDialog('${AppLocalizations.of(context)!.mail_requires_validation} ${AppContext.user.email}' )
             }else if (AppContext.user.mongoUserId == Constants.defMongoId){
 
           showDialog(context: context, builder: (context) =>
@@ -329,8 +342,8 @@ class OddsPageState extends State<OddsPage> with SingleTickerProviderStateMixin{
     }else{
 
       if (Constants.MAX_BET_PREDICTIONS < selectedOdds.length){
-        ScaffoldMessenger.of(context).showSnackBar( const SnackBar(
-          content: Text('Max selections size is ${Constants.MAX_BET_PREDICTIONS}'), showCloseIcon: true, duration: Duration(seconds: 5),
+        ScaffoldMessenger.of(context).showSnackBar(  SnackBar(
+          content: Text('${AppLocalizations.of(context)!.max_selection} ${Constants.MAX_BET_PREDICTIONS}'), showCloseIcon: true, duration: const Duration(seconds: 5),
         ));
 
         return;
@@ -360,11 +373,11 @@ class OddsPageState extends State<OddsPage> with SingleTickerProviderStateMixin{
 
     String? mongoUserId = AppContext.user.mongoUserId;
     if (mongoUserId != Constants.defMongoId && !AppContext.user.validated){
-      String msg = 'Your account requires validation. Please go to ${AppContext.user.email} and validate.';
+      String msg = '${AppLocalizations.of(context)!.mail_requires_validation}${AppContext.user.email}';
       alertDialog(msg);
       return BetPlacementStatus.FAILED_USER_NOT_VALIDATED;
     }else if (mongoUserId == Constants.defMongoId){
-      String msg = 'Please login/register at the top left in order to bet.';
+      String msg = AppLocalizations.of(context)!.login_or_register;
       alertDialog(msg);
       return BetPlacementStatus.FAILED_USER_NOT_VALIDATED;
     }
@@ -383,11 +396,11 @@ class OddsPageState extends State<OddsPage> with SingleTickerProviderStateMixin{
 
     if (betPlacementStatus == BetPlacementStatus.FAILED_MATCH_IN_PROGRESS) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+        ScaffoldMessenger.of(context).showSnackBar( SnackBar(
           content: Text(
-              'Cannot place bet. Match in progress.'),
+              AppLocalizations.of(context)!.match_in_progress),
           showCloseIcon: true,
-          duration: Duration(seconds: 5),
+          duration: const Duration(seconds: 5),
         ));
       }
 
@@ -395,22 +408,24 @@ class OddsPageState extends State<OddsPage> with SingleTickerProviderStateMixin{
 
     if (betPlacementStatus == BetPlacementStatus.FAIL_GENERIC) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+        ScaffoldMessenger.of(context).showSnackBar( SnackBar(
           content: Text(
-              'Cannot place bet. Please try again in a while.'),
+              AppLocalizations.of(context)!.cannot_place_bet,
+              ),
           showCloseIcon: true,
-          duration: Duration(seconds: 5),
+          duration: const Duration(seconds: 5),
         ));
       }
     }
 
     if (betPlacementStatus == BetPlacementStatus.FAILED_MATCH_IN_NEXT_MONTH) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+        ScaffoldMessenger.of(context).showSnackBar( SnackBar(
           content: Text(
-              'Cannot place bet. Please select predictions only for current month'),
+              AppLocalizations.of(context)!.preds_next_month,
+              ),
           showCloseIcon: true,
-          duration: Duration(seconds: 5),
+          duration: const Duration(seconds: 5),
         ));
       }
     }
@@ -424,7 +439,7 @@ class OddsPageState extends State<OddsPage> with SingleTickerProviderStateMixin{
     showDialog(context: context, builder: (context) =>
 
         AlertDialog(
-          title: const Text('Registration'),
+          title:  Text(AppLocalizations.of(context)!.action),
           content: Text(msg),
           elevation: 20,
         ));

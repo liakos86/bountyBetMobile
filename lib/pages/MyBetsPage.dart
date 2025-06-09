@@ -6,12 +6,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_app/enums/BetStatus.dart';
 import 'package:flutter_app/models/UserBet.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
-import '../models/User.dart';
+
 import '../models/constants/ColorConstants.dart';
 import '../models/constants/Constants.dart';
 import '../models/context/AppContext.dart';
-import '../models/interfaces/StatefulWidgetWithName.dart';
 import '../widgets/CustomTabIcon.dart';
 import '../widgets/row/UserBetRow.dart';
 import 'LivePage.dart';
@@ -38,6 +38,9 @@ class MyBetsPage extends StatefulWidget{//}WithName{
 
 class MyBetsPageState extends State<MyBetsPage>  with SingleTickerProviderStateMixin{
 
+  /*
+   * Make o copy of the bets
+   */
   List<UserBet> bets = List.of(AppContext.user.userBets);
 
   Function loginOrRegisterCallback;
@@ -54,16 +57,15 @@ class MyBetsPageState extends State<MyBetsPage>  with SingleTickerProviderStateM
 
   @override
   void initState(){
-    // bets = widget.bets;
     loginOrRegisterCallback = widget.loginOrRegisterCallback;
     _tabController = TabController(length: 3, vsync: this);
     _tabController.addListener(() {
       setState(() {});
     });
 
-    Timer.periodic(const Duration(seconds: 20), (timer) {
+    Timer.periodic(const Duration(seconds: 10), (timer) {
       //if (!isMinimized) {
-         updateBets(AppContext.user.userBets);
+         updateBets(AppContext.user.userBets);//update the copy from the new bets
         //);
       //}
     }
@@ -74,7 +76,7 @@ class MyBetsPageState extends State<MyBetsPage>  with SingleTickerProviderStateM
 
   @override
   Widget build(BuildContext context) {
-    //userBets = context.user
+
 
    if (AppContext.user.mongoUserId == Constants.defMongoId){
       return
@@ -88,7 +90,7 @@ class MyBetsPageState extends State<MyBetsPage>  with SingleTickerProviderStateM
             backgroundColor: Colors.orange,
             foregroundColor: Colors.black,
             onPressed: () => { loginOrRegisterCallback.call() },
-            label: const Text('Login/Register'),
+            label: Text(AppLocalizations.of(context)!.login_register),
       ));
     }
 
@@ -127,15 +129,11 @@ class MyBetsPageState extends State<MyBetsPage>  with SingleTickerProviderStateM
               labelPadding: const EdgeInsets.symmetric(horizontal: labelPadding),
             indicator: const BoxDecoration(),
             controller: _tabController,
-            //labelColor: Colors.black87,
-            //unselectedLabelColor: Colors.grey[400],
-            //indicatorColor: Colors.red,
-            //indicatorWeight: 8,
 
             tabs: [
-              CustomTabIcon(width: labelWidth, text: 'Pending(${pendingBets.length.toString()})', isSelected: _tabController.index == 0,),
-              CustomTabIcon(width: labelWidth,  text: 'Won(${wonBets.length.toString()})', isSelected: _tabController.index == 1,),
-              CustomTabIcon(width: labelWidth,  text: 'Lost(${lostBets.length.toString()})', isSelected: _tabController.index == 2,),
+              CustomTabIcon(width: labelWidth, text: '${AppLocalizations.of(context)!.pending}(${pendingBets.length.toString()})', isSelected: _tabController.index == 0,),
+              CustomTabIcon(width: labelWidth,  text: '${AppLocalizations.of(context)!.won}(${wonBets.length.toString()})', isSelected: _tabController.index == 1,),
+              CustomTabIcon(width: labelWidth,  text: '${AppLocalizations.of(context)!.lost}(${lostBets.length.toString()})', isSelected: _tabController.index == 2,),
             ],
 
             onTap: (index) {
@@ -160,17 +158,17 @@ class MyBetsPageState extends State<MyBetsPage>  with SingleTickerProviderStateM
 
             (pendingBets.isEmpty) ?
 
-            const Align(alignment: Alignment.center,
+            Align(alignment: Alignment.center,
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
                     // Icon on top
-                    ImageIcon(size:100, AssetImage('assets/images/money-bag-100.png')),
+                    const ImageIcon(size:100, AssetImage('assets/images/money-bag-100.png')),
                     const SizedBox(height: 20),  // Space between icon and text
                     // Text below the icon
-                    const Text(
-                      'No pending bets',
-                      style: TextStyle(
+                    Text(
+                      AppLocalizations.of(context)!.no_pending_bets,
+                      style: const TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
                         color: Color(ColorConstants.my_dark_grey),
@@ -196,17 +194,17 @@ class MyBetsPageState extends State<MyBetsPage>  with SingleTickerProviderStateM
 
             (wonBets.isEmpty) ?
 
-            const Align(alignment: Alignment.center,
+            Align(alignment: Alignment.center,
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
                     // Icon on top
-                    ImageIcon(size:100, AssetImage('assets/images/money-bag-100.png')),
+                    const ImageIcon(size:100, AssetImage('assets/images/money-bag-100.png')),
                     const SizedBox(height: 20),  // Space between icon and text
                     // Text below the icon
-                    const Text(
-                      'No won bets',
-                      style: TextStyle(
+                    Text(
+                        AppLocalizations.of(context)!.no_won_bets,
+                      style: const TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
                         color: Color(ColorConstants.my_dark_grey),
@@ -231,17 +229,17 @@ class MyBetsPageState extends State<MyBetsPage>  with SingleTickerProviderStateM
 
             (lostBets.isEmpty) ?
 
-            const Align(alignment: Alignment.center,
+            Align(alignment: Alignment.center,
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
                     // Icon on top
-                    ImageIcon(size:100, AssetImage('assets/images/money-bag-100.png')),
+                    const ImageIcon(size:100, AssetImage('assets/images/money-bag-100.png')),
                     const SizedBox(height: 20),  // Space between icon and text
                     // Text below the icon
-                    const Text(
-                      'No lost bets',
-                      style: TextStyle(
+                    Text(
+                        AppLocalizations.of(context)!.no_lost_bets,
+                      style: const TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
                         color: Color(ColorConstants.my_dark_grey),

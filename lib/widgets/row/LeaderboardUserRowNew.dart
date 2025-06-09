@@ -6,7 +6,11 @@ import 'package:flutter_app/utils/BetUtils.dart';
 
 import '../../models/User.dart';
 import '../../models/UserBet.dart';
-import '../../models/UserMonthlyBalance.dart';
+import '../../models/constants/Constants.dart';
+import '../../models/context/AppContext.dart';
+import '../../pages/OtherUserBetsPage.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
 
 
 class LeaderBoardUserFullInfoRow extends StatefulWidget {
@@ -17,12 +21,14 @@ class LeaderBoardUserFullInfoRow extends StatefulWidget {
 
   // final String position;
 
+  final bool isLeaderBoardWinner;
+
   final bool isCurrentLeaderBoard;
 
-  const LeaderBoardUserFullInfoRow({Key ?key, required this.user, required this.isCurrentLeaderBoard}) : super(key: key);
+  const LeaderBoardUserFullInfoRow({Key ?key, required this.user, required this.isCurrentLeaderBoard, required this.isLeaderBoardWinner}) : super(key: key);
 
   @override
-  LeaderBoardUserFullInfoRowState createState() => LeaderBoardUserFullInfoRowState(user: user, isCurrentLeaderBoard: isCurrentLeaderBoard);
+  LeaderBoardUserFullInfoRowState createState() => LeaderBoardUserFullInfoRowState(user: user, isCurrentLeaderBoard: isCurrentLeaderBoard, isLeaderBoardWinner: isLeaderBoardWinner );
 
 }
 
@@ -30,16 +36,13 @@ class LeaderBoardUserFullInfoRow extends StatefulWidget {
 
     User user;
 
-    // String position;
-
     bool isCurrentLeaderBoard;
-
-    // UserMonthlyBalance balance;
+    bool isLeaderBoardWinner;
 
     LeaderBoardUserFullInfoRowState({
       required this.user,
       required this.isCurrentLeaderBoard,
-      // required this.balance
+      required this.isLeaderBoardWinner,
     });
 
   @override
@@ -47,7 +50,8 @@ class LeaderBoardUserFullInfoRow extends StatefulWidget {
 
     user.userBets.sort();
 
-    return Stack(
+    return
+       Stack(
         clipBehavior: Clip.none, // Allow positioning outside the container
         children: [
 
@@ -92,7 +96,7 @@ class LeaderBoardUserFullInfoRow extends StatefulWidget {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(
-                          user.username.length < 25 ? user.username : '${user.username.substring(0, 22)}..',
+                          user.username.length < 18 ? user.username : user.username.substring(0, 17),
                           style: const TextStyle(
                             color: Colors.white,
                             fontSize: 18,
@@ -100,6 +104,19 @@ class LeaderBoardUserFullInfoRow extends StatefulWidget {
                           ),
                         ),
 
+
+                        if (!isCurrentLeaderBoard)
+                        const Spacer(),
+
+                        if (!isCurrentLeaderBoard)
+                        Text(
+                        '${user.balance.position} ${AppLocalizations.of(context)!.out_of} ${user.balance.totalUsers}' ,
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
 
                       ],
                     ),
@@ -121,15 +138,15 @@ class LeaderBoardUserFullInfoRow extends StatefulWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              _buildSmallStatBox(user.balance.betPredictionsMonthlyText(), 'Month\nPreds'),
-              _buildSmallStatBox(user.balance.betPredictionsMonthlyPercentageText(), 'Pred\n%'),
-              _buildSmallStatBox(user.balance.monthlyROIPercentageText(), 'Month\nROI'),
-              _buildSmallStatBox(user.balance.monthlyAmountROIText(), 'Bet\nReturned'),
+              _buildSmallStatBox(user.balance.betPredictionsMonthlyText(), AppLocalizations.of(context)!.month_preds),
+              _buildSmallStatBox(user.balance.betPredictionsMonthlyPercentageText(), AppLocalizations.of(context)!.preds_perc),
+              _buildSmallStatBox(user.balance.monthlyROIPercentageText(), AppLocalizations.of(context)!.month_roi),
+              _buildSmallStatBox(user.balance.monthlyAmountROIText(), AppLocalizations.of(context)!.amount_returned),
             ],
           ),
 
           if (isCurrentLeaderBoard)
-          const SizedBox(height: 16),
+          const SizedBox(height: 8),
 
           // Last 5 Tips Section
           if (isCurrentLeaderBoard)
@@ -171,19 +188,31 @@ class LeaderBoardUserFullInfoRow extends StatefulWidget {
           // Small Green Box at Top-Left Corner
           Positioned(
             top: -5, // Slightly above the container
-            left: 0, // Slightly left of the container
+            left: -5, // Slightly left of the container
             child:
 
-            _buildTiltedPosition(isCurrentLeaderBoard ? user.userPosition.toString() : BetUtils.getLocalizedMonthString(context, user.balance.month, user.balance.year))
+            _buildTiltedPosition(isCurrentLeaderBoard ? '${user.balance.position} ${AppLocalizations.of(context)!.out_of} ${user.balance.totalUsers}' : BetUtils.getLocalizedMonthString(context, user.balance.month, user.balance.year))
+
+
+          ),
+
+          if (AppContext.user.mongoUserId != Constants.defMongoId
+              && AppContext.user.mongoUserId != user.mongoUserId && isCurrentLeaderBoard
+          && isLeaderBoardWinner)
+          Positioned(
+              top: 0, // Slightly above the container
+              right: 5, // Slightly left of the container
+              child:
+
+              _buildPredsButton()
 
 
           ),
         ],
+
+
     );
   }
-
-
-
 
 
 
@@ -191,10 +220,10 @@ class LeaderBoardUserFullInfoRow extends StatefulWidget {
     return
 
       Transform(
-        transform: Matrix4.skewX(-0.2), // Tilt the container
+        transform: Matrix4.skewX(-0.1), // Tilt the container
         child: Container(
-          padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 6),
-          margin: const EdgeInsets.symmetric(horizontal: 4),
+          padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 4),
+          // margin: const EdgeInsets.symmetric(horizontal: 4),
           decoration: BoxDecoration(
             color: const Color(ColorConstants.my_green), // Background color of the parallelogram
             borderRadius: BorderRadius.circular(8),
@@ -203,9 +232,9 @@ class LeaderBoardUserFullInfoRow extends StatefulWidget {
 
           Row(
             children: [
-              _buildTiltedStatBox(user.balance.betSlipsMonthlyText(), 'Won Slips', 3, Colors.white),
-              _buildTiltedStatBox(user.balance.betSlipsMonthlyPercentageText(), 'Slips %', 2, Colors.white),
-              _buildTiltedStatBox(user.balance.balanceLeaderBoard.toStringAsFixed(0), '\$ Credits', 2, Colors.amber),
+              _buildTiltedStatBox(user.balance.betSlipsMonthlyText(), AppLocalizations.of(context)!.won_slips, 3, Colors.white),
+              _buildTiltedStatBox(user.balance.betSlipsMonthlyPercentageText(), AppLocalizations.of(context)!.slips_percent, 2, Colors.white),
+              _buildTiltedStatBox(user.balance.balanceLeaderBoard.toStringAsFixed(0), AppLocalizations.of(context)!.credits_with_sign, 2, Colors.amber),
             ],
           ),
 
@@ -219,7 +248,7 @@ class LeaderBoardUserFullInfoRow extends StatefulWidget {
     return
 
       Transform(
-        transform: Matrix4.skewX(-0.2), // Tilt the container
+        transform: Matrix4.skewX(-0.1), // Tilt the container
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
           // margin: EdgeInsets.symmetric(horizontal: 4),
@@ -307,7 +336,7 @@ class LeaderBoardUserFullInfoRow extends StatefulWidget {
           value,
           style: const TextStyle(
             color: Colors.white,
-            fontSize: 18,
+            fontSize: 16,
             fontWeight: FontWeight.bold,
             fontStyle: FontStyle.italic
           ),
@@ -315,9 +344,9 @@ class LeaderBoardUserFullInfoRow extends StatefulWidget {
         // SizedBox(height: 2),
         Text(
           label,
-          style: TextStyle(
+          style: const TextStyle(
             color: Colors.grey,
-            fontSize: 12,
+            fontSize: 10,
           ),
         ),
       ],
@@ -337,6 +366,61 @@ class LeaderBoardUserFullInfoRow extends StatefulWidget {
         child: Icon(bet == null || bet.betStatus == BetStatus.WITHDRAWN ? Icons.question_mark : bet.betStatus == BetStatus.WON ? Icons.check :  Icons.close , color: color, size: 18),
       ),
     );
+  }
+
+  _buildPredsButton() {
+    return
+      Container(
+        decoration: BoxDecoration(
+          boxShadow: [
+            BoxShadow(
+              color: Colors.redAccent.withOpacity(0.7),
+              blurRadius: 40,
+              spreadRadius: 1,
+              offset: const Offset(0, 0),
+            ),
+          ],
+          borderRadius: BorderRadius.circular(10),
+        ),
+        child: ElevatedButton(
+          key: UniqueKey(),
+          onPressed: () {
+            if (AppContext.user.mongoUserId == Constants.defMongoId ||
+                AppContext.user.mongoUserId == user.mongoUserId) {
+              return;
+            }
+
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => OtherUserBetsPage(
+                  key: UniqueKey(),
+                  otherUser: user,
+                ),
+              ),
+            );
+          },
+          style: ElevatedButton.styleFrom(
+            backgroundColor: Colors.red,
+            foregroundColor: Colors.white,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10),
+            ),
+            padding: const EdgeInsets.symmetric(horizontal: 2, vertical: 2),
+            minimumSize: const Size(0, 24),
+          ),
+          child: Text(
+            '👀 ${AppLocalizations.of(context)!.view_predictions_text}',
+            style: const TextStyle(
+              fontSize: 10,
+              color: Colors.white,
+              fontWeight: FontWeight.bold,
+              fontStyle: FontStyle.italic,
+            ),
+          ),
+        ),
+      );
+
   }
 
 

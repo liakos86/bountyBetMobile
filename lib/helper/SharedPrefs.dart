@@ -16,13 +16,23 @@ class SharedPrefs {
   void appendEventId(String value){
     List<String> current =  _sharedPrefs?.getStringList(sp_fav_event_ids) ?? <String>[];//favEventIds;
     if (current.contains(value)) {
-      throw new Exception("EVENT ALREADY IS FAVOURITE");
+      throw Exception("EVENT ALREADY IS FAVOURITE $value");
     }
 
     current.add(value);
     _sharedPrefs?.setStringList(sp_fav_event_ids, current);
     //reload();
 
+  }
+
+  void appendWonMonth(String value){
+    List<String> current =  _sharedPrefs?.getStringList(sp_won_months) ?? <String>[];
+    if (current.contains(value)) {
+      throw Exception("MONTH ALREADY IS IN WON $value");
+    }
+
+    current.add(value);
+    _sharedPrefs?.setStringList(sp_won_months, current);
   }
 
   void appendLeagueId(String value){
@@ -72,10 +82,20 @@ class SharedPrefs {
     return _sharedPrefs?.getStringList(key) ?? <String>[];
   }
 
-  Future<bool> isFavEvent(String eventId) async{
+  // Future<bool> isFavEvent(String eventId) async{
+  //   await _sharedPrefs?.reload();
+  //   List<String> current =  _sharedPrefs?.getStringList(sp_fav_event_ids) ?? <String>[];//favEventIds;
+  //   if (!current.contains(eventId)) {
+  //     return false;
+  //   }
+  //
+  //   return true;
+  // }
+
+  Future<bool> isInWonMonths(String monthYear) async{
     await _sharedPrefs?.reload();
-    List<String> current =  _sharedPrefs?.getStringList(sp_fav_event_ids) ?? <String>[];//favEventIds;
-    if (!current.contains(eventId)) {
+    List<String> current =  _sharedPrefs?.getStringList(sp_won_months) ?? <String>[];
+    if (!current.contains(monthYear)) {
       return false;
     }
 
@@ -88,3 +108,4 @@ final sharedPrefs = SharedPrefs();
 
 const String sp_fav_event_ids = "fav_event_ids";
 const String sp_fav_league_ids = "fav_league_ids";
+const String sp_won_months = "won_months";

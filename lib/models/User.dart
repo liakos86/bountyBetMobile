@@ -35,8 +35,6 @@ class User implements Comparable<User>{
   int overallLostBets = 0;
   int overallLostPredictions = 0;
 
-  int userPosition = 0;
-
   double betAmountOverall = 0;
 
 
@@ -72,7 +70,6 @@ class User implements Comparable<User>{
     user.overallLostPredictions = parsedJson['overallLostEventsCount'];
 
     user.userLevel = UserLevel.ofLevelCode(parsedJson['level']);
-    user.userPosition = parsedJson['position']??0 as int ;
 
     if(parsedJson['balanceObject'] != null) {
       user.balance = UserMonthlyBalance.fromJson(parsedJson['balanceObject']);
@@ -116,8 +113,8 @@ class User implements Comparable<User>{
     return '$overallWonPredictions/${overallWonPredictions + overallLostPredictions}';
   }
 
-  void copyBalancesFrom(User u) {
-    userPosition = u.userPosition;
+  void deepCopyFrom(User u) {
+    // userPosition = u.userPosition;
     email = u.email;
     validated = u.validated;
     username = u.username;
@@ -130,6 +127,7 @@ class User implements Comparable<User>{
     balance.copyBalancesFrom(u.balance);
     // userBets = u.userBets;
     copyBets(u.userBets);
+    copyAwards(u.awards);
   }
 
   @override
@@ -170,6 +168,24 @@ class User implements Comparable<User>{
       }
     }
 
+  }
+
+  void copyAwards(List<UserMonthlyBalance> incomingAwards) {
+    for (UserMonthlyBalance award in List.of(awards)){
+      UserMonthlyBalance incoming = incomingAwards.firstWhere((element) => element.mongoId == award.mongoId , orElse: () => UserMonthlyBalance.defBalance());
+      if (incoming.mongoId == Constants.defMongoId){
+        awards.remove(award);
+      }else{
+        award.copyBalancesFrom(incoming);
+      }
+    }
+
+    for (UserMonthlyBalance incoming in incomingAwards){
+      UserMonthlyBalance existing = awards.firstWhere((element) => element.mongoId == incoming.mongoId , orElse: () => UserMonthlyBalance.defBalance());
+      if (existing.mongoId == Constants.defMongoId){
+        awards.add(incoming);
+      }
+    }
   }
 
 }

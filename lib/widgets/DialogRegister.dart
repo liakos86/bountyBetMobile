@@ -57,7 +57,7 @@ class DialogRegisterState extends State<DialogRegister> {
                 },
                 decoration: const InputDecoration(
                   border: OutlineInputBorder(),
-                  hintText: 'your email',
+                  hintText: 'email',
                   hintStyle: TextStyle(color: Colors.white),
                 ),
               ),
@@ -71,7 +71,7 @@ class DialogRegisterState extends State<DialogRegister> {
                 },
                 decoration: const InputDecoration(
                   border: OutlineInputBorder(),
-                  hintText: 'your username',
+                  hintText: 'username',
                   hintStyle: TextStyle(color: Colors.white),
                 ),
               ),
@@ -86,7 +86,7 @@ class DialogRegisterState extends State<DialogRegister> {
                 },
                 decoration: InputDecoration(
                   border: const OutlineInputBorder(),
-                  hintText: 'Your password',
+                  hintText: 'password',
                   hintStyle: const TextStyle(color: Colors.white),
                   suffixIcon: IconButton(
                     icon: Icon(
@@ -203,7 +203,7 @@ class DialogRegisterState extends State<DialogRegister> {
       }
     }
 
-    if (userFromServer == null){
+    if (userFromServer == null || userFromServer.errorMessage.isNotEmpty){
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
@@ -227,17 +227,17 @@ class DialogRegisterState extends State<DialogRegister> {
   String? validatePassword(String password) {
     // Check length
     if (password.length < 6 || password.length > 12) {
-      return "Password must be between 6 and 12 characters long.";
+      return AppLocalizations.of(context)!.validation_password_length;
     }
 
     // Check for at least one number
     if (!RegExp(r'[0-9]').hasMatch(password)) {
-      return "Password must contain at least one number.";
+      return AppLocalizations.of(context)!.validation_password_number;
     }
 
     // Check for at least one special character
     if (!RegExp(r'[!@#$%^&*(),.?":{}|<>]').hasMatch(password)) {
-      return "Password must contain at least one special character.";
+      return AppLocalizations.of(context)!.validation_password_special;
     }
 
     return null; // Valid password
@@ -249,10 +249,8 @@ class DialogRegisterState extends State<DialogRegister> {
         r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$";
     RegExp regex = RegExp(pattern);
 
-    if (email.isEmpty) {
-      return "Email cannot be empty.";
-    } else if (!regex.hasMatch(email)) {
-      return "Enter a valid email address.";
+    if (email.isEmpty || !regex.hasMatch(email)) {
+      return AppLocalizations.of(context)!.validation_invalid_email;
     }
 
     return null; // Valid email
@@ -261,12 +259,12 @@ class DialogRegisterState extends State<DialogRegister> {
   String? validateUsername(String username) {
     // Check length
     if (username.length < 6 || username.length > 18) {
-      return "Username must be between 6 and 18 characters long.";
+      return AppLocalizations.of(context)!.validation_invalid_username_length;
     }
 
     // Check if it contains only letters and numbers
     if (!RegExp(r'^[a-zA-Z0-9]+$').hasMatch(username)) {
-      return "Username can only contain letters and numbers.";
+      return AppLocalizations.of(context)!.validation_invalid_username_char;
     }
 
     return null; // Valid username

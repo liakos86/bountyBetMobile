@@ -31,6 +31,8 @@ class UserPrediction{
 
   double value = 0;
 
+  int change = 0;
+
   UserPrediction({
     required this.betPredictionType,
     required this.betPredictionStatus,
@@ -38,7 +40,8 @@ class UserPrediction{
     required this.value,
     required this.homeTeam,
     required this.awayTeam,
-    required this.sportId
+    required this.sportId,
+    required this.change
   });
 
   @override
@@ -73,7 +76,8 @@ class UserPrediction{
         betPredictionType:  BetPredictionType.of(int.parse(parsedJson['predictionCategory']), int.parse(parsedJson['predictionType'])),
         homeTeam: Team.fromJson(homeTeam),
         awayTeam: Team.fromJson(awayTeam),
-        sportId: parsedJson['sportId'] as int
+        sportId: parsedJson['sportId'] as int,
+        change: parsedJson['change']!= null ? parsedJson['change'] as int : 0
     );
 
     return prediction;
@@ -81,6 +85,8 @@ class UserPrediction{
 
   void copyFrom(UserPrediction incoming) {
     betPredictionStatus = incoming.betPredictionStatus;
+    value = incoming.value;
+    change = incoming.change;
   }
 
 }

@@ -8,6 +8,7 @@ import 'package:flutter_app/enums/WinnerType.dart';
 import 'package:flutter_app/widgets/DisplayOdd.dart';
 import 'package:flutter_app/widgets/LogoWithName.dart';
 
+import '../../enums/MatchEventStatus.dart';
 import '../../enums/Sport.dart';
 import '../../models/UserPrediction.dart';
 import '../../models/constants/ColorConstants.dart';
@@ -37,12 +38,18 @@ class UserPredictionRowTiltedState extends State<UserPredictionRowTilted>{
 
   late Function(UserPrediction)? callback;
 
+  late MatchEvent? event;
+
   @override
-  Widget build(BuildContext context) {
+  void initState() {
     prediction = widget.prediction;
     callback = widget.callback;
+    event = AppContext.findEvent(prediction.eventId);
+    super.initState();
+    }
 
-    MatchEvent? event = AppContext.findEvent(prediction.eventId);
+  @override
+  Widget build(BuildContext context) {
 
     return
 
@@ -75,11 +82,12 @@ class UserPredictionRowTiltedState extends State<UserPredictionRowTilted>{
                       event != null ?
 
                          Expanded(flex: 3, child:
-                         Text(event!.display_status, style: TextStyle(
+                         Text(event!.display_status, style: const TextStyle(
                              fontSize: 10, color: Colors.white))
                          )
 
-                      : Expanded(flex: 3, child:
+                      : const Expanded(flex: 3, child:
+
                       SizedBox(width:0)
                       ),
                        //},
@@ -88,7 +96,7 @@ class UserPredictionRowTiltedState extends State<UserPredictionRowTilted>{
                         Align(
                           alignment: Alignment.center,
                           child:
-                          DisplayOdd(betPredictionType: prediction.betPredictionType!, prediction: prediction, odd: prediction),
+                          DisplayOdd(betPredictionType: prediction.betPredictionType!, prediction: prediction.betPredictionType!, odd: prediction),
                         )
                         ),
 
@@ -100,27 +108,8 @@ class UserPredictionRowTiltedState extends State<UserPredictionRowTilted>{
                       ],
                       )
 
-          // ],
-
-
-    // )
       );
-      //     ,
-      //
-      //       Positioned(
-      //           top: 10, // Slightly above the container
-      //           left: -5, // Slightly left of the container
-      //           child:
-      //
-      //            _buildResultIcon()
-      //
-      //
-      //       ),
-      //
-      //
-      //
-      //                 ]
-      // );
+
   }
 
   String predictionTypeTextOf(BetPredictionType? betPredictionType) {
@@ -132,7 +121,7 @@ class UserPredictionRowTiltedState extends State<UserPredictionRowTilted>{
           return prediction.homeTeam.getLocalizedName();
         }
 
-        return 'Draw';
+        return 'X';
   }
 
   Widget _buildResultIcon() {
@@ -173,37 +162,5 @@ class UserPredictionRowTiltedState extends State<UserPredictionRowTilted>{
     ))
     ;
   }
-
-
-  //
-  // //positioned
-  // Expanded(flex: 1, child:
-  //
-  //
-  // callback == null ?
-  // (
-  // prediction.betPredictionStatus==BetPredictionStatus.WITHDRAWN ?
-  // const Icon( Icons.timer, color:   Colors.black45) :
-  // prediction.betPredictionStatus==BetPredictionStatus.LOST ?
-  // const Icon( Icons.highlight_remove, color:   Colors.red)
-  //     : prediction.betPredictionStatus==BetPredictionStatus.WON ?
-  // const Icon(Icons.check_circle_outline_outlined, color:   Colors.green) :
-  // const Icon(Icons.pending_outlined, color:   Colors.black)
-  // ) :
-  //
-  // (IconButton(
-  // style: ButtonStyle(
-  // elevation: MaterialStateProperty.all<double>(4),
-  // foregroundColor: MaterialStateProperty.all<Color>(Colors.black),
-  // backgroundColor: MaterialStateProperty.all<Color>(Colors.transparent)
-  // ),
-  // onPressed: () {
-  // callback!.call(prediction);
-  // },
-  // icon: const Icon(Icons.delete, color: Colors.red,),
-  // ))
-  //
-  //
-  // )
 
 }

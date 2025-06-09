@@ -37,7 +37,7 @@ class HttpActionsClient {
 
   static Future<bool> onlineCheck() async{
     if (!connected){
-      // print('connected = '+connected.toString());
+      // //print('connected = '+connected.toString());
       connected = await checkInternetConnectivity();
     }
 
@@ -59,7 +59,7 @@ class HttpActionsClient {
             Constants.accessToken);
         await authorizeAsync();
         if (access_token == null) {
-          print('register COULD NOT AUTHORIZE ********************************************************************');
+          //print('register COULD NOT AUTHORIZE ********************************************************************');
           return false;
         }
       }
@@ -87,16 +87,16 @@ class HttpActionsClient {
       return responseDec['verified'];
 
     }catch(e){
-      print(e);
+      //print(e);
       return false;
     }
   }
 
-  static Future<User?> loginUser(String emailOrUsername, String password) async{
+  static Future<User> loginUser(String emailOrUsername, String password) async{
     if (!connected){
       connected = await checkInternetConnectivity();
       if (!connected){
-        return null;
+        return User.defUser();
       }
     }
 
@@ -107,8 +107,8 @@ class HttpActionsClient {
             Constants.accessToken);
         await authorizeAsync();
         if (access_token == null) {
-          print('login COULD NOT AUTHORIZE ********************************************************************');
-          return null;
+          //print('login COULD NOT AUTHORIZE ********************************************************************');
+          return User.defUser();
         }
       }
 
@@ -128,8 +128,8 @@ class HttpActionsClient {
       return userFromServer;
 
     }catch(e){
-      print(e);
-      return null;
+      ////print(e);
+      return User.defUser();
     }
   }
 
@@ -148,13 +148,11 @@ class HttpActionsClient {
     var encodedBet = jsonEncode(newBet.toJson());
 
       if (access_token == null) {
-        access_token = await SecureUtils().retrieveValue(
-            Constants.accessToken);
+        access_token = await SecureUtils().retrieveValue(Constants.accessToken);
         await authorizeAsync();
         if (access_token == null) {
-          print('COULD NOT AUTHORIZE ********************************************************************');
+          // //print('COULD NOT AUTHORIZE ********************************************************************');
           return PlaceBetResponseBean(betId: '', betPlacementStatus: BetPlacementStatus.FAIL_GENERIC.statusText);
-          // return BetPlacementStatus.FAIL_GENERIC;
         }
       }
       var userResponse = await post(Uri.parse(UrlConstants.POST_PLACE_BET),
@@ -174,7 +172,7 @@ class HttpActionsClient {
     return responseBean;
 
     }catch(e){
-      // print(e);
+      // //print(e);
       return PlaceBetResponseBean(betId: '', betPlacementStatus: BetPlacementStatus.FAIL_GENERIC.statusText);
     }
   }
@@ -196,17 +194,54 @@ class HttpActionsClient {
             Constants.accessToken);
         await authorizeAsync();
         if (access_token == null) {
-          print('STANDINGS COULD NOT AUTHORIZE ********************************************************************');
+          //print('STANDINGS COULD NOT AUTHORIZE ********************************************************************');
           return Season.defSeason();
         }
       }
 
-      Response userResponse = await get(Uri.parse(getSeasonUrlFinal), headers:  {'Authorization': 'Bearer $access_token'}).timeout(const Duration(seconds: 5));
+      Response userResponse = await get(Uri.parse(getSeasonUrlFinal), headers:  {'Authorization': 'Bearer $access_token'}).timeout(const Duration(seconds: 20));
       var responseDec = await jsonDecode(userResponse.body);
       return  Season.seasonFromJson(responseDec);
     } catch (e) {
-      print(e);
+      //print(e);
       return Season.defSeason();
+    }
+  }
+
+  static Future<List<UserBet>> getUserBets(String targetUserMongoId) async {
+    if (!connected){
+      connected = await checkInternetConnectivity();
+      if (!connected){
+        return <UserBet>[];
+      }
+    }
+
+    String getUserBetsUrlFinal = UrlConstants.GET_USER_BETS.replaceFirst("{1}", AppContext.user.mongoUserId).replaceFirst("{2}", targetUserMongoId);
+
+    try {
+
+      if (access_token == null) {
+        access_token = await SecureUtils().retrieveValue(
+            Constants.accessToken);
+        await authorizeAsync();
+        if (access_token == null) {
+          //print('GET USER BETS COULD NOT AUTHORIZE ********************************************************************');
+          return <UserBet>[];
+        }
+      }
+
+      Response userBetsResponse = await get(Uri.parse(getUserBetsUrlFinal), headers:  {'Authorization': 'Bearer $access_token'}).timeout(const Duration(seconds: 20));
+      Iterable userBetsIterable = json.decode(userBetsResponse.body);
+      List<UserBet> userBets = await Future.wait(
+        userBetsIterable.map((model) async => await UserBet.fromJson(model)),
+      );
+
+
+      return userBets;
+
+    } catch (e) {
+      //print(e);
+      return <UserBet>[];
     }
   }
 
@@ -227,12 +262,12 @@ class HttpActionsClient {
             Constants.accessToken);
         await authorizeAsync();
         if (access_token == null) {
-          // print('LEDERS COULD NOT AUTHORIZE ********************************************************************');
+          // //print('LEDERS COULD NOT AUTHORIZE ********************************************************************');
           return MatchEventStatisticsWithIncidents();
         }
       }
 
-      Response response = await get(Uri.parse(getStatsUrlFinal), headers:  {'Authorization': 'Bearer $access_token'}).timeout(const Duration(seconds: 3));
+      Response response = await get(Uri.parse(getStatsUrlFinal), headers:  {'Authorization': 'Bearer $access_token'}).timeout(const Duration(seconds: 20));
       var responseDec = await jsonDecode(response.body);
       if (responseDec == null){
         return MatchEventStatisticsWithIncidents();
@@ -240,7 +275,7 @@ class HttpActionsClient {
       return MatchEventStatisticsWithIncidents.fromJson(responseDec);
 
     } catch (e) {
-      print('STATS ERRROR ' + e.toString());
+      //print('STATS ERRROR ' + e.toString());
       return MatchEventStatisticsWithIncidents();
     }
   }
@@ -262,7 +297,7 @@ class HttpActionsClient {
             Constants.accessToken);
         await authorizeAsync();
         if (access_token == null) {
-          // print('LEDERS COULD NOT AUTHORIZE ********************************************************************');
+          // //print('LEDERS COULD NOT AUTHORIZE ********************************************************************');
           return leadersMap;
         }
       }
@@ -290,18 +325,18 @@ class HttpActionsClient {
       // mocks.add(MockUtils.mockUser());
       // leadersMap.putIfAbsent('0', () => mocks);
       // leadersMap.putIfAbsent('1', () => mocks);
-      // print(e);
+      // //print(e);
     }
 
     return leadersMap;
 
   }
 
-  static Future<User?> register(String username, String email, String password) async {
+  static Future<User> register(String username, String email, String password) async {
     if (!connected){
       connected = await checkInternetConnectivity();
       if (!connected){
-        return null;
+        return User.defUser();
       }
     }
 
@@ -311,8 +346,8 @@ class HttpActionsClient {
             Constants.accessToken);
         await authorizeAsync();
         if (access_token == null) {
-          print('reg COULD NOT AUTHORIZE ********************************************************************');
-          return null;
+          //print('reg COULD NOT AUTHORIZE ********************************************************************');
+          return User.defUser();
         }
       }
 
@@ -334,10 +369,10 @@ class HttpActionsClient {
       return userFromServer;
 
     } catch (e) {
-      print(e);
+      //print(e);
+      return User.defUser();
     }
 
-    return null;
   }
 
   static Future<Map<int, MatchEvent>> getLeagueLiveEventsAsync(Timer? timer) async {
@@ -356,7 +391,7 @@ class HttpActionsClient {
             Constants.accessToken);
         await authorizeAsync();
         if (access_token == null) {
-          print('COULD NOT AUTHORIZE ********************************************************************');
+          //print('COULD NOT AUTHORIZE ********************************************************************');
           return new Map();
         }
       }
@@ -364,7 +399,7 @@ class HttpActionsClient {
       Response liveMatchesResponse = await get(Uri.parse(UrlConstants.GET_LIVE_EVENTS), headers:  {'Authorization': 'Bearer $access_token'}).timeout(const Duration(seconds: 20));
       jsonMatchesData = await jsonDecode(liveMatchesResponse.body) as Map;
     } catch (e) {
-      // print('ERROR REST ---- MOCKING............');
+      // //print('ERROR REST ---- MOCKING............');
       Map<int, MatchEvent> validData = new Map();// MockUtils().mockLeaguesMap(AppContext.eventsPerDayMap, false);
       return validData;
     }
@@ -390,15 +425,15 @@ class HttpActionsClient {
             Constants.accessToken);
         await authorizeAsync();
         if (access_token == null) {
-          print('COULD NOT AUTHORIZE ********************************************************************');
+          //print('COULD NOT AUTHORIZE ********************************************************************');
           return new Map();
         }
       }
 
-      Response leaguesResponse = await get(Uri.parse(UrlConstants.GET_LEAGUE_EVENTS), headers:  {'Authorization': 'Bearer $access_token'}).timeout(const Duration(seconds: 10));
+      Response leaguesResponse = await get(Uri.parse(UrlConstants.GET_LEAGUE_EVENTS), headers:  {'Authorization': 'Bearer $access_token'}).timeout(const Duration(seconds: 30));
       jsonLeaguesData = await jsonDecode(leaguesResponse.body) as Map;
     } catch (e) {
-      // print('ERROR REST ---- MOCKING............');
+      // //print('ERROR REST ---- MOCKING............');
       Map<String, List<LeagueWithData>> validData = Map();//  MockUtils().mockLeaguesMap(AppContext.eventsPerDayMap, false);
       return validData;
     }
@@ -422,16 +457,22 @@ class HttpActionsClient {
             Constants.accessToken);
         await authorizeAsync();
         if (access_token == null) {
-          print('COULD NOT AUTHORIZE ********************************************************************');
+          //print('COULD NOT AUTHORIZE ********************************************************************');
           return jsonLeaguesData;
         }
       }
 
-      Response leaguesResponse = await get(Uri.parse(UrlConstants.GET_LEAGUES), headers:  {'Authorization': 'Bearer $access_token'}).timeout(const Duration(seconds: 10));
+      Response leaguesResponse = await get(Uri.parse(UrlConstants.GET_LEAGUES), headers:  {'Authorization': 'Bearer $access_token'}).timeout(const Duration(seconds: 20));
       Iterable leaguesIterable = json.decode(leaguesResponse.body);
       jsonLeaguesData = await Future.wait(
-        leaguesIterable.map((model) async => await League.fromJson(model)),
-      );// List<League>.from(leaguesIterable.map((model) async => await League.fromJson(model)));
+        leaguesIterable.map((model) async {
+          try {
+            return await League.fromJson(model);
+          } catch (e) {
+            return null; // or log the error if needed
+          }
+        }),
+      ).then((results) => results.where((league) => league != null).cast<League>().toList());// List<League>.from(leaguesIterable.map((model) async => await League.fromJson(model)));
     } catch (e) {
       String msg = e.toString();
 
@@ -443,8 +484,8 @@ class HttpActionsClient {
         result.write('\n'); // Add a newline after every 30 characters
       }
 
-      showToastInChunks(e.toString());
-      print('ERROR REST ---- LEAGUES MOCKING............');
+      //showToastInChunks(e.toString());
+      //print('ERROR REST ---- LEAGUES MOCKING............');
     }
 
     return jsonLeaguesData;
@@ -494,21 +535,34 @@ class HttpActionsClient {
             Constants.accessToken);
 
         if (access_token == null) {
-          print('COULD NOT AUTHORIZE ********************************************************************');
+          //print('COULD NOT AUTHORIZE ********************************************************************');
           return jsonSectionsData;
         }
       }
 
       String url = UrlConstants.GET_SECTIONS;
       Response sectionsHttpResponse = await get(Uri.parse(url),
-          headers:  {'Authorization': 'Bearer $access_token'}).timeout(const Duration(seconds: 10));
+          headers:  {'Authorization': 'Bearer $access_token'}).timeout(const Duration(seconds: 20));
       Iterable sectionsIterable = json.decode(sectionsHttpResponse.body);
-      jsonSectionsData = List<Section>.from(sectionsIterable.map((model)=> Section.fromJson(model)));
+
+       jsonSectionsData = sectionsIterable
+          .map((model) {
+        try {
+          return Section.fromJson(model);
+        } catch (e) {
+          return null; // or log the error if needed
+        }
+      })
+          .where((section) => section != null)
+          .cast<Section>()
+          .toList();
+
+
     } catch (e) {
       if (e is TimeoutException){
         connected = false;
       }
-      print('ERROR REST ---- SECTIONS MOCKING............');
+      //print('ERROR REST ---- SECTIONS MOCKING............');
 
     }
 
@@ -517,6 +571,10 @@ class HttpActionsClient {
 
 
   static Future<void> authorizeAsync() async {
+    if (access_token != null){
+      return;
+    }
+
     if (!connected){
       connected = await checkInternetConnectivity();
       if (!connected){
@@ -543,10 +601,10 @@ class HttpActionsClient {
           Uri.parse(UrlConstants.AUTH),
           body: jsonEncode({'uniqueDeviceId' : '$token'}),
           encoding: Encoding.getByName("utf-8"))
-          .timeout(const Duration(seconds: 10));
+          .timeout(const Duration(seconds: 20));
       var responseDec = await jsonDecode(authHttpResponse.body);
 
-      // print(responseDec['access_token']);
+      //print('SERVER TOKEN RECEIVED:: ' + responseDec['access_token']);
 
       String? accessTkn = (responseDec['access_token']);
       if (accessTkn==null){
@@ -558,7 +616,7 @@ class HttpActionsClient {
       access_token = accessTkn;
       return ;
     } catch (e) {
-      print('ERROR AUTH ---- ............');
+      //print('ERROR AUTH ---- ............');
     }
 
 
@@ -569,8 +627,8 @@ class HttpActionsClient {
     var encryptedWithAES_2 = encryptWithAES(emailOrUsername, createKey(UrlConstants.URL_ENC));
     var encryptedWithAES = encryptWithAES(password, createKey(encryptedWithAES_2.base64));
 
-    // print('sending ' +encryptedWithAES_2.base64 + ' size ' + encryptedWithAES_2.base64.length.toString() );
-    // print('sending ' +encryptedWithAES.base64+ ' size ' + encryptedWithAES.base64.length.toString() );
+    // //print('sending ' +encryptedWithAES_2.base64 + ' size ' + encryptedWithAES_2.base64.length.toString() );
+    // //print('sending ' +encryptedWithAES.base64+ ' size ' + encryptedWithAES.base64.length.toString() );
 
     return {
       "email": encryptedWithAES_2.base64,
@@ -587,8 +645,8 @@ class HttpActionsClient {
     // var encryptedWithAES_2 = encryptWithAES(email, encryptedWithAES.base64);
 
 
-    // print('sending ' +encryptedWithAES_2.base64 + ' size ' + encryptedWithAES_2.base64.length.toString() );
-    // print('sending ' +encryptedWithAES.base64+ ' size ' + encryptedWithAES.base64.length.toString() );
+    // //print('sending ' +encryptedWithAES_2.base64 + ' size ' + encryptedWithAES_2.base64.length.toString() );
+    // //print('sending ' +encryptedWithAES.base64+ ' size ' + encryptedWithAES.base64.length.toString() );
 
     return {
       "email": encryptedWithAES_2.base64,
@@ -605,9 +663,9 @@ class HttpActionsClient {
     // var encryptedWithAES_2 = encryptWithAES(email, encryptedWithAES.base64);
 
 
-    // print('sending ' + encryptedWithAES_2.base64 + ' size ' +
+    // //print('sending ' + encryptedWithAES_2.base64 + ' size ' +
     //     encryptedWithAES_2.base64.length.toString());
-    // print('sending ' + encryptedWithAES.base64 + ' size ' +
+    // //print('sending ' + encryptedWithAES.base64 + ' size ' +
     //     encryptedWithAES.base64.length.toString());
 
     return {
@@ -617,11 +675,16 @@ class HttpActionsClient {
     };
   }
 
-  static Future<User?> getUserAsync(String mongoId) async{
+  static Future<User> getUserAsync(String mongoId) async{
+    if (Constants.defMongoId == mongoId){
+      return User.defUser();
+    }
+
+
     if (!connected){
       connected = await checkInternetConnectivity();
       if (!connected){
-        return null;
+        return User.defUser();
       }
     }
 
@@ -632,8 +695,8 @@ class HttpActionsClient {
             Constants.accessToken);
         await authorizeAsync();
         if (access_token == null) {
-          print('COULD NOT AUTHORIZE ********************************************************************');
-          return null;
+          //print('COULD NOT AUTHORIZE ********************************************************************');
+          return User.defUser();
         }
       }
 
@@ -642,7 +705,7 @@ class HttpActionsClient {
       var responseDec = await jsonDecode(userResponse.body);
       return User.fromJson(responseDec);
     } catch (e) {
-      return null;
+      return User.defUser();
     }
   }
 
@@ -661,7 +724,7 @@ class HttpActionsClient {
             Constants.accessToken);
         await authorizeAsync();
         if (access_token == null) {
-          print('COULD NOT AUTHORIZE ********************************************************************');
+          //print('COULD NOT AUTHORIZE ********************************************************************');
           return <UserMonthlyBalance>[];
         }
       }
@@ -674,10 +737,10 @@ class HttpActionsClient {
         balancesIterable.map((model) async => await UserMonthlyBalance.fromJson(model)),
       );
 
-      // print('balances success');
+      // //print('balances success');
       return balances;
     } catch (e) {
-      print('Balance err');
+      //print('Balance err');
       return <UserMonthlyBalance>[];
     }
   }
@@ -690,9 +753,14 @@ class HttpActionsClient {
 
       var leaguesWithDataJson = dailyLeagues.value;
 
-      MatchEvent? leagueObj = await MatchEvent.eventFromJson(leaguesWithDataJson);
+      //try {
+        MatchEvent? leagueObj = await MatchEvent.eventFromJson(
+            leaguesWithDataJson);
+        newEventsPerDayMap.putIfAbsent(day, () => leagueObj);
+      // }catch(Exception e){
+      //
+      // }
 
-      newEventsPerDayMap.putIfAbsent(day, ()=> leagueObj);
     }
 
     return newEventsPerDayMap;
@@ -720,17 +788,20 @@ class HttpActionsClient {
   }
 
   static Future<bool> checkInternetConnectivity() async {
+
+    print("CONN CHECK");
+
     var connectivityResult = await Connectivity().checkConnectivity();
     if (connectivityResult == ConnectivityResult.none) {
-      print("No network connection (WiFi or Mobile not available)");
+      //print("No network connection (WiFi or Mobile not available)");
       return false;
     } else {
       bool isConnected = await hasActiveInternet();
       if (isConnected) {
-        print("Internet is available");
+        //print("Internet is available");
         return true;
       } else {
-        print("Network connected (WiFi/Mobile), but no internet access");
+        //print("Network connected (WiFi/Mobile), but no internet access");
         return false;
       }
     }
@@ -745,12 +816,12 @@ class HttpActionsClient {
 
     for (String url in testUrls) {
       try {
-        final response = await http.get(Uri.parse(url)).timeout(const Duration(seconds: 5));
+        final response = await http.get(Uri.parse(url)).timeout(const Duration(seconds: 10));
         if (response.statusCode == 200) {
           return true; // Internet is accessible
         }
       } catch (e) {
-        print(e);
+        //print(e);
         // Ignore and try the next URL
       }
     }
@@ -760,7 +831,7 @@ class HttpActionsClient {
   static void listenConnChanges(Function(bool conn) updateConnState) {
     Connectivity().onConnectivityChanged.listen(
           (ConnectivityResult result) {
-        print("Connectivity Result: $result");
+        //print("Connectivity Result: $result");
         if (result == ConnectivityResult.mobile) {
           connected = true;
         } else if (result == ConnectivityResult.wifi) {
@@ -772,7 +843,7 @@ class HttpActionsClient {
         updateConnState.call(connected);
       },
       onError: (error) {
-        print("Error: $error");
+        //print("Error: $error");
       },
     );
   }

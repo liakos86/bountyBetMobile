@@ -3,6 +3,8 @@ import 'dart:io';
 import 'dart:ui';
 import 'package:collection/collection.dart';
 import 'package:in_app_purchase_android/in_app_purchase_android.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
 
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
@@ -13,7 +15,6 @@ import 'package:flutter_app/models/constants/JsonConstants.dart';
 import 'package:flutter_app/models/LeagueWithData.dart';
 import 'package:flutter_app/models/constants/PurchaseConstants.dart';
 import 'package:flutter_app/models/context/AppContext.dart';
-// import 'package:flutter_app/pages/LeaguesInfoPage.dart';
 import 'package:flutter_app/pages/OddsPage.dart';
 import 'package:flutter_app/utils/client/HttpActionsClient.dart';
 import 'package:flutter_app/widgets/DialogTabbedLoginOrRegister.dart';
@@ -37,12 +38,13 @@ import '../widgets/dialog/DialogTextWithButtons.dart';
 import 'LeaderBoardPage.dart';
 import 'LivePage.dart';
 import 'MyBetsPage.dart';
-import 'MyFantasyLeaguesPage.dart';
 
   /*
    * The current device locale. It can change at any time by user.
   */
  String? locale;
+
+
 
   class ParentPage extends StatefulWidget {
 
@@ -66,11 +68,12 @@ class ParentPageState extends State<ParentPage> with WidgetsBindingObserver {
   bool available = false;
   StreamSubscription<List<PurchaseDetails>>? subscription;
   String appBarTitle = 'FantasyTips';
+  User user = AppContext.user;
 
   /*
    * Shared prefs
    */
-  Future<SharedPreferences> prefs = SharedPreferences.getInstance();
+  // Future<SharedPreferences> prefs = SharedPreferences.getInstance();
 
   /*
    * The index of the page navigator.
@@ -96,8 +99,6 @@ class ParentPageState extends State<ParentPage> with WidgetsBindingObserver {
   static GlobalKey livePageKey = GlobalKey();
   static GlobalKey betsPageKey = GlobalKey();
   static GlobalKey leaderBoardPageKey = GlobalKey();
-  static GlobalKey myFantasyLeaguesKey = GlobalKey();
-  // static GlobalKey leaguesPageKey = GlobalKey();
 
   updateConnState(bool conn){
 
@@ -117,26 +118,27 @@ class ParentPageState extends State<ParentPage> with WidgetsBindingObserver {
   @override
   void initState() {
 
+    retrieveUserFromPrefs();
+
     _initializeInAppPurchases();
 
     subscription = inAppPurchase.purchaseStream.listen((purchaseDetailsList) {
       handlePurchaseUpdates(purchaseDetailsList);
     },onDone: () => subscription?.cancel(), onError: (error) {
       if (mounted){
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-          content: Text('Purchase was not completed'), showCloseIcon: true, duration: Duration(seconds: 5),
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text(AppLocalizations.of(context)!.purchase_error), showCloseIcon: true, duration: const Duration(seconds: 5),
         ));
       }
       // Handle errors during the purchase flow.
-      //print('Purchase error: $error');
     });
 
     HttpActionsClient.listenConnChanges(updateConnState);
 
 
-   AppContext.eventsPerDayMap. putIfAbsent('-1', () => <LeagueWithData>[]);
-   AppContext.eventsPerDayMap.putIfAbsent('0', () => <LeagueWithData>[]);
-   AppContext.eventsPerDayMap.putIfAbsent('1', () => <LeagueWithData>[]);
+   AppContext.eventsPerDayMap. putIfAbsent(MatchConstants.KEY_YESTERDAY, () => <LeagueWithData>[]);
+   AppContext.eventsPerDayMap.putIfAbsent(MatchConstants.KEY_TODAY, () => <LeagueWithData>[]);
+   AppContext.eventsPerDayMap.putIfAbsent(MatchConstants.KEY_TOMORROW, () => <LeagueWithData>[]);
 
 
   WidgetsBinding.instance.addObserver(this);
@@ -147,10 +149,10 @@ class ParentPageState extends State<ParentPage> with WidgetsBindingObserver {
       .addPostFrameCallback((_) => setLocale(context));
 
   pagesList.add(OddsPage(key: oddsPageKey, updateUserCallback: updateUserCallBack, loginUserCallback: loginUserCallback, registerUserCallback: registerUserCallback, selectedOdds: selectedOdds, topUpCallback: promptDialogTopup));
-  pagesList.add(LivePage(key: livePageKey, allLeagues: AppContext.eventsPerDayMap['0']));
+  pagesList.add(LivePage(key: livePageKey, allLeagues: AppContext.eventsPerDayMap[MatchConstants.KEY_TODAY]));
   pagesList.add(LeaderBoardPage());
   pagesList.add(MyBetsPage(key: betsPageKey, loginOrRegisterCallback: promptLoginOrRegister));
-  pagesList.add(MyFantasyLeaguesPage(key: myFantasyLeaguesKey, loginOrRegisterCallback: promptLoginOrRegister));
+  // pagesList.add(MyFantasyLeaguesPage(key: myFantasyLeaguesKey, loginOrRegisterCallback: promptLoginOrRegister));
 
 
   HttpActionsClient.authorizeAsync().then((a) =>
@@ -163,59 +165,9 @@ class ParentPageState extends State<ParentPage> with WidgetsBindingObserver {
       .then((leagueEventsMap) => updateLeagueMatches(leagueEventsMap))
       .then((updated) => HttpActionsClient.getLeagueLiveEventsAsync(null))
       .then((leaguesMap) =>
-      updateLiveLeagueMatches(leaguesMap))
-  .then((value) => updateUserFromServer()));
+      updateLiveLeagueMatches(leaguesMap)));
 
-
-   Timer.periodic(const Duration(seconds: 10), (timer) {
-     if (!isMinimized) {
-       HttpActionsClient.getSectionsAsync(null).then((secMap) => updateSections(secMap)
-     );
-     }
-   }
-   );
-
-
-   Timer.periodic(const Duration(seconds: 20), (timer) {
-     if (!isMinimized) {
-       HttpActionsClient.getLeaguesAsync(null)
-         .then((leaguesMap) => updateLeagues(leaguesMap)
-     );
-     }
-   }
-   );
-
-
-  Timer.periodic(const Duration(seconds: 20), (timer) {
-    if (!isMinimized) {
-      HttpActionsClient.getLeagueEventsAsync(timer).then((leaguesMap) =>
-        updateLeagueMatches(leaguesMap)
-      );
-    }
-    }
-  );
-
-
-     Timer.periodic(const Duration(seconds: 10), (timer) {
-
-       if (AppContext.eventsPerDayMap['0'].isEmpty){
-         return;
-       }
-
-       if (!isMinimized) {
-         HttpActionsClient.getLeagueLiveEventsAsync(timer).then((leaguesMap) =>
-           updateLiveLeagueMatches(leaguesMap)
-       );
-       }
-     }
-     );
-
-     Timer.periodic(const Duration(seconds: 30), (timer) {
-       if (!isMinimized) {
-         updateUserFromServer();
-       }
-     });
-
+    schedulePeriodicUpdates();
 
       setupFirebaseListeners();
 
@@ -276,31 +228,28 @@ class ParentPageState extends State<ParentPage> with WidgetsBindingObserver {
 
   Future<void> updateUser(User value) async {
 
-    AppContext.updateUser(value);
+    user.deepCopyFrom(value);
 
-    // SharedPreferences sharedPreferences = await prefs;
-    //bool? purchaseIsPending = sharedPreferences.getBool(PurchaseConstants.pendingPurchase);
-    //if (purchaseIsPending != null && purchaseIsPending) {
+
+    if (user.mongoUserId != Constants.defMongoId) {
       restorePurchases();
-    // }
+    }
 
-    if (AppContext.user.mongoUserId == User.defUser().mongoUserId ){
-      appBarTitle = 'Football';
-    } else if (!AppContext.user.validated){
-      appBarTitle = '[validation pending]';
-    }else if (AppContext.user.userPosition > 0){
-      appBarTitle = ' pos[${AppContext.user.userPosition}]'  ;
+    if (user.mongoUserId == Constants.defMongoId ){
+     // updateUserMongoId(value);
+      appBarTitle = AppLocalizations.of(context)!.football;
+    } else if (!user.validated){
+      appBarTitle = '[${AppLocalizations.of(context)!.validation_pending}]';
+    }else {// if (AppContext.user.balance.position > 0){
+      appBarTitle = '${AppLocalizations.of(context)!.position}[${AppContext.user.balance.position}${AppLocalizations.of(context)!.out_of}${AppContext.user.balance.totalUsers}]'  ;
     }
 
     if (!mounted){
-      // print('not mounted');
       return;
     }
 
-
-    //print('TITLE ' + appBarTitle);
     setState(() {
-      AppContext.user;
+      user;
       appBarTitle;
     });
 
@@ -308,10 +257,15 @@ class ParentPageState extends State<ParentPage> with WidgetsBindingObserver {
       AppContext.user.userBets;
     });
 
+    leaderBoardPageKey.currentState?.setState(() {
+      AppContext.user;
+    });
+
   }
 
   @override
   Widget build(BuildContext context) {
+
 
     return Scaffold(
       appBar: AppBar(
@@ -344,7 +298,36 @@ class ParentPageState extends State<ParentPage> with WidgetsBindingObserver {
 
                 const WidgetSpan(child: SizedBox(width: 8)),
 
-                AppContext.user.balance.balance > 0 ?
+                if (AppContext.user.mongoUserId != User.defUser().mongoUserId
+                && AppContext.user.validated)
+                  WidgetSpan(
+                    alignment: PlaceholderAlignment.middle, // Align icon with text
+                    child:
+                    AppContext.user.balance.positionDelta >= 0 ?
+                    const Icon(
+                      Icons.arrow_circle_up, // Replace with desired icon
+                      size: 20,
+                      color: Color(ColorConstants.my_green),
+                    )
+                        :
+                    const Icon(
+                      Icons.arrow_circle_down, // Replace with desired icon
+                      size: 20,
+                      color: Colors.redAccent,
+                    )
+                  ),
+
+
+                if (AppContext.user.mongoUserId != User.defUser().mongoUserId
+                    && AppContext.user.validated)
+                  TextSpan(
+                    text: AppContext.user.balance.positionDelta >= 0 ? ' +${AppContext.user.balance.positionDelta}' : ' ${AppContext.user.balance.positionDelta}',
+                    style: TextStyle(color: AppContext.user.balance.positionDelta >= 0 ? const Color(ColorConstants.my_green) : Colors.redAccent)
+                  ),
+
+                const WidgetSpan(child: SizedBox(width: 8)),
+
+                if (AppContext.user.balance.balance > 0)
                 const WidgetSpan(
                   alignment: PlaceholderAlignment.middle, // Align icon with text
                   child: Icon(
@@ -352,9 +335,8 @@ class ParentPageState extends State<ParentPage> with WidgetsBindingObserver {
                     size: 20,
                     color: Colors.amber,
                   ),
-                )
-                :
-              const TextSpan(text: Constants.empty),
+                ),
+
 
                 TextSpan(
                   text: AppContext.user.balance.balance > 0 ? AppContext.user.balance.balance.toStringAsFixed(2) : Constants.empty,
@@ -375,9 +357,9 @@ class ParentPageState extends State<ParentPage> with WidgetsBindingObserver {
                       padding: const EdgeInsets.symmetric(horizontal: 2, vertical: 2),
                       minimumSize: const Size(0, 30), // Button size
                     ),
-                    child: const Text(
-                      'Top Up',
-                      style: TextStyle(
+                    child:  Text(
+                      AppLocalizations.of(context)!.topup_button_text,
+                      style: const TextStyle(
                           fontSize: 10,
                           color: Colors.white,
                           fontWeight: FontWeight.bold,
@@ -393,13 +375,17 @@ class ParentPageState extends State<ParentPage> with WidgetsBindingObserver {
 
         Builder(
             builder: (BuildContext context) {
+
     return
 
     Padding(
     padding: const EdgeInsets.all(4),
     child:
 
-    AppContext.user.mongoUserId == Constants.defMongoId ?
+    user.mongoUserId == Constants.defMongoId
+
+        ?
+
 
     FloatingActionButton(
     heroTag: 'btnParentLogin',
@@ -436,7 +422,7 @@ class ParentPageState extends State<ParentPage> with WidgetsBindingObserver {
        */
       IndexedStack(
               index: selectedPageIndex,
-              children: [pagesList[0], pagesList[1], pagesList[2], pagesList[3], pagesList[4]]),
+              children: [pagesList[0], pagesList[1], pagesList[2], pagesList[3]]),
 
       bottomNavigationBar: BottomNavigationBar(
         selectedFontSize: 18,
@@ -446,27 +432,24 @@ class ParentPageState extends State<ParentPage> with WidgetsBindingObserver {
         fixedColor: Colors.white,
         unselectedItemColor: Colors.white60,
         currentIndex: selectedPageIndex,
-        items: const [
+        items: [
           BottomNavigationBarItem(
-            icon: ImageIcon(AssetImage('assets/images/calendar-100.png')),//  Icon(Icons.home),
-            label: 'Calendar'
+            icon: const Icon(Icons.date_range_outlined),//ImageIcon(AssetImage('assets/images/calendar-100.png')),//  Icon(Icons.home),
+            label: AppLocalizations.of(context)!.matches
           ),
           BottomNavigationBarItem(
-              icon: ImageIcon(AssetImage('assets/images/live-100.png')),
-              label: 'Live'
+              icon: const Icon(Icons.local_fire_department),// ImageIcon(AssetImage('assets/images/live-100.png')),
+              label: AppLocalizations.of(context)!.live
           ),
           BottomNavigationBarItem(
-              icon: ImageIcon(AssetImage('assets/images/leaders-100.png')),//  Icon(Icons.home),
-              label: 'Leaders'
+              icon: const Icon(Icons.leaderboard),// ImageIcon(AssetImage('assets/images/leaders-100.png')),//  Icon(Icons.home),
+              label: AppLocalizations.of(context)!.leaders
           ),
           BottomNavigationBarItem(
-              icon: ImageIcon(AssetImage('assets/images/money-bag-100.png')),//  Icon(Icons.home),
-              label: 'My bets'
+              icon: const Icon(Icons.currency_exchange),// ImageIcon(AssetImage('assets/images/money-bag-100.png')),//  Icon(Icons.home),
+              label: AppLocalizations.of(context)!.bets
           ),
-          BottomNavigationBarItem(
-              icon: Icon(Icons.leaderboard),
-              label: 'Fantasy'
-          ),
+
         ],
 
         onTap: (index){
@@ -483,22 +466,21 @@ class ParentPageState extends State<ParentPage> with WidgetsBindingObserver {
     );
   }
 
-
-
-  Future<User?> getUserAsync() async{
-    SharedPreferences sh_prefs =  await prefs;
-    String? mongoId = sh_prefs.getString('mongoId');
-    if (mongoId == null){//638376a4d9419c54f54ec23f
-      setState(() {
-        appBarTitle = 'Football';
-      });
-      return null;
-    }
-
-    return await HttpActionsClient.getUserAsync(mongoId);
+  Future<String?> mongoIdPrefs() async{
+    SharedPreferences sh_prefs =  await SharedPreferences.getInstance();
+    return  sh_prefs.getString(Constants.mongoId);
   }
 
   registerUserCallback(User user) {
+
+
+      updatePrefsMongoUserId(user);
+      updateUser(user);
+
+
+      if (!mounted){
+        return;
+      }
 
       Navigator.pop(context);
 
@@ -506,7 +488,7 @@ class ParentPageState extends State<ParentPage> with WidgetsBindingObserver {
       if (user.errorMessage != Constants.empty){
         content = user.errorMessage;
       }else{
-        content = 'A verification email has been sent to ' + user.email;
+        content = AppLocalizations.of(context)!.email_verification + user.email;
       }
 
       showDialog(context: context, builder: (context) =>
@@ -514,41 +496,48 @@ class ParentPageState extends State<ParentPage> with WidgetsBindingObserver {
           DialogUserRegistered(text: content)
       );
 
-      updateUserMongoId(user);
-
   }
 
   loginUserCallback(User user) async{
 
-    Navigator.pop(context);
+    updatePrefsMongoUserId(user);
+    updateUser(user);
 
-    if (user.errorMessage == Constants.empty){
-      await updateUserMongoId(user);
+    if (!mounted){
       return;
     }
 
-    showDialog(context: context, builder: (context) =>
+    if (user.errorMessage != Constants.empty) {
+      showDialog(context: context, builder: (context) =>
 
-        AlertDialog(
-          title: Text('Login Error'),
-          content: DialogUserRegistered(text: user.errorMessage),
-          elevation: 20,
-        ));
+          AlertDialog(
+            title: Text(AppLocalizations.of(context)!.login_error),
+            content: DialogUserRegistered(text: user.errorMessage),
+            elevation: 20,
+          ));
+    }
 
+    Navigator.pop(context);
   }
 
-  Future<void> updateUserMongoId(User user) async {
-    final SharedPreferences shprefs = await prefs;
-    shprefs.setString('mongoId', user.mongoUserId);
-    updateUser(user);
+  Future<void> updatePrefsMongoUserId(User user) async {
+    final SharedPreferences shprefs = await SharedPreferences.getInstance();
+    if (user.mongoUserId != Constants.defMongoId) {
+      shprefs.setString(Constants.mongoId, user.mongoUserId);
+    }else{
+      shprefs.remove(Constants.mongoId);
+    }
   }
 
   updateUserCallBack(UserBet newBet) {
 
-    //AppContext.user.userBets.add(newBet);
-    // betsPageKey.currentState?.setState(() {
-    //   AppContext.user.userBets;
-    // });
+    double balance = AppContext.user.balance.balance;
+    double balanceNew = balance - newBet.betAmount;
+
+    setState((){
+      AppContext.user.balance.balance = balanceNew;
+    });
+
   }
 
   /*
@@ -564,25 +553,25 @@ class ParentPageState extends State<ParentPage> with WidgetsBindingObserver {
       return; //TODO maybe empty everything?
     }
 
-    AppContext.eventsPerDayMap['-1'] =
-    incomingLeaguesMap[MatchConstants.KEY_TODAY];
 
-    AppContext.eventsPerDayMap['1'] =
-    incomingLeaguesMap[MatchConstants.KEY_TOMORROW];
+    for (var dailyEntry in incomingLeaguesMap.entries) {
+      List<LeagueWithData> existingTodayLeagues = AppContext
+          .eventsPerDayMap[dailyEntry.key];
+      List<
+          LeagueWithData> incomingTodayLeagues = incomingLeaguesMap[dailyEntry.key]!;
 
-    List<LeagueWithData> existingTodayLeagues = AppContext.eventsPerDayMap[MatchConstants.KEY_TODAY];
-    List<LeagueWithData> incomingTodayLeagues = incomingLeaguesMap[MatchConstants.KEY_TODAY]!;
 
-    // print("existing " + existingTodayLeagues.length.toString() + " incoming " + incomingTodayLeagues.length.toString() );
+      updateExistingMatchDataFromIncoming(
+          existingTodayLeagues, incomingTodayLeagues);
 
-    updateExistingMatchDataFromIncoming(existingTodayLeagues, incomingTodayLeagues);
-    // print("upd existing " + existingTodayLeagues.length.toString() + " incoming " + incomingTodayLeagues.length.toString() );
+      updateExistingMatchDataFromIncomingMissing(
+          existingTodayLeagues, incomingTodayLeagues);
 
-    updateExistingMatchDataFromIncomingMissing(existingTodayLeagues, incomingTodayLeagues);
-
-    for (var element in existingTodayLeagues) {
-      //for (var element in element.events) {element.calculateLiveMinute();}
-      for (var element in element.events) {element.calculateDisplayStatus(context);}
+      for (var element in existingTodayLeagues) {
+        for (var element in element.events) {
+          element.calculateDisplayStatus(context);
+        }
+      }
     }
 
     sortLeagues();
@@ -603,7 +592,7 @@ class ParentPageState extends State<ParentPage> with WidgetsBindingObserver {
           incomingLiveLeagueIds.add(incomingLiveEvent.leagueId);
           bool eventExistsInCache = false;
 
-          for (LeagueWithData lwt in AppContext.eventsPerDayMap['0']) {//incoming exists then copy
+          for (LeagueWithData lwt in AppContext.eventsPerDayMap[MatchConstants.KEY_TODAY]) {//incoming exists then copy
             List<MatchEvent> liveEvents = lwt.events;//.where((element) => element.status == MatchEventStatus.INPROGRESS.statusStr).toList();
             if (liveEvents.contains(incomingLiveEventEntry.value)) {
               eventExistsInCache = true;
@@ -618,83 +607,31 @@ class ParentPageState extends State<ParentPage> with WidgetsBindingObserver {
 
           }
 
-          // if (!eventExistsInCache && !newAddedLeagueIds.contains(incomingLiveEventEntry.value.leagueId)) {//means that the related league is also absent
-          //
-          //   LeagueWithData leagueWithLiveGameToBeAdded = AppContext.eventsPerDayMap[MatchConstants.KEY_TODAY]
-          //       .firstWhere((element) =>
-          //         element.league.league_id == incomingLiveEventEntry.value.leagueId);
-          //
-          //   leagueWithLiveGameToBeAdded.events.add(incomingLiveEvent);
-          //   AppContext.allLeaguesMap['0'].add(leagueWithLiveGameToBeAdded);
-          //   newAddedLeagueIds.add(incomingLiveEventEntry.value.leagueId);
-          // }
+
         }
 
-        // for (LeagueWithData lwt in List.of(AppContext.liveLeagues)) {
-        //   if (!incomingLiveLeagueIds.contains(lwt.league.league_id)){
-        //     AppContext.liveLeagues.remove(lwt);
-        //   }
-        // }
 
-        for (var element in AppContext.eventsPerDayMap['0']) {
+        for (var element in AppContext.eventsPerDayMap[MatchConstants.KEY_TODAY]) {
           for (var element in element.events) {
             element.calculateDisplayStatus(context);
           }
-          // for (var element in element.liveEvents) {
-          //   element.calculateLiveMinute();
-          // }
+
         }
       }
 
 
-      AppContext.eventsPerDayMap['0'].sort();
+      AppContext.eventsPerDayMap[MatchConstants.KEY_TODAY].sort();
       updatePageStates();
   }
 
   void promptLoginOrRegister() {
     showDialog(context: context, builder: (context) =>
 
-        // AlertDialog(
-        //   // title: const Text('Welcome'),
-        //   backgroundColor: Colors.blueAccent,
-        //   // titleTextStyle: const TextStyle(color: Colors.white, fontSize: 20),
-        //   insetPadding: EdgeInsets.zero,
-        //   contentPadding: const EdgeInsets.all(2.0),
-        //   buttonPadding: EdgeInsets.zero,
-        //   alignment: Alignment.bottomCenter,
-        //   elevation: 20,
-        //   shape: const RoundedRectangleBorder(
-        //       borderRadius:
-        //       BorderRadius.only(topLeft:
-        //       Radius.circular(10.0), topRight: Radius.circular(10.0))),
-        //   content:
-        //
-        //   Builder(
-        //       builder: (context) {
-        //         // Get available height and width of the build area of this widget. Make a choice depending on the size.
-        //         var height = MediaQuery
-        //             .of(context)
-        //             .size
-        //             .height * (2 / 3);
-        //         var width = MediaQuery
-        //             .of(context)
-        //             .size
-        //             .width;
-        //         return SizedBox(width: width, height: height,
-        //             child:
-
-
-
                     DialogTabbedLoginOrRegister(
                       registerCallback: registerUserCallback,
                       loginCallback: loginUserCallback,
                     )
-                        // :
-                        // Text('Hello ' + AppContext.user.username)
-        //
-        //         );
-        //       }
-        // ))
+
     );
   }
 
@@ -713,15 +650,12 @@ void setupFirebaseListeners() async{
     if (!mounted){
       return;
     }
-    // print('FG Message data: ${message.messageId}');
     if (message.notification != null) {//we sent only data messages for now
-      print('Message also contained a notification: ${message.notification}');
+      //print('Message also contained a notification: ${message.notification}');
     }
 
     handleFirebaseTopicMessage(message);
   });
-
-
 
   //now we can subscribe to topic
   await FirebaseMessaging.instance.subscribeToTopic("LiveSoccer").onError((error, stackTrace) => print(error.toString() + stackTrace.toString()));
@@ -737,7 +671,6 @@ void setupFirebaseListeners() async{
   void handleFirebaseTopicMessage(RemoteMessage message) {
 
     final payload = message.data;
-    // print('Received message:$payload ');
     if (payload[JsonConstants.changeEvent] == null){
       return;
     }
@@ -773,7 +706,6 @@ void setupFirebaseListeners() async{
     }
 
     if (!mounted){
-      print('not mounted');
       return;
     }
 
@@ -783,8 +715,7 @@ void setupFirebaseListeners() async{
     });
 
     livePageKey.currentState?.setState(() {
-      // AppContext.eventsPerDayMap[MatchConstants.KEY_TODAY];
-      AppContext.eventsPerDayMap['0'];
+      AppContext.eventsPerDayMap[MatchConstants.KEY_TODAY];
     });
   }
 
@@ -797,7 +728,6 @@ void setupFirebaseListeners() async{
 
   void updatePageStates() {
     if (!mounted){
-      print('not mounted');
       return;
     }
 
@@ -807,17 +737,12 @@ void setupFirebaseListeners() async{
     });
 
     livePageKey.currentState?.setState(() {
-      //AppContext.eventsPerDayMap[MatchConstants.KEY_TODAY];
-      AppContext.eventsPerDayMap['0'];
+      AppContext.eventsPerDayMap[MatchConstants.KEY_TODAY];
     });
 
-    // leaguesPageKey.currentState?.setState(() {
-    //   AppContext.allLeaguesMap;
+    // myFantasyLeaguesKey.currentState?.setState(() {
+    //   AppContext.user;
     // });
-
-    myFantasyLeaguesKey.currentState?.setState(() {
-      AppContext.user;
-    });
   }
 
   void checkForOddsRemoval(List<MatchEvent> events) {
@@ -861,7 +786,6 @@ void setupFirebaseListeners() async{
   }
 
   bool updateSections(List<Section> sections) {
-    // print('SEC:'+ sections.length.toString());
 
     for ( Section s in sections){
       AppContext.allSectionsMap.putIfAbsent(s.id, ()=>s);
@@ -893,7 +817,7 @@ void setupFirebaseListeners() async{
           existingLeague.events.remove(existingEvent);
 
           if(existingLeague.events.isEmpty){
-            AppContext.eventsPerDayMap['0'].remove(existingLeague);
+            existingTodayLeagues.remove(existingLeague);
           }
 
           checkForOddsRemoval([existingEvent]);
@@ -901,6 +825,8 @@ void setupFirebaseListeners() async{
           //match was present and is also now, copy fields
           MatchEvent incomingEvent = incomingLeague.events.firstWhere((
               element) => element == existingEvent);
+
+
           existingEvent.copyFrom(incomingEvent);
           incomingLeague.events.remove(incomingEvent);
         }
@@ -941,36 +867,21 @@ void setupFirebaseListeners() async{
     }
   }
 
-  void updateUserFromServer() {
-
-    getUserAsync().then((value) =>
-    {
-      if (value != null){
-        updateUser(value)
-      }
-    }
-    );
+  Future<void> updateUserFromServer(String mongoUserId) async {
+    User userNew = await HttpActionsClient.getUserAsync(mongoUserId);
+    updatePrefsMongoUserId(userNew);
+    updateUser(userNew);
   }
 
   void logoutUser() async{
 
+    updatePrefsMongoUserId(User.defUser());
 
-    final SharedPreferences shprefs = await prefs;
-    shprefs.remove('mongoId');
+    updateUser(User.defUser());
 
-    await updateUser(User.defUser());
-
-    betsPageKey.currentState?.setState(() {
-      AppContext.user;
-    });
-
-    leaderBoardPageKey.currentState?.setState(() {
-
-    });
-
-    setState(() {
-      AppContext.user;
-    });
+    if(!mounted){
+      return;
+    }
 
     Navigator.pop(context);
   }
@@ -1049,17 +960,11 @@ void setupFirebaseListeners() async{
       } else if (purchaseDetails.status == PurchaseStatus.error) {
         // Handle error
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text('Purchase Error: ${purchaseDetails.error}'), showCloseIcon: true, duration: const Duration(seconds: 5),
+          content: Text( '${AppLocalizations.of(context)!.purchase_error} ${purchaseDetails.error}'), showCloseIcon: true, duration: const Duration(seconds: 5),
         ));
       }
     }
   }
-
-  // Future<bool> verifyPurchaseOnServer(PurchaseDetails purchase) async {
-  //   // Simulating verification (Implement real verification on your server)
-  //   //await Future.delayed(Duration(seconds: 2));
-  //   return true;
-  // }
 
   /*
    * A purchase is sent here in order to be validated on server and then completed.
@@ -1070,7 +975,6 @@ void setupFirebaseListeners() async{
     try {
       bool success = await sendPurchaseToServer(purchaseDetails);
       if (success) {
-        //print("Product delivered: ${purchaseDetails.productID}");
 
         inAppPurchase.completePurchase(purchaseDetails);
 
@@ -1082,16 +986,15 @@ void setupFirebaseListeners() async{
       } else {
 
         if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-            content: Text('Please wait while we handle your purchase'),
+          ScaffoldMessenger.of(context).showSnackBar( SnackBar(
+            content: Text(AppLocalizations.of(context)!.purchase_handling),
             showCloseIcon: true,
-            duration:  Duration(seconds: 5),
+            duration:  const Duration(seconds: 5),
           ));
         }
 
       }
     } catch (e) {
-      //print("Server error: $e, will retry later.");
     }
 
   }
@@ -1137,8 +1040,66 @@ void setupFirebaseListeners() async{
     return await HttpActionsClient.verifyPurchase(purchaseDetails); // Simulating network delay
   }
 
+  /*
+   * If shared prefs have a value , make a call to retrieve user
+   */
+  void retrieveUserFromPrefs() async{
+    String? mongoIdFromPrefs = await mongoIdPrefs();
+    if (mongoIdFromPrefs == null){
+      return;
+    }
+    User userNew = await HttpActionsClient.getUserAsync(mongoIdFromPrefs);
+    if (Constants.defMongoId != userNew.mongoUserId){
+      updateUser(userNew);
+    }
+  }
+
+  void schedulePeriodicUpdates() {
+    Timer.periodic(const Duration(seconds: 60*60*8), (timer) {
+      if (!isMinimized) {
+        HttpActionsClient.getSectionsAsync(null).then((secMap) => updateSections(secMap)
+        );
+      }
+    }
+    );
+
+    Timer.periodic(const Duration(seconds: 60*60*4), (timer) {
+      if (!isMinimized) {
+        HttpActionsClient.getLeaguesAsync(null)
+            .then((leaguesMap) => updateLeagues(leaguesMap)
+        );
+      }
+    }
+    );
+
+    Timer.periodic(const Duration(seconds: 20), (timer) {
+      if (!isMinimized) {
+        HttpActionsClient.getLeagueEventsAsync(timer).then((leaguesMap) =>
+            updateLeagueMatches(leaguesMap)
+        );
+      }
+    }
+    );
+
+    Timer.periodic(const Duration(seconds: 30), (timer) {
+
+      if (AppContext.eventsPerDayMap[MatchConstants.KEY_TODAY].isEmpty){
+        return;
+      }
+
+      if (!isMinimized) {
+        HttpActionsClient.getLeagueLiveEventsAsync(timer).then((leaguesMap) =>
+            updateLiveLeagueMatches(leaguesMap)
+        );
+      }
+    }
+    );
+
+    Timer.periodic(const Duration(seconds: 30), (timer) {
+      if (!isMinimized && User.defUser().mongoUserId != user.mongoUserId) {
+        updateUserFromServer(user.mongoUserId);
+      }
+    });
+  }
+
 }
-
-
-
-

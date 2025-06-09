@@ -5,7 +5,6 @@ import 'package:flutter_app/models/UserBet.dart';
 import 'package:flutter_app/widgets/row/UserPredictionRowTilted.dart';
 
 import '../models/UserPrediction.dart';
-import './row/UserBetPredictionRow.dart';
 
 class DialogSuccessfulBet extends StatelessWidget{
 

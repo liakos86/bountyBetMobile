@@ -1,6 +1,8 @@
 import 'dart:io';
 import 'dart:math';
 import 'dart:ui';
+import 'package:flutter_cache_manager/src/result/file_info.dart';
+
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
@@ -68,6 +70,10 @@ class LogoWithName extends StatefulWidget {
   @override
   Widget build(BuildContext context) {
 
+    // loadImg();
+
+
+
     return
       Row(
         mainAxisSize: MainAxisSize.max,
@@ -77,10 +83,17 @@ class LogoWithName extends StatefulWidget {
             child:
 
             CachedNetworkImage(
+              key: ValueKey(logoUrl),
               imageUrl: logoUrl,
-              cacheManager: CustomCacheManager(),
-              placeholder: (context, url) => Image.asset(Constants.assetNoTeamImage, width: logoSize, height: logoSize,),
-              errorWidget: (context, url, error) => Image.asset(Constants.assetNoTeamImage, width: logoSize, height: logoSize,),
+              cacheManager: CustomCacheManager.instance,
+
+              placeholderFadeInDuration: const Duration(milliseconds: 300),
+              fadeInDuration: const Duration(milliseconds: 300),
+              placeholder: (context, url) =>
+                  Image.asset(Constants.assetNoLeagueImage, width: 32, height: 32),
+              errorWidget: (context, url, error) =>
+                  Image.asset(Constants.assetNoLeagueImage, width: 32, height: 32),
+
               height: logoSize,
               width: logoSize,
             ),
@@ -110,7 +123,7 @@ class LogoWithName extends StatefulWidget {
                 Align(
                   alignment: Alignment.centerLeft,
                   child: Text( name + (WinnerType.AFTER == winnerType ? '*' : Constants.empty), overflow: TextOverflow.ellipsis, textAlign: TextAlign.left,
-                    style: TextStyle(fontWeight: WinnerType.NONE == winnerType ? FontWeight.w500 : FontWeight.w900, fontSize: fontSize, color: goalScored ? Colors.red : Colors.white),)),
+                    style: TextStyle(fontWeight: WinnerType.NONE == winnerType && !goalScored ? FontWeight.w500 : FontWeight.w900, fontSize: fontSize, color: goalScored ? Colors.redAccent : Colors.white),)),
                  ]))),
 
         Expanded(
@@ -136,5 +149,14 @@ class LogoWithName extends StatefulWidget {
 
     );
   }
+
+  // Future<void> loadImg() async {
+  //   final  file = await  CustomCacheManager.instance.getFileFromCache(logoUrl);
+  //   if (file != null) {
+  //     print('✅ Cached file exists: ${file.file.path}');
+  //   } else {
+  //     print('🚫 Not in cache');
+  //   }
+  // }
 
 }

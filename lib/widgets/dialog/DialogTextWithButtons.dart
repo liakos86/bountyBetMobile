@@ -2,6 +2,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_app/models/constants/ColorConstants.dart';
 import 'package:flutter_app/models/constants/PurchaseConstants.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
 
 class DialogTextWithButtons extends StatelessWidget{//} StatefulWidget {
 
@@ -33,9 +35,9 @@ class DialogTextWithButtons extends StatelessWidget{//} StatefulWidget {
             mainAxisSize: MainAxisSize.min,
             children: [
 
-              const Text(
-                'Your virtual credits are close to 0. Do you want to topUp?',
-                style: TextStyle(fontSize: 16.0),
+              Text(
+                AppLocalizations.of(context)!.topup_text,
+                style: const TextStyle(fontSize: 16.0),
               ),
               const SizedBox(height: 20.0),
 
@@ -56,13 +58,13 @@ class DialogTextWithButtons extends StatelessWidget{//} StatefulWidget {
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(20), // Rounded radius
                   ),
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8), // Button size
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8), // Button size
                 ),
-                child: const Text(
+                child: Text(
 
-                  'Top Up 1000',
+                  '${AppLocalizations.of(context)!.topup_button_text} 1000',
                   maxLines: 1,
-                  style: TextStyle(
+                  style: const TextStyle(
 
                       fontSize: 14,
                       fontWeight: FontWeight.bold,
@@ -70,6 +72,8 @@ class DialogTextWithButtons extends StatelessWidget{//} StatefulWidget {
                   ),
                 ),
               )),
+
+                  const SizedBox(width: 4),
 
                   Expanded(flex:1, child:
                   ElevatedButton(
@@ -83,12 +87,12 @@ class DialogTextWithButtons extends StatelessWidget{//} StatefulWidget {
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(20), // Rounded radius
                       ),
-                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8), // Button size
+                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8), // Button size
                     ),
-                    child: const Text(
-                      'Top Up 3000',
+                    child: Text(
+                      '${AppLocalizations.of(context)!.topup_button_text} 3000',
                       maxLines: 1,
-                      style: TextStyle(
+                      style: const TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.bold,
                           fontStyle: FontStyle.italic
@@ -111,9 +115,9 @@ class DialogTextWithButtons extends StatelessWidget{//} StatefulWidget {
                   ),
                   padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8), // Button size
                 ),
-                child: const Text(
-                  'Close',
-                  style: TextStyle(
+                child: Text(
+                  AppLocalizations.of(context)!.close,
+                  style: const TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
                       fontStyle: FontStyle.italic

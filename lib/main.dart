@@ -8,6 +8,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_app/pages/ParentPage.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 
@@ -104,7 +105,9 @@ class MyApp extends StatelessWidget {
       localizationsDelegates: AppLocalizations.localizationsDelegates, // <--- add this
       supportedLocales: AppLocalizations.supportedLocales, // <--- add this
 
-      theme: ThemeData(primaryColor: const Color(ColorConstants.my_green)),
+      theme: ThemeData(
+          textTheme: GoogleFonts.kanitTextTheme(),// GoogleFonts.poppinsTextTheme(),
+          primaryColor: const Color(ColorConstants.my_green)),
       home: ParentPage(),
     );
   }

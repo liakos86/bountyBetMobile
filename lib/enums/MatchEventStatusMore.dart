@@ -31,6 +31,10 @@
 
   POSTPONED(statusStr: "Postponed"),
 
+  CANCELLED(statusStr: "Cancelled"),
+
+  CANCELED(statusStr: "Canceled"),
+
   AFTER_EXTRA_TIME(statusStr: "AET"),
 
   AFTER_PENALTIES(statusStr: "AP"),

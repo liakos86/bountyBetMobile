@@ -3,10 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_app/enums/BetPlacementStatus.dart';
 import 'package:flutter_app/enums/BetPredictionType.dart';
 import 'package:flutter_app/enums/WinnerType.dart';
-import 'package:flutter_app/models/match_odds.dart';
-import 'package:flutter_app/pages/ParentPage.dart';
 import 'package:flutter_app/widgets/DisplayOdd.dart';
-import 'package:flutter_app/widgets/GestureDetectorForOdds.dart';
 
 import '../../models/UserPrediction.dart';
 import '../../models/constants/ColorConstants.dart';
@@ -89,13 +86,13 @@ class SelectedOddRow extends StatelessWidget {
                               child:
 
                               BetPredictionType.HOME_WIN.betPredictionCode == prediction.betPredictionType?.betPredictionCode ?
-                              DisplayOdd(betPredictionType: BetPredictionType.HOME_WIN, prediction: prediction, odd: gameWithOdds?.odds?.odd1)
+                              DisplayOdd(betPredictionType: BetPredictionType.HOME_WIN, prediction: prediction.betPredictionType!, odd: gameWithOdds?.odds?.odd1)
                                   :
                               BetPredictionType.AWAY_WIN.betPredictionCode == prediction.betPredictionType?.betPredictionCode ?
-                              DisplayOdd(betPredictionType: BetPredictionType.AWAY_WIN, prediction: prediction, odd: gameWithOdds?.odds?.odd2)
+                              DisplayOdd(betPredictionType: BetPredictionType.AWAY_WIN, prediction: prediction.betPredictionType!, odd: gameWithOdds?.odds?.odd2)
                                   :
                               BetPredictionType.DRAW.betPredictionCode == prediction.betPredictionType?.betPredictionCode ?
-                              DisplayOdd(betPredictionType: BetPredictionType.DRAW, prediction: prediction, odd: gameWithOdds?.odds?.oddX)
+                              DisplayOdd(betPredictionType: BetPredictionType.DRAW, prediction: prediction.betPredictionType!, odd: gameWithOdds?.odds?.oddX)
                                   : const Text('-')
                           )
                           , // FIRST COLUMN END

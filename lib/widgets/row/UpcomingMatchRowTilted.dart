@@ -1,17 +1,11 @@
-import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_app/enums/MatchEventStatus.dart';
 import 'package:flutter_app/widgets/GestureDetectorForOdds.dart';
-import 'package:flutter_app/widgets/row/LiveMatchRow.dart';
 
-import '../../enums/WinnerType.dart';
-import '../../helper/SharedPrefs.dart';
 import '../../models/UserPrediction.dart';
 import '../../models/constants/ColorConstants.dart';
 import '../../models/match_event.dart';
-import '../../pages/ParentPage.dart';
-import '../LogoWithName.dart';
 import 'LiveMatchRowTilted.dart';
 
   class UpcomingOrEndedMatchRowTilted extends StatefulWidget {
@@ -53,13 +47,20 @@ import 'LiveMatchRowTilted.dart';
             children: [
 
         Container(
-          padding: const EdgeInsets.all(2),
-      margin: const EdgeInsets.only(bottom: 2, left: 12, right: 2),
-      decoration: BoxDecoration(
-      color: const Color(ColorConstants.my_dark_grey)
+          // padding: const EdgeInsets.all(2),
+      // margin: const EdgeInsets.only(bottom: 2, left: 12, right: 2),
+      decoration: const BoxDecoration(
+        border: Border(
+          bottom: BorderSide(
+            color: Colors.white,
+            width: 0.5,
+          ),
+        ),
+      color: Color(ColorConstants.my_dark_grey)
       , // Dark background color
-      borderRadius: BorderRadius.circular(12),
+      // borderRadius: BorderRadius.circular(12),
       ),
+
       child:
 
         Wrap( //top parent
@@ -67,7 +68,10 @@ import 'LiveMatchRowTilted.dart';
 
             children: [
 
+
               LiveMatchRowTilted(gameWithOdds: gameWithOdds),
+
+
 
               //ODDS ROW
 
@@ -126,99 +130,99 @@ import 'LiveMatchRowTilted.dart';
         )
         ),
 
-              Positioned(
-                  top: 20, // Slightly above the container
-                  left: 5, // Slightly left of the container
-                  child:
-
-                  _buildTiltedFavourite()
-
-
-              ),
+              // Positioned(
+              //     top: 20, // Slightly above the container
+              //     left: 5, // Slightly left of the container
+              //     child:
+              //
+              //     _buildTiltedFavourite()
+              //
+              //
+              // ),
 
         ]//stack children
         );
     }
 
-  _buildTiltedFavourite() {
+  // _buildTiltedFavourite() {
+  //
+  //  if ( MatchEventStatus.INPROGRESS.statusStr == gameWithOdds.status || MatchEventStatus.NOTSTARTED.statusStr == gameWithOdds.status ) {
+  //    return
+  //      Transform(
+  //          transform: Matrix4.skewX(-0.2), // Tilt the container
+  //          child: Container(
+  //              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+  //              // margin: EdgeInsets.symmetric(horizontal: 4),
+  //              decoration: BoxDecoration(
+  //                color: Colors.white,
+  //                // Background color of the parallelogram
+  //                borderRadius: BorderRadius.circular(8),
+  //                border: Border.all(color: Colors.black87, width: 1)
+  //              ),
+  //              child:
+  //
+  //
+  //              GestureDetector(
+  //                  onTap: () async =>
+  //                  {
+  //
+  //                    if ((await checkFirebasePermission())
+  //                        .authorizationStatus ==
+  //                        AuthorizationStatus.authorized){
+  //
+  //                      if (gameWithOdds.isFavourite){
+  //                        sharedPrefs.removeFavEvent(
+  //                            gameWithOdds.eventId.toString()),
+  //                        updateFav(false)
+  //                      } else
+  //                        {
+  //                          sharedPrefs.appendEventId(
+  //                              gameWithOdds.eventId.toString()),
+  //                          updateFav(true)
+  //                        },
+  //                      ParentPageState.favouritesUpdate(),
+  //                    }
+  //                  },
+  //
+  //                  child:
+  //                  Column(
+  //                      children: [
+  //                        Align(
+  //                          alignment: Alignment.center,
+  //                          child:
+  //                          gameWithOdds.isFavourite ?
+  //                          const Icon(Icons.star_outlined, color: Colors.redAccent)
+  //                              :
+  //                          const Icon(Icons.star_border, color: Color(ColorConstants.my_dark_grey)),
+  //                        )
+  //                      ]
+  //                  )
+  //              )
+  //          )
+  //      );
+  //  }else {
+  //   return  const SizedBox();
+  //  }
+  // }
 
-   if ( MatchEventStatus.INPROGRESS.statusStr == gameWithOdds.status || MatchEventStatus.NOTSTARTED.statusStr == gameWithOdds.status ) {
-     return
-       Transform(
-           transform: Matrix4.skewX(-0.2), // Tilt the container
-           child: Container(
-               padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-               // margin: EdgeInsets.symmetric(horizontal: 4),
-               decoration: BoxDecoration(
-                 color: Colors.white,
-                 // Background color of the parallelogram
-                 borderRadius: BorderRadius.circular(8),
-                 border: Border.all(color: Colors.black87, width: 1)
-               ),
-               child:
-
-
-               GestureDetector(
-                   onTap: () async =>
-                   {
-
-                     if ((await checkFirebasePermission())
-                         .authorizationStatus ==
-                         AuthorizationStatus.authorized){
-
-                       if (gameWithOdds.isFavourite){
-                         sharedPrefs.removeFavEvent(
-                             gameWithOdds.eventId.toString()),
-                         updateFav(false)
-                       } else
-                         {
-                           sharedPrefs.appendEventId(
-                               gameWithOdds.eventId.toString()),
-                           updateFav(true)
-                         },
-                       ParentPageState.favouritesUpdate(),
-                     }
-                   },
-
-                   child:
-                   Column(
-                       children: [
-                         Align(
-                           alignment: Alignment.center,
-                           child:
-                           gameWithOdds.isFavourite ?
-                           const Icon(Icons.star_outlined, color: Colors.red)
-                               :
-                           const Icon(Icons.star_border, color: Color(ColorConstants.my_dark_grey)),
-                         )
-                       ]
-                   )
-               )
-           )
-       );
-   }else {
-    return  const SizedBox();
-   }
-  }
-
-    Future<NotificationSettings> checkFirebasePermission() async {
-      FirebaseMessaging messaging = FirebaseMessaging.instance;
-      return await messaging.requestPermission(
-        alert: true,
-        announcement: false,
-        badge: true,
-        carPlay: false,
-        criticalAlert: false,
-        provisional: false,
-        sound: true,
-      );
-    }
-
-    updateFav(bool newfav) {
-      setState(() {
-        gameWithOdds.isFavourite = newfav;
-      });
-    }
+    // Future<NotificationSettings> checkFirebasePermission() async {
+    //   FirebaseMessaging messaging = FirebaseMessaging.instance;
+    //   return await messaging.requestPermission(
+    //     alert: true,
+    //     announcement: false,
+    //     badge: true,
+    //     carPlay: false,
+    //     criticalAlert: false,
+    //     provisional: false,
+    //     sound: true,
+    //   );
+    // }
+    //
+    // updateFav(bool newfav) {
+    //   setState(() {
+    //     gameWithOdds.isFavourite = newfav;
+    //   });
+    // }
 
 
   }

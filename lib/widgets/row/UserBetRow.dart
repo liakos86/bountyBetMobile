@@ -1,28 +1,20 @@
-import 'dart:collection';
 import 'dart:ui';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_app/enums/BetStatus.dart';
-import 'package:flutter_app/models/match_event.dart';
-import 'package:flutter_app/widgets/row/UserPredictionRow.dart';
-import 'package:intl/intl.dart';
 
 import '../../models/UserPrediction.dart';
 import '../../models/UserBet.dart';
 import '../../models/constants/ColorConstants.dart';
 import '../../models/constants/Constants.dart';
-import '../../models/constants/MatchConstants.dart';
-import './UserBetPredictionRow.dart';
 import 'UserPredictionRowTilted.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
 
 class UserBetRow extends StatefulWidget {
 
-
-
   final UserBet bet;
-
-  //HashMap eventsPerIdMap;
 
   const UserBetRow({Key? key, required this.bet}) : super(key: key);
 
@@ -38,11 +30,9 @@ class UserBetRow extends StatefulWidget {
 
    late final String placementTime;
 
-   // late final ExpansionTileController controller;
 
    @override
   void initState() {
-     // controller = ExpansionTileController();
     bet = widget.bet;
     DateTime currentPeriodStartTime = DateTime.fromMillisecondsSinceEpoch(bet.betPlacementMillis.toInt()).toLocal();
     placementTime = '${currentPeriodStartTime.day < 10 ? '0' : Constants.empty}${currentPeriodStartTime.day}/${currentPeriodStartTime.month < 10 ? '0' : Constants.empty}${currentPeriodStartTime.month} ${currentPeriodStartTime.hour < 10 ? '0' : Constants.empty}${currentPeriodStartTime.hour}:${currentPeriodStartTime.minute < 10 ? '0' : Constants.empty}${currentPeriodStartTime.minute}' ;
@@ -81,7 +71,7 @@ class UserBetRow extends StatefulWidget {
 
 
 
-      title: Text('Possible earnings: ${bet.toReturn().toStringAsFixed(2)}',
+      title: Text('${AppLocalizations.of(context)!.possible_earnings} ${bet.toReturn().toStringAsFixed(2)}',
           style: const TextStyle(fontSize: 14, color: Colors.black87, fontWeight: FontWeight.bold)),
       children: bet.predictions.map((item)=> _buildSelectedOddRow(item)).toList()
     ));
