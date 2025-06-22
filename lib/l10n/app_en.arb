@@ -192,6 +192,19 @@
 
         "email_or_username" : "email or username",
 
+        "statistics" : "Statistics",
+
+        "betslip_positive_amount" : "Please select a positive bet amount",
+        "betslip_place_bet" : "Place bet ",
+        "betslip_returning" : " returning ",
+        "betslip_selections" : " selections to return: ",
+
+        "password_repeat_missmatch" : "your password repeat does not match with original",
+
+        "username" : "username",
+
+        "password" : "password",
+        "password_repeat" : "repeat password",
 
         "@congrats_text": {
           "placeholders": {

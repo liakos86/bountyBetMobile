@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 import 'dart:ui';
 import 'package:collection/collection.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:in_app_purchase_android/in_app_purchase_android.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
@@ -646,21 +647,40 @@ void setupFirebaseListeners() async{
 
 
   //handler for app in foreground
-  FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-    if (!mounted){
-      return;
-    }
-    if (message.notification != null) {//we sent only data messages for now
-      //print('Message also contained a notification: ${message.notification}');
-    }
-
-    handleFirebaseTopicMessage(message);
-  });
+  // FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+  //   if (!mounted){
+  //     return;
+  //   }
+  //   if (message.notification != null) {//we sent only data messages for now
+  //     //print('Message also contained a notification: ${message.notification}');
+  //   }
+  //
+  //   //handleFirebaseTopicMessage(message);
+  // });
 
   //now we can subscribe to topic
-  await FirebaseMessaging.instance.subscribeToTopic("LiveSoccer").onError((error, stackTrace) => print(error.toString() + stackTrace.toString()));
+
+  // await _subscribeToTopicOnce();
+   await FirebaseMessaging.instance.subscribeToTopic("LiveSoccer").onError((error, stackTrace) => print(error.toString() + stackTrace.toString()));
 
 }
+
+  Future<void> _subscribeToTopicOnce() async {
+    final prefs = await SharedPreferences.getInstance();
+    bool alreadySubscribed = prefs.getBool('subscribedToLiveSoccer') ?? false;
+
+    if (!alreadySubscribed) {
+      try {
+        await FirebaseMessaging.instance.subscribeToTopic("LiveSoccer");
+        await prefs.setBool('subscribedToLiveSoccer', true);
+        //await Fluttertoast.showToast(msg: " Subscribed to LiveSoccer topic.");
+      } catch (e, st) {
+        print("❌ Error subscribing to topic: $e\n$st");
+      }
+    }else{
+      //await Fluttertoast.showToast(msg: "Already  Subscribed to LiveSoccer topic.");
+    }
+  }
 
 /*
 
@@ -869,6 +889,10 @@ void setupFirebaseListeners() async{
 
   Future<void> updateUserFromServer(String mongoUserId) async {
     User userNew = await HttpActionsClient.getUserAsync(mongoUserId);
+    if (userNew.mongoUserId == Constants.defMongoId){
+      return;
+    }
+
     updatePrefsMongoUserId(userNew);
     updateUser(userNew);
   }
@@ -1072,7 +1096,7 @@ void setupFirebaseListeners() async{
     }
     );
 
-    Timer.periodic(const Duration(seconds: 20), (timer) {
+    Timer.periodic(const Duration(seconds: 15), (timer) {
       if (!isMinimized) {
         HttpActionsClient.getLeagueEventsAsync(timer).then((leaguesMap) =>
             updateLeagueMatches(leaguesMap)
@@ -1081,7 +1105,7 @@ void setupFirebaseListeners() async{
     }
     );
 
-    Timer.periodic(const Duration(seconds: 30), (timer) {
+    Timer.periodic(const Duration(seconds: 5), (timer) {
 
       if (AppContext.eventsPerDayMap[MatchConstants.KEY_TODAY].isEmpty){
         return;
@@ -1095,11 +1119,12 @@ void setupFirebaseListeners() async{
     }
     );
 
-    Timer.periodic(const Duration(seconds: 30), (timer) {
+    Timer.periodic(const Duration(seconds: 10), (timer) {
       if (!isMinimized && User.defUser().mongoUserId != user.mongoUserId) {
         updateUserFromServer(user.mongoUserId);
       }
     });
   }
+
 
 }

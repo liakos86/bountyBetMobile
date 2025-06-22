@@ -1,5 +1,11 @@
- import '../models/UserPrediction.dart';
+ import 'package:flutter_app/enums/MatchEventStatusMore.dart';
+
+import '../enums/MatchEventStatus.dart';
+import '../enums/WinnerType.dart';
+import '../models/UserPrediction.dart';
  import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
+import '../models/match_event.dart';
 
 class BetUtils{
 
@@ -48,6 +54,40 @@ class BetUtils{
       default:
         return 'This month';
     }
+  }
+
+  static WinnerType calculateWinnerType(MatchEvent gameWithOdds) {
+
+    if (MatchEventStatus.FINISHED != MatchEventStatus.fromStatusText(gameWithOdds.status)
+        && MatchEventStatusMore.ENDED != MatchEventStatusMore.fromStatusMoreText(gameWithOdds.status_more)) {
+      return WinnerType.NONE;
+    }
+
+    if (gameWithOdds.aggregated_winner_code != null){
+      if (gameWithOdds.aggregated_winner_code == 1){
+        return WinnerType.AGGREGATED_HOME;
+      }else if (gameWithOdds.aggregated_winner_code == 2){
+        return WinnerType.AGGREGATED_AWAY;
+      }
+
+      return WinnerType.NONE;
+    }
+
+    if (gameWithOdds.winnerCodeNormalTime != null){
+
+      if (gameWithOdds.winnerCodeNormalTime == 1){
+        return WinnerType.NORMAL_HOME;
+      }
+
+      if (gameWithOdds.winnerCodeNormalTime == 2){
+        return WinnerType.NORMAL_AWAY;
+      }
+
+      return WinnerType.NONE;
+    }
+
+    return WinnerType.NONE;
+
   }
 
 

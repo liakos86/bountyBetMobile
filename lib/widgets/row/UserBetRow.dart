@@ -78,7 +78,8 @@ class UserBetRow extends StatefulWidget {
   }
 
   Widget _buildSelectedOddRow(UserPrediction bettingOdd) {
-    return UserPredictionRowTilted(key: UniqueKey(), prediction: bettingOdd, callback: null,);
+     // print('key is ' + bettingOdd.mongoId);
+    return UserPredictionRowTilted(key: PageStorageKey<String>('user_prediction_${bettingOdd.mongoId}'), prediction: bettingOdd, callback: null,);
   }
 
 }

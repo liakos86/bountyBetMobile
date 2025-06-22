@@ -117,6 +117,7 @@ class MatchInfoSoccerDetailsPageState extends State<MatchInfoSoccerDetailsPage> 
 
         )),
 
+        // Expanded(flex:1, child: Text(event.round_info)),
         Expanded(flex:7, child:
 
 
@@ -134,7 +135,7 @@ class MatchInfoSoccerDetailsPageState extends State<MatchInfoSoccerDetailsPage> 
 
                     tabs: [
                       CustomTabIcon(width: labelWidth, text: AppLocalizations.of(context)!.incidents, isSelected: _tabController.index == 0,),
-                      CustomTabIcon(width: labelWidth, text: 'statistics', isSelected: _tabController.index == 1,),
+                      CustomTabIcon(width: labelWidth, text: AppLocalizations.of(context)!.statistics, isSelected: _tabController.index == 1,),
                     ],
 
                     onTap: (index) {

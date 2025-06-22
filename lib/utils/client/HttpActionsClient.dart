@@ -8,6 +8,8 @@ import 'package:flutter_app/models/constants/UrlConstants.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart';
 import 'package:in_app_purchase/in_app_purchase.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:synchronized/synchronized.dart';
 import 'dart:async';
 
 import '../../enums/BetPlacementStatus.dart';
@@ -35,6 +37,8 @@ class HttpActionsClient {
 
   static String? access_token;
 
+  static final _lock = Lock();
+
   static Future<bool> onlineCheck() async{
     if (!connected){
       // //print('connected = '+connected.toString());
@@ -55,8 +59,10 @@ class HttpActionsClient {
     try {
 
       if (access_token == null) {
-        access_token = await SecureUtils().retrieveValue(
-            Constants.accessToken);
+        final prefs = await SharedPreferences.getInstance();
+        access_token = prefs.getString(Constants.accessToken) ;
+        // access_token = await SecureUtils().retrieveValue(
+        //     Constants.accessToken);
         await authorizeAsync();
         if (access_token == null) {
           //print('register COULD NOT AUTHORIZE ********************************************************************');
@@ -96,6 +102,8 @@ class HttpActionsClient {
     if (!connected){
       connected = await checkInternetConnectivity();
       if (!connected){
+        await Fluttertoast.showToast(
+            msg: 'conn err');
         return User.defUser();
       }
     }
@@ -103,10 +111,14 @@ class HttpActionsClient {
     try {
 
       if (access_token == null) {
-        access_token = await SecureUtils().retrieveValue(
-            Constants.accessToken);
+        final prefs = await SharedPreferences.getInstance();
+        access_token = prefs.getString(Constants.accessToken) ;
+        //access_token = await SecureUtils().retrieveValue(
+          //  Constants.accessToken);
         await authorizeAsync();
         if (access_token == null) {
+          await Fluttertoast.showToast(
+              msg: 'auth err');
           //print('login COULD NOT AUTHORIZE ********************************************************************');
           return User.defUser();
         }
@@ -128,6 +140,8 @@ class HttpActionsClient {
       return userFromServer;
 
     }catch(e){
+      await Fluttertoast.showToast(
+          msg: e.toString());
       ////print(e);
       return User.defUser();
     }
@@ -148,7 +162,9 @@ class HttpActionsClient {
     var encodedBet = jsonEncode(newBet.toJson());
 
       if (access_token == null) {
-        access_token = await SecureUtils().retrieveValue(Constants.accessToken);
+        final prefs = await SharedPreferences.getInstance();
+        access_token = prefs.getString(Constants.accessToken) ;
+        // access_token = await SecureUtils().retrieveValue(Constants.accessToken);
         await authorizeAsync();
         if (access_token == null) {
           // //print('COULD NOT AUTHORIZE ********************************************************************');
@@ -190,8 +206,10 @@ class HttpActionsClient {
     try {
 
       if (access_token == null) {
-        access_token = await SecureUtils().retrieveValue(
-            Constants.accessToken);
+        final prefs = await SharedPreferences.getInstance();
+        access_token = prefs.getString(Constants.accessToken) ;
+        // access_token = await SecureUtils().retrieveValue(
+        //     Constants.accessToken);
         await authorizeAsync();
         if (access_token == null) {
           //print('STANDINGS COULD NOT AUTHORIZE ********************************************************************');
@@ -221,8 +239,10 @@ class HttpActionsClient {
     try {
 
       if (access_token == null) {
-        access_token = await SecureUtils().retrieveValue(
-            Constants.accessToken);
+        final prefs = await SharedPreferences.getInstance();
+        access_token = prefs.getString(Constants.accessToken) ;
+        // access_token = await SecureUtils().retrieveValue(
+        //     Constants.accessToken);
         await authorizeAsync();
         if (access_token == null) {
           //print('GET USER BETS COULD NOT AUTHORIZE ********************************************************************');
@@ -258,8 +278,10 @@ class HttpActionsClient {
     try {
 
       if (access_token == null) {
-        access_token = await SecureUtils().retrieveValue(
-            Constants.accessToken);
+        final prefs = await SharedPreferences.getInstance();
+        access_token = prefs.getString(Constants.accessToken) ;
+        // access_token = await SecureUtils().retrieveValue(
+        //     Constants.accessToken);
         await authorizeAsync();
         if (access_token == null) {
           // //print('LEDERS COULD NOT AUTHORIZE ********************************************************************');
@@ -293,8 +315,10 @@ class HttpActionsClient {
     try {
 
       if (access_token == null) {
-        access_token = await SecureUtils().retrieveValue(
-            Constants.accessToken);
+        final prefs = await SharedPreferences.getInstance();
+        access_token = prefs.getString(Constants.accessToken) ;
+        // access_token = await SecureUtils().retrieveValue(
+        //     Constants.accessToken);
         await authorizeAsync();
         if (access_token == null) {
           // //print('LEDERS COULD NOT AUTHORIZE ********************************************************************');
@@ -342,8 +366,10 @@ class HttpActionsClient {
 
     try {
       if (access_token == null) {
-        access_token = await SecureUtils().retrieveValue(
-            Constants.accessToken);
+        final prefs = await SharedPreferences.getInstance();
+        access_token = prefs.getString(Constants.accessToken) ;
+        // access_token = await SecureUtils().retrieveValue(
+        //     Constants.accessToken);
         await authorizeAsync();
         if (access_token == null) {
           //print('reg COULD NOT AUTHORIZE ********************************************************************');
@@ -387,8 +413,10 @@ class HttpActionsClient {
 
     try {
       if (access_token == null) {
-        access_token = await SecureUtils().retrieveValue(
-            Constants.accessToken);
+        final prefs = await SharedPreferences.getInstance();
+        access_token = prefs.getString(Constants.accessToken) ;
+        // access_token = await SecureUtils().retrieveValue(
+        //     Constants.accessToken);
         await authorizeAsync();
         if (access_token == null) {
           //print('COULD NOT AUTHORIZE ********************************************************************');
@@ -421,8 +449,10 @@ class HttpActionsClient {
 
     try {
       if (access_token == null) {
-        access_token = await SecureUtils().retrieveValue(
-            Constants.accessToken);
+        final prefs = await SharedPreferences.getInstance();
+        access_token = prefs.getString(Constants.accessToken) ;
+        // access_token = await SecureUtils().retrieveValue(
+        //     Constants.accessToken);
         await authorizeAsync();
         if (access_token == null) {
           //print('COULD NOT AUTHORIZE ********************************************************************');
@@ -453,8 +483,10 @@ class HttpActionsClient {
 
     try {
       if (access_token == null) {
-        access_token = await SecureUtils().retrieveValue(
-            Constants.accessToken);
+        final prefs = await SharedPreferences.getInstance();
+        access_token = prefs.getString(Constants.accessToken) ;
+        // access_token = await SecureUtils().retrieveValue(
+        //     Constants.accessToken);
         await authorizeAsync();
         if (access_token == null) {
           //print('COULD NOT AUTHORIZE ********************************************************************');
@@ -484,7 +516,7 @@ class HttpActionsClient {
         result.write('\n'); // Add a newline after every 30 characters
       }
 
-      //showToastInChunks(e.toString());
+      showToastInChunks(e.toString());
       //print('ERROR REST ---- LEAGUES MOCKING............');
     }
 
@@ -531,8 +563,10 @@ class HttpActionsClient {
     try {
 
       if (access_token == null) {
-        access_token = await SecureUtils().retrieveValue(
-            Constants.accessToken);
+        final prefs = await SharedPreferences.getInstance();
+        access_token = prefs.getString(Constants.accessToken) ;
+        // access_token = await SecureUtils().retrieveValue(
+        //     Constants.accessToken);
 
         if (access_token == null) {
           //print('COULD NOT AUTHORIZE ********************************************************************');
@@ -571,55 +605,62 @@ class HttpActionsClient {
 
 
   static Future<void> authorizeAsync() async {
-    if (access_token != null){
-      return;
-    }
 
-    if (!connected){
-      connected = await checkInternetConnectivity();
-      if (!connected){
-        return ;
-      }
-    }
+    await _lock.synchronized(() async {
 
-    if (access_token == null) {
-      String? token = await SecureUtils().retrieveValue(Constants.accessToken);
-      if (token != null) {
-        access_token = token;
+      if (access_token != null) {
         return;
       }
-    }
 
-    try {
-
-      String token = await getToken();
-      Response authHttpResponse = await post(
-          headers: {
-            "Accept": "application/json",
-            "Content-Type": "application/json"
-          },
-          Uri.parse(UrlConstants.AUTH),
-          body: jsonEncode({'uniqueDeviceId' : '$token'}),
-          encoding: Encoding.getByName("utf-8"))
-          .timeout(const Duration(seconds: 20));
-      var responseDec = await jsonDecode(authHttpResponse.body);
-
-      //print('SERVER TOKEN RECEIVED:: ' + responseDec['access_token']);
-
-      String? accessTkn = (responseDec['access_token']);
-      if (accessTkn==null){
-        return ;
+      if (!connected) {
+        connected = await checkInternetConnectivity();
+        if (!connected) {
+          return;
+        }
       }
 
-      SecureUtils().storeValue(Constants.accessToken, accessTkn);
+      if (access_token == null) {
+        final prefs = await SharedPreferences.getInstance();
+        String? token = prefs.getString(Constants.accessToken);
+        // String? token = await SecureUtils().retrieveValue(Constants.accessToken);
+        if (token != null) {
+          access_token = token;
+          return;
+        }
+      }
 
-      access_token = accessTkn;
-      return ;
-    } catch (e) {
-      //print('ERROR AUTH ---- ............');
+      try {
+        String token = await getToken();
+        Response authHttpResponse = await post(
+            headers: {
+              "Accept": "application/json",
+              "Content-Type": "application/json"
+            },
+            Uri.parse(UrlConstants.AUTH),
+            body: jsonEncode({'uniqueDeviceId': '$token'}),
+            encoding: Encoding.getByName("utf-8"))
+            .timeout(const Duration(seconds: 20));
+        var responseDec = await jsonDecode(authHttpResponse.body);
+
+        //print('SERVER TOKEN RECEIVED:: ' + responseDec[Constants.accessToken]);
+
+        String? accessTkn = (responseDec[Constants.accessToken]);
+        if (accessTkn == null) {
+          return;
+        }
+
+        final SharedPreferences shprefs = await SharedPreferences.getInstance();
+        shprefs.setString(Constants.accessToken, accessTkn);
+
+        // SecureUtils().storeValue(Constants.accessToken, accessTkn);
+
+        access_token = accessTkn;
+        return;
+      } catch (e) {
+        //print('ERROR AUTH ---- ............');
+      }
     }
-
-
+    );
   }
 
   static Map<String, dynamic> toJsonLogin(emailOrUsername, password) {
@@ -691,9 +732,15 @@ class HttpActionsClient {
 
     try {
       if (access_token == null) {
-        access_token = await SecureUtils().retrieveValue(
-            Constants.accessToken);
-        await authorizeAsync();
+        final prefs = await SharedPreferences.getInstance();
+        access_token = prefs.getString(Constants.accessToken) ;
+        
+        // access_token = await SecureUtils().retrieveValue(
+        //     Constants.accessToken);
+        if (access_token == null) {
+          await authorizeAsync();
+        }
+
         if (access_token == null) {
           //print('COULD NOT AUTHORIZE ********************************************************************');
           return User.defUser();
@@ -720,8 +767,11 @@ class HttpActionsClient {
 
     try {
       if (access_token == null) {
-        access_token = await SecureUtils().retrieveValue(
-            Constants.accessToken);
+        final prefs = await SharedPreferences.getInstance();
+        access_token = prefs.getString(Constants.accessToken) ;
+        
+        // access_token = await SecureUtils().retrieveValue(
+        //     Constants.accessToken);
         await authorizeAsync();
         if (access_token == null) {
           //print('COULD NOT AUTHORIZE ********************************************************************');

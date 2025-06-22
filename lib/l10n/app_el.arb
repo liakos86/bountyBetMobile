@@ -205,5 +205,19 @@
 
          "validation_invalid_email" : "Η διεύθυνση email δεν είναι έγκυρη",
 
-         "email_or_username" : "email ή username"
+         "email_or_username" : "email ή όνομα χρήστη",
+
+         "statistics" : "Στατιστικά",
+
+         "betslip_positive_amount" : "Επιλέξτε θετικό ποσό",
+         "betslip_place_bet" : "Τοποθετείστε ",
+         "betslip_returning" : " για επιστροφή ",
+         "betslip_selections" : " επιλογές για επιστροφή: ",
+
+         "password_repeat_missmatch" : "η επανάληψη του κωδικού είναι λανθασμένη",
+
+         "username" : "όνομα χρήστη",
+         "password" : "κωδικός πρόσβασης",
+         "password_repeat" : "επανάληψη κωδικού"
+
 }

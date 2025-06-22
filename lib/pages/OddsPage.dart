@@ -365,7 +365,19 @@ class OddsPageState extends State<OddsPage> with SingleTickerProviderStateMixin{
   }
 
   Future<BetPlacementStatus> placeBetCallback(double bettingAmount) async {
-    if (bettingAmount <= 0 || bettingAmount > AppContext.user.balance.balance){
+    if (bettingAmount > Constants.maxBet || bettingAmount <= 0){
+      String text = AppLocalizations.of(context)!.max_bet_amount;
+      ScaffoldMessenger.of(context).showSnackBar( SnackBar(
+        content: Text('$text ${Constants.maxBet}'),
+        showCloseIcon: true,
+        duration: const Duration(seconds: 5),
+
+      ));
+      return BetPlacementStatus.FAILED_INSUFFICIENT_FUNDS;
+    }
+
+
+    if (bettingAmount > AppContext.user.balance.balance){
       //String msg = 'Cannot place bet. insufficient funds.';
       alertDialogTopUp();
       return BetPlacementStatus.FAILED_INSUFFICIENT_FUNDS;

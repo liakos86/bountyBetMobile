@@ -3,7 +3,7 @@ class UrlConstants{
   //static const SERVER_IP_PLAIN = "liakos86-32935.portmap.host";
 
   // static const SERVER_IP_PLAIN = "192.168.2.2";
-  static const SERVER_IP_PLAIN = "192.168.1.5";//'172.18.128.1';// "192.168.1.4";
+  static const SERVER_IP_PLAIN = "78.47.111.32"; //'172.18.128.1';//
 
   static const SRV_VERSION = "fantasyTips";
 
@@ -39,6 +39,6 @@ class UrlConstants{
 
   static String LOGO_BASE_URL ="https://xscore.cc/resb/team/";
 
-  static const URL_ENC = "mF=!72kg*&;.J^1]";
+  static const URL_ENC = "mF=!79kg*&;.J^1]";
 
 }

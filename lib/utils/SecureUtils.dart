@@ -45,34 +45,56 @@ class SecureUtils{
     return deviceIdentifier;
   }
 
-  Future<void> storeValue(String key, String value) async {
-    const secureStorage = FlutterSecureStorage(
-      aOptions: AndroidOptions(
-        encryptedSharedPreferences: true,
-      ),
-    );
-    await secureStorage.write(key: key, value: value);
-  }
+  // Future<void> storeValue(String key, String value) async {
+  //   const secureStorage = FlutterSecureStorage(
+  //     aOptions: AndroidOptions(
+  //       encryptedSharedPreferences: true,
+  //     ),
+  //   );
+  //   await secureStorage.write(key: key, value: value);
+  // }
 
-  Future<String?> retrieveValue(String key) async {
-    const secureStorage = FlutterSecureStorage(
-      aOptions: AndroidOptions(
-        encryptedSharedPreferences: true,
-      ),
-    );
-    String? value = await secureStorage.read(key: key);
-    return value;
-  }
+  // Future<String?> retrieveValue(String key) async {
+  //   const secureStorage = FlutterSecureStorage(
+  //     aOptions: AndroidOptions(
+  //       encryptedSharedPreferences: true,
+  //     ),
+  //   );
+  //
+  //   try {
+  //     return await secureStorage.read(key: key);
+  //   } on Exception catch (e) {
+  //     if (e.toString().contains("CryptoException") ||
+  //         e.toString().contains("javax.crypto")) {
+  //       // Handle or clear corrupted storage
+  //       await secureStorage.deleteAll();
+  //       return null;
+  //     } else {
+  //       rethrow;
+  //     }
+  //   }
+  // }
 
-  void deleteValue(String accessToken) {
-    const secureStorage = FlutterSecureStorage(
-      aOptions: AndroidOptions(
-        encryptedSharedPreferences: true,
-      ),
-    );
-     secureStorage.delete(key: accessToken);
 
-  }
+  // Future<String?> retrieveValue(String key) async {
+  //   const secureStorage = FlutterSecureStorage(
+  //     aOptions: AndroidOptions(
+  //       encryptedSharedPreferences: true,
+  //     ),
+  //   );
+  //   String? value = await secureStorage.read(key: key);
+  //   return value;
+  // }
+
+  // void deleteValue(String accessToken) {
+  //   const secureStorage = FlutterSecureStorage(
+  //     aOptions: AndroidOptions(
+  //       encryptedSharedPreferences: true,
+  //     ),
+  //   );
+  //    secureStorage.delete(key: accessToken);
+  //
+  // }
 
 
 }

@@ -64,7 +64,7 @@ class LeagueStandingRowState extends State<LeagueStandingRow> {
                   Align(
                   alignment: Alignment.centerLeft,
                   child:
-                LogoWithName(key: UniqueKey(), goalScored: false, name: standing.team.getLocalizedName(), logoUrl: standing.team.logo, redCards: 0, logoSize: 24, fontSize: 14,  winnerType: WinnerType.NONE),
+                LogoWithName(key: UniqueKey(), isHomeTeam: true, goalScored: false, name: standing.team.getLocalizedName(), logoUrl: standing.team.logo, redCards: 0, logoSize: 24, fontSize: 14,  winnerType: WinnerType.NONE),
                   )
                 )
           //     ]

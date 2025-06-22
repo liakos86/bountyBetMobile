@@ -117,7 +117,7 @@ class BetSlipWithCustomKeyboardState extends State<BetSlipWithCustomKeyboard>{
 
                       TextSpan(
                         style: const TextStyle(fontSize: 16),
-                        text: ('  ${selectedOdds.length} selections to return: ${(bettingAmount * BetUtils.finalOddOf(selectedOdds)).toStringAsFixed(2)}'),
+                        text: ('  ${selectedOdds.length}${AppLocalizations.of(context)!.betslip_selections}${(bettingAmount * BetUtils.finalOddOf(selectedOdds)).toStringAsFixed(2)}'),
                       ),
                     ],
                   )
@@ -176,7 +176,7 @@ class BetSlipWithCustomKeyboardState extends State<BetSlipWithCustomKeyboard>{
                 callbackForBetRemoval.call(null);
 
               },
-              child: const Text('Close'),
+              child:  Text( AppLocalizations.of(context)!.close),
             )
       )
     ]
@@ -196,9 +196,6 @@ class BetSlipWithCustomKeyboardState extends State<BetSlipWithCustomKeyboard>{
                 Align(
               alignment: Alignment.bottomCenter,
               child:
-              // Column(
-              // mainAxisAlignment: MainAxisAlignment.end, // Pushes child to the bottom
-              // children: [
 
 
                 Padding(
@@ -207,7 +204,7 @@ class BetSlipWithCustomKeyboardState extends State<BetSlipWithCustomKeyboard>{
                     Row(
                       children: [
 
-                        Expanded(flex: 3,
+                        Expanded(flex: 2,
                           child:
 
                           Align(alignment: Alignment.centerRight,
@@ -217,7 +214,27 @@ class BetSlipWithCustomKeyboardState extends State<BetSlipWithCustomKeyboard>{
                             style: const TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
                             controller: betAmountController,
                             keyboardType: TextInputType.number,
-                            inputFormatters: [FilteringTextInputFormatter.digitsOnly, LengthLimitingTextInputFormatter(9)],
+                            inputFormatters: [
+                              FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d{0,2}')),
+                              LengthLimitingTextInputFormatter(8),
+                                TextInputFormatter.withFunction((oldValue, newValue) {
+                                  final text = newValue.text;
+                                  if (text.isEmpty) return newValue;
+
+                                  // Only allow one decimal point
+                                  if ('.'.allMatches(text).length > 1) {
+                                    return oldValue;
+                                  }
+
+                                  // Allow only 2 decimal places
+                                  final parts = text.split('.');
+                                  if (parts.length > 1 && parts[1].length > 2) {
+                                    return oldValue;
+                                  }
+
+                                  return newValue;
+                                })
+                            ],
 
                             onChanged:
                                 (text) {
@@ -231,12 +248,7 @@ class BetSlipWithCustomKeyboardState extends State<BetSlipWithCustomKeyboard>{
 
                                 bettingAmount = double.parse(text);
 
-                                if (bettingAmount > Constants.maxBet){
-                                  String text = AppLocalizations.of(context)!.max_bet_amount;
-                                  ScaffoldMessenger.of(context).showSnackBar( SnackBar(
-                                    content: Text('$text ${Constants.maxBet}'), showCloseIcon: true, duration: const Duration(seconds: 5),
-                                  ));
-                                }
+
 
                               });
                             },
@@ -254,9 +266,35 @@ class BetSlipWithCustomKeyboardState extends State<BetSlipWithCustomKeyboard>{
 
                         ),
 
+                        Expanded(
+                          flex: 2,
+                          child: Container(
+                            height: 40,
+                            margin: const EdgeInsets.symmetric(horizontal: 2),
+                            padding: const EdgeInsets.all(2),
+                            decoration: BoxDecoration(
+                              color: const Color(ColorConstants.my_green),
+                              borderRadius: BorderRadius.circular(4),
+                            ),
+                            child:  Center(
+                              child: Text(
+                               'x ${BetUtils.finalOddOf(selectedOdds).toStringAsFixed(2)}', // Replace with your actual text
+                                style: const TextStyle(color: Colors.white, fontSize: 12),
+                                overflow: TextOverflow.ellipsis, // Prevents wrap
+                                maxLines: 1, // Ensures it stays on one line
+                                softWrap: false,
+                              ),
+                            ),
+                          ),
+                        ),
+
+
                         (betPlacementStatus != BetPlacementStatus.PLACED) ?
 
-                        Expanded(flex: 5, child: TextButton(
+                        Expanded(flex: 5, child:
+                        SizedBox(height:40, child:
+                        TextButton(
+
                           style: ButtonStyle(
                               shape: MaterialStateProperty.all<RoundedRectangleBorder>(
                                   RoundedRectangleBorder(
@@ -269,8 +307,8 @@ class BetSlipWithCustomKeyboardState extends State<BetSlipWithCustomKeyboard>{
                           ),
                           onPressed: () {
                             if (bettingAmount <= 0){
-                              ScaffoldMessenger.of(context).showSnackBar( const SnackBar(
-                                content: Text('Please select a positive bet amount'), showCloseIcon: true, duration: Duration(seconds: 5),
+                              ScaffoldMessenger.of(context).showSnackBar(  SnackBar(
+                                content: Text(AppLocalizations.of(context)!.betslip_positive_amount), showCloseIcon: true, duration: const Duration(seconds: 5),
                               ));
                               return;
                             }
@@ -298,8 +336,8 @@ class BetSlipWithCustomKeyboardState extends State<BetSlipWithCustomKeyboard>{
                             child: Center(
                                 child: CircularProgressIndicator()
                             ),
-                          ) : Text('Place bet${bettingAmount > 0 ? ' returning ${(bettingAmount * BetUtils.finalOddOf(selectedOdds)).toStringAsFixed(2)}' : ''}'),
-                        ),)
+                          ) : Text('${AppLocalizations.of(context)!.betslip_place_bet}${bettingAmount > 0 ? '${AppLocalizations.of(context)!.betslip_returning}${(bettingAmount * BetUtils.finalOddOf(selectedOdds)).toStringAsFixed(2)}' : ''}'),
+                        )),)
 
                             :
                         Expanded(flex: 1, child: TextButton(
@@ -317,7 +355,7 @@ class BetSlipWithCustomKeyboardState extends State<BetSlipWithCustomKeyboard>{
                            Navigator.pop(context);
 
                           },
-                          child: const Text('Close'),
+                          child:  Text(AppLocalizations.of(context)!.close),
                         ),)
 
                       ],
@@ -355,6 +393,7 @@ class BetSlipWithCustomKeyboardState extends State<BetSlipWithCustomKeyboard>{
 
 
   }
+
 
 
 }

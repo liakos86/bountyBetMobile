@@ -25,6 +25,10 @@ class UserPrediction{
 
   Team awayTeam = Team.defTeam();
 
+  int? homeScore;
+
+  int? awayScore;
+
   int eventId = -1;
 
   int sportId = 1;
@@ -80,6 +84,16 @@ class UserPrediction{
         change: parsedJson['change']!= null ? parsedJson['change'] as int : 0
     );
 
+    prediction.mongoId = parsedJson['mongoId'];
+
+    if (parsedJson['predictionHomeScore'] != null){
+      prediction.homeScore = parsedJson['predictionHomeScore']  as int;
+    }
+
+    if (parsedJson['predictionAwayScore'] != null){
+      prediction.awayScore = parsedJson['predictionAwayScore'] as int;
+    }
+
     return prediction;
   }
 
@@ -87,6 +101,9 @@ class UserPrediction{
     betPredictionStatus = incoming.betPredictionStatus;
     value = incoming.value;
     change = incoming.change;
+    mongoId = incoming.mongoId;
+    awayScore = incoming.awayScore;
+    homeScore = incoming.homeScore;
   }
 
 }

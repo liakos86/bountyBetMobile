@@ -45,6 +45,8 @@ class MatchEvent implements Comparable<MatchEvent>{
 
 	String start_at_local = Constants.empty;
 
+	String round_info = Constants.empty;
+
   String status;
 
   int startMillis = 0;
@@ -75,6 +77,9 @@ class MatchEvent implements Comparable<MatchEvent>{
 	// 3 = X
   int? winner_code;
 
+  //winner without extra time
+  int? winnerCodeNormalTime;
+
   bool isFavourite = false;
 
   //TODO
@@ -101,10 +106,10 @@ class MatchEvent implements Comparable<MatchEvent>{
 		}
 
 		if (MatchEventStatusMore.INPROGRESS_HALFTIME.statusStr == status_more ) {
-			if (ChangeEvent.SECOND_HALF_START == changeEvent){
-				changeEvent = ChangeEvent.NONE;
-				return '46';
-			}
+			// if (ChangeEvent.SECOND_HALF_START == changeEvent){
+			// 	changeEvent = ChangeEvent.NONE;
+			// 	return '46';
+			// }
 
 			return AppLocalizations.of(context)!.status_half_time;
 		}
@@ -225,6 +230,16 @@ class MatchEvent implements Comparable<MatchEvent>{
 		var awayTeamScore = event["away_score"];
 		var _changeEvent = event["changeEvent"] as int;
 		int? sportId = event['sportId'];
+
+		String round_info = Constants.empty;
+		var roundInfoObj = event['round_info'];
+		if (roundInfoObj != null){
+			var roundInfoStr = roundInfoObj['name'];
+			if (roundInfoStr != null){
+				round_info = roundInfoStr;
+			}
+		}
+
 		sportId ??= 1;
 
 
@@ -235,6 +250,7 @@ class MatchEvent implements Comparable<MatchEvent>{
 		var startAt = event['start_at'];
 		MatchEvent match = MatchEvent(eventId: event[JsonConstants.id], leagueId: event[JsonConstants.leagueId], status: event["status"], status_more: event["status_more"]??'-', homeTeam: hTeam, awayTeam: aTeam, start_at: startAt);
 		match.changeEvent = ChangeEvent.ofCode(_changeEvent);
+		match.round_info = round_info;
 
 
 
@@ -320,6 +336,8 @@ class MatchEvent implements Comparable<MatchEvent>{
 		//the match winner code after all played periods. counts extra time and penalties.
 		match.winner_code = event['winner_code'];
 
+		match.winnerCodeNormalTime = event['winnerCodeNormalTime'];
+
 		List<String> favEvents = await sharedPrefs.getListByKey(sp_fav_event_ids);
 		if (favEvents.contains(match.eventId.toString())){
 			match.isFavourite = true;
@@ -335,8 +353,11 @@ class MatchEvent implements Comparable<MatchEvent>{
   	awayTeamScore.copyFrom(incomingEvent.awayTeamScore);
   	status = incomingEvent.status;
   	status_more = incomingEvent.status_more;
-  	timeDetails = incomingEvent.timeDetails;
+  	timeDetails = (incomingEvent.timeDetails);
   	lasted_period = incomingEvent.lasted_period;
+  	winner_code = incomingEvent.winner_code;
+  	aggregated_winner_code = incomingEvent.aggregated_winner_code;
+		winnerCodeNormalTime = incomingEvent.winnerCodeNormalTime;
 
   	if (odds != null && incomingEvent.odds != null) {
 			odds?.copyFrom(incomingEvent.odds);
@@ -349,9 +370,9 @@ class MatchEvent implements Comparable<MatchEvent>{
 			return 'error non live more';
 		}
 
-		//if (MatchEventStatus.FINISHED.statusStr == status){
 			if (MatchEventStatusMore.GAME_FINISHED.statusStr == status_more
-					|| MatchEventStatusMore.ENDED.statusStr == status_more) {
+					|| MatchEventStatusMore.ENDED.statusStr == status_more
+					) {
 				return AppLocalizations.of(context)!.status_finished;
 			}
 
@@ -400,21 +421,16 @@ class MatchEvent implements Comparable<MatchEvent>{
 	String textScore(bool home) {
 		Score score = home ? homeTeamScore : awayTeamScore;
 
-		// if (score == null){
-		// 	return Constants.empty;
-		// }
-
 		if (MatchEventStatus.FINISHED == MatchEventStatus.fromStatusText(status)){
 			if (score.display == null) {
 				return Constants.empty;
 			}
 
-			// if (lasted_period != null && LastedPeriod.PERIOD_2 == LastedPeriod.fromStatusText(lasted_period!)) {
-			if (aggregated_winner_code == null){
+			if (lasted_period != null && LastedPeriod.PERIOD_2.period == lasted_period){
 				return score.display.toString();
 			}
 
-			return '${score.display} (${score.current})';
+			return '${score.normal_time} (${score.current})';
 
 		}
 

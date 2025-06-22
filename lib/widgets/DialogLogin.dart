@@ -64,7 +64,7 @@ class DialogLoginState extends State<DialogLogin> {
                 },
                 decoration: InputDecoration(
                   border: const OutlineInputBorder(),
-                  hintText: 'password',
+                  hintText: AppLocalizations.of(context)!.password,
                   hintStyle: const TextStyle(color: Colors.white),
                   suffixIcon: IconButton(
                     icon: Icon(

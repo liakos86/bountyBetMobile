@@ -13,8 +13,10 @@ import '../../enums/MatchEventStatusMore.dart';
 import '../../enums/WinnerType.dart';
 import '../../helper/SharedPrefs.dart';
 import '../../models/constants/ColorConstants.dart';
+import '../../models/constants/Constants.dart';
 import '../../models/match_event.dart';
 import '../../pages/ParentPage.dart';
+import '../../utils/BetUtils.dart';
 import '../DisplayOdd.dart';
 import '../LogoWithName.dart';
 
@@ -67,15 +69,16 @@ class LiveMatchRowTiltedState extends State<LiveMatchRowTilted> {
               children: [
 
                 Expanded(//second column
-                    flex: 2,
+                    flex:flexSizeForLeading()
+                   ,
                     child:
                     ( MatchEventStatus.INPROGRESS.statusStr == gameWithOdds.status || MatchEventStatus.NOTSTARTED.statusStr == gameWithOdds.status ) ?
                 _buildTiltedFavourite()
                         :
 
-                    (gameWithOdds.odds != null &&  gameWithOdds.winner_code != null) ?
+                    (gameWithOdds.odds != null &&  gameWithOdds.winnerCodeNormalTime != null) ?
                         SizedBox(height:60, child:
-              _buildWinnerOdds(gameWithOdds.odds, gameWithOdds.winner_code)
+              _buildWinnerOdds(gameWithOdds.odds, gameWithOdds.winnerCodeNormalTime)
                         )
 
                   :
@@ -121,12 +124,12 @@ class LiveMatchRowTiltedState extends State<LiveMatchRowTilted> {
                         Align(
                         alignment: Alignment.centerLeft,
                         child:
-                      LogoWithName(key: UniqueKey(), name: gameWithOdds.homeTeam.getLocalizedName(), logoUrl: gameWithOdds.homeTeam.logo, redCards: homeRed, logoSize: 20, fontSize: 12,  winnerType: calculateWinnerType(gameWithOdds, 1), goalScored: gameWithOdds.changeEvent == ChangeEvent.HOME_GOAL ),
+                      LogoWithName(key: UniqueKey(), isHomeTeam: true, name: gameWithOdds.homeTeam.getLocalizedName(), logoUrl: gameWithOdds.homeTeam.logo, redCards: homeRed, logoSize: 20, fontSize: 12,  winnerType: BetUtils.calculateWinnerType(gameWithOdds), goalScored: gameWithOdds.changeEvent == ChangeEvent.HOME_GOAL ),
                         ),
                             Align(
                                 alignment: Alignment.centerLeft,
                                 child:
-                      LogoWithName(key: UniqueKey(), name: gameWithOdds.awayTeam.getLocalizedName(), logoUrl: gameWithOdds.awayTeam.logo, redCards: awayRed, logoSize: 20, fontSize: 12,  winnerType: calculateWinnerType(gameWithOdds, 2), goalScored: gameWithOdds.changeEvent == ChangeEvent.AWAY_GOAL),
+                      LogoWithName(key: UniqueKey(), isHomeTeam: false, name: gameWithOdds.awayTeam.getLocalizedName(), logoUrl: gameWithOdds.awayTeam.logo, redCards: awayRed, logoSize: 20, fontSize: 12,  winnerType: BetUtils.calculateWinnerType(gameWithOdds), goalScored: gameWithOdds.changeEvent == ChangeEvent.AWAY_GOAL),
                             )
                       ]
                     )
@@ -152,7 +155,7 @@ class LiveMatchRowTiltedState extends State<LiveMatchRowTilted> {
                 )),//SECOND COLUMN END
 
                 Expanded(
-                    flex: 3,
+                    flex: flexSizeForTrailing(),
 
                     child:
 
@@ -167,7 +170,7 @@ class LiveMatchRowTiltedState extends State<LiveMatchRowTilted> {
                           fontWeight:  FontWeight.w900,
                           color: gameWithOdds.changeEvent == ChangeEvent.HOME_GOAL ? Colors.redAccent : Colors.white),)),
 
-                      Padding(padding: const EdgeInsets.all(8), child:
+                      Padding(padding: const EdgeInsets.all(6), child:
                       Text(gameWithOdds.textScore(false), style: TextStyle(
                           fontSize: gameWithOdds.changeEvent == ChangeEvent.AWAY_GOAL ? 13 : 12,
                           fontWeight: FontWeight.w900,
@@ -186,34 +189,6 @@ class LiveMatchRowTiltedState extends State<LiveMatchRowTilted> {
   }
 
 
-
-  WinnerType calculateWinnerType(MatchEvent gameWithOdds, int homeOrAway) {
-
-    if (MatchEventStatus.FINISHED != MatchEventStatus.fromStatusText(gameWithOdds.status)
-    && MatchEventStatusMore.ENDED != MatchEventStatusMore.fromStatusMoreText(gameWithOdds.status_more)) {
-      return WinnerType.NONE;
-    }
-
-    if (gameWithOdds.aggregated_winner_code != null){
-      if (homeOrAway == gameWithOdds.aggregated_winner_code){
-        return WinnerType.AFTER;
-      }
-
-      return WinnerType.NONE;
-    }
-
-    if (gameWithOdds.winner_code != null){
-
-      if (homeOrAway == gameWithOdds.winner_code){
-        return WinnerType.NORMAL;
-      }
-
-      return WinnerType.NONE;
-    }
-
-    return WinnerType.NONE;
-
-  }
 
   getEvent(){
     return gameWithOdds;
@@ -331,6 +306,26 @@ class LiveMatchRowTiltedState extends State<LiveMatchRowTilted> {
     }
 
     return BetPredictionType.OVER_25;
+  }
+
+  flexSizeForLeading() {
+    if ( MatchEventStatus.INPROGRESS.statusStr == gameWithOdds.status || MatchEventStatus.NOTSTARTED.statusStr == gameWithOdds.status ){
+      return 3;
+    }
+
+    if  (gameWithOdds.odds != null &&  gameWithOdds.winnerCodeNormalTime != null){
+      return 3;
+    }
+
+    return 0;
+  }
+
+  flexSizeForTrailing() {
+    if (gameWithOdds.textScore(true) == Constants.empty){
+      return 0;
+    }
+
+    return 3;
   }
 
 

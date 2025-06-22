@@ -92,7 +92,7 @@ class DialogTabbedLoginOrRegisterState extends State<DialogTabbedLoginOrRegister
       var height = MediaQuery
           .of(context)
           .size
-          .height * (1 / 2);
+          .height * (2 / 3);
       var width = MediaQuery
           .of(context)
           .size

@@ -1,7 +1,4 @@
-import 'dart:io';
-import 'dart:math';
 import 'dart:ui';
-import 'package:flutter_cache_manager/src/result/file_info.dart';
 
 
 import 'package:cached_network_image/cached_network_image.dart';
@@ -29,9 +26,11 @@ class LogoWithName extends StatefulWidget {
 
   final bool goalScored;
 
+  final bool isHomeTeam;
+
   const LogoWithName(
       {Key ?key, required this.logoUrl, required this.logoSize, required this.fontSize,
-        required this.name, required this.redCards, required this.winnerType, required this.goalScored})
+        required this.name, required this.redCards, required this.winnerType, required this.goalScored, required this.isHomeTeam})
       : super(key: key);
 
   @override
@@ -55,6 +54,8 @@ class LogoWithName extends StatefulWidget {
 
   late bool goalScored;
 
+  late bool isHomeTeam;
+
   @override
   void initState() {
     super.initState();
@@ -65,13 +66,11 @@ class LogoWithName extends StatefulWidget {
     logoUrl = widget.logoUrl;
     winnerType = widget.winnerType;
     goalScored = widget.goalScored;
+    isHomeTeam = widget.isHomeTeam;
   }
 
   @override
   Widget build(BuildContext context) {
-
-    // loadImg();
-
 
 
     return
@@ -98,19 +97,7 @@ class LogoWithName extends StatefulWidget {
               width: logoSize,
             ),
 
-              // Image(
-              //   image: NetworkImage(logoUrl),
-              //     height: logoSize,
-              //     width: logoSize,
-              //   errorBuilder:
-              //       ( context,  exception,  stackTrace) {
-              //     if (exception is HttpException ) {
-              //       return Image.asset("assets/images/substitution.png" , width: logoSize, height: logoSize,);
-              //     } else {
-              //       return Image.asset("assets/images/substitution.png", width: logoSize, height: logoSize,);
-              //     }
-              //   },
-              // )
+
         ),
 
         Expanded(
@@ -122,7 +109,7 @@ class LogoWithName extends StatefulWidget {
               children:  [
                 Align(
                   alignment: Alignment.centerLeft,
-                  child: Text( name + (WinnerType.AFTER == winnerType ? '*' : Constants.empty), overflow: TextOverflow.ellipsis, textAlign: TextAlign.left,
+                  child: Text( name + extraText(), overflow: TextOverflow.ellipsis, textAlign: TextAlign.left,
                     style: TextStyle(fontWeight: WinnerType.NONE == winnerType && !goalScored ? FontWeight.w500 : FontWeight.w900, fontSize: fontSize, color: goalScored ? Colors.redAccent : Colors.white),)),
                  ]))),
 
@@ -150,13 +137,13 @@ class LogoWithName extends StatefulWidget {
     );
   }
 
-  // Future<void> loadImg() async {
-  //   final  file = await  CustomCacheManager.instance.getFileFromCache(logoUrl);
-  //   if (file != null) {
-  //     print('✅ Cached file exists: ${file.file.path}');
-  //   } else {
-  //     print('🚫 Not in cache');
-  //   }
-  // }
+  String extraText() {
+    if ((WinnerType.AGGREGATED_HOME == winnerType && isHomeTeam) || (WinnerType.AGGREGATED_AWAY == winnerType && !isHomeTeam)) {
+      return '*' ;
+    }
+
+    return (Constants.empty);
+  }
+
 
 }

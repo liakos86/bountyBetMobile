@@ -34,10 +34,12 @@ class DialogRegisterState extends State<DialogRegister> {
   String email = '';
 
   String password = '';
+  String passwordRepeat = '';
 
   String username = '';
 
   bool obscureText = true;
+  bool obscureTextRepeat = true;
 
   @override
   Widget build(BuildContext context) {
@@ -69,10 +71,10 @@ class DialogRegisterState extends State<DialogRegister> {
                 onChanged: (text) {
                   username = text;
                 },
-                decoration: const InputDecoration(
-                  border: OutlineInputBorder(),
-                  hintText: 'username',
-                  hintStyle: TextStyle(color: Colors.white),
+                decoration: InputDecoration(
+                  border: const OutlineInputBorder(),
+                  hintText: AppLocalizations.of(context)!.username,
+                  hintStyle: const TextStyle(color: Colors.white),
                 ),
               ),
               const SizedBox(height: 2), // Add spacing between fields
@@ -86,7 +88,7 @@ class DialogRegisterState extends State<DialogRegister> {
                 },
                 decoration: InputDecoration(
                   border: const OutlineInputBorder(),
-                  hintText: 'password',
+                  hintText: AppLocalizations.of(context)!.password,
                   hintStyle: const TextStyle(color: Colors.white),
                   suffixIcon: IconButton(
                     icon: Icon(
@@ -101,6 +103,35 @@ class DialogRegisterState extends State<DialogRegister> {
                   ),
                 ),
               ),
+
+              const SizedBox(height: 2), // Add spacing between fields
+
+              // Password repeat with visibility toggle
+              TextField(
+                style: const TextStyle(color: Colors.white),
+                obscureText: obscureTextRepeat,
+                onChanged: (text) {
+                  passwordRepeat = text;
+                },
+                decoration: InputDecoration(
+                  border: const OutlineInputBorder(),
+                  hintText: AppLocalizations.of(context)!.password_repeat,
+                  hintStyle: const TextStyle(color: Colors.white),
+                  suffixIcon: IconButton(
+                    icon: Icon(
+                      obscureTextRepeat ? Icons.visibility_off : Icons.visibility,
+                      color: Colors.white,
+                    ),
+                    onPressed: () {
+                      setState(() {
+                        obscureTextRepeat = !obscureTextRepeat; // Toggle password visibility
+                      });
+                    },
+                  ),
+                ),
+              ),
+
+
               const SizedBox(height: 4), // Add spacing between fields
 
               // Register button
@@ -238,6 +269,10 @@ class DialogRegisterState extends State<DialogRegister> {
     // Check for at least one special character
     if (!RegExp(r'[!@#$%^&*(),.?":{}|<>]').hasMatch(password)) {
       return AppLocalizations.of(context)!.validation_password_special;
+    }
+
+    if (! (passwordRepeat == password)){
+      return AppLocalizations.of(context)!.password_repeat_missmatch;
     }
 
     return null; // Valid password

@@ -8,15 +8,14 @@ enum ChangeEvent{
 
   MATCH_START(changeCode: 3, displayName: 'Match started.'),
 
-  HOME_RED_CARD(changeCode: 4, displayName: 'Red Card!!!'),
+  RED_CARD(changeCode: 4, displayName: 'Red Card!!!'),
 
-  AWAY_RED_CARD(changeCode: 5, displayName: 'Red Card!!!'),
 
-  HALF_TIME(changeCode: 6, displayName: 'Half time.'),
+  HALF_TIME(changeCode: 5, displayName: 'Half time.'),
 
-  FULL_TIME(changeCode: 7, displayName: 'Match ended.'),
+  FULL_TIME(changeCode: 6, displayName: 'Match ended.'),
 
-  SECOND_HALF_START(changeCode: 8, displayName: 'Second half started.');
+  AWAITING_ET(changeCode: 8, displayName: 'Second half started.');
 
   final int changeCode;
 
@@ -33,9 +32,9 @@ enum ChangeEvent{
 
 
 
-  static bool isForNotification(ChangeEvent? e){
-    return ChangeEvent.HOME_RED_CARD == e || ChangeEvent.AWAY_RED_CARD == e || isGoal(e) || ChangeEvent.HALF_TIME == e || ChangeEvent.FULL_TIME == e;
-  }
+  // static bool isForNotification(ChangeEvent? e){
+  //   return ChangeEvent.HOME_RED_CARD == e || ChangeEvent.AWAY_RED_CARD == e || isGoal(e) || ChangeEvent.HALF_TIME == e || ChangeEvent.FULL_TIME == e;
+  // }
 
   static ChangeEvent ofCode(int code){
 

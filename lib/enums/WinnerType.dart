@@ -2,9 +2,13 @@ enum WinnerType{
 
   NONE(statusCode: 1),
 
-  NORMAL(statusCode: 2),
+  NORMAL_HOME(statusCode: 2),
 
-  AFTER(statusCode: 3);
+  NORMAL_AWAY(statusCode: 3),
+
+  AGGREGATED_HOME(statusCode: 4),
+
+  AGGREGATED_AWAY(statusCode: 5);
 
   final int statusCode;
 
@@ -18,8 +22,6 @@ enum WinnerType{
         return status;
       }
     }
-
-print('****** WINNER CODE:' + code.toString());
 
     return WinnerType.NONE;
   }

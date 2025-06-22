@@ -1,6 +1,6 @@
-import 'dart:math';
 
 import 'package:flutter_app/models/constants/ColorConstants.dart';
+import 'package:flutter_app/utils/ImageUtils.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -10,6 +10,9 @@ import 'package:flutter_app/pages/ParentPage.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:synchronized/synchronized.dart';
+import 'package:uuid/uuid.dart';
+
 
 
 import 'dart:async';
@@ -26,6 +29,10 @@ bool isFlutterLocalNotificationsInitialized = false;
 
 /// Initialize the [FlutterLocalNotificationsPlugin] package.
  FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
+
+// final Set<String> _processedUuids = {};
+// final _lock = Lock();
+
 
 Future<void> main() async {
 
@@ -89,9 +96,9 @@ Future<void> setupFlutterNotifications() async {
   /// Update the iOS foreground notification presentation options to allow
   /// heads up notifications.
   await FirebaseMessaging.instance.setForegroundNotificationPresentationOptions(
-    alert: true,
-    badge: true,
-    sound: true,
+    alert: false,
+    badge: false,
+    sound: false,
   );
   isFlutterLocalNotificationsInitialized = true;
 }
@@ -146,21 +153,37 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
       }
 
       ChangeEventSoccer changeEventSoccer = ChangeEventSoccer.fromJson(payload);
+      // if (_processedUuids.contains(changeEventSoccer.uniqueId)) {
+      //   //print('Duplicate message ignored: $uuid');
+      //   return;
+      // }
+      //
+      // _processedUuids.add(changeEventSoccer.uniqueId);
+
+
       for (String fav in favEventIds){
        int favEventId = int.parse(fav);
 
       if (favEventId == changeEventSoccer.eventId){
+
+        String name = changeEventSoccer.changeEvent == ChangeEvent.HOME_GOAL ? changeEventSoccer.homeTeam : changeEventSoccer.awayTeam;
+        String file = await ImageUtils.downloadAndSaveFile(changeEventSoccer.imgUrl, name);
+
       flutterLocalNotificationsPlugin.show(
-        Random().nextInt(10000000),
-        changeEventSoccer.changeEvent.displayName,
+        generateUniqueNotificationId(),
         notificationBodyFrom(changeEventSoccer),
-        const NotificationDetails(
-          iOS: DarwinNotificationDetails(),//TODO: needs setup for IOS
+        changeEventSoccer.uniqueId,
+        // changeEventSoccer.changeEvent.displayName,
+        NotificationDetails(
+          iOS: const DarwinNotificationDetails(),//TODO: needs setup for IOS
           android: AndroidNotificationDetails(
-            'high_importance_channel', // id
-            'High Importance Notifications',
+            'high_importance_channel_fantasy_tips', // id
+            'High Importance Notifications ft',
+            // groupKey: null,
+            groupKey: 'unique_key_${changeEventSoccer.uniqueId}',
             // 'MY FOREGROUND SERVICE',
-            icon: 'notification_icon',//  '@mipmap/ic_launcher',
+            largeIcon: FilePathAndroidBitmap(file),
+           // largeIcon: icon,//  '@mipmap/ic_launcher',
             priority: Priority.high,
             ongoing: false,
           ),
@@ -169,7 +192,7 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
       }
       }
     }catch(e){
-      print('Invalid message: $payload - $msgId');
+      // print('Invalid message: $payload - $msgId');
     }
   }
 
@@ -178,10 +201,16 @@ String notificationBodyFrom(ChangeEventSoccer changeEventSoccer) {
     // case ChangeEvent.FULL_TIME:
     //   return '${changeEventSoccer.homeTeam.name} ${changeEventSoccer.homeTeamScore.current} - ${changeEventSoccer.awayTeamScore.current} ${changeEventSoccer.awayTeam.name}';
     case ChangeEvent.HOME_GOAL:
-      return '${changeEventSoccer.homeTeamScore} - ${changeEventSoccer.awayTeamScore}';
+      return 'Goal for ${changeEventSoccer.homeTeam}: ${changeEventSoccer.homeTeamScore} - ${changeEventSoccer.awayTeamScore}';
     case ChangeEvent.AWAY_GOAL:
-      return '${changeEventSoccer.homeTeamScore} - ${changeEventSoccer.awayTeamScore}';
-    // case ChangeEvent.HALF_TIME:
+      return 'Goal for ${changeEventSoccer.awayTeam}: ${changeEventSoccer.homeTeamScore} - ${changeEventSoccer.awayTeamScore}';
+    case ChangeEvent.FULL_TIME:
+      return 'Match ended ${changeEventSoccer.homeTeam}: ${changeEventSoccer.homeTeamScore} - ${changeEventSoccer.awayTeamScore} ${changeEventSoccer.awayTeam}';
+    case ChangeEvent.AWAITING_ET:
+      return 'Awaiting extra time ${changeEventSoccer.homeTeam}: ${changeEventSoccer.homeTeamScore} - ${changeEventSoccer.awayTeamScore} ${changeEventSoccer.awayTeam}';
+
+
+  // case ChangeEvent.HALF_TIME:
     //   return 'Half time ${changeEventSoccer.homeTeamScore.current} - ${changeEventSoccer.awayTeamScore.current}';
     // case ChangeEvent.HOME_RED_CARD:
     //   return 'Home red ${changeEventSoccer.homeTeamScore.current} - ${changeEventSoccer.awayTeamScore.current}';
@@ -190,4 +219,9 @@ String notificationBodyFrom(ChangeEventSoccer changeEventSoccer) {
     default:
       return 'Nothing';
   }
+
+}
+
+int generateUniqueNotificationId() {
+  return const Uuid().v4().hashCode & 0x7fffffff;
 }

@@ -66,7 +66,7 @@ class SelectedOddRow extends StatelessWidget {
                                 Align(
                                     alignment: Alignment.centerLeft,
                                     child:
-                                    LogoWithName(key: UniqueKey(),
+                                    LogoWithName(key: UniqueKey(), isHomeTeam: true,
                                       goalScored:false, logoUrl: prediction.homeTeam.logo, name: prediction.homeTeam.getLocalizedName(), redCards: 0, logoSize: 18, fontSize: 10, winnerType: WinnerType.NONE,))
                                 ),
 
@@ -75,7 +75,7 @@ class SelectedOddRow extends StatelessWidget {
                                 Align(
                                     alignment: Alignment.centerLeft,
                                     child:
-                                    LogoWithName(key: UniqueKey(),
+                                    LogoWithName(key: UniqueKey(), isHomeTeam: false,
                                       goalScored:false, logoUrl: prediction.awayTeam.logo, name: prediction.awayTeam.getLocalizedName(), redCards: 0, logoSize: 18, fontSize: 10,  winnerType: WinnerType.NONE)
                                 )),
                               ]

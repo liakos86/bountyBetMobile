@@ -70,8 +70,8 @@ class UserPredictionRowTiltedState extends State<UserPredictionRowTilted>{
                           crossAxisAlignment: CrossAxisAlignment.start,
                           mainAxisAlignment: MainAxisAlignment.start,
                           children: [
-                            LogoWithName(goalScored:false, logoUrl: prediction.homeTeam.logo, logoSize: 20, fontSize: 12, name: prediction.homeTeam.getLocalizedName(), redCards: 0, winnerType: WinnerType.NONE),
-                            LogoWithName(goalScored:false, logoUrl: prediction.awayTeam.logo, logoSize: 20, fontSize: 12, name: prediction.awayTeam.getLocalizedName(), redCards: 0, winnerType: WinnerType.NONE),
+                            LogoWithName(goalScored:false, isHomeTeam: true, logoUrl: prediction.homeTeam.logo, logoSize: 20, fontSize: 12, name: prediction.homeTeam.getLocalizedName(), redCards: 0, winnerType: WinnerType.NONE),
+                            LogoWithName(goalScored:false, isHomeTeam: false, logoUrl: prediction.awayTeam.logo, logoSize: 20, fontSize: 12, name: prediction.awayTeam.getLocalizedName(), redCards: 0, winnerType: WinnerType.NONE),
 
                           ],
                         )
@@ -99,6 +99,34 @@ class UserPredictionRowTiltedState extends State<UserPredictionRowTilted>{
                           DisplayOdd(betPredictionType: prediction.betPredictionType!, prediction: prediction.betPredictionType!, odd: prediction),
                         )
                         ),
+
+                        if (prediction.homeScore != null)
+                        Expanded(
+                            flex: 1,
+
+                            child:
+
+                            Column(// third column
+                                children: [
+                                  Padding(padding: const EdgeInsets.all(6), child:
+
+                                  Text(prediction.homeScore.toString(), style: const TextStyle(
+                                      fontSize: 12,
+                                      fontWeight:  FontWeight.w900,
+                                      color: Colors.white),)),
+
+                                  Padding(padding: const EdgeInsets.all(6), child:
+                                  Text(prediction.awayScore.toString(), style: const TextStyle(
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.w900,
+                                      color: Colors.white),)),
+                                ]
+                            )
+
+                          // : Container()
+
+                        ),
+
 
                         Expanded(flex: 2, child:
                         _buildResultIcon()
