@@ -138,6 +138,9 @@ class LiveMatchRowTiltedState extends State<LiveMatchRowTilted> {
                         // )
                 ),
 
+
+                gameWithOdds.calculateExtraTimeMinutes() == Constants.empty ?
+
                 Expanded(
                     flex: 3,
                     child:
@@ -152,7 +155,35 @@ class LiveMatchRowTiltedState extends State<LiveMatchRowTilted> {
                           fontWeight: FontWeight.bold,
                           color: Colors.white),))
                     ]
-                )),//SECOND COLUMN END
+                )) //SECOND COLUMN END
+                :
+                Expanded(
+                flex: 3,
+                child:RichText(
+                  text: TextSpan(
+                    children: [
+                      TextSpan(
+                        text: gameWithOdds.display_status,
+                        style: const TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white),
+                      ),
+                      WidgetSpan(
+                        alignment: PlaceholderAlignment.top,
+                        child: Transform.translate(
+                          offset: const Offset(2, -4), // Fine-tune positioning
+                          child: Text(
+                            '+${gameWithOdds.calculateExtraTimeMinutes()}',
+                            style: const TextStyle(fontSize: 9, color: Colors.red),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                )
+                ),
+
 
                 Expanded(
                     flex: flexSizeForTrailing(),

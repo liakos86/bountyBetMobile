@@ -458,6 +458,47 @@ class MatchEvent implements Comparable<MatchEvent>{
 		display_status = calculateLiveMinute(context, currentPeriodStartTime);
 	}
 
+	String calculateExtraTimeMinutes() {
+		if (timeDetails == null){
+			return '';
+		}
+
+		if (MatchEventStatusMore.INPROGRESS_1ST_HALF == MatchEventStatusMore.fromStatusMoreText(status_more)) {
+			if (timeDetails!.injuryTime1 > 0) {
+				return timeDetails!.injuryTime1.toString();
+			}else {
+				return '';
+			}
+		}
+
+		if (MatchEventStatusMore.INPROGRESS_2ND_HALF == MatchEventStatusMore.fromStatusMoreText(status_more)) {
+			if (timeDetails!.injuryTime2 > 0) {
+				return timeDetails!.injuryTime2.toString();
+			}else {
+				return '';
+			}
+		}
+
+		if (MatchEventStatusMore.INPROGRESS_1ST_EXTRA == MatchEventStatusMore.fromStatusMoreText(status_more)) {
+			if (timeDetails!.injuryTime3 > 0) {
+				return timeDetails!.injuryTime3.toString();
+			}else {
+				return '';
+			}
+		}
+
+		if (MatchEventStatusMore.INPROGRESS_2ND_EXTRA == MatchEventStatusMore.fromStatusMoreText(status_more)) {
+			if (timeDetails!.injuryTime4 > 0) {
+				return timeDetails!.injuryTime4.toString();
+			}else {
+				return '';
+			}
+		}
+
+		return '';
+
+	}
+
   DateTime calculateCurrentPeriodStartTime() {
 
 		DateTime? currentPeriodStartTime;
