@@ -64,19 +64,11 @@ String reverse(String s) {
 
   ///Encrypts the given plainText using the key. Returns encrypted data
 enc.Encrypted encryptWithAES(String plainText, String key){
-      // , String initialKey) {
-
-
 
     plainText = paddedPlainText(plainText);
-   // final String key = createKey(plainText, initialKey);
-    print('Will encrypt ' + plainText +  ' key is  $key');
     final cipherKey = enc.Key.fromUtf8(key);
 
-    print ('key after creation is ' + cipherKey.base64);
     final encryptService = enc.Encrypter(enc.AES(cipherKey, mode: enc.AESMode.ecb));
-    // final encryptService = Encrypter(AES(cipherKey, mode: AESMode.cbc));
-    //final initVector = enc.IV.fromUtf8(key); //Here the IV is generated from key. This is for example only. Use some other text or random data as IV for better security.
 
     enc.Encrypted encryptedData = encryptService.encrypt(plainText);//, iv: initVector);
     return encryptedData;

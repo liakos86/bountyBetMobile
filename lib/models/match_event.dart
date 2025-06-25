@@ -94,7 +94,7 @@ class MatchEvent implements Comparable<MatchEvent>{
 	String calculateLiveMinute(BuildContext context, DateTime startLocal) {
 
 		if (! (MatchEventStatus.INPROGRESS.statusStr == status)) {
-			return 'error not inprog';
+			return 'N/A';
 		}
 
 		if (status_more.isEmpty){
@@ -361,6 +361,8 @@ class MatchEvent implements Comparable<MatchEvent>{
 
   	if (odds != null && incomingEvent.odds != null) {
 			odds?.copyFrom(incomingEvent.odds);
+		}else if (odds == null && incomingEvent.odds != null){
+  		odds = incomingEvent.odds;
 		}
 	}
 
@@ -386,7 +388,7 @@ class MatchEvent implements Comparable<MatchEvent>{
 
 		// }
 
-		if (MatchEventStatus.CANCELLED.statusStr == status){
+		if (MatchEventStatus.CANCELLED.statusStr == status || MatchEventStatus.CANCELED.statusStr == status){
 			return AppLocalizations.of(context)!.status_cancelled;
 		}
 

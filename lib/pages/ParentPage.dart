@@ -193,6 +193,7 @@ class ParentPageState extends State<ParentPage> with WidgetsBindingObserver {
       });
     } else if (state == AppLifecycleState.resumed) {
       // App is active again
+      print('RESUMED!!!!!!!');
       setState(() {
         isMinimized = false;
       });

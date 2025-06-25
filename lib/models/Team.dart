@@ -34,27 +34,53 @@ class Team{
 
   Team(this.id, this.name);
 
-  String getLocalizedName(){
-    if (name_translations == null){
-      return name;
-    }
 
-    if (locale == null){
-      return name;
-    }
+  String getLocalizedName() {
+    if (name_translations == null || locale == null) return name;
 
-
-    var candidates = locale?.toLowerCase().split(Constants.underscore);
-    for (String candidate in candidates!){
-      if (name_translations?[candidate] != null){
-
-        var utf8Text = name_translations?[candidate].runes.toList();
-        return utf8.decode(utf8Text);
+    var candidates = locale!.toLowerCase().split(Constants.underscore);
+    for (String candidate in candidates) {
+      final raw = name_translations?[candidate];
+      if (raw != null) {
+        try {
+          // Convert string (mis-decoded UTF-8) to bytes
+          final bytes = raw.codeUnits;
+          // Properly decode as UTF-8
+          return utf8.decode(bytes);
+        } catch (_) {
+          return raw; // fallback
+        }
       }
     }
 
     return name;
   }
+
+
+  // String getLocalizedName(){
+  //   if (name_translations == null){
+  //     return name;
+  //   }
+  //
+  //   if (locale == null){
+  //     return name;
+  //   }
+  //
+  //
+  //   var candidates = locale?.toLowerCase().split(Constants.underscore);
+  //   for (String candidate in candidates!){
+  //     if (name_translations?[candidate] != null){
+  //
+  //       var utf8Text = name_translations?[candidate].runes.toList();
+  //       return utf8.decode(utf8Text);
+  //     }
+  //   }
+  //
+  //   return name;
+  // }
+
+
+
 
   static Team fromJson(Map<String, dynamic> jsonValues){
     Team hTeam = Team(jsonValues[JsonConstants.id], jsonValues["name"]);
