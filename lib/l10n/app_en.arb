@@ -29,11 +29,11 @@
 
     "points" : "points",
 
-    "won" : "bets won",
+    "won" : "correct preds",
 
     "buypreds" : "Buy predictions of ",
 
-    "monthlybetswon" : "Monthly bets won:",
+    "monthlybetswon" : "Monthly correct combos:",
 
     "monthlypredswon" : "Monthly correct predictions:",
 
@@ -83,7 +83,7 @@
 
         "validation_pending" : "validation pending",
 
-        "all_time_bets" : "All time bets",
+        "all_time_bets" : "All time combos",
         "all_time_predictions" : "All time predictions",
 
           "max_bet_amount" : "Max bet amount is",
@@ -114,9 +114,9 @@
        "out_of" : " out of ",
 
        "winners" : "Winners",
-       "no_pending_bets" : "No pending bets",
-       "no_lost_bets" : "No lost bets",
-        "no_won_bets" : "No won bets",
+       "no_pending_bets" : "No pending preds",
+       "no_lost_bets" : "No lost preds",
+        "no_won_bets" : "No won preds",
 
        "me" : "My stats",
 
@@ -126,7 +126,10 @@
 
        "matches" : "Matches",
 
-       "bets" : "My bets",
+       "bets" : "Predictions",
+
+           "submit_preds" : "Submit predictions?",
+
 
 
        "email_verification" : "A verification email has been sent to ",
@@ -175,7 +178,7 @@
 
          "purchase_handling" : "Please wait while we handle your purchase",
 
-         "possible_earnings" : "Possible earnings",
+         "possible_earnings" : "Prediction points",
 
 
         "login_or_validate" : "Please login or register",

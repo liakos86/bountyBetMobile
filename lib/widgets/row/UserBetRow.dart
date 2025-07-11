@@ -60,7 +60,8 @@ class UserBetRow extends StatefulWidget {
       initiallyExpanded: true,
 
       tilePadding: const EdgeInsets.only(left: 8),
-      subtitle: Text(maxLines:2, '$placementTime - Bet: ${bet.betAmount.toStringAsFixed(2)} \r\nbetId:${bet.betId}'),
+      // subtitle: Text(maxLines:2, '$placementTime - Bet: ${bet.betAmount.toStringAsFixed(2)} \r\nbetId:${bet.betId}'),
+      subtitle: Text(maxLines:1, '$placementTime - Id:${bet.betId}'),
       leading:
 
           bet.betStatus==BetStatus.LOST ?
