@@ -69,7 +69,7 @@ class MockUtils {
       Set<MatchEvent> eventsMock = mockEvents(leagueId);
       events.addAll(eventsMock);
       League leagueInfo = League(   name: "Mock country"+leagueId.toString(), league_id: leagueId, priority: leagueId, section_id: leagueId);
-      LeagueWithData league = LeagueWithData(events: events,  league: leagueInfo);
+      LeagueWithData league = LeagueWithData(events: events,  league: leagueInfo, dateKey: "");
 
       // for (MatchEvent event in eventsMock){
       //   if (MatchEventStatus.fromStatusText(event.status) == MatchEventStatus.INPROGRESS) {

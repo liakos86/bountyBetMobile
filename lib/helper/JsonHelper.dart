@@ -31,41 +31,41 @@ class JsonHelper{
 
 
 
-  static Future<LeagueWithData?> leagueWithDataFromJson(leagueWithDataJson) async{
-
-    List<MatchEvent> matches = <MatchEvent>[];
-    // List<MatchEvent> liveMatches = <MatchEvent>[];
-
-    var jsonLeagueEvents = leagueWithDataJson["matchEvents"];
-    for (var jsonEvent in jsonLeagueEvents){
-      if (jsonEvent[JsonConstants.id] == null || jsonEvent[JsonConstants.id] == -1 || jsonEvent[JsonConstants.id].toString() == '-1'){
-        continue;
-      }
-
-      MatchEvent match = await MatchEvent. eventFromJson(jsonEvent);
-      matches.add(match);
-      // if (MatchEventStatus.INPROGRESS == MatchEventStatus.fromStatusText(match.status)){
-      //   liveMatches.add(match);
-      // }
-    }
-
-    // var league = leagueWithDataJson['league'];
-    int leagueId = leagueWithDataJson['leagueId'];
-
-    if(!AppContext.allLeaguesMap.containsKey(leagueId)){
-      print('League missing ' + leagueId.toString());
-      return null;
-    }
-
-    League? le = AppContext.allLeaguesMap[leagueId];
-
-    LeagueWithData l = LeagueWithData(
-        league: le??League.defConst(),
-        events: matches);
-    // l.liveEvents = liveMatches;
-
-    return l;
-  }
+  // static Future<LeagueWithData?> leagueWithDataFromJson(leagueWithDataJson) async{
+  //
+  //   List<MatchEvent> matches = <MatchEvent>[];
+  //   // List<MatchEvent> liveMatches = <MatchEvent>[];
+  //
+  //   var jsonLeagueEvents = leagueWithDataJson["matchEvents"];
+  //   for (var jsonEvent in jsonLeagueEvents){
+  //     if (jsonEvent[JsonConstants.id] == null || jsonEvent[JsonConstants.id] == -1 || jsonEvent[JsonConstants.id].toString() == '-1'){
+  //       continue;
+  //     }
+  //
+  //     MatchEvent match = await MatchEvent. eventFromJson(jsonEvent);
+  //     matches.add(match);
+  //     // if (MatchEventStatus.INPROGRESS == MatchEventStatus.fromStatusText(match.status)){
+  //     //   liveMatches.add(match);
+  //     // }
+  //   }
+  //
+  //   // var league = leagueWithDataJson['league'];
+  //   int leagueId = leagueWithDataJson['leagueId'];
+  //
+  //   if(!AppContext.allLeaguesMap.containsKey(leagueId)){
+  //     print('League missing ' + leagueId.toString());
+  //     return null;
+  //   }
+  //
+  //   League? le = AppContext.allLeaguesMap[leagueId];
+  //
+  //   LeagueWithData l = LeagueWithData(
+  //       league: le??League.defConst(),
+  //       events: matches);
+  //   // l.liveEvents = liveMatches;
+  //
+  //   return l;
+  // }
 
 
 

@@ -20,6 +20,7 @@ import 'package:flutter_app/pages/OddsPage.dart';
 import 'package:flutter_app/utils/client/HttpActionsClient.dart';
 import 'package:flutter_app/widgets/DialogTabbedLoginOrRegister.dart';
 import 'package:in_app_purchase/in_app_purchase.dart';
+import 'package:intl/intl.dart';
 
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -150,7 +151,7 @@ class ParentPageState extends State<ParentPage> with WidgetsBindingObserver {
       .addPostFrameCallback((_) => setLocale(context));
 
   pagesList.add(OddsPage(key: oddsPageKey, updateUserCallback: updateUserCallBack, loginUserCallback: loginUserCallback, registerUserCallback: registerUserCallback, selectedOdds: selectedOdds, topUpCallback: promptDialogTopup));
-  pagesList.add(LivePage(key: livePageKey, allLeagues: AppContext.eventsPerDayMap[MatchConstants.KEY_TODAY]));
+  pagesList.add(LivePage(key: livePageKey, liveLeagues: AppContext.liveLeagues));
   pagesList.add(LeaderBoardPage());
   pagesList.add(MyBetsPage(key: betsPageKey, loginOrRegisterCallback: promptLoginOrRegister));
   // pagesList.add(MyFantasyLeaguesPage(key: myFantasyLeaguesKey, loginOrRegisterCallback: promptLoginOrRegister));
@@ -222,8 +223,9 @@ class ParentPageState extends State<ParentPage> with WidgetsBindingObserver {
       });
 
       livePageKey.currentState?.setState(() {
-        AppContext.eventsPerDayMap;
-        AppContext.allLeaguesMap;
+        // AppContext.eventsPerDayMap;
+        // AppContext.allLeaguesMap;
+        AppContext.liveLeagues;
       });
   }
 
@@ -550,79 +552,101 @@ class ParentPageState extends State<ParentPage> with WidgetsBindingObserver {
    * 2. Delete the matches that are missing from the previous call.
    * 3. Update the data of the matches that were pre-existing.
    */
-  void updateLeagueMatches(Map<String, List<LeagueWithData>> incomingLeaguesMap) {
-    if (incomingLeaguesMap.isEmpty) {
+  void updateLeagueMatches(List<MatchEvent> incomingEvents) {
+    if (incomingEvents.isEmpty) {
       return; //TODO maybe empty everything?
     }
 
+    DateFormat matchTimeFormat = DateFormat(MatchConstants.MATCH_START_TIME_FORMAT);
 
-    for (var dailyEntry in incomingLeaguesMap.entries) {
-      List<LeagueWithData> existingTodayLeagues = AppContext
-          .eventsPerDayMap[dailyEntry.key];
-      List<
-          LeagueWithData> incomingTodayLeagues = incomingLeaguesMap[dailyEntry.key]!;
+    for (MatchEvent incomingEvent in incomingEvents) {
 
+      String localStartString = matchTimeFormat.format(incomingEvent.startAtLocalDateTime());
+      String eventDateKey = localStartString.split(' ')[0];
 
-      updateExistingMatchDataFromIncoming(
-          existingTodayLeagues, incomingTodayLeagues);
-
-      updateExistingMatchDataFromIncomingMissing(
-          existingTodayLeagues, incomingTodayLeagues);
-
-      for (var element in existingTodayLeagues) {
-        for (var element in element.events) {
-          element.calculateDisplayStatus(context);
-        }
+      if (!AppContext.eventsPerDayMap.containsKey(eventDateKey)){
+        AppContext.eventsPerDayMap. putIfAbsent(eventDateKey, () => <LeagueWithData>[]);
       }
+
+      List<LeagueWithData> matchDayLeagues = AppContext.eventsPerDayMap[eventDateKey] ?? [];
+      LeagueWithData leagueOfMatch = matchDayLeagues.firstWhere((
+          element) => element.league.league_id == incomingEvent.leagueId && element.dateKey == eventDateKey ,
+          orElse: () => LeagueWithData.defLeague());
+
+      if (leagueOfMatch.league.league_id == -1){
+        League l = AppContext.allLeaguesMap[incomingEvent.leagueId]!;
+        leagueOfMatch = LeagueWithData(league: l, events: [], dateKey: eventDateKey);
+        matchDayLeagues.add(leagueOfMatch);
+      }
+
+      MatchEvent? existingEvent;
+
+      var matches = leagueOfMatch.events
+          .where((element) => element.eventId == incomingEvent.eventId);
+
+      if (matches.isEmpty) {
+        incomingEvent.calculateDisplayStatus(context);
+        leagueOfMatch.events.add(incomingEvent);
+      }else{
+        existingEvent = matches.first;
+        existingEvent.copyFrom(incomingEvent);
+        incomingEvent.calculateDisplayStatus(context);
+      }
+
     }
 
     sortLeagues();
     updatePageStates();
   }
 
-    void updateLiveLeagueMatches(Map<int, MatchEvent> incomingLiveEventsMap) {
+    void updateLiveLeagueMatches(List<MatchEvent> incomingLiveEvents) {
 
-      if (incomingLiveEventsMap.isEmpty) {
+      if (incomingLiveEvents.isEmpty) {
         //AppContext.liveLeagues.clear();
       }else {
 
-        //Set<int> newAddedLeagueIds = Set();
-        Set<int> incomingLiveLeagueIds = Set();
+        DateFormat matchTimeFormat = DateFormat(MatchConstants.MATCH_START_TIME_FORMAT);
 
-        for (MapEntry incomingLiveEventEntry in incomingLiveEventsMap.entries) {
-          MatchEvent incomingLiveEvent = incomingLiveEventEntry.value;
-          incomingLiveLeagueIds.add(incomingLiveEvent.leagueId);
+        for (MatchEvent incomingLiveEvent in incomingLiveEvents) {
+         // incomingLiveLeagueIds.add(incomingLiveEvent.leagueId);
           bool eventExistsInCache = false;
 
-          for (LeagueWithData lwt in AppContext.eventsPerDayMap[MatchConstants.KEY_TODAY]) {//incoming exists then copy
+          String localStartString = matchTimeFormat.format(incomingLiveEvent.startAtLocalDateTime());
+          String eventDateKey = localStartString.split(' ')[0];
+
+          for (LeagueWithData lwt in AppContext.eventsPerDayMap[eventDateKey]!) {//incoming exists then copy
             List<MatchEvent> liveEvents = lwt.events;//.where((element) => element.status == MatchEventStatus.INPROGRESS.statusStr).toList();
-            if (liveEvents.contains(incomingLiveEventEntry.value)) {
+            if (lwt.dateKey == eventDateKey && liveEvents.contains(incomingLiveEvent)) {
               eventExistsInCache = true;
               MatchEvent existing = liveEvents.firstWhere((
-                  element) => element.eventId == incomingLiveEventEntry.key);
+                  element) => element.eventId == incomingLiveEvent.eventId);
               existing.copyFrom(incomingLiveEvent);
+              existing.calculateDisplayStatus(context);
+
+              if (!AppContext.liveLeagues.contains(lwt)) {
+                AppContext.liveLeagues.add(lwt);
+              }
+
             }
 
             if (eventExistsInCache){
               break;
             }
-
           }
+        }
 
-
+        for (LeagueWithData lwd in List.of(AppContext.liveLeagues)){
+          bool hasLiveGames = lwd.events.any((element) => element.status == MatchEventStatus.INPROGRESS.statusStr);
+          if (!hasLiveGames){
+            AppContext.liveLeagues.remove(lwd);
+          }
         }
 
 
-        for (var element in AppContext.eventsPerDayMap[MatchConstants.KEY_TODAY]) {
-          for (var element in element.events) {
-            element.calculateDisplayStatus(context);
-          }
-
-        }
       }
 
 
-      AppContext.eventsPerDayMap[MatchConstants.KEY_TODAY].sort();
+      //AppContext.eventsPerDayMap[MatchConstants.KEY_TODAY].sort();
       updatePageStates();
   }
 
@@ -699,7 +723,7 @@ void setupFirebaseListeners() async{
     ChangeEventSoccer changeEventSoccer = ChangeEventSoccer.fromJson(payload);
 
     // for (LeagueWithData l in AppContext.liveLeagues){
-    for (LeagueWithData l in AppContext.eventsPerDayMap[MatchConstants.KEY_TODAY]){
+    for (LeagueWithData l in AppContext.eventsPerDayMap[MatchConstants.KEY_TODAY]!){
 
       List<MatchEvent> events = l.events.where((element) => element.status == MatchEventStatus.INPROGRESS.statusStr).toList();
       MatchEvent? relevantEvent = events.firstWhereOrNull((element) => element.eventId == changeEventSoccer.eventId);
@@ -736,13 +760,16 @@ void setupFirebaseListeners() async{
     });
 
     livePageKey.currentState?.setState(() {
-      AppContext.eventsPerDayMap[MatchConstants.KEY_TODAY];
+      AppContext.liveLeagues;
     });
   }
 
   static void sortLeagues() {
     for (var element in AppContext.eventsPerDayMap.entries) {
       element.value.sort();
+      for (var lwt in element.value){
+        lwt.events.sort();
+      }
     }
 
   }
@@ -758,7 +785,7 @@ void setupFirebaseListeners() async{
     });
 
     livePageKey.currentState?.setState(() {
-      AppContext.eventsPerDayMap[MatchConstants.KEY_TODAY];
+      AppContext.liveLeagues;
     });
 
     // myFantasyLeaguesKey.currentState?.setState(() {
@@ -1108,7 +1135,7 @@ void setupFirebaseListeners() async{
 
     Timer.periodic(const Duration(seconds: 5), (timer) {
 
-      if (AppContext.eventsPerDayMap[MatchConstants.KEY_TODAY].isEmpty){
+      if (!AppContext.eventsPerDayMap.containsKey(MatchConstants.KEY_TODAY)){
         return;
       }
 

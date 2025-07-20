@@ -21,7 +21,8 @@ class AppContext{
   /*
    * Map with keys the dates and values the List of leagues for each date.
    */
-  static final Map eventsPerDayMap = HashMap<String, List<LeagueWithData>>();
+  static final Map<String, List<LeagueWithData>> eventsPerDayMap = HashMap<String, List<LeagueWithData>>();
+  static final List<LeagueWithData> liveLeagues = [];
 
   /*
    * The logged user.

@@ -52,9 +52,12 @@ class FantasyTipsDrawer extends StatelessWidget {
                       // Email
                       Text(
                         AppContext.user.email,
+                        maxLines:1,
                         style: const TextStyle(
+                          overflow: TextOverflow.ellipsis,
                           color: Colors.white,
                           fontSize: 16,
+
                         ),
                       ),
                       const SizedBox(height: 16), // Add space before status

@@ -9,6 +9,7 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import '../models/LeagueWithData.dart';
 import '../models/constants/ColorConstants.dart';
+import '../models/context/AppContext.dart';
 import '../widgets/LeagueExpandableTile.dart';
 import '../widgets/row/DialogProgressBarWithText.dart';
 
@@ -19,26 +20,28 @@ class LivePage extends StatefulWidget{//}WithName {
   @override
   LivePageState createState() => LivePageState();
 
-  final List<LeagueWithData> allLeagues;
+  final List<LeagueWithData> liveLeagues;
 
   LivePage({
     Key? key,
-    required this.allLeagues,
+    required this.liveLeagues,
   } ) : super(key: key);
 
 }
 
 class LivePageState extends State<LivePage> with WidgetsBindingObserver{
 
-  late List<LeagueWithData> allLeagues;// = AppContext.eventsPerDayMap[MatchConstants.KEY_TODAY].where((element) => element.liveEvents.isNotEmpty);// <LeagueWithData>[];
+  late List<LeagueWithData> liveLeagues;// = AppContext.eventsPerDayMap[MatchConstants.KEY_TODAY].where((element) => element.liveEvents.isNotEmpty);// <LeagueWithData>[];
 
   List<String> favourites = <String>[];
 
-  List<LeagueWithData> leaguesWd = <LeagueWithData>[];
+  // List<LeagueWithData> leaguesWd = <LeagueWithData>[];
 
   @override
   void initState(){
-    allLeagues = widget.allLeagues;
+    liveLeagues = widget.liveLeagues;
+    List<LeagueWithData> all = AppContext.eventsPerDayMap.values.expand((e) => e).toList();
+    // leaguesWd = all.where((element) => element.events.where((element) => element.status == MatchEventStatus.INPROGRESS.statusStr).toList().isNotEmpty).toList();// <LeagueWithData>[];;
     favourites = getFavourites();
     super.initState();
   }
@@ -47,12 +50,12 @@ class LivePageState extends State<LivePage> with WidgetsBindingObserver{
   @override
   Widget build(BuildContext context) {
 
-    if (allLeagues.isEmpty){
+    if (AppContext.eventsPerDayMap.isEmpty){
       return DialogProgressText(text:  AppLocalizations.of(context)!.loading);
     }
 
-    leaguesWd = allLeagues.where((element) => element.events.where((element) => element.status == MatchEventStatus.INPROGRESS.statusStr).toList().isNotEmpty).toList();// <LeagueWithData>[];
-    if (leaguesWd.isEmpty){
+    //leaguesWd = allLeagues.where((element) => element.events.where((element) => element.status == MatchEventStatus.INPROGRESS.statusStr).toList().isNotEmpty).toList();// <LeagueWithData>[];
+    if (liveLeagues.isEmpty){
       return Align(alignment: Alignment.center,  child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
@@ -92,7 +95,7 @@ class LivePageState extends State<LivePage> with WidgetsBindingObserver{
           key: const PageStorageKey<String>(
               'pageLive'),
         // controller: scrollController,
-          itemCount: leaguesWd.length,
+          itemCount: liveLeagues.length,
           itemBuilder: (context, item) {
             return _buildRow(item);
           }),
@@ -101,8 +104,8 @@ class LivePageState extends State<LivePage> with WidgetsBindingObserver{
   }
 
   Widget _buildRow(int item) {
-    LeagueWithData league = leaguesWd[item];
-    return LeagueExpandableTile(key: PageStorageKey<LeagueWithData>(leaguesWd.elementAt(item)),  leagueWithData: league, isAlwaysExpanded: true,  expandAll: true, events: league.events.where((element) => element.status == MatchEventStatus.INPROGRESS.statusStr).toList(), selectedOdds: [], callbackForOdds: (a)=>{}, favourites: favourites, );
+    LeagueWithData league = liveLeagues[item];
+    return LeagueExpandableTile(key: PageStorageKey<LeagueWithData>(liveLeagues.elementAt(item)),  leagueWithData: league, isAlwaysExpanded: true,  expandAll: true, events: league.events.where((element) => element.status == MatchEventStatus.INPROGRESS.statusStr).toList(), selectedOdds: [], callbackForOdds: (a)=>{}, favourites: favourites, );
   }
 
   List<String> getFavourites(){

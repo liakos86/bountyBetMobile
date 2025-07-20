@@ -401,13 +401,13 @@ class HttpActionsClient {
 
   }
 
-  static Future<Map<int, MatchEvent>> getLeagueLiveEventsAsync(Timer? timer) async {
+  static Future<List<MatchEvent>> getLeagueLiveEventsAsync(Timer? timer) async {
 
-    Map jsonMatchesData = LinkedHashMap();
+    List jsonMatchesData = [];
     if (!connected){
       connected = await checkInternetConnectivity();
       if (!connected){
-        return Map();
+        return [];
       }
     }
 
@@ -420,32 +420,32 @@ class HttpActionsClient {
         await authorizeAsync();
         if (access_token == null) {
           //print('COULD NOT AUTHORIZE ********************************************************************');
-          return new Map();
+          return [];
         }
       }
 
       Response liveMatchesResponse = await get(Uri.parse(UrlConstants.GET_LIVE_EVENTS), headers:  {'Authorization': 'Bearer $access_token'}).timeout(const Duration(seconds: 20));
-      jsonMatchesData = await jsonDecode(liveMatchesResponse.body) as Map;
+      jsonMatchesData = await jsonDecode(liveMatchesResponse.body) as List;
     } catch (e) {
       // //print('ERROR REST ---- MOCKING............');
-      Map<int, MatchEvent> validData = new Map();// MockUtils().mockLeaguesMap(AppContext.eventsPerDayMap, false);
-      return validData;
+      // Map<int, MatchEvent> validData = new Map();// MockUtils().mockLeaguesMap(AppContext.eventsPerDayMap, false);
+      return [];
     }
 
 
-    return await convertJsonLiveMatchesToObjects(jsonMatchesData);
+    return await convertJsonLeaguesToObjects(jsonMatchesData);
   }
 
-  static Future<Map<String, List<LeagueWithData>>> getLeagueEventsAsync(Timer? timer) async {
+  static Future<List<MatchEvent>> getLeagueEventsAsync(Timer? timer) async {
 
     if (!connected){
       connected = await checkInternetConnectivity();
       if (!connected){
-        return Map();
+        return [];
       }
     }
 
-    Map jsonLeaguesData = LinkedHashMap();
+    List jsonLeaguesData = [];
 
     try {
       if (access_token == null) {
@@ -456,16 +456,16 @@ class HttpActionsClient {
         await authorizeAsync();
         if (access_token == null) {
           //print('COULD NOT AUTHORIZE ********************************************************************');
-          return new Map();
+          return [];
         }
       }
 
       Response leaguesResponse = await get(Uri.parse(UrlConstants.GET_LEAGUE_EVENTS), headers:  {'Authorization': 'Bearer $access_token'}).timeout(const Duration(seconds: 30));
-      jsonLeaguesData = await jsonDecode(leaguesResponse.body) as Map;
+      jsonLeaguesData = await jsonDecode(leaguesResponse.body) as List;
     } catch (e) {
       // //print('ERROR REST ---- MOCKING............');
-      Map<String, List<LeagueWithData>> validData = Map();//  MockUtils().mockLeaguesMap(AppContext.eventsPerDayMap, false);
-      return validData;
+      // Map<String, List<LeagueWithData>> validData = Map();//  MockUtils().mockLeaguesMap(AppContext.eventsPerDayMap, false);
+      return [];
     }
 
     return await convertJsonLeaguesToObjects(jsonLeaguesData);
@@ -816,25 +816,14 @@ class HttpActionsClient {
     return newEventsPerDayMap;
   }
 
-  static Future<Map<String, List<LeagueWithData>>> convertJsonLeaguesToObjects(Map jsonLeaguesData) async{
-    Map<String, List<LeagueWithData>> newEventsPerDayMap = LinkedHashMap();
-    for (MapEntry dailyLeagues in  jsonLeaguesData.entries) {
-      String day = dailyLeagues.key;
-
-      var leaguesWithDataJson = dailyLeagues.value;
-      List<LeagueWithData> leaguesWithData = <LeagueWithData>[];
-      for (var leagueWithData in leaguesWithDataJson) {
-        LeagueWithData? leagueObj = await JsonHelper.leagueWithDataFromJson(leagueWithData);
-        if (leagueObj == null){
-          continue;
-        }
-        leaguesWithData.add(leagueObj);
-      }
-
-      newEventsPerDayMap.putIfAbsent(day, ()=> leaguesWithData);
+  static Future<List<MatchEvent>> convertJsonLeaguesToObjects(List jsonEvents) async{
+    List<MatchEvent> eventsList = [];
+    for (var jsonEvent in  jsonEvents) {
+        MatchEvent matchObj = await MatchEvent.eventFromJson(jsonEvent);
+        eventsList.add(matchObj);
     }
 
-    return newEventsPerDayMap;
+    return eventsList;
   }
 
   static Future<bool> checkInternetConnectivity() async {

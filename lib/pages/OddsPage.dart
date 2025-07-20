@@ -101,7 +101,7 @@ class OddsPageState extends State<OddsPage> with SingleTickerProviderStateMixin{
 
     bool allEmpty = true;
     for (String key in AppContext.eventsPerDayMap.keys){
-      if (AppContext.eventsPerDayMap[key].length > 0){
+      if (AppContext.eventsPerDayMap.containsKey(key) && AppContext.eventsPerDayMap[key]!.isNotEmpty){
         allEmpty = false;
         break;
       }
@@ -173,9 +173,9 @@ class OddsPageState extends State<OddsPage> with SingleTickerProviderStateMixin{
                   // controller: _scrollController0,
                   padding: const EdgeInsets.all(0),
                   // itemCount: AppContext.eventsPerDayMap.entries.elementAt(2).value.length,
-                  itemCount: AppContext.eventsPerDayMap[MatchConstants.KEY_YESTERDAY].length,
+                  itemCount:  AppContext.eventsPerDayMap[MatchConstants.KEY_YESTERDAY]?.length,
                   itemBuilder: (context, item) {
-                    return _buildRow(AppContext.eventsPerDayMap[MatchConstants.KEY_YESTERDAY].elementAt(item), item);
+                    return _buildRow(AppContext.eventsPerDayMap[MatchConstants.KEY_YESTERDAY]!.elementAt(item), item);
                     // return _buildRow(AppContext.eventsPerDayMap.entries.elementAt(2).value[item], item);
                   }),
 
@@ -186,9 +186,9 @@ class OddsPageState extends State<OddsPage> with SingleTickerProviderStateMixin{
                   // controller: _scrollController0,
                   padding: const EdgeInsets.all(0),
                   // itemCount: AppContext.eventsPerDayMap.entries.elementAt(2).value.length,
-                  itemCount: AppContext.eventsPerDayMap[MatchConstants.KEY_TODAY].length,
+                  itemCount: AppContext.eventsPerDayMap[MatchConstants.KEY_TODAY]?.length,
                   itemBuilder: (context, item) {
-                    return _buildRow(AppContext.eventsPerDayMap[MatchConstants.KEY_TODAY].elementAt(item), item);
+                    return _buildRow(AppContext.eventsPerDayMap[MatchConstants.KEY_TODAY]!.elementAt(item), item);
                     // return _buildRow(AppContext.eventsPerDayMap.entries.elementAt(2).value[item], item);
                   }),
 
@@ -199,9 +199,9 @@ class OddsPageState extends State<OddsPage> with SingleTickerProviderStateMixin{
                   // controller: _scrollController0,
                   padding: const EdgeInsets.all(0),
                   // itemCount: AppContext.eventsPerDayMap.entries.elementAt(2).value.length,
-                  itemCount: AppContext.eventsPerDayMap[MatchConstants.KEY_TOMORROW].length,
+                  itemCount: AppContext.eventsPerDayMap[MatchConstants.KEY_TOMORROW]?.length,
                   itemBuilder: (context, item) {
-                    return _buildRow(AppContext.eventsPerDayMap[MatchConstants.KEY_TOMORROW].elementAt(item), item);
+                    return _buildRow(AppContext.eventsPerDayMap[MatchConstants.KEY_TOMORROW]!.elementAt(item), item);
                     // return _buildRow(AppContext.eventsPerDayMap.entries.elementAt(2).value[item], item);
                   }),
 

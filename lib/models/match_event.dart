@@ -32,10 +32,9 @@ class MatchEvent implements Comparable<MatchEvent>{
 		required this.start_at
   } );
 
-
   Map<String, String> ?translations;
 
-  int eventId;
+  int eventId = -1;
 
   int leagueId;
 
@@ -206,11 +205,23 @@ class MatchEvent implements Comparable<MatchEvent>{
 
 	@override
 	int compareTo(MatchEvent other){
+
+		if (this.eventId == 3009593 && other.eventId == 3009594){
+			print('HOME:'+ homeTeam.name + ' is starting befora ' + other.homeTeam.name);
+		}
+
 		if (startMillis > other.startMillis){
+
+			if (this.eventId == 3009593 && other.eventId == 3009594){
+				print('HOME:'+ homeTeam.name + ' is starting after ' + other.homeTeam.name);
+			}
 			return 1;
 		}
 
 		if (startMillis < other.startMillis){
+			if (this.eventId == 3009593 && other.eventId == 3009594){
+				print('HOME:'+ homeTeam.name + ' is starting befora ' + other.homeTeam.name);
+			}
 			return -1;
 		}
 
@@ -509,8 +520,7 @@ class MatchEvent implements Comparable<MatchEvent>{
 			currentPeriodStartTime = DateTime.fromMillisecondsSinceEpoch(timeDetails!.currentPeriodStartTimestamp * 1000).toLocal();
 		}
 
-		DateFormat matchTimeFormat = DateFormat(MatchConstants.MATCH_START_TIME_FORMAT);
-		DateTime matchTime = matchTimeFormat.parseUtc(start_at).toLocal();
+		DateTime matchTime = startAtLocalDateTime();
 		startMillis = matchTime.millisecondsSinceEpoch;
 		start_at_local = '${matchTime.hour < 10 ? '0' : Constants.empty}${matchTime.hour}:${matchTime.minute < 10 ? '0' : Constants.empty}${matchTime.minute}' ;
 
@@ -520,5 +530,12 @@ class MatchEvent implements Comparable<MatchEvent>{
 
 		return currentPeriodStartTime;
 	}
+
+	DateTime startAtLocalDateTime(){
+		DateFormat matchTimeFormat = DateFormat(MatchConstants.MATCH_START_TIME_FORMAT);
+		return matchTimeFormat.parseUtc(start_at).toLocal();
+	}
+
+
 
 }
