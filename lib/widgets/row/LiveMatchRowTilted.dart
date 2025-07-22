@@ -176,7 +176,7 @@ class LiveMatchRowTiltedState extends State<LiveMatchRowTilted> {
                           offset: const Offset(2, -4), // Fine-tune positioning
                           child: Text(
                             '+${gameWithOdds.calculateExtraTimeMinutes()}',
-                            style: const TextStyle(fontSize: 9, color: Color(ColorConstants.my_green)),
+                            style: const TextStyle(fontSize: 9, color: Colors.yellow),
                           ),
                         ),
                       ),

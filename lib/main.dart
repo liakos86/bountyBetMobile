@@ -30,7 +30,7 @@ bool isFlutterLocalNotificationsInitialized = false;
 /// Initialize the [FlutterLocalNotificationsPlugin] package.
  FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
 
-// final Set<String> _processedUuids = {};
+final Set<String> _processedUuids = {};
 // final _lock = Lock();
 
 
@@ -153,13 +153,6 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
       }
 
       ChangeEventSoccer changeEventSoccer = ChangeEventSoccer.fromJson(payload);
-      // if (_processedUuids.contains(changeEventSoccer.uniqueId)) {
-      //   //print('Duplicate message ignored: $uuid');
-      //   return;
-      // }
-      //
-      // _processedUuids.add(changeEventSoccer.uniqueId);
-
 
       for (String fav in favEventIds){
        int favEventId = int.parse(fav);
@@ -168,6 +161,13 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
 
         String name = changeEventSoccer.changeEvent == ChangeEvent.HOME_GOAL ? changeEventSoccer.homeTeam : changeEventSoccer.awayTeam;
         String file = await ImageUtils.downloadAndSaveFile(changeEventSoccer.imgUrl, name);
+
+        if (_processedUuids.contains(changeEventSoccer.uniqueId)) {
+          //print('Duplicate message ignored: $uuid');
+          return;
+        }
+
+        _processedUuids.add(changeEventSoccer.uniqueId);
 
       flutterLocalNotificationsPlugin.show(
         generateUniqueNotificationId(),
