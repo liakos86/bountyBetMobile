@@ -15,6 +15,8 @@ class User implements Comparable<User>{
 
   String mongoUserId = Constants.defMongoId;
 
+  String? fantasyLeagueMongoId;
+
   bool validated = false;
 
   String username = Constants.empty;
@@ -26,7 +28,6 @@ class User implements Comparable<User>{
   UserMonthlyBalance balance = UserMonthlyBalance.defBalance();
 
   List<UserMonthlyBalance> awards = <UserMonthlyBalance>[];
-  List<FantasyLeague> fantasyLeagues = <FantasyLeague>[];
 
   UserLevel userLevel = UserLevel.bettingVisitor;
 
@@ -60,6 +61,10 @@ class User implements Comparable<User>{
 
     user.validated = parsedJson['validated'] as bool;
     user.email = parsedJson['email'];
+
+    if(parsedJson['fantasyLeagueMongoId'] != null) {
+      user.fantasyLeagueMongoId = parsedJson['fantasyLeagueMongoId'];
+    }
 
 
     user.betAmountOverall = parsedJson['overallBetAmount']??0;
@@ -125,6 +130,7 @@ class User implements Comparable<User>{
     overallWonPredictions = u.overallWonPredictions;
     overallWonBets = u.overallWonBets;
     balance.copyBalancesFrom(u.balance);
+    fantasyLeagueMongoId = u.fantasyLeagueMongoId;
     // userBets = u.userBets;
     copyBets(u.userBets);
     copyAwards(u.awards);

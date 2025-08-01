@@ -2,8 +2,9 @@ class UrlConstants{
 
   //static const SERVER_IP_PLAIN = "liakos86-32935.portmap.host";
 
-  // static const SERVER_IP_PLAIN = "192.168.2.2";
-  static const SERVER_IP_PLAIN = "fantasytips.org";// "78.47.111.32"; //'172.18.128.1';//
+  static const SERVER_IP_PLAIN = "172.18.128.1";
+  // static const SERVER_IP_PLAIN = "192.168.1.5";
+  // static const SERVER_IP_PLAIN = "fantasytips.org";// "78.47.111.32"; //'172.18.128.1';//
 
   static const SRV_VERSION = "fantasyTips";
 
@@ -18,6 +19,7 @@ class UrlConstants{
   static const String GET_SECTIONS = SERVER_IP +  SRV_VERSION + '/rest/getSections';
 
   // static const String GET_STANDINGS_WITHOUT_TABLES = SERVER_IP +  SRV_VERSION + '/rest/getStandingsAllWithoutTables';
+  static const String GET_FANTASY_LEAGUES = SERVER_IP +  SRV_VERSION + '/rest/getUserFantasyLeagues/{1}';
 
   static const String GET_SEASON_STANDINGS = SERVER_IP +  SRV_VERSION + '/rest/getStandingsOfSeason/{1}/{2}';
 
@@ -26,6 +28,14 @@ class UrlConstants{
   static const String GET_LEADERS_URL = SERVER_IP + SRV_VERSION + '/rest/getLeaderBoard';
 
   static const POST_PLACE_BET = SERVER_IP + SRV_VERSION + '/rest/placeBet';
+
+  static const POST_CREATE_FANTASY_LEAGUE = SERVER_IP + SRV_VERSION + '/rest/createFantasyLeague';
+
+  static const PUT_CREATE_FANTASY_LEAGUE_INVITATION = SERVER_IP + SRV_VERSION + '/rest/inviteUser';
+
+  static const PUT_ACCEPT_FANTASY_LEAGUE_INVITATION = SERVER_IP + SRV_VERSION + '/rest/acceptInvitation';
+
+  static const POST_OPTOUT_FANTASY_LEAGUE = SERVER_IP + SRV_VERSION + '/rest/optoutFantasyLeague';
 
   static const GET_USER_URL = SERVER_IP + SRV_VERSION + '/rest/getUser/';
 
@@ -40,5 +50,6 @@ class UrlConstants{
   static String LOGO_BASE_URL ="https://xscore.cc/resb/team/";
 
   static const URL_ENC = "mF=!79kg*&;.J^1]";
+
 
 }

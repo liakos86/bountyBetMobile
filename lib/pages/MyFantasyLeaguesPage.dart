@@ -1,16 +1,31 @@
-
 import 'dart:async';
+import 'dart:ui';
+import 'package:collection/collection.dart';
+
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_app/models/constants/Constants.dart';
+import 'package:flutter_app/models/context/AppContext.dart';
+import 'package:flutter_app/utils/client/HttpActionsClient.dart';
+
+
+import '../models/FantasyLeagueInvitation.dart';
+import '../models/User.dart';
+import '../models/constants/ColorConstants.dart';
+import '../widgets/custom/FantasyLeagueCard.dart';
+import '../widgets/row/FantasyLeagueInvitationRow.dart';
+import '../widgets/dialog/DialogWizardLeagueNameStep1.dart';
+import 'LivePage.dart';
+
+
+
+
+
 import 'package:flutter/widgets.dart';
 
 import '../models/FantasyLeague.dart';
-import '../models/constants/ColorConstants.dart';
-import '../models/constants/Constants.dart';
-import '../models/context/AppContext.dart';
 import '../widgets/CustomTabIcon.dart';
-import 'LivePage.dart';
 
 
 class MyFantasyLeaguesPage extends StatefulWidget{//}WithName{
@@ -33,7 +48,11 @@ class MyFantasyLeaguesPage extends StatefulWidget{//}WithName{
 
 class MyFantasyLeaguesPageState extends State<MyFantasyLeaguesPage>  with SingleTickerProviderStateMixin{
 
-  List<FantasyLeague> fantasyLeagues = List.of(AppContext.user.fantasyLeagues);
+  FantasyLeague? fantasyLeague;
+
+  List<FantasyLeague> fantasyLeagues = <FantasyLeague>[];
+
+  List<FantasyLeague> invitations = <FantasyLeague>[];
 
   Function loginOrRegisterCallback;
 
@@ -49,14 +68,15 @@ class MyFantasyLeaguesPageState extends State<MyFantasyLeaguesPage>  with Single
 
   @override
   void initState(){
-    _tabController = TabController(length: 2, vsync: this);
+    loginOrRegisterCallback= widget.loginOrRegisterCallback;
+    _tabController = TabController(length: 3, vsync: this);
     _tabController.addListener(() {
       setState(() {});
     });
 
-    Timer.periodic(const Duration(seconds: 20), (timer) {
+    Timer.periodic(const Duration(seconds: 15), (timer) {
       //if (!isMinimized) {
-         updateFantasyLeagues(AppContext.user.fantasyLeagues);
+         updateFantasyLeagues();
         //);
       //}
     }
@@ -86,7 +106,7 @@ class MyFantasyLeaguesPageState extends State<MyFantasyLeaguesPage>  with Single
       ));
     }
 
-   const int items = 4;
+   const int items = 3;
    double width = MediaQuery.of(context).size.width;
    const double labelPadding = 4;
    double labelWidth = (width - (labelPadding * (items - 1))) / items;
@@ -106,7 +126,8 @@ class MyFantasyLeaguesPageState extends State<MyFantasyLeaguesPage>  with Single
 
             tabs: [
               CustomTabIcon(width: labelWidth, text: 'Current League', isSelected: _tabController.index == 0,),
-              CustomTabIcon(width: labelWidth,  text: 'Past Leagues', isSelected: _tabController.index == 1,),
+              CustomTabIcon(width: labelWidth,  text: 'Invitations', isSelected: _tabController.index == 1,),
+              CustomTabIcon(width: labelWidth,  text: 'Past Leagues', isSelected: _tabController.index == 2,),
             ],
 
             onTap: (index) {
@@ -129,7 +150,65 @@ class MyFantasyLeaguesPageState extends State<MyFantasyLeaguesPage>  with Single
           controller: _tabController,
           children: [
 
-            (fantasyLeagues.isEmpty) ?
+            (AppContext.user.fantasyLeagueMongoId == null) ?
+
+            Align(alignment: Alignment.center,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+
+                    ElevatedButton(
+                      onPressed: () {
+                        showDialog(
+                          context: context,
+                          barrierDismissible: false,
+                          builder: (_) =>
+                              DialogWizardLeagueNameStep1(),
+                        );
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.green.shade400,
+                        foregroundColor: Colors.white,
+                      ),
+                      child: const Text("Create League"),
+                    ),
+
+                  ],
+                )
+            )
+
+                :
+
+
+            fantasyLeague != null ?
+
+        FantasyLeagueCard(
+          fantasyLeague: fantasyLeague,
+          onOptOut: () {
+
+            optout();
+
+
+            print("Opted out!");
+          },
+          onInviteEmail: (email) async{
+            FantasyLeagueInvitation invitation = FantasyLeagueInvitation(email: email);
+            invitation = await HttpActionsClient.createFantasyLeagueInvitation(invitation);
+            print('Invited: $email');
+          },
+        )
+
+                : SizedBox(),
+
+
+
+
+                // Text(AppContext.user.fantasyLeagueMongoId??'no mongo id'),
+
+
+
+
+            (invitations.isEmpty) ?
 
             const Align(alignment: Alignment.center,
                 child: Column(
@@ -140,7 +219,7 @@ class MyFantasyLeaguesPageState extends State<MyFantasyLeaguesPage>  with Single
                     const SizedBox(height: 20),  // Space between icon and text
                     // Text below the icon
                     const Text(
-                      'No league',
+                      'No invitations',
                       style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
@@ -153,10 +232,15 @@ class MyFantasyLeaguesPageState extends State<MyFantasyLeaguesPage>  with Single
 
                 :
 
-
-                Text('TODO'),
-
-
+            ListView.builder(
+              key: const PageStorageKey<String>('pageLeaguesInvitations'),
+              padding: const EdgeInsets.all(8),
+              itemCount: invitations.length,
+              itemBuilder: (context, item) {
+                return _buildInvitationRow(invitations[item], 'inv$item${invitations[item].mongoId}');
+              },
+            ),
+            
 
 
             (fantasyLeagues.isEmpty) ?
@@ -170,7 +254,7 @@ class MyFantasyLeaguesPageState extends State<MyFantasyLeaguesPage>  with Single
                     const SizedBox(height: 20),  // Space between icon and text
                     // Text below the icon
                     const Text(
-                      'No won bets',
+                      'No completed leagues',
                       style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
@@ -183,7 +267,8 @@ class MyFantasyLeaguesPageState extends State<MyFantasyLeaguesPage>  with Single
 
                 :
 
-            Text('TODO'),
+            Text(fantasyLeagues[0].name),
+
 
           ],)
             )
@@ -193,26 +278,80 @@ class MyFantasyLeaguesPageState extends State<MyFantasyLeaguesPage>  with Single
 
   }
 
-  void updateFantasyLeagues(List<FantasyLeague> userBets) {
-    // for(UserBet incomingBet in userBets){
-    //   UserBet existing = bets.firstWhere((element) => element.betId == incomingBet.betId, orElse: () => UserBet.defBet());
-    //   if (existing.betId != Constants.defMongoId){
-    //     existing.copyFrom(incomingBet);
-    //   }else{
-    //     bets.add(incomingBet);
-    //   }
-    // }
-    //
-    // for(UserBet existingBet in List.of(bets)){
-    //   UserBet incoming = userBets.firstWhere((element) => element.betId == existingBet.betId, orElse: () => UserBet.defBet());
-    //   if (incoming.betId == Constants.defMongoId){
-    //     bets.remove(existingBet);
-    //   }
-    // }
-    //
-    // setState((){
-    //   bets;
-    // });
+  void updateFantasyLeagues() async{
+    List<FantasyLeague> leagues = await HttpActionsClient.getFantasyLeaguesAsync();
+
+    if (AppContext.user.fantasyLeagueMongoId != null) {
+      FantasyLeague? fantasyLeagueIncoming = leagues.firstWhereOrNull((element) => element.mongoId == AppContext.user.fantasyLeagueMongoId);
+      if (fantasyLeagueIncoming != null){
+        if (fantasyLeague == null){
+          fantasyLeague = fantasyLeagueIncoming;
+        }else{
+          fantasyLeague?.copyFrom(fantasyLeagueIncoming);
+        }
+      }
+    }
+
+    if (fantasyLeague != null){
+      for (int id in  List.of(AppContext.fantasyLeagueIds)){
+        if (!fantasyLeague!.selectedLeagueIds.contains(id)){
+          AppContext.fantasyLeagueIds.remove(id);
+        }
+      }
+
+      for (int id in  fantasyLeague!.selectedLeagueIds){
+        if (!AppContext.fantasyLeagueIds.contains(id)){
+          AppContext.fantasyLeagueIds.add(id);
+        }
+      }
+    }
+
+
+    List<FantasyLeague> invitationsIncoming = (leagues.where((e) => e.isInvitation).toList());
+    for (FantasyLeague invitationIncoming in invitationsIncoming){
+      FantasyLeague? invitationExisting = invitations.firstWhereOrNull((element) => element.mongoId == invitationIncoming.mongoId);
+      if (invitationExisting != null){
+        invitationExisting.copyFrom(invitationIncoming);
+      }else{
+        invitations.add(invitationIncoming);
+      }
+    }
+
+    //TODO
+    fantasyLeagues.clear();
+    fantasyLeagues.addAll(leagues.where((e) => !e.isInvitation && e.mongoId != AppContext.user.fantasyLeagueMongoId));
+
+
+
   }
+
+  Widget _buildInvitationRow(FantasyLeague league, String key) {
+    return FantasyLeagueInvitationRow(
+      key: PageStorageKey<String>(key),
+      league: league,
+      onAccept: () {
+        print("Accepted invitation");
+        FantasyLeagueInvitation fli = FantasyLeagueInvitation(email: AppContext.user.email);
+        fli.mongoId = league.invitationMongoId;
+        HttpActionsClient.acceptFantasyLeagueInvitation(fli);
+      },
+      onDecline: () {
+        print("Declined invitation");
+        // TODO: Call backend / update state
+      },
+    );
+  }
+
+  void optout() async{
+    User user = await HttpActionsClient.optOutFantasyLeague();
+    if (user.fantasyLeagueMongoId == null){
+      setState(() {
+        fantasyLeague = null;
+        AppContext.user.fantasyLeagueMongoId = null;
+      });
+    }
+  }
+
+
 
 }

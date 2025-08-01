@@ -40,6 +40,7 @@ import '../widgets/dialog/DialogTextWithButtons.dart';
 import 'LeaderBoardPage.dart';
 import 'LivePage.dart';
 import 'MyBetsPage.dart';
+import 'MyFantasyLeaguesPage.dart';
 
   /*
    * The current device locale. It can change at any time by user.
@@ -101,6 +102,7 @@ class ParentPageState extends State<ParentPage> with WidgetsBindingObserver {
   static GlobalKey livePageKey = GlobalKey();
   static GlobalKey betsPageKey = GlobalKey();
   static GlobalKey leaderBoardPageKey = GlobalKey();
+  static GlobalKey fantasyLeaguesPageKey = GlobalKey();
 
   updateConnState(bool conn){
 
@@ -154,6 +156,7 @@ class ParentPageState extends State<ParentPage> with WidgetsBindingObserver {
   pagesList.add(LivePage(key: livePageKey, liveLeagues: AppContext.liveLeagues));
   pagesList.add(LeaderBoardPage());
   pagesList.add(MyBetsPage(key: betsPageKey, loginOrRegisterCallback: promptLoginOrRegister));
+  pagesList.add(MyFantasyLeaguesPage(key: fantasyLeaguesPageKey, loginOrRegisterCallback: promptLoginOrRegister));
   // pagesList.add(MyFantasyLeaguesPage(key: myFantasyLeaguesKey, loginOrRegisterCallback: promptLoginOrRegister));
 
 
@@ -262,6 +265,10 @@ class ParentPageState extends State<ParentPage> with WidgetsBindingObserver {
     });
 
     leaderBoardPageKey.currentState?.setState(() {
+      AppContext.user;
+    });
+
+    fantasyLeaguesPageKey.currentState?.setState(() {
       AppContext.user;
     });
 
@@ -426,7 +433,7 @@ class ParentPageState extends State<ParentPage> with WidgetsBindingObserver {
        */
       IndexedStack(
               index: selectedPageIndex,
-              children: [pagesList[0], pagesList[1], pagesList[2], pagesList[3]]),
+              children: [pagesList[0], pagesList[1], pagesList[2], pagesList[3], pagesList[4]]),
 
       bottomNavigationBar: BottomNavigationBar(
         selectedFontSize: 18,
@@ -452,6 +459,10 @@ class ParentPageState extends State<ParentPage> with WidgetsBindingObserver {
           BottomNavigationBarItem(
               icon: const Icon(Icons.currency_exchange),// ImageIcon(AssetImage('assets/images/money-bag-100.png')),//  Icon(Icons.home),
               label: AppLocalizations.of(context)!.bets
+          ),
+          BottomNavigationBarItem(
+              icon: const Icon(Icons.currency_exchange),// ImageIcon(AssetImage('assets/images/money-bag-100.png')),//  Icon(Icons.home),
+              label: 'Fantasy'
           ),
 
         ],

@@ -33,7 +33,7 @@ String reverse(String s) {
 }
 
   void main() {
-    final plainText = "liakos@gmail.com";
+    final plainText = "a8cxlylb!";
     print('Plain text for encryption: $plainText');
 
     //Encrypt

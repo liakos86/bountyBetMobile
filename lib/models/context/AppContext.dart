@@ -1,5 +1,6 @@
 import 'dart:collection';
 
+import '../FantasyLeague.dart';
 import '../League.dart';
 import '../LeagueWithData.dart';
 import '../Section.dart';
@@ -28,6 +29,8 @@ class AppContext{
    * The logged user.
    */
   static User user = User.defUser();
+
+  static List<int> fantasyLeagueIds = <int>[];
 
   AppContext();
 
