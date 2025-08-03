@@ -135,10 +135,10 @@ class FantasyLeague implements Comparable<FantasyLeague>{
 
 
     for (User userIncoming in other.users){
-      User? userExisting = other.users.firstWhereOrNull((element) => element.mongoUserId == userIncoming.mongoUserId);
+      User? userExisting = users.firstWhereOrNull((element) => element.mongoUserId == userIncoming.mongoUserId);
       if (userExisting != null){
         userExisting.deepCopyFrom(userIncoming);
-      }else{
+     }else{
         users.add(userIncoming);
       }
     }

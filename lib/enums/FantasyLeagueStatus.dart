@@ -2,7 +2,7 @@ enum FantasyLeagueStatus{
 
   PENDING(statusCode: 1),
 
-  IN_PROGRESS(statusCode: 2),
+  RUNNING(statusCode: 2),
 
   ABANDONED(statusCode: 3),
 

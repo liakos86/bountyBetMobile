@@ -4,6 +4,7 @@ import 'package:flutter_app/models/UserBet.dart';
 import '../enums/UserLevel.dart';
 import 'FantasyLeague.dart';
 // import 'UserAward.dart';
+import 'UserFantasyLeagueBalance.dart';
 import 'UserMonthlyBalance.dart';
 import 'constants/Constants.dart';
 
@@ -26,6 +27,8 @@ class User implements Comparable<User>{
   String errorMessage = Constants.empty;
 
   UserMonthlyBalance balance = UserMonthlyBalance.defBalance();
+
+  UserFantasyLeagueBalance fantasyBalance = UserFantasyLeagueBalance.defBalance();
 
   List<UserMonthlyBalance> awards = <UserMonthlyBalance>[];
 
@@ -79,6 +82,12 @@ class User implements Comparable<User>{
     if(parsedJson['balanceObject'] != null) {
       user.balance = UserMonthlyBalance.fromJson(parsedJson['balanceObject']);
     }
+
+    if(parsedJson['fantasyLeagueBalanceObject'] != null) {
+      user.fantasyBalance = UserFantasyLeagueBalance.fromJson(parsedJson['fantasyLeagueBalanceObject']);
+    }
+
+
 
     if (parsedJson['userAwards'] != null){
       user.awards.clear();
@@ -134,6 +143,12 @@ class User implements Comparable<User>{
     // userBets = u.userBets;
     copyBets(u.userBets);
     copyAwards(u.awards);
+
+
+    if (u.fantasyBalance.mongoId != Constants.defMongoId) {
+      fantasyBalance.copyFrom(u.fantasyBalance);
+    }
+
   }
 
   @override

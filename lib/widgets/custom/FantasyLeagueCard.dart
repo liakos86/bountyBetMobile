@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 
 import '../../enums/FantasyLeagueInvitationStatus.dart';
+import '../../enums/FantasyLeagueStatus.dart';
 import '../../models/FantasyLeague.dart';
 import '../../models/League.dart';
 import '../../models/context/AppContext.dart';
 import 'package:collection/collection.dart';
+
+import '../row/FantasyLeaderBoardRow.dart';
 
 
 
@@ -75,7 +78,7 @@ class FantasyLeagueCard extends StatelessWidget {
                   style: ElevatedButton.styleFrom(
                     foregroundColor: Colors.white,
                     backgroundColor: Colors.red.shade200,
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
                   ),
                   child: const Text('Opt-out'),
                 ),
@@ -120,34 +123,14 @@ class FantasyLeagueCard extends StatelessWidget {
                 },
               ),
 
-              // Row(
-              //   mainAxisAlignment: MainAxisAlignment.center,
-              //   children: leagues!.map((league) {
-              //     return Padding(
-              //       padding: const EdgeInsets.symmetric(horizontal: 12),
-              //       child: Column(
-              //         children: [
-              //           SizedBox(
-              //             height: 40,
-              //             width: 40,
-              //             child: Image.network(league.logo ?? '', fit: BoxFit.cover),
-              //           ),
-              //           const SizedBox(height: 4),
-              //           Text(
-              //             league.name,
-              //             style: const TextStyle(fontSize: 12),
-              //           ),
-              //         ],
-              //       ),
-              //     );
-              //   }).toList(),
-              // ),
             ),
 
             // const SizedBox(height: 16),
 
             // Invite button
-            Center(
+            if (fantasyLeague!.invitations.isNotEmpty && fantasyLeague?.status == FantasyLeagueStatus.PENDING.statusCode)
+
+              Center(
               child:
 
               fantasyLeague?.creatorUserId == AppContext.user.mongoUserId ?
@@ -168,7 +151,7 @@ class FantasyLeagueCard extends StatelessWidget {
             const SizedBox(height: 8),
 
             // Invitations list
-            if (fantasyLeague!.invitations.isNotEmpty)
+            if (fantasyLeague!.invitations.isNotEmpty && fantasyLeague?.status == FantasyLeagueStatus.PENDING.statusCode)
               SizedBox(
                 height: 200, // 👈 Adjust this height as needed
                 child: ListView.builder(
@@ -220,49 +203,20 @@ class FantasyLeagueCard extends StatelessWidget {
               ),
 
 
+            if (fantasyLeague!.users.isNotEmpty && fantasyLeague?.status == FantasyLeagueStatus.RUNNING.statusCode)
+              SizedBox(
+                height: 200, // 👈 Adjust this height as needed
+                child: ListView.builder(
+                  itemCount: fantasyLeague!.users.length,
+                  itemBuilder: (context, index) {
+                    final user = fantasyLeague!.users[index];
 
-            // Column(
-              //   crossAxisAlignment: CrossAxisAlignment.start,
-              //   children: [
-              //     ...fantasyLeague!.invitations.map((invitation) {
-              //       final statusText = FantasyLeagueInvitationStatus.ofStatus(invitation.status).text;
-              //       final expirationStr = invitation.dtExpiration.toLocal().toString().split(' ')[0];
-              //       return Padding(
-              //         padding: const EdgeInsets.symmetric(vertical: 4.0),
-              //         child: Row(
-              //           children: [
-              //             Container(
-              //               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-              //               decoration: BoxDecoration(
-              //                 color: Colors.grey.shade300,
-              //                 borderRadius: BorderRadius.circular(4),
-              //               ),
-              //               child: Text(
-              //                 statusText,
-              //                 style: const TextStyle(fontSize: 12),
-              //               ),
-              //             ),
-              //             const SizedBox(width: 12),
-              //             Expanded(
-              //               child: Text(
-              //                 invitation.email,
-              //                 style: const TextStyle(fontSize: 14),
-              //                 overflow: TextOverflow.ellipsis,
-              //               ),
-              //             ),
-              //             const SizedBox(width: 12),
-              //             Text(
-              //               expirationStr,
-              //               style: const TextStyle(fontSize: 12, color: Colors.grey),
-              //             ),
-              //           ],
-              //         ),
-              //       );
-              //     }
-              //
-              //     ).toList(),
-              //   ],
-              // ),
+                    return FantasyLeaderboardRow(user: user);
+
+                  },
+                ),
+              ),
+
           ],
         ),
       ),

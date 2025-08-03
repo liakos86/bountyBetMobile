@@ -82,11 +82,11 @@ class LeaderBoardPageState extends State<LeaderBoardPage> with SingleTickerProvi
     WidgetsBinding.instance.addObserver(this); // Add observer
 
 
-    getLeaderBoard();
-    Timer.periodic(const Duration(seconds: 30), (timer) {(
-        getLeaderBoard()
-    );
-   } );
+   // getLeaderBoard();
+   // Timer.periodic(const Duration(seconds: 30), (timer) {(
+     //   getLeaderBoard()
+   // );
+   // } );
 
    getMyBalances();
     Timer.periodic(const Duration(seconds: 30), (timer) {(

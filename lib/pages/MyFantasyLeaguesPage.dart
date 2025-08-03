@@ -60,6 +60,8 @@ class MyFantasyLeaguesPageState extends State<MyFantasyLeaguesPage>  with Single
 
   late TabController _tabController;
 
+  GlobalKey  fantasyLeagueKey = GlobalKey();
+
   @override
   void dispose() {
     _tabController.dispose();
@@ -182,8 +184,10 @@ class MyFantasyLeaguesPageState extends State<MyFantasyLeaguesPage>  with Single
 
             fantasyLeague != null ?
 
+
         FantasyLeagueCard(
           fantasyLeague: fantasyLeague,
+          key: fantasyLeagueKey,
           onOptOut: () {
 
             optout();
@@ -318,10 +322,19 @@ class MyFantasyLeaguesPageState extends State<MyFantasyLeaguesPage>  with Single
     }
 
     //TODO
-    fantasyLeagues.clear();
-    fantasyLeagues.addAll(leagues.where((e) => !e.isInvitation && e.mongoId != AppContext.user.fantasyLeagueMongoId));
+    // fantasyLeagues.clear();
+    // fantasyLeagues.addAll(leagues.where((e) => !e.isInvitation && e.mongoId != AppContext.user.fantasyLeagueMongoId));
 
 
+    setState(() {
+      invitations;
+      fantasyLeague;
+      fantasyLeagues;
+    });
+
+    fantasyLeagueKey.currentState?.setState(() {
+      fantasyLeague;
+    });
 
   }
 
