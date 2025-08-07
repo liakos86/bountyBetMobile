@@ -19,8 +19,13 @@ class FantasyLeague implements Comparable<FantasyLeague>{
     required this.creatorUserId,
     required this.status,
     required this.isInvitation,
-
+    required this.startingBalance,
+    required this.allowTopUp,
   });
+
+  double startingBalance;
+
+  bool allowTopUp;
 
   List<String> invitedEmails = <String>[];
   List<User> users = <User>[];
@@ -64,12 +69,14 @@ class FantasyLeague implements Comparable<FantasyLeague>{
     }
 
     bool isInvitation = parsedJson['isInvitation'] as bool;
+    bool allowTopUp = parsedJson['allowTopUp'] as bool;
+    double startingBalance = parsedJson['startingBalance'] as double;
 
     DateFormat formatter = DateFormat("MMM d, yyyy, h:mm:ss a");
     DateTime dtStart = formatter.parse(parsedJson['dtStart']);
     DateTime dtEnd = formatter.parse(parsedJson['dtEnd']);
 
-    FantasyLeague l = FantasyLeague( isInvitation: isInvitation, creatorUserId: creatorUserId, name: name, status: status, dtStart: dtStart, dtEnd: dtEnd, selectedLeagueIds: supportedLeagues);
+    FantasyLeague l = FantasyLeague(allowTopUp: allowTopUp, startingBalance: startingBalance, isInvitation: isInvitation, creatorUserId: creatorUserId, name: name, status: status, dtStart: dtStart, dtEnd: dtEnd, selectedLeagueIds: supportedLeagues);
 
     if (parsedJson['invitations'] != null){
       List<FantasyLeagueInvitation> invitations = <FantasyLeagueInvitation>[];
@@ -112,7 +119,9 @@ class FantasyLeague implements Comparable<FantasyLeague>{
       "name": name,
       "dtStart": dtStart.toUtc().toIso8601String() + 'Z',
       "dtEnd": dtEnd.toUtc().toIso8601String() + 'Z',
-      "supportedLeagueIds": selectedLeagueIds
+      "supportedLeagueIds": selectedLeagueIds,
+      "startingBalance": startingBalance,
+      "allowTopUp": allowTopUp
     };
   }
 
@@ -128,6 +137,8 @@ class FantasyLeague implements Comparable<FantasyLeague>{
     this.selectedLeagueIds.addAll(other.selectedLeagueIds);
     this.creatorUserId = other.creatorUserId;
     this.status = other.status;
+    this.allowTopUp = other.allowTopUp;
+    this.startingBalance = other.startingBalance;
     this.isInvitation = other.isInvitation;
 
     this.invitations.clear();

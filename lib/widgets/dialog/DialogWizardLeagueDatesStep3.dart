@@ -4,7 +4,8 @@ import 'package:intl/intl.dart';
 import '../../models/FantasyLeague.dart';
 import '../../models/context/AppContext.dart';
 import '../../utils/client/HttpActionsClient.dart';
-import 'DialogWizardLeagueConfirmStep4.dart';
+import 'DialogWizardLeagueConfirmStep5.dart';
+import 'DialogWizardLeagueOptionsStep4.dart';
 
 class DialogWizardLeagueDatesStep3 extends StatefulWidget {
   final String leagueName;
@@ -96,26 +97,20 @@ class _DialogWizardLeagueDatesStep3State extends State<DialogWizardLeagueDatesSt
       dtStart: _start!,
       dtEnd: _end!,
       selectedLeagueIds: widget.selectedLeagueIds,
+      startingBalance: 0,//update next
+      allowTopUp: false//update next
     );
 
     Navigator.of(context).pop(); // Close current step
 
-    _showFinalReview(context, league);
+    _showNextStep(context, league);
   }
 
-  void _showFinalReview(BuildContext context, FantasyLeague league) {
+  void _showNextStep(BuildContext context, FantasyLeague league) {
     showDialog(
       context: context,
-      builder: (_) => DialogWizardLeagueConfirmStep4(
-        league: league,
-        onCreate: () {
-          HttpActionsClient.createFantasyLeague(league);
-
-          // ScaffoldMessenger.of(context).showSnackBar(
-          //   SnackBar(content: Text("Fantasy League '${league.name}' created!")),
-          // );
-        },
-      ),
+      barrierDismissible: false,
+      builder: (_) => DialogWizardLeagueOptionsStep4(league: league),
     );
   }
 
@@ -168,7 +163,7 @@ class _DialogWizardLeagueDatesStep3State extends State<DialogWizardLeagueDatesSt
         ),
         ElevatedButton(
           onPressed: _onNext,
-          child: const Text("Finish"),
+          child: const Text("Next"),
         ),
       ],
     );

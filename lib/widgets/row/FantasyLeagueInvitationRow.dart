@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 import '../../models/FantasyLeague.dart';
 import '../../models/FantasyLeagueInvitation.dart';
 import '../../models/League.dart';
+import '../../models/constants/Constants.dart';
 import '../../models/context/AppContext.dart';
 import '../../utils/client/HttpActionsClient.dart';
 
@@ -61,7 +62,7 @@ class _FantasyLeagueInvitationRowState
             // ),
             SizedBox(height: 8),
             Text(
-              "Invited by: ${league.creatorUserId}",
+              "Invited by: ${league.users.firstWhere((u) => u.mongoUserId == league.creatorUserId).username }",
               style: TextStyle(fontSize: 14, color: Colors.grey[600]),
             ),
             SizedBox(height: 8),
@@ -75,32 +76,89 @@ class _FantasyLeagueInvitationRowState
               style: TextStyle(fontWeight: FontWeight.w600),
             ),
             SizedBox(height: 8),
-          Center(
-              child:
-              Wrap(
-              alignment: WrapAlignment.center,
 
-              spacing: 12,
-              runSpacing: 8,
-              children: league.selectedLeagueIds.map((id) {
-                final League? l = AppContext.allLeaguesMap[id];
-                return Column(
-                  mainAxisSize: MainAxisSize.min,
+            Center(
+              child: Wrap(
+                alignment: WrapAlignment.center,
+                spacing: 12,
+                runSpacing: 8,
+                children: league.selectedLeagueIds.map((id) {
+                  final League? l = AppContext.allLeaguesMap[id];
+                  return Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      CircleAvatar(
+                        backgroundImage: NetworkImage(l?.logo ?? Constants.noImageUrl),
+                        radius: 20,
+                      ),
+                      SizedBox(height: 4),
+                      Text(
+                        l?.name ?? 'league name',
+                        style: TextStyle(fontSize: 12),
+                      ),
+                    ],
+                  );
+                }).toList(),
+              ),
+            ),
+
+            SizedBox(height: 16),
+
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text("Initial Balance:", style: TextStyle(fontWeight: FontWeight.w600)),
+                Text("\$${league.startingBalance.toStringAsFixed(0)}"),
+              ],
+            ),
+
+            SizedBox(height: 8),
+
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text("Top-Up Allowed:", style: TextStyle(fontWeight: FontWeight.w600)),
+                Row(
                   children: [
-                    CircleAvatar(
-                      backgroundImage: NetworkImage(l?.logo ?? 'https://xscore.cc/resb/team/barcelona.png'),
-                      radius: 20,
+                    Icon(
+                      league.allowTopUp ? Icons.check_circle : Icons.cancel,
+                      color: league.allowTopUp ? Colors.green : Colors.red,
+                      size: 18,
                     ),
-                    SizedBox(height: 4),
-                    Text(
-                      l?.name ?? 'league name',
-                      style: TextStyle(fontSize: 12),
-                    ),
+                    SizedBox(width: 6),
+                    Text(league.allowTopUp ? "Yes" : "No"),
                   ],
-                );
-              }).toList(),
-            )
-          ),
+                ),
+              ],
+            ),
+
+
+            // Center(
+          //     child:
+          //     Wrap(
+          //     alignment: WrapAlignment.center,
+          //
+          //     spacing: 12,
+          //     runSpacing: 8,
+          //     children: league.selectedLeagueIds.map((id) {
+          //       final League? l = AppContext.allLeaguesMap[id];
+          //       return Column(
+          //         mainAxisSize: MainAxisSize.min,
+          //         children: [
+          //           CircleAvatar(
+          //             backgroundImage: NetworkImage(l?.logo ?? 'https://xscore.cc/resb/team/barcelona.png'),
+          //             radius: 20,
+          //           ),
+          //           SizedBox(height: 4),
+          //           Text(
+          //             l?.name ?? 'league name',
+          //             style: TextStyle(fontSize: 12),
+          //           ),
+          //         ],
+          //       );
+          //     }).toList(),
+          //   )
+          // ),
 
             // SizedBox(
             //   height: 55,
