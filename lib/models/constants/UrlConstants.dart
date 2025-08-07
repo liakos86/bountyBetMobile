@@ -35,6 +35,8 @@ class UrlConstants{
 
   static const PUT_ACCEPT_FANTASY_LEAGUE_INVITATION = SERVER_IP + SRV_VERSION + '/rest/acceptInvitation';
 
+  static const PUT_REJECT_FANTASY_LEAGUE_INVITATION = SERVER_IP + SRV_VERSION + '/rest/rejectInvitation';
+
   static const POST_OPTOUT_FANTASY_LEAGUE = SERVER_IP + SRV_VERSION + '/rest/optoutFantasyLeague';
 
   static const GET_USER_URL = SERVER_IP + SRV_VERSION + '/rest/getUser/';
