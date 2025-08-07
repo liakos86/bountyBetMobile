@@ -7,6 +7,7 @@ import 'package:flutter_app/enums/MatchEventStatus.dart';
 import 'package:flutter_app/models/match_event.dart';
 import 'package:flutter_app/widgets/row/UpcomingMatchRowTilted.dart';
 
+import '../enums/FantasyLeagueStatus.dart';
 import '../helper/SharedPrefs.dart';
 import '../models/UserPrediction.dart';
 import '../models/constants/ColorConstants.dart';
@@ -96,8 +97,8 @@ class LeagueExpandableTile extends StatefulWidget {
     iconColor: Colors.transparent,
     collapsedIconColor: Colors.transparent,
     initiallyExpanded: expandAll,
-    collapsedBackgroundColor: Colors.grey.shade200,
-    backgroundColor: Colors.yellow[50],
+    collapsedBackgroundColor: (AppContext.fantasyLeague != null && FantasyLeagueStatus.RUNNING.statusCode == AppContext.fantasyLeague?.status && AppContext.fantasyLeague!.selectedLeagueIds.contains(leagueWithData.league.league_id)) ? Colors.yellow.shade200 : Colors.grey.shade200,
+    backgroundColor:  (AppContext.fantasyLeague != null && FantasyLeagueStatus.RUNNING.statusCode == AppContext.fantasyLeague?.status && AppContext.fantasyLeague!.selectedLeagueIds.contains(leagueWithData.league.league_id)) ? Colors.yellow.shade400 : Colors.yellow[50],
     // tilePadding: EdgeInsets.zero, // No padding for the tile
     childrenPadding: EdgeInsets.zero,
     subtitle: Text(leagueWithData.league.getLocalizedName(), style: const TextStyle(color: Colors.black, fontWeight: FontWeight.w700, fontSize: 10),),
@@ -106,6 +107,22 @@ class LeagueExpandableTile extends StatefulWidget {
         Row(
           mainAxisSize: MainAxisSize.min,
     children:[
+
+      if (!expandAll && AppContext.fantasyLeague != null && AppContext.fantasyLeague!.selectedLeagueIds.contains(leagueWithData.league.league_id))
+        Container(
+          width: 80,
+          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+          decoration: BoxDecoration(
+           color: Colors.green.shade300,
+            borderRadius: BorderRadius.circular(4),
+          ),
+          child: Text(
+            AppContext.fantasyLeague!.name ,
+            style: const TextStyle(fontSize: 12, color: Colors.white),
+            maxLines:1
+          ),
+        ),
+      const SizedBox(width: 4),
 
       if (!expandAll)
     Container(

@@ -15,7 +15,7 @@ class DialogWizardLeagueConfirmStep4 extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final dateFormat = DateFormat('MMM yyyy');
+    final dateFormat = DateFormat('dd/MM/yyyy');
 
     return AlertDialog(
       contentPadding: const EdgeInsets.fromLTRB(24, 20, 24, 8),

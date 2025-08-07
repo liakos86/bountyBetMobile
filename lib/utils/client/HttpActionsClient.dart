@@ -928,6 +928,51 @@ class HttpActionsClient {
     }
   }
 
+  static Future<FantasyLeagueInvitation> rejectFantasyLeagueInvitation(FantasyLeagueInvitation fantasyLeagueInvitation)  async {
+
+    if (!connected){
+      connected = await checkInternetConnectivity();
+      if (!connected){
+        return fantasyLeagueInvitation;
+      }
+    }
+
+
+    try {
+      var encodedFantasyLeagueInvitation = jsonEncode(fantasyLeagueInvitation.toJsonAccept());
+
+      if (access_token == null) {
+        final prefs = await SharedPreferences.getInstance();
+        access_token = prefs.getString(Constants.accessToken) ;
+        // access_token = await SecureUtils().retrieveValue(Constants.accessToken);
+        await authorizeAsync();
+        if (access_token == null) {
+          // //print('COULD NOT AUTHORIZE ********************************************************************');
+          return fantasyLeagueInvitation;
+        }
+      }
+      var fantasyLeagueResponse = await put(Uri.parse(UrlConstants.PUT_REJECT_FANTASY_LEAGUE_INVITATION),
+          headers: {
+            "Accept": "application/json",
+            "Content-Type": "application/json",
+            'Authorization': 'Bearer $access_token'
+          },
+          body: encodedFantasyLeagueInvitation,
+          encoding: Encoding.getByName("utf-8")).timeout(
+          const Duration(seconds: 20));
+
+      var responseDec = jsonDecode(fantasyLeagueResponse.body);
+
+      FantasyLeagueInvitation responseBean = await FantasyLeagueInvitation.fromJson(responseDec);
+
+      return responseBean;
+
+    }catch(e){
+      return fantasyLeagueInvitation;
+    }
+  }
+
+
   static Future<FantasyLeague> createFantasyLeague(FantasyLeague fantasyLeague)  async {
 
     if (!connected){

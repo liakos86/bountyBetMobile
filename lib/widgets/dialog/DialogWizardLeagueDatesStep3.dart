@@ -111,9 +111,9 @@ class _DialogWizardLeagueDatesStep3State extends State<DialogWizardLeagueDatesSt
         onCreate: () {
           HttpActionsClient.createFantasyLeague(league);
 
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text("Fantasy League '${league.name}' created!")),
-          );
+          // ScaffoldMessenger.of(context).showSnackBar(
+          //   SnackBar(content: Text("Fantasy League '${league.name}' created!")),
+          // );
         },
       ),
     );

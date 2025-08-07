@@ -30,7 +30,9 @@ class AppContext{
    */
   static User user = User.defUser();
 
-  static List<int> fantasyLeagueIds = <int>[];
+  static FantasyLeague? fantasyLeague;// List<int> fantasyLeagueIds = <int>[];
+
+  // static String? fantasyLeagueName;
 
   AppContext();
 

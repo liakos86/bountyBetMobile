@@ -2,20 +2,22 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 import '../../models/FantasyLeague.dart';
+import '../../models/FantasyLeagueInvitation.dart';
 import '../../models/League.dart';
 import '../../models/context/AppContext.dart';
+import '../../utils/client/HttpActionsClient.dart';
 
 
 class FantasyLeagueInvitationRow extends StatefulWidget {
   final FantasyLeague league;
-  final Function onAccept;
-  final Function onDecline;
+  // final Function onAccept;
+  // final Function onDecline;
 
   const FantasyLeagueInvitationRow({
     Key? key,
     required this.league,
-    required this.onAccept,
-    required this.onDecline,
+    // required this.onAccept,
+    // required this.onDecline,
   }) : super(key: key);
 
   @override
@@ -25,7 +27,8 @@ class FantasyLeagueInvitationRow extends StatefulWidget {
 
 class _FantasyLeagueInvitationRowState
     extends State<FantasyLeagueInvitationRow> {
-  bool _responded = false;
+  bool _accepted = false;
+  bool _rejected = false;
 
   @override
   Widget build(BuildContext context) {
@@ -123,7 +126,7 @@ class _FantasyLeagueInvitationRowState
             //     },
             //   ),
             // ),
-            if (!_responded) ...[
+            if (!_accepted && !_rejected) ...[
               SizedBox(height: 16),
               Row(
                 mainAxisAlignment: MainAxisAlignment.end,
@@ -131,8 +134,9 @@ class _FantasyLeagueInvitationRowState
                   (AppContext.user.fantasyLeagueMongoId == null) ?
                   TextButton(
                     onPressed: () {
-                      widget.onDecline();
-                      setState(() => _responded = true);
+                      _showDeclineConfirmation(league);
+                      // widget.onDecline();
+                      // setState(() => _accepted = true);
                     },
                     child: Text("Decline"),
                   ) : SizedBox(),
@@ -140,29 +144,91 @@ class _FantasyLeagueInvitationRowState
                   (AppContext.user.fantasyLeagueMongoId == null) ?
                   ElevatedButton(
                     onPressed: () {
-                      widget.onAccept();
-                      setState(() => _responded = true);
+                      _showAcceptConfirmation(league);
+                      //widget.onAccept();
+                      // setState(() => _accepted = true);
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.green.shade400, // Greenish hue
                       foregroundColor: Colors.white,          // Text color
                     ),
                     child: Text("Accept"),
-                  ) : Text('You need to opt-out in order to accept'),
+                  ) : Text('You need to opt-out ${AppContext.fantasyLeague!.name} in order to accept'),
                 ],
               ),
             ] else ...[
               SizedBox(height: 16),
               Center(
                 child: Text(
-                  "Response Sent",
-                  style: TextStyle(color: Colors.green),
+                  _accepted ? "Invitation accept response sent" : "Invitation reject response sent",
+                  style: TextStyle(color: _accepted ? Colors.green : Colors.red),
                 ),
               ),
             ],
           ],
         ),
       ),
+    );
+  }
+
+
+  void _showAcceptConfirmation(FantasyLeague league) {
+    showDialog(
+      context: context, // or pass context directly
+      builder: (context) {
+        return AlertDialog(
+          title: const Text('Accept Invitation'),
+          content: const Text('Are you sure you want to accept this league invitation?'),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('Cancel'),
+            ),
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(backgroundColor: Colors.green.shade300),
+              onPressed: () {
+                Navigator.pop(context); // Close dialog
+                FantasyLeagueInvitation fli = FantasyLeagueInvitation(email: AppContext.user.email);
+                fli.mongoId = league.invitationMongoId;
+                HttpActionsClient.acceptFantasyLeagueInvitation(fli);
+                setState(() => _accepted = true);
+                print("Accepted invitation");
+              },
+              child: const Text('Accept', style: TextStyle(color: Colors.white)),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _showDeclineConfirmation(FantasyLeague league) {
+    showDialog(
+      context: context, // or pass context directly
+      builder: (context) {
+        return AlertDialog(
+          title: const Text('Decline Invitation'),
+          content: const Text('Are you sure you want to decline this league invitation?'),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('Cancel'),
+            ),
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(backgroundColor: Colors.red.shade300),
+              onPressed: () {
+                Navigator.pop(context); // Close dialog
+                FantasyLeagueInvitation fli = FantasyLeagueInvitation(email: AppContext.user.email);
+                fli.mongoId = league.invitationMongoId;
+                HttpActionsClient.rejectFantasyLeagueInvitation(fli);
+                setState(() => _rejected = true);
+                print("Declined invitation");
+              },
+              child: const Text('Decline', style: TextStyle(color: Colors.white)),
+            ),
+          ],
+        );
+      },
     );
   }
 }

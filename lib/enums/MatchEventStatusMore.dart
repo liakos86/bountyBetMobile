@@ -45,6 +45,8 @@
 
   ABABDONED(statusStr: 'Abandoned'),
 
+  DELAYED(statusStr: "Start delayed"),
+
   EMPTY(statusStr:"-")
 
  ;

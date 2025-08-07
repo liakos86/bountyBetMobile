@@ -15,7 +15,7 @@ class FantasyLeaderboardRow extends StatefulWidget {
 class _FantasyLeaderboardRowState extends State<FantasyLeaderboardRow> {
   late User _user;
   // late UserFantasyLeagueBalance _fb;
-  final NumberFormat _formatter = NumberFormat.compactCurrency(symbol: '\$');
+  //final NumberFormat _formatter = NumberFormat.compactCurrency(symbol: '\$');
 
   @override
   void initState() {
@@ -36,7 +36,7 @@ class _FantasyLeaderboardRowState extends State<FantasyLeaderboardRow> {
   }
 
   Widget _buildAnimatedDeltaIcon(int delta) {
-    print('delta is ' + delta.toString());
+    // print('delta is ' + delta.toString());
     Icon icon;
     if (delta > 0) {
       icon = const Icon(Icons.arrow_upward, color: Colors.green, size: 16);
@@ -68,7 +68,7 @@ class _FantasyLeaderboardRowState extends State<FantasyLeaderboardRow> {
   @override
   Widget build(BuildContext context) {
     return Card(
-      margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      margin: const EdgeInsets.symmetric(horizontal: 2, vertical: 4),
       child: Padding(
         padding: const EdgeInsets.all(12),
         child: Row(
@@ -92,8 +92,9 @@ class _FantasyLeaderboardRowState extends State<FantasyLeaderboardRow> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(_user.username,
+                      maxLines:1,
                       style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
-                  Text(_formatter.format(_user.fantasyBalance.balance),
+                  Text(_user.fantasyBalance.balance.round().toString(),
                       style: const TextStyle(fontSize: 14, color: Colors.grey)),
                 ],
               ),

@@ -3,8 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_app/enums/MatchEventStatus.dart';
 import 'package:flutter_app/widgets/GestureDetectorForOdds.dart';
 
+import '../../enums/FantasyLeagueStatus.dart';
 import '../../models/UserPrediction.dart';
 import '../../models/constants/ColorConstants.dart';
+import '../../models/context/AppContext.dart';
 import '../../models/match_event.dart';
 import 'LiveMatchRowTilted.dart';
 
@@ -76,7 +78,10 @@ import 'LiveMatchRowTilted.dart';
               //ODDS ROW
 
               if (gameWithOdds.odds != null
-                  && (MatchEventStatus.NOTSTARTED.statusStr ==  gameWithOdds.status))
+                  && (MatchEventStatus.NOTSTARTED.statusStr ==  gameWithOdds.status)
+              &&  (AppContext.fantasyLeague != null
+                      && FantasyLeagueStatus.RUNNING.statusCode == AppContext.fantasyLeague?.status
+                      && AppContext.fantasyLeague!.selectedLeagueIds.contains(gameWithOdds.leagueId)))
                 //TODO: && match time not passed
 
                // Container(color: Colors.white, child:

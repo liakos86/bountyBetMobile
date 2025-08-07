@@ -59,6 +59,14 @@ class FantasyLeagueInvitation implements Comparable<FantasyLeagueInvitation>{
 
   @override
   int compareTo(FantasyLeagueInvitation other) {
+    if (mongoId == 'admin_invitation'){
+      return -1;
+    }
+
+    if (other.mongoId == 'admin_invitation'){
+      return 1;
+    }
+
     if (status > other.status){
       return 1;
     }

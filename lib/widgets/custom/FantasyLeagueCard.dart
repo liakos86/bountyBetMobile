@@ -25,14 +25,15 @@ class FantasyLeagueCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final duration = '${fantasyLeague!.dtStart.toLocal().toString().split(' ')[0]} - '
+    // "${dateFormat.format(league.dtStart)} → ${dateFormat.format(league.dtEnd)}",
+    final duration = '${fantasyLeague!.dtStart.toLocal().toString().split(' ')[0]} → '
         '${fantasyLeague!.dtEnd.toLocal().toString().split(' ')[0]}';
 
     final leagues = fantasyLeague?.selectedLeagueIds.map((id) => AppContext.allLeaguesMap[id]).whereType<League>().toList();
 
 
     return Card(
-      elevation: 4,
+      elevation: 6,
       margin: const EdgeInsets.all(16),
       child: Padding(
         padding: const EdgeInsets.all(16),
@@ -40,6 +41,10 @@ class FantasyLeagueCard extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             // Title row with name, duration and opt-out
+
+            Expanded(flex:1,
+            child:
+
             Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -57,37 +62,39 @@ class FantasyLeagueCard extends StatelessWidget {
                         style: const TextStyle(fontSize: 14, color: Colors.grey),
                       ),
 
-                      const SizedBox(height: 8),
-                      Row(
-                        children: [
-                          const Icon(Icons.verified_user, size: 16, color: Colors.orange),
-                          const SizedBox(width: 6),
-                          Text(
-                            'Admin: ${_getAdminEmail()}',
-                            style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
-                          ),
-                        ],
-                      ),
-
 
                     ],
                   ),
                 ),
+                // ElevatedButton(
+                //   onPressed: onOptOut,
+                //   style: ElevatedButton.styleFrom(
+                //     foregroundColor: Colors.white,
+                //     backgroundColor: Colors.red.shade200,
+                //     padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+                //   ),
+                //   child: const Text('Opt-out', style: TextStyle(fontSize:12)),
+                // ),
                 ElevatedButton(
-                  onPressed: onOptOut,
+                  onPressed: () => _showOptOutConfirmation(context),
                   style: ElevatedButton.styleFrom(
                     foregroundColor: Colors.white,
                     backgroundColor: Colors.red.shade200,
                     padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
                   ),
-                  child: const Text('Opt-out'),
+                  child: const Text('Opt-out', style: TextStyle(fontSize: 12)),
                 ),
+
               ],
+            )
             ),
 
-            const SizedBox(height: 16),
+            //const SizedBox(height: 16),
 
             // Leagues row
+
+            Expanded(flex:1,
+            child:
             Center(
               child:
 
@@ -107,14 +114,14 @@ class FantasyLeagueCard extends StatelessWidget {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       SizedBox(
-                        height: 40,
-                        width: 40,
+                        height: 24,
+                        width: 24,
                         child: Image.network(league.logo ?? '', fit: BoxFit.cover),
                       ),
                       const SizedBox(height: 4),
                       Text(
                         league.name,
-                        style: const TextStyle(fontSize: 12, ),
+                        style: const TextStyle(fontSize: 10, ),
                         textAlign: TextAlign.center,
                           maxLines:2
                       ),
@@ -123,12 +130,16 @@ class FantasyLeagueCard extends StatelessWidget {
                 },
               ),
 
+            )
             ),
 
             // const SizedBox(height: 16),
 
             // Invite button
             if (fantasyLeague!.invitations.isNotEmpty && fantasyLeague?.status == FantasyLeagueStatus.PENDING.statusCode)
+
+              Expanded(flex:1,
+              child:
 
               Center(
               child:
@@ -144,22 +155,27 @@ class FantasyLeagueCard extends StatelessWidget {
                 child: const Text('Invite'),
               ) :
 
-              Text('Waiting for league to start'),
+              Text('⏳ Waiting for the league to start...'),
 
-            ),
+            )
+              ),
 
-            const SizedBox(height: 8),
+            // const SizedBox(height: 8),
 
             // Invitations list
             if (fantasyLeague!.invitations.isNotEmpty && fantasyLeague?.status == FantasyLeagueStatus.PENDING.statusCode)
-              SizedBox(
-                height: 200, // 👈 Adjust this height as needed
-                child: ListView.builder(
+              Expanded(flex:3,
+              child:
+
+             // SizedBox(
+               // height: 200, // 👈 Adjust this height as needed
+              //  child:
+              ListView.builder(
                   itemCount: fantasyLeague!.invitations.length,
                   itemBuilder: (context, index) {
                     final invitation = fantasyLeague!.invitations[index];
-                    final statusText = FantasyLeagueInvitationStatus.ofStatus(invitation.status).text;
-                    final expirationStr = invitation.dtExpiration.toLocal().toString().split(' ')[0];
+                    final statusText = 'admin_invitation'==invitation.mongoId ? 'ADMIN' :  FantasyLeagueInvitationStatus.ofStatus(invitation.status).text;
+                    final expirationStr = ('admin_invitation'==invitation.mongoId || FantasyLeagueInvitationStatus.COMPLETED.statusCode == invitation.status) ? '' : invitation.dtExpiration.toLocal().toString().split(' ')[0];
 
                     return Padding(
                       padding: const EdgeInsets.symmetric(vertical: 4.0),
@@ -168,7 +184,11 @@ class FantasyLeagueCard extends StatelessWidget {
                           Container(
                             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                             decoration: BoxDecoration(
-                              color: FantasyLeagueInvitationStatus.EXPIRED.statusCode == invitation.status ?
+                              color:
+                              'admin_invitation' == invitation.mongoId ?
+                              Colors.black87
+                              :
+                              FantasyLeagueInvitationStatus.EXPIRED.statusCode == invitation.status ?
                               Colors.red.shade300
                                   :
                               FantasyLeagueInvitationStatus.COMPLETED.statusCode == invitation.status ?
@@ -179,7 +199,7 @@ class FantasyLeagueCard extends StatelessWidget {
                             ),
                             child: Text(
                               statusText,
-                              style: const TextStyle(fontSize: 12),
+                              style: const TextStyle(fontSize: 12, color: Colors.white),
                             ),
                           ),
                           const SizedBox(width: 12),
@@ -199,14 +219,18 @@ class FantasyLeagueCard extends StatelessWidget {
                       ),
                     );
                   },
-                ),
+                )
               ),
 
 
+
             if (fantasyLeague!.users.isNotEmpty && fantasyLeague?.status == FantasyLeagueStatus.RUNNING.statusCode)
-              SizedBox(
-                height: 200, // 👈 Adjust this height as needed
-                child: ListView.builder(
+              Expanded(flex:3,
+                child:
+              //SizedBox(
+                //height: 200, // 👈 Adjust this height as needed
+                //child:
+                ListView.builder(
                   itemCount: fantasyLeague!.users.length,
                   itemBuilder: (context, index) {
                     final user = fantasyLeague!.users[index];
@@ -292,12 +316,37 @@ class FantasyLeagueCard extends StatelessWidget {
     );
   }
 
-  String _getAdminEmail() {
-    final adminUser = fantasyLeague?.users
-        .firstWhereOrNull((u) => u.mongoUserId == fantasyLeague!.creatorUserId);
 
-    return adminUser?.email ?? 'Unknown';
+  void _showOptOutConfirmation(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Confirm Opt-Out'),
+          content: const Text('Are you sure you want to opt out of this league? This action cannot be undone.'),
+          actions: [
+            TextButton(
+              child: const Text('Cancel'),
+              onPressed: () {
+                Navigator.of(context).pop(); // close the dialog
+              },
+            ),
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.red.shade300,
+              ),
+              child: const Text('Opt-Out', style: TextStyle(color: Colors.white)),
+              onPressed: () {
+                Navigator.of(context).pop(); // close the dialog
+                onOptOut(); // perform the opt-out
+              },
+            ),
+          ],
+        );
+      },
+    );
   }
+
 
 
 }

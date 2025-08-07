@@ -8,6 +8,7 @@ import '../helper/SharedPrefs.dart';
 import '../pages/ParentPage.dart';
 import 'Section.dart';
 import 'constants/JsonConstants.dart';
+import 'context/AppContext.dart';
 
 class League implements Comparable<League>{
 
@@ -70,6 +71,13 @@ class League implements Comparable<League>{
       li.isFavourite = true;
       li.priority += 10000;
     }
+
+    if (AppContext.fantasyLeague != null && AppContext.fantasyLeague!.selectedLeagueIds.contains(li.league_id)){
+      li.isFavourite = true;
+      li.priority += 20000;
+    }
+
+
 
     return li;
   }

@@ -76,6 +76,7 @@ class MyFantasyLeaguesPageState extends State<MyFantasyLeaguesPage>  with Single
       setState(() {});
     });
 
+    updateFantasyLeagues();
     Timer.periodic(const Duration(seconds: 15), (timer) {
       //if (!isMinimized) {
          updateFantasyLeagues();
@@ -297,17 +298,28 @@ class MyFantasyLeaguesPageState extends State<MyFantasyLeaguesPage>  with Single
     }
 
     if (fantasyLeague != null){
-      for (int id in  List.of(AppContext.fantasyLeagueIds)){
+      if (AppContext.fantasyLeague == null){
+        AppContext.fantasyLeague = fantasyLeague;
+        return;
+      }
+
+      AppContext.fantasyLeague?.name = fantasyLeague!.name;
+      for (int id in  List.of(AppContext.fantasyLeague!.selectedLeagueIds)){
         if (!fantasyLeague!.selectedLeagueIds.contains(id)){
-          AppContext.fantasyLeagueIds.remove(id);
+          AppContext.fantasyLeague!.selectedLeagueIds.remove(id);
         }
       }
 
       for (int id in  fantasyLeague!.selectedLeagueIds){
-        if (!AppContext.fantasyLeagueIds.contains(id)){
-          AppContext.fantasyLeagueIds.add(id);
+        if (!AppContext.fantasyLeague!.selectedLeagueIds.contains(id)){
+          AppContext.fantasyLeague!.selectedLeagueIds.add(id);
         }
       }
+
+      fantasyLeague?.invitations.sort();
+      fantasyLeague?.users.sort();
+    }else{
+      AppContext.fantasyLeague = null;
     }
 
 
@@ -318,6 +330,13 @@ class MyFantasyLeaguesPageState extends State<MyFantasyLeaguesPage>  with Single
         invitationExisting.copyFrom(invitationIncoming);
       }else{
         invitations.add(invitationIncoming);
+      }
+    }
+
+    for (FantasyLeague invitationExisting in List.of(invitations)){
+      FantasyLeague? invitationIncoming = invitationsIncoming.firstWhereOrNull((element) => element.mongoId == invitationExisting.mongoId);
+      if (invitationIncoming == null){
+        invitations.remove(invitationExisting);
       }
     }
 
@@ -337,23 +356,15 @@ class MyFantasyLeaguesPageState extends State<MyFantasyLeaguesPage>  with Single
     });
 
   }
-
   Widget _buildInvitationRow(FantasyLeague league, String key) {
     return FantasyLeagueInvitationRow(
       key: PageStorageKey<String>(key),
       league: league,
-      onAccept: () {
-        print("Accepted invitation");
-        FantasyLeagueInvitation fli = FantasyLeagueInvitation(email: AppContext.user.email);
-        fli.mongoId = league.invitationMongoId;
-        HttpActionsClient.acceptFantasyLeagueInvitation(fli);
-      },
-      onDecline: () {
-        print("Declined invitation");
-        // TODO: Call backend / update state
-      },
+      // onAccept: () => _showAcceptConfirmation(league),
+      // onDecline: () => _showDeclineConfirmation(league),
     );
   }
+
 
   void optout() async{
     User user = await HttpActionsClient.optOutFantasyLeague();
@@ -365,6 +376,64 @@ class MyFantasyLeaguesPageState extends State<MyFantasyLeaguesPage>  with Single
     }
   }
 
+
+  // void _showAcceptConfirmation(FantasyLeague league) {
+  //   showDialog(
+  //     context: context, // or pass context directly
+  //     builder: (context) {
+  //       return AlertDialog(
+  //         title: const Text('Accept Invitation'),
+  //         content: const Text('Are you sure you want to accept this league invitation?'),
+  //         actions: [
+  //           TextButton(
+  //             onPressed: () => Navigator.pop(context),
+  //             child: const Text('Cancel'),
+  //           ),
+  //           ElevatedButton(
+  //             style: ElevatedButton.styleFrom(backgroundColor: Colors.green.shade300),
+  //             onPressed: () {
+  //               Navigator.pop(context); // Close dialog
+  //               FantasyLeagueInvitation fli = FantasyLeagueInvitation(email: AppContext.user.email);
+  //               fli.mongoId = league.invitationMongoId;
+  //               HttpActionsClient.acceptFantasyLeagueInvitation(fli);
+  //               print("Accepted invitation");
+  //             },
+  //             child: const Text('Accept'),
+  //           ),
+  //         ],
+  //       );
+  //     },
+  //   );
+  // }
+  //
+  // void _showDeclineConfirmation(FantasyLeague league) {
+  //   showDialog(
+  //     context: context, // or pass context directly
+  //     builder: (context) {
+  //       return AlertDialog(
+  //         title: const Text('Decline Invitation'),
+  //         content: const Text('Are you sure you want to decline this league invitation?'),
+  //         actions: [
+  //           TextButton(
+  //             onPressed: () => Navigator.pop(context),
+  //             child: const Text('Cancel', style: TextStyle(color: Colors.white)),
+  //           ),
+  //           ElevatedButton(
+  //             style: ElevatedButton.styleFrom(backgroundColor: Colors.red.shade300),
+  //             onPressed: () {
+  //               Navigator.pop(context); // Close dialog
+  //               FantasyLeagueInvitation fli = FantasyLeagueInvitation(email: AppContext.user.email);
+  //               fli.mongoId = league.invitationMongoId;
+  //               HttpActionsClient.rejectFantasyLeagueInvitation(fli);
+  //               print("Declined invitation");
+  //             },
+  //             child: const Text('Decline'),
+  //           ),
+  //         ],
+  //       );
+  //     },
+  //   );
+  // }
 
 
 }

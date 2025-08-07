@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../models/League.dart';
 import '../../models/context/AppContext.dart';
 import 'DialogWizardLeagueDatesStep3.dart';
 
@@ -44,7 +45,11 @@ class _LeagueSelectionDialogState extends State<DialogWizardLeagueLeaguesStep2> 
 
   @override
   Widget build(BuildContext context) {
-    final allLeagues = AppContext.allLeaguesMap;
+    final allLeaguesMap = AppContext.allLeaguesMap;
+
+    final List<League> allLeagues = List.of(allLeaguesMap.values);
+    allLeagues.sort();
+
 
     return AlertDialog(
       title: Text("Step 2: Select Leagues"),
@@ -60,7 +65,7 @@ class _LeagueSelectionDialogState extends State<DialogWizardLeagueLeaguesStep2> 
             Wrap(
               spacing: 8,
               children: _selectedLeagueIds.map((id) {
-                final league = allLeagues[id]!;
+                final league = allLeaguesMap[id]!;
                 return InputChip(
                   avatar: CircleAvatar(backgroundImage: NetworkImage(league.logo ?? '')),
                   label: Text(league.name),
@@ -73,11 +78,11 @@ class _LeagueSelectionDialogState extends State<DialogWizardLeagueLeaguesStep2> 
           Expanded(
             child: ListView(
               shrinkWrap: true,
-              children: allLeagues.entries.map((entry) {
-                final league = entry.value;
-                final isSelected = _selectedLeagueIds.contains(entry.key);
+              children: allLeagues.map((entry) {
+                final league = entry;
+                final isSelected = _selectedLeagueIds.contains(league.league_id);
                 return ListTile(
-                  onTap: isSelected ? null : () => _onLeagueTap(entry.key),
+                  onTap: isSelected ? null : () => _onLeagueTap(league.league_id),
                   leading: CircleAvatar(
                     backgroundImage: NetworkImage(league.logo ?? ''),
                   ),

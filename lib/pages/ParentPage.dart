@@ -656,6 +656,7 @@ class ParentPageState extends State<ParentPage> with WidgetsBindingObserver {
 
       }
 
+      AppContext.liveLeagues.sort();
 
       //AppContext.eventsPerDayMap[MatchConstants.KEY_TODAY].sort();
       updatePageStates();
@@ -1111,6 +1112,11 @@ void setupFirebaseListeners() async{
     if (mongoIdFromPrefs == null){
       return;
     }
+
+    if(Constants.defMongoId == user.mongoUserId){
+      user.mongoUserId = mongoIdFromPrefs;
+    }
+
     User userNew = await HttpActionsClient.getUserAsync(mongoIdFromPrefs);
     if (Constants.defMongoId != userNew.mongoUserId){
       updateUser(userNew);
@@ -1126,7 +1132,7 @@ void setupFirebaseListeners() async{
     }
     );
 
-    Timer.periodic(const Duration(seconds: 60*60*4), (timer) {
+    Timer.periodic(const Duration(seconds: 30), (timer) {
       if (!isMinimized) {
         HttpActionsClient.getLeaguesAsync(null)
             .then((leaguesMap) => updateLeagues(leaguesMap)
@@ -1159,9 +1165,17 @@ void setupFirebaseListeners() async{
     );
 
     Timer.periodic(const Duration(seconds: 10), (timer) {
+      if(isMinimized){
+        return;
+      }
+
       if (!isMinimized && User.defUser().mongoUserId != user.mongoUserId) {
         updateUserFromServer(user.mongoUserId);
+        return;
       }
+
+      retrieveUserFromPrefs();
+
     });
   }
 

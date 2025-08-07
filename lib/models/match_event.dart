@@ -18,6 +18,7 @@ import 'TimeDetails.dart';
 import 'UserPrediction.dart';
 import 'constants/JsonConstants.dart';
 import 'constants/MatchConstants.dart';
+import 'context/AppContext.dart';
 
 class MatchEvent implements Comparable<MatchEvent>{
 
@@ -373,7 +374,7 @@ class MatchEvent implements Comparable<MatchEvent>{
   	if (odds != null && incomingEvent.odds != null) {
 			odds?.copyFrom(incomingEvent.odds);
 		}else if (odds == null && incomingEvent.odds != null){
-  		odds = incomingEvent.odds;
+				odds = incomingEvent.odds;
 		}
 	}
 
