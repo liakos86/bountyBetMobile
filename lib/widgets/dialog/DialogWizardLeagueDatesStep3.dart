@@ -26,15 +26,15 @@ class _DialogWizardLeagueDatesStep3State extends State<DialogWizardLeagueDatesSt
   String? _error;
 
   // final DateTime _now = DateTime.now();
-  final DateTime _now = DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day, 0, 1);
+  final DateTime _now = DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day, 0, 0);
 
   final DateFormat _dateFormat = DateFormat('MMM dd, yyyy');
 
   Future<void> _pickStartDate() async {
     final picked = await showDatePicker(
       context: context,
-      initialDate: _start ?? _now.add(Duration(days: 3)),
-      firstDate: _now.add(Duration(days: 3)),
+      initialDate: _start ?? _now.add(Duration(days: 0)),
+      firstDate: _now.add(Duration(days: 0)),
       lastDate: _now.add(Duration(days: 365 * 2)),
       helpText: 'Select Start Date',
     );
@@ -78,8 +78,8 @@ class _DialogWizardLeagueDatesStep3State extends State<DialogWizardLeagueDatesSt
 
     if (_start == null || _end == null) {
       _error = "Please select both start and end dates.";
-    } else if (_start!.isBefore(_now.add(Duration(days: 3)))) {
-      _error = "Start date must be at least 3 days from today.";
+    } else if (_start!.isBefore(_now)) {
+      _error = "Start date cannot be before today.";
     } else if (!_isEndValid(_start!, _end!)) {
       _error = "End date must be after start and within 1 year.";
     }

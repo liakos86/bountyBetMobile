@@ -26,7 +26,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import '../enums/ChangeEvent.dart';
 import '../enums/MatchEventStatus.dart';
-import '../models/ChangeEventSoccer.dart';
+import '../models/notification/ChangeEventSoccer.dart';
 import '../models/League.dart';
 import '../models/Section.dart';
 import '../models/User.dart';
@@ -156,7 +156,7 @@ class ParentPageState extends State<ParentPage> with WidgetsBindingObserver {
   pagesList.add(LivePage(key: livePageKey, liveLeagues: AppContext.liveLeagues));
   pagesList.add(LeaderBoardPage());
   pagesList.add(MyBetsPage(key: betsPageKey, loginOrRegisterCallback: promptLoginOrRegister));
-  pagesList.add(MyFantasyLeaguesPage(key: fantasyLeaguesPageKey, loginOrRegisterCallback: promptLoginOrRegister));
+  pagesList.add(MyFantasyLeaguesPage(key: fantasyLeaguesPageKey, loginOrRegisterCallback: promptLoginOrRegister, fantasyLeague: AppContext.fantasyLeague));
   // pagesList.add(MyFantasyLeaguesPage(key: myFantasyLeaguesKey, loginOrRegisterCallback: promptLoginOrRegister));
 
 
@@ -598,6 +598,9 @@ class ParentPageState extends State<ParentPage> with WidgetsBindingObserver {
       if (matches.isEmpty) {
         incomingEvent.calculateDisplayStatus(context);
         leagueOfMatch.events.add(incomingEvent);
+        if (incomingEvent.eventId == 3269201){
+          int a;
+        }
       }else{
         existingEvent = matches.first;
         existingEvent.copyFrom(incomingEvent);

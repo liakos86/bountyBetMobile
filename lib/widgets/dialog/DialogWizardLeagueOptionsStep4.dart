@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
 import '../../models/FantasyLeague.dart';
+import '../../models/constants/Constants.dart';
+import '../../models/context/AppContext.dart';
 import 'DialogWizardLeagueConfirmStep5.dart';
 import '../../utils/client/HttpActionsClient.dart';
 
@@ -30,7 +32,8 @@ class _DialogWizardLeagueOptionsStep4State extends State<DialogWizardLeagueOptio
       builder: (_) => DialogWizardLeagueConfirmStep5(
         league: widget.league,
         onCreate: () {
-          HttpActionsClient.createFantasyLeague(widget.league);
+          createLeague(widget.league);
+
         },
       ),
     );
@@ -74,5 +77,13 @@ class _DialogWizardLeagueOptionsStep4State extends State<DialogWizardLeagueOptio
         ),
       ],
     );
+  }
+
+  void createLeague(FantasyLeague league) async{
+    FantasyLeague league = await HttpActionsClient.createFantasyLeague(widget.league);
+    if (league.mongoId != Constants.defMongoId) {
+      AppContext.fantasyLeague.copyFrom(league);
+      AppContext.user.fantasyLeagueMongoId = league.mongoId;
+    }
   }
 }

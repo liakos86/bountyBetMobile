@@ -79,9 +79,8 @@ import 'LiveMatchRowTilted.dart';
 
               if (gameWithOdds.odds != null
                   && (MatchEventStatus.NOTSTARTED.statusStr ==  gameWithOdds.status)
-              &&  (AppContext.fantasyLeague != null
-                      && FantasyLeagueStatus.RUNNING.statusCode == AppContext.fantasyLeague?.status
-                      && AppContext.fantasyLeague!.selectedLeagueIds.contains(gameWithOdds.leagueId)))
+              &&  (FantasyLeagueStatus.RUNNING.statusCode == AppContext.fantasyLeague.status
+                      && AppContext.fantasyLeague.selectedLeagueIds.contains(gameWithOdds.leagueId)))
                 //TODO: && match time not passed
 
                // Container(color: Colors.white, child:

@@ -10,35 +10,35 @@ import 'package:flutter_app/models/context/AppContext.dart';
 import 'package:flutter_app/utils/client/HttpActionsClient.dart';
 
 
+import '../helper/SharedPrefs.dart';
 import '../models/FantasyLeagueInvitation.dart';
 import '../models/User.dart';
 import '../models/constants/ColorConstants.dart';
 import '../widgets/custom/FantasyLeagueCard.dart';
 import '../widgets/row/FantasyLeagueInvitationRow.dart';
 import '../widgets/dialog/DialogWizardLeagueNameStep1.dart';
-import 'LivePage.dart';
-
-
-
-
 
 import 'package:flutter/widgets.dart';
 
 import '../models/FantasyLeague.dart';
 import '../widgets/CustomTabIcon.dart';
+import 'LivePage.dart';
 
 
 class MyFantasyLeaguesPage extends StatefulWidget{//}WithName{
 
   final Function loginOrRegisterCallback;
 
+  final FantasyLeague fantasyLeague;
+
 
   @override
-  MyFantasyLeaguesPageState createState() => MyFantasyLeaguesPageState(loginOrRegisterCallback);
+  MyFantasyLeaguesPageState createState() => MyFantasyLeaguesPageState(loginOrRegisterCallback, fantasyLeague);
 
   MyFantasyLeaguesPage({
     Key? key,
-    required this.loginOrRegisterCallback
+    required this.loginOrRegisterCallback,
+    required this.fantasyLeague
 
     //setName('Today\'s Odds')
 
@@ -48,7 +48,7 @@ class MyFantasyLeaguesPage extends StatefulWidget{//}WithName{
 
 class MyFantasyLeaguesPageState extends State<MyFantasyLeaguesPage>  with SingleTickerProviderStateMixin{
 
-  FantasyLeague? fantasyLeague;
+  FantasyLeague fantasyLeague;
 
   List<FantasyLeague> fantasyLeagues = <FantasyLeague>[];
 
@@ -56,7 +56,7 @@ class MyFantasyLeaguesPageState extends State<MyFantasyLeaguesPage>  with Single
 
   Function loginOrRegisterCallback;
 
-  MyFantasyLeaguesPageState(this.loginOrRegisterCallback);
+  MyFantasyLeaguesPageState(this.loginOrRegisterCallback, this.fantasyLeague);
 
   late TabController _tabController;
 
@@ -70,7 +70,8 @@ class MyFantasyLeaguesPageState extends State<MyFantasyLeaguesPage>  with Single
 
   @override
   void initState(){
-    loginOrRegisterCallback= widget.loginOrRegisterCallback;
+    loginOrRegisterCallback = widget.loginOrRegisterCallback;
+    fantasyLeague = widget.fantasyLeague;
     _tabController = TabController(length: 3, vsync: this);
     _tabController.addListener(() {
       setState(() {});
@@ -183,7 +184,7 @@ class MyFantasyLeaguesPageState extends State<MyFantasyLeaguesPage>  with Single
                 :
 
 
-            fantasyLeague != null ?
+            fantasyLeague.mongoId != Constants.defMongoId ?
 
 
         FantasyLeagueCard(
@@ -204,13 +205,6 @@ class MyFantasyLeaguesPageState extends State<MyFantasyLeaguesPage>  with Single
         )
 
                 : SizedBox(),
-
-
-
-
-                // Text(AppContext.user.fantasyLeagueMongoId??'no mongo id'),
-
-
 
 
             (invitations.isEmpty) ?
@@ -289,37 +283,22 @@ class MyFantasyLeaguesPageState extends State<MyFantasyLeaguesPage>  with Single
     if (AppContext.user.fantasyLeagueMongoId != null) {
       FantasyLeague? fantasyLeagueIncoming = leagues.firstWhereOrNull((element) => element.mongoId == AppContext.user.fantasyLeagueMongoId);
       if (fantasyLeagueIncoming != null){
-        if (fantasyLeague == null){
-          fantasyLeague = fantasyLeagueIncoming;
-        }else{
-          fantasyLeague?.copyFrom(fantasyLeagueIncoming);
-        }
-      }
-    }
+          fantasyLeague.copyFrom(fantasyLeagueIncoming);
 
-    if (fantasyLeague != null){
-      if (AppContext.fantasyLeague == null){
-        AppContext.fantasyLeague = fantasyLeague;
-        return;
-      }
+          fantasyLeague.invitations.sort();
+          fantasyLeague.users.sort();
 
-      AppContext.fantasyLeague?.name = fantasyLeague!.name;
-      for (int id in  List.of(AppContext.fantasyLeague!.selectedLeagueIds)){
-        if (!fantasyLeague!.selectedLeagueIds.contains(id)){
-          AppContext.fantasyLeague!.selectedLeagueIds.remove(id);
-        }
-      }
+          print('fantasy was ' + sharedPrefs.getByKey(sp_fantasy_league_id));
+       // if (AppContext.user.fantasyLeagueMongoId != fantasyLeagueIncoming.mongoId){
+          sharedPrefs.updateFantasyLeagueId(fantasyLeagueIncoming.mongoId);
 
-      for (int id in  fantasyLeague!.selectedLeagueIds){
-        if (!AppContext.fantasyLeague!.selectedLeagueIds.contains(id)){
-          AppContext.fantasyLeague!.selectedLeagueIds.add(id);
-        }
-      }
+          print('fantasy now is  ' + sharedPrefs.getByKey(sp_fantasy_league_id));
+        //}
 
-      fantasyLeague?.invitations.sort();
-      fantasyLeague?.users.sort();
+      }
     }else{
-      AppContext.fantasyLeague = null;
+      fantasyLeague.copyFrom(FantasyLeague.defLeague());
+      sharedPrefs.remove(sp_fantasy_league_id);
     }
 
 
@@ -370,7 +349,7 @@ class MyFantasyLeaguesPageState extends State<MyFantasyLeaguesPage>  with Single
     User user = await HttpActionsClient.optOutFantasyLeague();
     if (user.fantasyLeagueMongoId == null){
       setState(() {
-        fantasyLeague = null;
+        fantasyLeague.copyFrom(FantasyLeague.defLeague());
         AppContext.user.fantasyLeagueMongoId = null;
       });
     }

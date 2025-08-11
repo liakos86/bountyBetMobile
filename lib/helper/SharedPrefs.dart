@@ -74,6 +74,10 @@ class SharedPrefs {
     //reload();
   }
 
+  updateFantasyLeagueId(String leagueId){
+    return _sharedPrefs?.setString(sp_fantasy_league_id, leagueId);
+  }
+
   getByKey(String key){
     return _sharedPrefs?.getString(key) ?? Constants.empty;
   }
@@ -82,15 +86,6 @@ class SharedPrefs {
     return _sharedPrefs?.getStringList(key) ?? <String>[];
   }
 
-  // Future<bool> isFavEvent(String eventId) async{
-  //   await _sharedPrefs?.reload();
-  //   List<String> current =  _sharedPrefs?.getStringList(sp_fav_event_ids) ?? <String>[];//favEventIds;
-  //   if (!current.contains(eventId)) {
-  //     return false;
-  //   }
-  //
-  //   return true;
-  // }
 
   Future<bool> isInWonMonths(String monthYear) async{
     await _sharedPrefs?.reload();
@@ -109,3 +104,4 @@ final sharedPrefs = SharedPrefs();
 const String sp_fav_event_ids = "fav_event_ids";
 const String sp_fav_league_ids = "fav_league_ids";
 const String sp_won_months = "won_months";
+const String sp_fantasy_league_id = "fantasy_league_id";

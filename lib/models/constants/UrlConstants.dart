@@ -31,6 +31,8 @@ class UrlConstants{
 
   static const POST_CREATE_FANTASY_LEAGUE = SERVER_IP + SRV_VERSION + '/rest/createFantasyLeague';
 
+  static const POST_EDIT_FANTASY_LEAGUE = SERVER_IP + SRV_VERSION + '/rest/editFantasyLeague';
+
   static const PUT_CREATE_FANTASY_LEAGUE_INVITATION = SERVER_IP + SRV_VERSION + '/rest/inviteUser';
 
   static const PUT_ACCEPT_FANTASY_LEAGUE_INVITATION = SERVER_IP + SRV_VERSION + '/rest/acceptInvitation';

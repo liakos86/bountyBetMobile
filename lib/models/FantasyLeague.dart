@@ -2,6 +2,7 @@
 import 'package:flutter_app/models/constants/Constants.dart';
 import 'package:intl/intl.dart';
 
+import '../enums/FantasyLeagueStatus.dart';
 import 'FantasyLeagueInvitation.dart';
 import 'User.dart';
 import 'context/AppContext.dart';
@@ -23,30 +24,32 @@ class FantasyLeague implements Comparable<FantasyLeague>{
     required this.allowTopUp,
   });
 
-  double startingBalance;
+  FantasyLeague.defLeague();
 
-  bool allowTopUp;
+  double startingBalance = 0;
+
+  bool allowTopUp = false;
 
   List<String> invitedEmails = <String>[];
   List<User> users = <User>[];
 
   List<FantasyLeagueInvitation> invitations = <FantasyLeagueInvitation>[];
 
-  bool isInvitation;
+  bool isInvitation = false;
 
   String name = Constants.empty;
 
-  DateTime dtStart;
+  DateTime dtStart = DateTime.now();
 
-  DateTime dtEnd;
+  DateTime dtEnd = DateTime.now();
 
-  List<int> selectedLeagueIds;
+  List<int> selectedLeagueIds = <int>[];
 
-  String creatorUserId;
+  String creatorUserId = Constants.defMongoId;
 
-  int status;
+  int status = FantasyLeagueStatus.PENDING.statusCode;
 
-  String mongoId = '';
+  String mongoId = Constants.defMongoId;
   String invitationMongoId = '';
 
   static Future<FantasyLeague> fromJson(Map<String, dynamic> parsedJson) async{
@@ -115,6 +118,7 @@ class FantasyLeague implements Comparable<FantasyLeague>{
 
   Map<String, dynamic> toJson() {
     return {
+      "fantasyLeagueMongoId": mongoId,
       "creatorMongoUserId": AppContext.user.mongoUserId,
       "name": name,
       "dtStart": dtStart.toUtc().toIso8601String() + 'Z',
@@ -156,6 +160,25 @@ class FantasyLeague implements Comparable<FantasyLeague>{
 
 
   }
+
+  FantasyLeague clone() {
+    FantasyLeague clone = FantasyLeague(
+      name: name,
+      dtStart: dtStart,
+      dtEnd: dtEnd,
+      selectedLeagueIds: List<int>.from(selectedLeagueIds),
+      creatorUserId: creatorUserId,
+      status: status,
+      isInvitation: isInvitation,
+      startingBalance: startingBalance,
+      allowTopUp: allowTopUp,
+    );
+
+    clone.mongoId = mongoId;
+
+    return clone;
+  }
+
 
 
 }

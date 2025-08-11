@@ -1,24 +1,42 @@
 import 'package:flutter/material.dart';
 
+import '../../models/FantasyLeague.dart';
 import '../../models/League.dart';
+import '../../models/constants/Constants.dart';
 import '../../models/context/AppContext.dart';
+import '../../utils/client/HttpActionsClient.dart';
 import 'DialogWizardLeagueDatesStep3.dart';
 
 class DialogWizardLeagueLeaguesStep2 extends StatefulWidget {
   final String leagueName;
 
-  const DialogWizardLeagueLeaguesStep2({required this.leagueName});
+  final List<int> initialSelectedLeagueIds;
+  final bool isEdit; // new flag
+
+  const DialogWizardLeagueLeaguesStep2({
+    required this.leagueName,
+    this.initialSelectedLeagueIds = const [],
+    this.isEdit = false,
+  });
+
 
   @override
   State<DialogWizardLeagueLeaguesStep2> createState() => _LeagueSelectionDialogState();
 }
 
 class _LeagueSelectionDialogState extends State<DialogWizardLeagueLeaguesStep2> {
-  final List<int> _selectedLeagueIds = [];
+  late List<int> _selectedLeagueIds;
+
+  @override
+  void initState() {
+    super.initState();
+    _selectedLeagueIds = List<int>.from(widget.initialSelectedLeagueIds);
+  }
+
 
   void _onLeagueTap(int id) {
     if (_selectedLeagueIds.contains(id)) return;
-    if (_selectedLeagueIds.length >= 3) return;
+    if (_selectedLeagueIds.length >= 10) return;
 
     setState(() {
       _selectedLeagueIds.add(id);
@@ -40,7 +58,16 @@ class _LeagueSelectionDialogState extends State<DialogWizardLeagueLeaguesStep2> 
     }
 
     Navigator.of(context).pop(); // Close this step
-    _showNextStep(context, widget.leagueName, _selectedLeagueIds);
+
+    if (!widget.isEdit) {
+      _showNextStep(context, widget.leagueName, _selectedLeagueIds);
+    }else{
+      editLeague();
+    }
+
+
+
+
   }
 
   @override
@@ -102,7 +129,7 @@ class _LeagueSelectionDialogState extends State<DialogWizardLeagueLeaguesStep2> 
         ),
         ElevatedButton(
           onPressed: _onNext,
-          child: const Text("Next"),
+          child: Text( (widget.isEdit) ? "Save" : "Next"),
         ),
       ],
     );
@@ -117,6 +144,15 @@ class _LeagueSelectionDialogState extends State<DialogWizardLeagueLeaguesStep2> 
         selectedLeagueIds: selectedLeagueIds,
       ),
     );
+  }
+
+  void editLeague () async{
+    FantasyLeague fCopy = AppContext.fantasyLeague.clone();
+    fCopy.selectedLeagueIds = _selectedLeagueIds;
+    fCopy = await HttpActionsClient.editFantasyLeague(fCopy);
+    if (fCopy.mongoId != Constants.defMongoId){
+      AppContext.fantasyLeague.copyFrom(fCopy);
+    }
   }
 
 }

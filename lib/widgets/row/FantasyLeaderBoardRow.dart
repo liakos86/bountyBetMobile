@@ -5,8 +5,9 @@ import '../../models/User.dart';
 
 class FantasyLeaderboardRow extends StatefulWidget {
   final User user;
+  final int position;
 
-  const FantasyLeaderboardRow({Key? key, required this.user}) : super(key: key);
+  const FantasyLeaderboardRow({Key? key, required this.user, required this.position}) : super(key: key);
 
   @override
   State<FantasyLeaderboardRow> createState() => _FantasyLeaderboardRowState();
@@ -14,6 +15,7 @@ class FantasyLeaderboardRow extends StatefulWidget {
 
 class _FantasyLeaderboardRowState extends State<FantasyLeaderboardRow> {
   late User _user;
+  late int position;
   // late UserFantasyLeagueBalance _fb;
   //final NumberFormat _formatter = NumberFormat.compactCurrency(symbol: '\$');
 
@@ -21,15 +23,17 @@ class _FantasyLeaderboardRowState extends State<FantasyLeaderboardRow> {
   void initState() {
     super.initState();
     _user = widget.user;
+    position = widget.position;
     // _fb = _user.fantasyBalance;
   }
 
   @override
   void didUpdateWidget(covariant FantasyLeaderboardRow oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (oldWidget.user != widget.user) {
+    if (oldWidget.user != widget.user || oldWidget.position != widget.position) {
       setState(() {
         _user = widget.user;
+        position = widget.position;
         // _fb = _user.fantasyBalance;
       });
     }
@@ -77,7 +81,8 @@ class _FantasyLeaderboardRowState extends State<FantasyLeaderboardRow> {
             Column(
               children: [
                 Text(
-                  '#${_user.fantasyBalance.position}',
+                  // '#${_user.fantasyBalance.position}',
+                  '#$position',
                   style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(height: 4),

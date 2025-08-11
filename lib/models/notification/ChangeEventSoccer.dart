@@ -1,5 +1,5 @@
 
-import '../enums/ChangeEvent.dart';
+import '../../enums/ChangeEvent.dart';
 
 class ChangeEventSoccer{
 

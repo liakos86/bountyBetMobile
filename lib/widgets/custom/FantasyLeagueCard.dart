@@ -7,6 +7,7 @@ import '../../models/League.dart';
 import '../../models/context/AppContext.dart';
 import 'package:collection/collection.dart';
 
+import '../dialog/DialogWizardLeagueLeaguesStep2.dart';
 import '../row/FantasyLeaderBoardRow.dart';
 
 
@@ -31,6 +32,9 @@ class FantasyLeagueCard extends StatelessWidget {
 
     final leagues = fantasyLeague?.selectedLeagueIds.map((id) => AppContext.allLeaguesMap[id]).whereType<League>().toList();
 
+    if (fantasyLeague!.users.isNotEmpty && fantasyLeague?.status == FantasyLeagueStatus.RUNNING.statusCode){
+      fantasyLeague!.users.sort();
+    }
 
     return Card(
       elevation: 6,
@@ -44,7 +48,6 @@ class FantasyLeagueCard extends StatelessWidget {
 
             Expanded(flex:1,
             child:
-
             Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -59,22 +62,29 @@ class FantasyLeagueCard extends StatelessWidget {
                       const SizedBox(height: 4),
                       Text(
                         duration,
-                        style: const TextStyle(fontSize: 14, color: Colors.grey),
+                        style: const TextStyle(fontSize: 14, color: Colors.grey, ),
+                        maxLines:1
                       ),
-
-
                     ],
                   ),
                 ),
-                // ElevatedButton(
-                //   onPressed: onOptOut,
-                //   style: ElevatedButton.styleFrom(
-                //     foregroundColor: Colors.white,
-                //     backgroundColor: Colors.red.shade200,
-                //     padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
-                //   ),
-                //   child: const Text('Opt-out', style: TextStyle(fontSize:12)),
-                // ),
+
+                // Edit button
+                ElevatedButton.icon(
+                  onPressed: () => _showEditLeaguesDialog(context),
+                  style: ElevatedButton.styleFrom(
+                    foregroundColor: Colors.white,
+                    backgroundColor: Colors.blue.shade400,
+                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    textStyle: const TextStyle(fontSize: 12),
+                  ),
+                  icon: const Icon(Icons.edit, size: 16),
+                  label: const Text("Edit"),
+                ),
+
+
+
+                // Opt-out button
                 ElevatedButton(
                   onPressed: () => _showOptOutConfirmation(context),
                   style: ElevatedButton.styleFrom(
@@ -84,9 +94,53 @@ class FantasyLeagueCard extends StatelessWidget {
                   ),
                   child: const Text('Opt-out', style: TextStyle(fontSize: 12)),
                 ),
-
               ],
             )
+
+
+              // Row(
+            //   crossAxisAlignment: CrossAxisAlignment.start,
+            //   children: [
+            //     Expanded(
+            //       child: Column(
+            //         crossAxisAlignment: CrossAxisAlignment.start,
+            //         children: [
+            //           Text(
+            //             fantasyLeague!.name,
+            //             style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            //           ),
+            //           const SizedBox(height: 4),
+            //           Text(
+            //             duration,
+            //             style: const TextStyle(fontSize: 14, color: Colors.grey),
+            //           ),
+            //
+            //
+            //         ],
+            //       ),
+            //     ),
+            //     // ElevatedButton(
+            //     //   onPressed: onOptOut,
+            //     //   style: ElevatedButton.styleFrom(
+            //     //     foregroundColor: Colors.white,
+            //     //     backgroundColor: Colors.red.shade200,
+            //     //     padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+            //     //   ),
+            //     //   child: const Text('Opt-out', style: TextStyle(fontSize:12)),
+            //     // ),
+            //     ElevatedButton(
+            //       onPressed: () => _showOptOutConfirmation(context),
+            //       style: ElevatedButton.styleFrom(
+            //         foregroundColor: Colors.white,
+            //         backgroundColor: Colors.red.shade200,
+            //         padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+            //       ),
+            //       child: const Text('Opt-out', style: TextStyle(fontSize: 12)),
+            //     ),
+            //
+            //   ],
+            // )
+
             ),
 
             //const SizedBox(height: 16),
@@ -99,36 +153,70 @@ class FantasyLeagueCard extends StatelessWidget {
               child:
 
               GridView.builder(
-                shrinkWrap: true, // 👈 Prevents unbounded height
-                physics: const NeverScrollableScrollPhysics(), // 👈 Disables internal scrolling
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                itemCount: leagues!.length > 10 ? 10 : leagues.length,
                 gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 3, // 👈 3 items per row
-                  mainAxisSpacing: 12,
-                  crossAxisSpacing: 12,
-                  childAspectRatio: 1, // Adjust this to control item shape
+                  crossAxisCount: 5, // Show up to 5 items per row
+                  mainAxisSpacing: 8,
+                  crossAxisSpacing: 8,
+                  childAspectRatio: 0.8,
                 ),
-                itemCount: leagues!.length,
                 itemBuilder: (context, index) {
                   final league = leagues[index];
                   return Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       SizedBox(
-                        height: 24,
-                        width: 24,
+                        height: 28,
+                        width: 28,
                         child: Image.network(league.logo ?? '', fit: BoxFit.cover),
                       ),
                       const SizedBox(height: 4),
                       Text(
                         league.name,
-                        style: const TextStyle(fontSize: 10, ),
+                        style: const TextStyle(fontSize: 10),
+                        maxLines: 2,
                         textAlign: TextAlign.center,
-                          maxLines:2
+                        overflow: TextOverflow.ellipsis,
                       ),
                     ],
                   );
                 },
               ),
+
+
+              // GridView.builder(
+              //   shrinkWrap: true, // 👈 Prevents unbounded height
+              //   physics: const NeverScrollableScrollPhysics(), // 👈 Disables internal scrolling
+              //   gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+              //     crossAxisCount: 3, // 👈 3 items per row
+              //     mainAxisSpacing: 12,
+              //     crossAxisSpacing: 12,
+              //     childAspectRatio: 1, // Adjust this to control item shape
+              //   ),
+              //   itemCount: leagues!.length,
+              //   itemBuilder: (context, index) {
+              //     final league = leagues[index];
+              //     return Column(
+              //       mainAxisSize: MainAxisSize.min,
+              //       children: [
+              //         SizedBox(
+              //           height: 24,
+              //           width: 24,
+              //           child: Image.network(league.logo ?? '', fit: BoxFit.cover),
+              //         ),
+              //         const SizedBox(height: 4),
+              //         Text(
+              //           league.name,
+              //           style: const TextStyle(fontSize: 10, ),
+              //           textAlign: TextAlign.center,
+              //             maxLines:2
+              //         ),
+              //       ],
+              //     );
+              //   },
+              // ),
 
             )
             ),
@@ -235,7 +323,7 @@ class FantasyLeagueCard extends StatelessWidget {
                   itemBuilder: (context, index) {
                     final user = fantasyLeague!.users[index];
 
-                    return FantasyLeaderboardRow(user: user);
+                    return FantasyLeaderboardRow(user: user, position: index+1);
 
                   },
                 ),
@@ -346,6 +434,18 @@ class FantasyLeagueCard extends StatelessWidget {
       },
     );
   }
+
+  void _showEditLeaguesDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (_) => DialogWizardLeagueLeaguesStep2(
+        isEdit: true,
+        leagueName: fantasyLeague!.name,
+        initialSelectedLeagueIds: fantasyLeague!.selectedLeagueIds,
+      ),
+    );
+  }
+
 
 
 

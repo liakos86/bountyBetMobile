@@ -978,7 +978,7 @@ class HttpActionsClient {
     if (!connected){
       connected = await checkInternetConnectivity();
       if (!connected){
-        return fantasyLeague;
+        return FantasyLeague.defLeague();
       }
     }
 
@@ -993,7 +993,7 @@ class HttpActionsClient {
         await authorizeAsync();
         if (access_token == null) {
           // //print('COULD NOT AUTHORIZE ********************************************************************');
-          return fantasyLeague;
+          return FantasyLeague.defLeague();
         }
       }
       var fantasyLeagueResponse = await put(Uri.parse(UrlConstants.POST_CREATE_FANTASY_LEAGUE),
@@ -1013,7 +1013,51 @@ class HttpActionsClient {
       return responseBean;
 
     }catch(e){
-      return fantasyLeague;
+      return FantasyLeague.defLeague();
+    }
+  }
+
+  static Future<FantasyLeague> editFantasyLeague(FantasyLeague fantasyLeague)  async {
+
+    if (!connected){
+      connected = await checkInternetConnectivity();
+      if (!connected){
+        return FantasyLeague.defLeague();
+      }
+    }
+
+
+    try {
+      var encodedFantasyLeague = jsonEncode(fantasyLeague.toJson());
+
+      if (access_token == null) {
+        final prefs = await SharedPreferences.getInstance();
+        access_token = prefs.getString(Constants.accessToken) ;
+        // access_token = await SecureUtils().retrieveValue(Constants.accessToken);
+        await authorizeAsync();
+        if (access_token == null) {
+          // //print('COULD NOT AUTHORIZE ********************************************************************');
+          return FantasyLeague.defLeague();
+        }
+      }
+      var fantasyLeagueResponse = await put(Uri.parse(UrlConstants.POST_EDIT_FANTASY_LEAGUE),
+          headers: {
+            "Accept": "application/json",
+            "Content-Type": "application/json",
+            'Authorization': 'Bearer $access_token'
+          },
+          body: encodedFantasyLeague,
+          encoding: Encoding.getByName("utf-8")).timeout(
+          const Duration(seconds: 20));
+
+      var responseDec = jsonDecode(fantasyLeagueResponse.body);
+
+      FantasyLeague responseBean = await FantasyLeague.fromJson(responseDec);
+
+      return responseBean;
+
+    }catch(e){
+      return FantasyLeague.defLeague();
     }
   }
 

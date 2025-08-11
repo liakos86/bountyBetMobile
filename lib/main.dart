@@ -18,7 +18,10 @@ import 'package:uuid/uuid.dart';
 import 'dart:async';
 import 'enums/ChangeEvent.dart';
 import 'helper/SharedPrefs.dart';
-import 'models/ChangeEventSoccer.dart';
+import 'models/constants/Constants.dart';
+import 'models/context/AppContext.dart';
+import 'models/notification/ChangeEventSoccer.dart';
+import 'models/notification/StartLeagueEvent.dart';
 
 
 /// Create a [AndroidNotificationChannel] for heads up notifications
@@ -137,37 +140,99 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   }
 
   void handleIncomingTopicMessageWhenInBackground(RemoteMessage message) async{
-    final prefs = await SharedPreferences.getInstance();
-    prefs.reload();
-    var favEventIds = prefs.getStringList(sp_fav_event_ids) ?? <String>[];
-    if (favEventIds.isEmpty){
-      return;
-    }
+
 
     final payload = message.data;
-    final String msgId = message.messageId.toString();
+
     try {
-      // final jsonValues = json.decode(payload['changeEvent']);
-      if (payload['changeEvent'] == null){
+      if (payload['changeEvent'] == null && payload['leagueName'] == null){
         return;
       }
 
-      ChangeEventSoccer changeEventSoccer = ChangeEventSoccer.fromJson(payload);
+      if (payload['changeEvent'] != null){
+        sendChangeEventNotifications(payload);
+      }else if (payload['leagueName'] != null){
+        sendStartLeagueNotification(payload);
+      }
 
-      for (String fav in favEventIds){
-       int favEventId = int.parse(fav);
 
-      if (favEventId == changeEventSoccer.eventId){
+    }catch(e){
+      // print('Invalid message: $payload - $msgId');
+    }
+  }
 
-        String name = changeEventSoccer.changeEvent == ChangeEvent.HOME_GOAL ? changeEventSoccer.homeTeam : changeEventSoccer.awayTeam;
-        String file = await ImageUtils.downloadAndSaveFile(changeEventSoccer.imgUrl, name);
+void sendStartLeagueNotification(Map<String, dynamic> payload) async{
 
-        if (_processedUuids.contains(changeEventSoccer.uniqueId)) {
-          //print('Duplicate message ignored: $uuid');
-          return;
-        }
+  final prefs = await SharedPreferences.getInstance();
+  await prefs.reload();
+  var leagueId = prefs.getString(sp_fantasy_league_id) ?? Constants.empty;
+  if (leagueId == Constants.empty){
+    return;
+  }
 
-        _processedUuids.add(changeEventSoccer.uniqueId);
+  StartLeagueEvent event = StartLeagueEvent.fromJson(payload);
+
+
+  if (event.leagueId != leagueId){
+    return;
+  }
+
+  if (_processedUuids.contains(event.uniqueId)) {
+    return;
+  }
+
+  String file = await ImageUtils.downloadAndSaveFile(event.imgUrl, event.leagueName);
+
+  _processedUuids.add(event.uniqueId);
+
+  flutterLocalNotificationsPlugin.show(
+    generateUniqueNotificationId(),
+    'Fantasy League ' + event.leagueName + ' has started!',
+    event.dtStart + ' - ' + event.dtEnd,
+    // changeEventSoccer.changeEvent.displayName,
+    NotificationDetails(
+      iOS: const DarwinNotificationDetails(),//TODO: needs setup for IOS
+      android: AndroidNotificationDetails(
+        'high_importance_channel_fantasy_tips', // id
+        'High Importance Notifications ft',
+        // groupKey: null,
+        groupKey: 'unique_key_${event.uniqueId}',
+        // 'MY FOREGROUND SERVICE',
+        largeIcon: FilePathAndroidBitmap(file),
+        // largeIcon: icon,//  '@mipmap/ic_launcher',
+        priority: Priority.high,
+        ongoing: false,
+      ),
+    ),
+  );
+
+}
+
+void sendChangeEventNotifications(Map<String, dynamic> payload) async{
+
+  final prefs = await SharedPreferences.getInstance();
+  await prefs.reload();
+  var favEventIds = prefs.getStringList(sp_fav_event_ids) ?? <String>[];
+  if (favEventIds.isEmpty){
+    return;
+  }
+
+  ChangeEventSoccer changeEventSoccer = ChangeEventSoccer.fromJson(payload);
+
+  for (String fav in favEventIds){
+    int favEventId = int.parse(fav);
+
+    if (favEventId == changeEventSoccer.eventId){
+
+      String name = changeEventSoccer.changeEvent == ChangeEvent.HOME_GOAL ? changeEventSoccer.homeTeam : changeEventSoccer.awayTeam;
+      String file = await ImageUtils.downloadAndSaveFile(changeEventSoccer.imgUrl, name);
+
+      if (_processedUuids.contains(changeEventSoccer.uniqueId)) {
+        //print('Duplicate message ignored: $uuid');
+        return;
+      }
+
+      _processedUuids.add(changeEventSoccer.uniqueId);
 
       flutterLocalNotificationsPlugin.show(
         generateUniqueNotificationId(),
@@ -183,18 +248,15 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
             groupKey: 'unique_key_${changeEventSoccer.uniqueId}',
             // 'MY FOREGROUND SERVICE',
             largeIcon: FilePathAndroidBitmap(file),
-           // largeIcon: icon,//  '@mipmap/ic_launcher',
+            // largeIcon: icon,//  '@mipmap/ic_launcher',
             priority: Priority.high,
             ongoing: false,
           ),
         ),
       );
-      }
-      }
-    }catch(e){
-      // print('Invalid message: $payload - $msgId');
     }
   }
+}
 
 String notificationBodyFrom(ChangeEventSoccer changeEventSoccer) {
   switch (changeEventSoccer.changeEvent){
