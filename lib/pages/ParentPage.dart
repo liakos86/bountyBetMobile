@@ -34,6 +34,7 @@ import '../models/UserPrediction.dart';
 import '../models/constants/ColorConstants.dart';
 import '../models/constants/MatchConstants.dart';
 import '../models/match_event.dart';
+import '../utils/DateUtils.dart';
 import '../widgets/DialogUserRegistered.dart';
 import '../widgets/custom/FantasyTipsDrawer.dart';
 import '../widgets/dialog/DialogTextWithButtons.dart';
@@ -140,9 +141,14 @@ class ParentPageState extends State<ParentPage> with WidgetsBindingObserver {
     HttpActionsClient.listenConnChanges(updateConnState);
 
 
-   AppContext.eventsPerDayMap. putIfAbsent(MatchConstants.KEY_YESTERDAY, () => <LeagueWithData>[]);
-   AppContext.eventsPerDayMap.putIfAbsent(MatchConstants.KEY_TODAY, () => <LeagueWithData>[]);
-   AppContext.eventsPerDayMap.putIfAbsent(MatchConstants.KEY_TOMORROW, () => <LeagueWithData>[]);
+   AppContext.eventsPerDayMap. putIfAbsent(DateUtilsFt.formattedDateWithOffset(-1), () => <LeagueWithData>[]);
+   AppContext.eventsPerDayMap.putIfAbsent(DateUtilsFt.formattedDateWithOffset(0), () => <LeagueWithData>[]);
+   AppContext.eventsPerDayMap.putIfAbsent(DateUtilsFt.formattedDateWithOffset(1), () => <LeagueWithData>[]);
+
+
+
+   print('Calling init state ' + AppContext.eventsPerDayMap.keys.toList().length.toString());
+   print('init state date ' + AppContext.eventsPerDayMap.keys.toList()[0] +' / '+ AppContext.eventsPerDayMap.keys.toList()[1] + ' / ' + AppContext.eventsPerDayMap.keys.toList()[2]);
 
 
   WidgetsBinding.instance.addObserver(this);
@@ -155,7 +161,7 @@ class ParentPageState extends State<ParentPage> with WidgetsBindingObserver {
   pagesList.add(OddsPage(key: oddsPageKey, updateUserCallback: updateUserCallBack, loginUserCallback: loginUserCallback, registerUserCallback: registerUserCallback, selectedOdds: selectedOdds, topUpCallback: promptDialogTopup));
   pagesList.add(LivePage(key: livePageKey, liveLeagues: AppContext.liveLeagues));
   pagesList.add(LeaderBoardPage());
-  pagesList.add(MyBetsPage(key: betsPageKey, loginOrRegisterCallback: promptLoginOrRegister));
+  //pagesList.add(MyBetsPage(key: betsPageKey, loginOrRegisterCallback: promptLoginOrRegister));
   pagesList.add(MyFantasyLeaguesPage(key: fantasyLeaguesPageKey, loginOrRegisterCallback: promptLoginOrRegister, fantasyLeague: AppContext.fantasyLeague));
   // pagesList.add(MyFantasyLeaguesPage(key: myFantasyLeaguesKey, loginOrRegisterCallback: promptLoginOrRegister));
 
@@ -273,9 +279,18 @@ class ParentPageState extends State<ParentPage> with WidgetsBindingObserver {
     });
 
   }
-
+int count =0;
   @override
   Widget build(BuildContext context) {
+
+
+    print('parent Calling build ' + AppContext.eventsPerDayMap.keys.toList().length.toString());
+    print('parent build  date ' + AppContext.eventsPerDayMap.keys.toList()[0] +' / '+ AppContext.eventsPerDayMap.keys.toList()[1] + ' / ' + AppContext.eventsPerDayMap.keys.toList()[2]);
+
+
+    print('calling build ' + count.toString());
+    ++count;
+
 
 
     return Scaffold(
@@ -433,7 +448,7 @@ class ParentPageState extends State<ParentPage> with WidgetsBindingObserver {
        */
       IndexedStack(
               index: selectedPageIndex,
-              children: [pagesList[0], pagesList[1], pagesList[2], pagesList[3], pagesList[4]]),
+              children: [pagesList[0], pagesList[1], pagesList[2], pagesList[3]]),
 
       bottomNavigationBar: BottomNavigationBar(
         selectedFontSize: 18,
@@ -456,10 +471,10 @@ class ParentPageState extends State<ParentPage> with WidgetsBindingObserver {
               icon: const Icon(Icons.leaderboard),// ImageIcon(AssetImage('assets/images/leaders-100.png')),//  Icon(Icons.home),
               label: AppLocalizations.of(context)!.leaders
           ),
-          BottomNavigationBarItem(
-              icon: const Icon(Icons.currency_exchange),// ImageIcon(AssetImage('assets/images/money-bag-100.png')),//  Icon(Icons.home),
-              label: AppLocalizations.of(context)!.bets
-          ),
+          // BottomNavigationBarItem(
+          //     icon: const Icon(Icons.currency_exchange),// ImageIcon(AssetImage('assets/images/money-bag-100.png')),//  Icon(Icons.home),
+          //     label: AppLocalizations.of(context)!.bets
+          // ),
           BottomNavigationBarItem(
               icon: const Icon(Icons.currency_exchange),// ImageIcon(AssetImage('assets/images/money-bag-100.png')),//  Icon(Icons.home),
               label: 'Fantasy'
@@ -564,6 +579,11 @@ class ParentPageState extends State<ParentPage> with WidgetsBindingObserver {
    * 3. Update the data of the matches that were pre-existing.
    */
   void updateLeagueMatches(List<MatchEvent> incomingEvents) {
+    /**
+     * The day might have changed
+     */
+    updateDateKeys();
+
     if (incomingEvents.isEmpty) {
       return; //TODO maybe empty everything?
     }
@@ -576,7 +596,9 @@ class ParentPageState extends State<ParentPage> with WidgetsBindingObserver {
       String eventDateKey = localStartString.split(' ')[0];
 
       if (!AppContext.eventsPerDayMap.containsKey(eventDateKey)){
-        AppContext.eventsPerDayMap. putIfAbsent(eventDateKey, () => <LeagueWithData>[]);
+        print('SKIPPING GAME ' + incomingEvent.eventId.toString());
+        continue;
+        // AppContext.eventsPerDayMap. putIfAbsent(eventDateKey, () => <LeagueWithData>[]);
       }
 
       List<LeagueWithData> matchDayLeagues = AppContext.eventsPerDayMap[eventDateKey] ?? [];
@@ -598,13 +620,15 @@ class ParentPageState extends State<ParentPage> with WidgetsBindingObserver {
       if (matches.isEmpty) {
         incomingEvent.calculateDisplayStatus(context);
         leagueOfMatch.events.add(incomingEvent);
-        if (incomingEvent.eventId == 3269201){
-          int a;
-        }
       }else{
+
+        if (matches.length > 1){
+          print('MATCH EEEEEEEEERRRRRRRRRRRRRRRRRRRRRRR');
+        }
+
         existingEvent = matches.first;
         existingEvent.copyFrom(incomingEvent);
-        incomingEvent.calculateDisplayStatus(context);
+        existingEvent.calculateDisplayStatus(context);
       }
 
     }
@@ -652,6 +676,7 @@ class ParentPageState extends State<ParentPage> with WidgetsBindingObserver {
         for (LeagueWithData lwd in List.of(AppContext.liveLeagues)){
           bool hasLiveGames = lwd.events.any((element) => element.status == MatchEventStatus.INPROGRESS.statusStr);
           if (!hasLiveGames){
+            print('removed LIVE LEAGUE ' + lwd.league.league_id.toString());
             AppContext.liveLeagues.remove(lwd);
           }
         }
@@ -738,7 +763,7 @@ void setupFirebaseListeners() async{
     ChangeEventSoccer changeEventSoccer = ChangeEventSoccer.fromJson(payload);
 
     // for (LeagueWithData l in AppContext.liveLeagues){
-    for (LeagueWithData l in AppContext.eventsPerDayMap[MatchConstants.KEY_TODAY]!){
+    for (LeagueWithData l in AppContext.eventsPerDayMap[DateUtilsFt.formattedDateWithOffset(0)]!){
 
       List<MatchEvent> events = l.events.where((element) => element.status == MatchEventStatus.INPROGRESS.statusStr).toList();
       MatchEvent? relevantEvent = events.firstWhereOrNull((element) => element.eventId == changeEventSoccer.eventId);
@@ -1155,7 +1180,7 @@ void setupFirebaseListeners() async{
 
     Timer.periodic(const Duration(seconds: 5), (timer) {
 
-      if (!AppContext.eventsPerDayMap.containsKey(MatchConstants.KEY_TODAY)){
+      if (!AppContext.eventsPerDayMap.containsKey(DateUtilsFt.formattedDateWithOffset(0))){
         return;
       }
 
@@ -1180,6 +1205,30 @@ void setupFirebaseListeners() async{
       retrieveUserFromPrefs();
 
     });
+  }
+
+  void updateDateKeys() {
+    List<String> dateKeysNew = <String>[];
+    dateKeysNew.add(DateUtilsFt.formattedDateWithOffset(-1));
+    dateKeysNew.add(DateUtilsFt.formattedDateWithOffset(0));
+    dateKeysNew.add(DateUtilsFt.formattedDateWithOffset(1));
+
+    print('Dates new are ' + dateKeysNew.first);
+    print('Dates new are ' + dateKeysNew[1]);
+    print('Dates new are ' + dateKeysNew[2]);
+
+    List<String> dateKeysOld  = AppContext.eventsPerDayMap.keys.toList();
+    for (String keyOld in dateKeysOld){
+      if (!dateKeysNew.contains(keyOld)){
+        AppContext.eventsPerDayMap.remove(keyOld);
+      }
+    }
+
+    for (String keyNew in dateKeysNew){
+      if (!dateKeysOld.contains(keyNew)){
+        AppContext.eventsPerDayMap.putIfAbsent(keyNew, () => <LeagueWithData>[]);
+      }
+    }
   }
 
 

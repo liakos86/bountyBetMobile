@@ -6,8 +6,6 @@ class MatchConstants{
 
    static const String GMT = "GMT";
 
-   static  String KEY_TODAY = DateUtils.formattedDateWithOffset(0);// '0';
-   static  String KEY_TOMORROW = DateUtils.formattedDateWithOffset(1);
-   static  String KEY_YESTERDAY = DateUtils.formattedDateWithOffset(-1);
+
 
 }

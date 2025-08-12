@@ -26,6 +26,7 @@ import '../models/constants/ColorConstants.dart';
 import '../models/constants/MatchConstants.dart';
 import '../models/context/AppContext.dart';
 import '../utils/BetUtils.dart';
+import '../utils/DateUtils.dart';
 import '../widgets/CustomTabIcon.dart';
 import '../widgets/row/DialogProgressBarWithText.dart';
 
@@ -116,6 +117,11 @@ class OddsPageState extends State<OddsPage> with SingleTickerProviderStateMixin{
     const double labelPadding = 2;
     double labelWidth = (width - (labelPadding * (items - 1)))  / items;
 
+
+    print('Calling odds build ' + AppContext.eventsPerDayMap.keys.toList().length.toString());
+    print('odds build  date ' + AppContext.eventsPerDayMap.keys.toList()[0] +' / '+ AppContext.eventsPerDayMap.keys.toList()[1] + ' / ' +  AppContext.eventsPerDayMap.keys.toList()[2]);
+
+
     return
 
       Scaffold(
@@ -140,9 +146,9 @@ class OddsPageState extends State<OddsPage> with SingleTickerProviderStateMixin{
 
                 tabs: [
                   // CustomTabIcon(width: labelWidth, text: getDateWithOffset(-2), isSelected: _tabController.index == 0,),
-                  CustomTabIcon(width: labelWidth, text: getDateWithOffset(-1), isSelected: _tabController.index == 0,),
+                  CustomTabIcon(width: labelWidth, text: AppContext.eventsPerDayMap.keys.toList()[2], isSelected: _tabController.index == 0,),
                   CustomTabIcon(width: labelWidth, text: AppLocalizations.of(context)!.today, isSelected: _tabController.index == 1,),
-                  CustomTabIcon(width: labelWidth, text: getDateWithOffset(1), isSelected: _tabController.index == 2,),
+                  CustomTabIcon(width: labelWidth, text: AppContext.eventsPerDayMap.keys.toList()[0], isSelected: _tabController.index == 2,),
                   // CustomTabIcon(width: labelWidth, text: getDateWithOffset(2), isSelected: _tabController.index == 4,),
                 ],
 
@@ -173,9 +179,9 @@ class OddsPageState extends State<OddsPage> with SingleTickerProviderStateMixin{
                   // controller: _scrollController0,
                   padding: const EdgeInsets.all(0),
                   // itemCount: AppContext.eventsPerDayMap.entries.elementAt(2).value.length,
-                  itemCount:  AppContext.eventsPerDayMap[MatchConstants.KEY_YESTERDAY]?.length,
+                  itemCount:  AppContext.eventsPerDayMap[DateUtilsFt.formattedDateWithOffset(-1)]?.length,
                   itemBuilder: (context, item) {
-                    return _buildRow(AppContext.eventsPerDayMap[MatchConstants.KEY_YESTERDAY]!.elementAt(item), item);
+                    return _buildRow(AppContext.eventsPerDayMap[DateUtilsFt.formattedDateWithOffset(-1)]!.elementAt(item), item);
                     // return _buildRow(AppContext.eventsPerDayMap.entries.elementAt(2).value[item], item);
                   }),
 
@@ -186,9 +192,9 @@ class OddsPageState extends State<OddsPage> with SingleTickerProviderStateMixin{
                   // controller: _scrollController0,
                   padding: const EdgeInsets.all(0),
                   // itemCount: AppContext.eventsPerDayMap.entries.elementAt(2).value.length,
-                  itemCount: AppContext.eventsPerDayMap[MatchConstants.KEY_TODAY]?.length,
+                  itemCount: AppContext.eventsPerDayMap[DateUtilsFt.formattedDateWithOffset(0)]?.length,
                   itemBuilder: (context, item) {
-                    return _buildRow(AppContext.eventsPerDayMap[MatchConstants.KEY_TODAY]!.elementAt(item), item);
+                    return _buildRow(AppContext.eventsPerDayMap[DateUtilsFt.formattedDateWithOffset(0)]!.elementAt(item), item);
                     // return _buildRow(AppContext.eventsPerDayMap.entries.elementAt(2).value[item], item);
                   }),
 
@@ -199,9 +205,9 @@ class OddsPageState extends State<OddsPage> with SingleTickerProviderStateMixin{
                   // controller: _scrollController0,
                   padding: const EdgeInsets.all(0),
                   // itemCount: AppContext.eventsPerDayMap.entries.elementAt(2).value.length,
-                  itemCount: AppContext.eventsPerDayMap[MatchConstants.KEY_TOMORROW]?.length,
+                  itemCount: AppContext.eventsPerDayMap[DateUtilsFt.formattedDateWithOffset(1)]?.length,
                   itemBuilder: (context, item) {
-                    return _buildRow(AppContext.eventsPerDayMap[MatchConstants.KEY_TOMORROW]!.elementAt(item), item);
+                    return _buildRow(AppContext.eventsPerDayMap[DateUtilsFt.formattedDateWithOffset(1)]!.elementAt(item), item);
                     // return _buildRow(AppContext.eventsPerDayMap.entries.elementAt(2).value[item], item);
                   }),
 

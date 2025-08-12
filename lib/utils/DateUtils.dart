@@ -1,4 +1,4 @@
-class DateUtils {
+class DateUtilsFt {
   static String formattedDateWithOffset(int offset) {
     final DateTime targetDate = DateTime.now().add(Duration(days: offset));
     return '${targetDate.year.toString().padLeft(4, '0')}-'

@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:ui';
 import 'package:collection/collection.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 
 import 'package:flutter/cupertino.dart';
@@ -13,6 +14,7 @@ import 'package:flutter_app/utils/client/HttpActionsClient.dart';
 import '../helper/SharedPrefs.dart';
 import '../models/FantasyLeagueInvitation.dart';
 import '../models/User.dart';
+import '../models/UserBet.dart';
 import '../models/constants/ColorConstants.dart';
 import '../widgets/custom/FantasyLeagueCard.dart';
 import '../widgets/row/FantasyLeagueInvitationRow.dart';
@@ -22,6 +24,7 @@ import 'package:flutter/widgets.dart';
 
 import '../models/FantasyLeague.dart';
 import '../widgets/CustomTabIcon.dart';
+import '../widgets/row/UserBetRow.dart';
 import 'LivePage.dart';
 
 
@@ -48,6 +51,11 @@ class MyFantasyLeaguesPage extends StatefulWidget{//}WithName{
 
 class MyFantasyLeaguesPageState extends State<MyFantasyLeaguesPage>  with SingleTickerProviderStateMixin{
 
+  /*
+   * Make o copy of the bets
+   */
+  List<UserBet> bets = List.of(AppContext.user.userBets);
+
   FantasyLeague fantasyLeague;
 
   List<FantasyLeague> fantasyLeagues = <FantasyLeague>[];
@@ -72,7 +80,7 @@ class MyFantasyLeaguesPageState extends State<MyFantasyLeaguesPage>  with Single
   void initState(){
     loginOrRegisterCallback = widget.loginOrRegisterCallback;
     fantasyLeague = widget.fantasyLeague;
-    _tabController = TabController(length: 3, vsync: this);
+    _tabController = TabController(length: 4, vsync: this);
     _tabController.addListener(() {
       setState(() {});
     });
@@ -85,6 +93,13 @@ class MyFantasyLeaguesPageState extends State<MyFantasyLeaguesPage>  with Single
       //}
     }
     );
+
+    Timer.periodic(const Duration(seconds: 10), (timer) {
+      //if (!isMinimized) {
+      updateBets(AppContext.user.userBets);//update the copy from the new bets
+      //);
+      //}
+    });
 
     super.initState();
   }
@@ -110,7 +125,7 @@ class MyFantasyLeaguesPageState extends State<MyFantasyLeaguesPage>  with Single
       ));
     }
 
-   const int items = 3;
+   const int items = 4;
    double width = MediaQuery.of(context).size.width;
    const double labelPadding = 4;
    double labelWidth = (width - (labelPadding * (items - 1))) / items;
@@ -130,8 +145,9 @@ class MyFantasyLeaguesPageState extends State<MyFantasyLeaguesPage>  with Single
 
             tabs: [
               CustomTabIcon(width: labelWidth, text: 'Current League', isSelected: _tabController.index == 0,),
-              CustomTabIcon(width: labelWidth,  text: 'Invitations', isSelected: _tabController.index == 1,),
-              CustomTabIcon(width: labelWidth,  text: 'Past Leagues', isSelected: _tabController.index == 2,),
+              CustomTabIcon(width: labelWidth, text: 'Predictions', isSelected: _tabController.index == 1,),
+              CustomTabIcon(width: labelWidth,  text: 'Invitations', isSelected: _tabController.index == 2,),
+              CustomTabIcon(width: labelWidth,  text: 'Past Leagues', isSelected: _tabController.index == 3,),
             ],
 
             onTap: (index) {
@@ -205,6 +221,44 @@ class MyFantasyLeaguesPageState extends State<MyFantasyLeaguesPage>  with Single
         )
 
                 : SizedBox(),
+
+
+            (bets.isEmpty) ?
+
+            Align(alignment: Alignment.center,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    // Icon on top
+                    const ImageIcon(size:100, AssetImage('assets/images/money-bag-100.png')),
+                    const SizedBox(height: 20),  // Space between icon and text
+                    // Text below the icon
+                    Text(
+                      AppLocalizations.of(context)!.no_pending_bets,
+                      style: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        color: Color(ColorConstants.my_dark_grey),
+                      ),
+                    ),
+                  ],
+                )
+            )
+
+                :
+
+
+            ListView.builder(
+                key: const PageStorageKey<String>(
+                    'pageBetsPending'),
+                // padding: const EdgeInsets.all(8),
+                itemCount: bets.length,
+                itemBuilder: (context, item) {
+                  UserBet bet = bets[item];
+                  return _buildUserBetRow(bet, 'pending$item${bet.betId}');
+                }),
+
+
 
 
             (invitations.isEmpty) ?
@@ -353,6 +407,33 @@ class MyFantasyLeaguesPageState extends State<MyFantasyLeaguesPage>  with Single
         AppContext.user.fantasyLeagueMongoId = null;
       });
     }
+  }
+
+  void updateBets(List<UserBet> userBets) {
+    for(UserBet incomingBet in userBets){
+      UserBet existing = bets.firstWhere((element) => element.betId == incomingBet.betId, orElse: () => UserBet.defBet());
+      if (existing.betId != Constants.defMongoId){
+        existing.copyFrom(incomingBet);
+      }else{
+        bets.add(incomingBet);
+      }
+    }
+
+    for(UserBet existingBet in List.of(bets)){
+      UserBet incoming = userBets.firstWhere((element) => element.betId == existingBet.betId, orElse: () => UserBet.defBet());
+      if (incoming.betId == Constants.defMongoId){
+        bets.remove(existingBet);
+      }
+    }
+
+    setState((){
+      bets;
+    });
+  }
+
+  Widget _buildUserBetRow(UserBet bet, String key) {
+
+    return UserBetRow(key: PageStorageKey<String>(key), bet: bet);
   }
 
 

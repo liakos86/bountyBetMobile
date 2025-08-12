@@ -40,7 +40,7 @@ class LivePageState extends State<LivePage> with WidgetsBindingObserver{
   @override
   void initState(){
     liveLeagues = widget.liveLeagues;
-    List<LeagueWithData> all = AppContext.eventsPerDayMap.values.expand((e) => e).toList();
+    //List<LeagueWithData> all = AppContext.eventsPerDayMap.values.expand((e) => e).toList();
     // leaguesWd = all.where((element) => element.events.where((element) => element.status == MatchEventStatus.INPROGRESS.statusStr).toList().isNotEmpty).toList();// <LeagueWithData>[];;
     favourites = getFavourites();
     super.initState();
