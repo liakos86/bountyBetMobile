@@ -37,7 +37,7 @@ class OddsPage extends StatefulWidget{//}WithName {
   final Function updateUserCallback;
   final Function loginUserCallback;
   final Function registerUserCallback;
-  final Function topUpCallback;
+  // final Function topUpCallback;
 
   final List<UserPrediction> selectedOdds;
 
@@ -50,7 +50,7 @@ class OddsPage extends StatefulWidget{//}WithName {
     required this.loginUserCallback,
     required this.registerUserCallback,
     required this.selectedOdds,
-    required this.topUpCallback
+    // required this.topUpCallback
   } ) : super(key: key);
 
 }
@@ -69,7 +69,7 @@ class OddsPageState extends State<OddsPage> with SingleTickerProviderStateMixin{
   Function updateUserCallback = ()=>{ };
   Function loginUserCallback = ()=>{ };
   Function registerUserCallback = ()=>{ };
-  Function topUpCallback = ()=>{ };
+  // Function topUpCallback = ()=>{ };
 
   late TabController _tabController;
 
@@ -86,7 +86,7 @@ class OddsPageState extends State<OddsPage> with SingleTickerProviderStateMixin{
     updateUserCallback = widget.updateUserCallback;
     loginUserCallback = widget.loginUserCallback;
     registerUserCallback = widget.registerUserCallback;
-    topUpCallback = widget.topUpCallback;
+    // topUpCallback = widget.topUpCallback;
 
     _tabController = TabController(length: 3, vsync: this, initialIndex: 1);
     _tabController.addListener(() {
@@ -118,8 +118,8 @@ class OddsPageState extends State<OddsPage> with SingleTickerProviderStateMixin{
     double labelWidth = (width - (labelPadding * (items - 1)))  / items;
 
 
-    print('Calling odds build ' + AppContext.eventsPerDayMap.keys.toList().length.toString());
-    print('odds build  date ' + AppContext.eventsPerDayMap.keys.toList()[0] +' / '+ AppContext.eventsPerDayMap.keys.toList()[1] + ' / ' +  AppContext.eventsPerDayMap.keys.toList()[2]);
+    // print('Calling odds build ' + AppContext.eventsPerDayMap.keys.toList().length.toString());
+    // print('odds build  date ' + AppContext.eventsPerDayMap.keys.toList()[0] +' / '+ AppContext.eventsPerDayMap.keys.toList()[1] + ' / ' +  AppContext.eventsPerDayMap.keys.toList()[2]);
 
 
     return
@@ -385,7 +385,7 @@ class OddsPageState extends State<OddsPage> with SingleTickerProviderStateMixin{
 
     if (bettingAmount > AppContext.user.balance.balance){
       //String msg = 'Cannot place bet. insufficient funds.';
-      alertDialogTopUp();
+      //alertDialogTopUp();
       return BetPlacementStatus.FAILED_INSUFFICIENT_FUNDS;
     }
 
@@ -491,10 +491,10 @@ class OddsPageState extends State<OddsPage> with SingleTickerProviderStateMixin{
     return true;
   }
 
-  void alertDialogTopUp() {
-    showDialog(context: context, builder: (context) =>
-      DialogTextWithButtons(topUpCallback: topUpCallback)
-    );
-  }
+  // void alertDialogTopUp() {
+  //   showDialog(context: context, builder: (context) =>
+  //     DialogTextWithButtons(topUpCallback: topUpCallback)
+  //   );
+  // }
 
 }

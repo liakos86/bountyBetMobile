@@ -1,13 +1,25 @@
 import 'package:flutter/material.dart';
+import 'package:in_app_purchase/in_app_purchase.dart';
 import 'package:intl/intl.dart';
 
 import '../../models/User.dart';
+import '../../models/constants/Constants.dart';
+import '../../models/context/AppContext.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
+import '../dialog/DialogTextWithButtons.dart';
+
 
 class FantasyLeaderboardRow extends StatefulWidget {
   final User user;
   final int position;
+  final List<ProductDetails> products;
+  final Function topUpCallback;
 
-  const FantasyLeaderboardRow({Key? key, required this.user, required this.position}) : super(key: key);
+  const FantasyLeaderboardRow({Key? key, required this.user,
+    required this.position,
+    required this.topUpCallback,
+    required this.products}) : super(key: key);
 
   @override
   State<FantasyLeaderboardRow> createState() => _FantasyLeaderboardRowState();
@@ -16,14 +28,18 @@ class FantasyLeaderboardRow extends StatefulWidget {
 class _FantasyLeaderboardRowState extends State<FantasyLeaderboardRow> {
   late User _user;
   late int position;
+  List<ProductDetails> products = [];
+  late Function topUpCallback;
   // late UserFantasyLeagueBalance _fb;
   //final NumberFormat _formatter = NumberFormat.compactCurrency(symbol: '\$');
 
   @override
   void initState() {
     super.initState();
+    topUpCallback = widget.topUpCallback;
     _user = widget.user;
     position = widget.position;
+    products = widget.products;
     // _fb = _user.fantasyBalance;
   }
 
@@ -72,6 +88,7 @@ class _FantasyLeaderboardRowState extends State<FantasyLeaderboardRow> {
   @override
   Widget build(BuildContext context) {
     return Card(
+      color: AppContext.user.mongoUserId == _user.mongoUserId ? Colors.blue[50] : Colors.white,
       margin: const EdgeInsets.symmetric(horizontal: 2, vertical: 4),
       child: Padding(
         padding: const EdgeInsets.all(12),
@@ -105,6 +122,32 @@ class _FantasyLeaderboardRowState extends State<FantasyLeaderboardRow> {
               ),
             ),
 
+            if (products.isNotEmpty && AppContext.fantasyLeague.allowTopUp  && AppContext.user.mongoUserId != Constants.defMongoId && AppContext.user.validated && AppContext.user.balance.balance < 10 )
+              ElevatedButton(
+                key: UniqueKey(),
+                onPressed: () {
+                  alertDialogTopUp();
+                },
+                style: ElevatedButton.styleFrom(
+                  foregroundColor: Colors.white, backgroundColor: Colors.red,  // Text color
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10), // Rounded radius
+                  ),
+                  padding: const EdgeInsets.symmetric(horizontal: 2, vertical: 2),
+                  minimumSize: const Size(0, 30), // Button size
+                ),
+                child:  Text(
+                  AppLocalizations.of(context)!.topup_button_text,
+                  style: const TextStyle(
+                      fontSize: 10,
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                      fontStyle: FontStyle.italic
+                  ),
+                ),
+              ),
+
+
             // Stats (wins/losses)
             Column(
               crossAxisAlignment: CrossAxisAlignment.end,
@@ -120,6 +163,12 @@ class _FantasyLeaderboardRowState extends State<FantasyLeaderboardRow> {
           ],
         ),
       ),
+    );
+  }
+
+  void alertDialogTopUp() {
+    showDialog(context: context, builder: (context) =>
+        DialogTextWithButtons(topUpCallback: topUpCallback)
     );
   }
 }

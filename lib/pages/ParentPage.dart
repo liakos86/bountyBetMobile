@@ -66,11 +66,11 @@ import 'MyFantasyLeaguesPage.dart';
  */
 class ParentPageState extends State<ParentPage> with WidgetsBindingObserver {
 
-  final InAppPurchase inAppPurchase = InAppPurchase.instance;
-  List<ProductDetails> products = [];
-  List<PurchaseDetails> purchases = [];
-  bool available = false;
-  StreamSubscription<List<PurchaseDetails>>? subscription;
+  // final InAppPurchase inAppPurchase = InAppPurchase.instance;
+  // List<ProductDetails> products = [];
+  // List<PurchaseDetails> purchases = [];
+  // StreamSubscription<List<PurchaseDetails>>? subscription;
+  // bool available = false;
   String appBarTitle = 'FantasyTips';
   User user = AppContext.user;
 
@@ -125,18 +125,18 @@ class ParentPageState extends State<ParentPage> with WidgetsBindingObserver {
 
     retrieveUserFromPrefs();
 
-    _initializeInAppPurchases();
-
-    subscription = inAppPurchase.purchaseStream.listen((purchaseDetailsList) {
-      handlePurchaseUpdates(purchaseDetailsList);
-    },onDone: () => subscription?.cancel(), onError: (error) {
-      if (mounted){
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text(AppLocalizations.of(context)!.purchase_error), showCloseIcon: true, duration: const Duration(seconds: 5),
-        ));
-      }
-      // Handle errors during the purchase flow.
-    });
+    // _initializeInAppPurchases();
+    //
+    // subscription = inAppPurchase.purchaseStream.listen((purchaseDetailsList) {
+    //   handlePurchaseUpdates(purchaseDetailsList);
+    // },onDone: () => subscription?.cancel(), onError: (error) {
+    //   if (mounted){
+    //     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+    //       content: Text(AppLocalizations.of(context)!.purchase_error), showCloseIcon: true, duration: const Duration(seconds: 5),
+    //     ));
+    //   }
+    //   // Handle errors during the purchase flow.
+    // });
 
     HttpActionsClient.listenConnChanges(updateConnState);
 
@@ -158,7 +158,7 @@ class ParentPageState extends State<ParentPage> with WidgetsBindingObserver {
   WidgetsBinding.instance
       .addPostFrameCallback((_) => setLocale(context));
 
-  pagesList.add(OddsPage(key: oddsPageKey, updateUserCallback: updateUserCallBack, loginUserCallback: loginUserCallback, registerUserCallback: registerUserCallback, selectedOdds: selectedOdds, topUpCallback: promptDialogTopup));
+  pagesList.add(OddsPage(key: oddsPageKey, updateUserCallback: updateUserCallBack, loginUserCallback: loginUserCallback, registerUserCallback: registerUserCallback, selectedOdds: selectedOdds));
   pagesList.add(LivePage(key: livePageKey, liveLeagues: AppContext.liveLeagues));
   pagesList.add(LeaderBoardPage());
   //pagesList.add(MyBetsPage(key: betsPageKey, loginOrRegisterCallback: promptLoginOrRegister));
@@ -188,7 +188,7 @@ class ParentPageState extends State<ParentPage> with WidgetsBindingObserver {
   @override
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
-    subscription?.cancel();
+    // subscription?.cancel();
     super.dispose();
   }
 
@@ -244,9 +244,9 @@ class ParentPageState extends State<ParentPage> with WidgetsBindingObserver {
     user.deepCopyFrom(value);
 
 
-    if (user.mongoUserId != Constants.defMongoId) {
-      restorePurchases();
-    }
+    // if (user.mongoUserId != Constants.defMongoId) {
+    //   restorePurchases();
+    // }
 
     if (user.mongoUserId == Constants.defMongoId ){
      // updateUserMongoId(value);
@@ -279,17 +279,17 @@ class ParentPageState extends State<ParentPage> with WidgetsBindingObserver {
     });
 
   }
-int count =0;
+
   @override
   Widget build(BuildContext context) {
 
 
-    print('parent Calling build ' + AppContext.eventsPerDayMap.keys.toList().length.toString());
-    print('parent build  date ' + AppContext.eventsPerDayMap.keys.toList()[0] +' / '+ AppContext.eventsPerDayMap.keys.toList()[1] + ' / ' + AppContext.eventsPerDayMap.keys.toList()[2]);
-
-
-    print('calling build ' + count.toString());
-    ++count;
+    // print('parent Calling build ' + AppContext.eventsPerDayMap.keys.toList().length.toString());
+    // print('parent build  date ' + AppContext.eventsPerDayMap.keys.toList()[0] +' / '+ AppContext.eventsPerDayMap.keys.toList()[1] + ' / ' + AppContext.eventsPerDayMap.keys.toList()[2]);
+    //
+    //
+    // print('calling build ' + count.toString());
+    // ++count;
 
 
 
@@ -369,30 +369,30 @@ int count =0;
                 ),
                ]))),
 
-              if (available && products.isNotEmpty && AppContext.user.mongoUserId != Constants.defMongoId && AppContext.user.validated && AppContext.user.balance.balance < 100000 )
-                  ElevatedButton(
-                    key: UniqueKey(),
-                    onPressed: () {
-                      alertDialogTopUp();
-                    },
-                    style: ElevatedButton.styleFrom(
-                      foregroundColor: Colors.white, backgroundColor: Colors.red,  // Text color
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10), // Rounded radius
-                      ),
-                      padding: const EdgeInsets.symmetric(horizontal: 2, vertical: 2),
-                      minimumSize: const Size(0, 30), // Button size
-                    ),
-                    child:  Text(
-                      AppLocalizations.of(context)!.topup_button_text,
-                      style: const TextStyle(
-                          fontSize: 10,
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold,
-                          fontStyle: FontStyle.italic
-                      ),
-                    ),
-                  )
+              // if (available && products.isNotEmpty && AppContext.user.mongoUserId != Constants.defMongoId && AppContext.user.validated && AppContext.user.balance.balance < 100000 )
+              //     ElevatedButton(
+              //       key: UniqueKey(),
+              //       onPressed: () {
+              //         alertDialogTopUp();
+              //       },
+              //       style: ElevatedButton.styleFrom(
+              //         foregroundColor: Colors.white, backgroundColor: Colors.red,  // Text color
+              //         shape: RoundedRectangleBorder(
+              //           borderRadius: BorderRadius.circular(10), // Rounded radius
+              //         ),
+              //         padding: const EdgeInsets.symmetric(horizontal: 2, vertical: 2),
+              //         minimumSize: const Size(0, 30), // Button size
+              //       ),
+              //       child:  Text(
+              //         AppLocalizations.of(context)!.topup_button_text,
+              //         style: const TextStyle(
+              //             fontSize: 10,
+              //             color: Colors.white,
+              //             fontWeight: FontWeight.bold,
+              //             fontStyle: FontStyle.italic
+              //         ),
+              //       ),
+              //     )
                       ]
           ),
         titleTextStyle: const TextStyle(color: Colors.white70, fontSize: 20, fontWeight: FontWeight.bold),
@@ -596,7 +596,7 @@ int count =0;
       String eventDateKey = localStartString.split(' ')[0];
 
       if (!AppContext.eventsPerDayMap.containsKey(eventDateKey)){
-        print('SKIPPING GAME ' + incomingEvent.eventId.toString());
+        // print('SKIPPING GAME ' + incomingEvent.eventId.toString());
         continue;
         // AppContext.eventsPerDayMap. putIfAbsent(eventDateKey, () => <LeagueWithData>[]);
       }
@@ -978,159 +978,159 @@ void setupFirebaseListeners() async{
     Navigator.pop(context);
   }
 
-  void alertDialogTopUp() {
-    showDialog(context: context, builder: (context) =>
-        DialogTextWithButtons(topUpCallback: promptDialogTopup)
-    );
-  }
+  // void alertDialogTopUp() {
+  //   showDialog(context: context, builder: (context) =>
+  //       DialogTextWithButtons(topUpCallback: promptDialogTopup)
+  //   );
+  // }
 
 
-  void promptDialogTopup(String productId) {
-    if (products.isEmpty){
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-        content: Text('No products available'), showCloseIcon: true, duration: Duration(seconds: 5),
-      ));
+  // void promptDialogTopup(String productId) {
+  //   if (products.isEmpty){
+  //     ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+  //       content: Text('No products available'), showCloseIcon: true, duration: Duration(seconds: 5),
+  //     ));
+  //
+  //     return;
+  //   }
+  //
+  //   ProductDetails? selected;
+  //   for(ProductDetails product in products) {
+  //     if (productId == product.id) {
+  //       selected = product;
+  //     }
+  //   }
+  //
+  //   if (selected == null) {
+  //     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+  //       content: Text('Product not found $productId'), showCloseIcon: true, duration: const Duration(seconds: 5),
+  //     ));
+  //
+  //     return;
+  //   }
+  //
+  //   buyProduct(selected);
+  // }
 
-      return;
-    }
-
-    ProductDetails? selected;
-    for(ProductDetails product in products) {
-      if (productId == product.id) {
-        selected = product;
-      }
-    }
-
-    if (selected == null) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text('Product not found $productId'), showCloseIcon: true, duration: const Duration(seconds: 5),
-      ));
-
-      return;
-    }
-
-    buyProduct(selected);
-  }
-
-  Future<void> _initializeInAppPurchases() async {
-    final bool isAvailable = await inAppPurchase.isAvailable();
-
-
-    setState(() {
-      available = isAvailable;
-    });
-
-    if (isAvailable) {
-
-      final ProductDetailsResponse response = await inAppPurchase.queryProductDetails(PurchaseConstants.productIds);
-      if (response.error == null) {
-        setState(() {
-          products = response.productDetails;
-        });
-      }
-    }
-  }
-
-  Future<void> handlePurchaseUpdates(List<PurchaseDetails> purchaseDetailsList) async{
-    setState(() {
-      purchases.addAll(purchaseDetailsList);
-    });
-
-    for (final PurchaseDetails purchaseDetails in purchaseDetailsList) {
-
-      if (purchaseDetails.status == PurchaseStatus.purchased || purchaseDetails.status == PurchaseStatus.restored) {
-        //bool isValid = true; // TODO: server await verifyPurchaseOnServer(purchaseDetails);
-        if (purchaseDetails.pendingCompletePurchase) {
-          deliverProduct(purchaseDetails);
-        }else{
-          final InAppPurchaseAndroidPlatformAddition  androidAddition =
-          inAppPurchase.getPlatformAddition<InAppPurchaseAndroidPlatformAddition>();
-
-          await androidAddition.consumePurchase(purchaseDetails);
-
-        }
-      } else if (purchaseDetails.status == PurchaseStatus.error) {
-        // Handle error
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text( '${AppLocalizations.of(context)!.purchase_error} ${purchaseDetails.error}'), showCloseIcon: true, duration: const Duration(seconds: 5),
-        ));
-      }
-    }
-  }
-
-  /*
-   * A purchase is sent here in order to be validated on server and then completed.
-   * If server validation fails, we keep the purchase in the shared prefs in order to be retried in 30 seconds.
-   */
-  Future<void> deliverProduct(PurchaseDetails purchaseDetails) async{
-
-    try {
-      bool success = await sendPurchaseToServer(purchaseDetails);
-      if (success) {
-
-        inAppPurchase.completePurchase(purchaseDetails);
-
-        final InAppPurchaseAndroidPlatformAddition  androidAddition =
-        inAppPurchase.getPlatformAddition<InAppPurchaseAndroidPlatformAddition>();
-
-        await androidAddition.consumePurchase(purchaseDetails);
-
-      } else {
-
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar( SnackBar(
-            content: Text(AppLocalizations.of(context)!.purchase_handling),
-            showCloseIcon: true,
-            duration:  const Duration(seconds: 5),
-          ));
-        }
-
-      }
-    } catch (e) {
-    }
-
-  }
-
-  Future<void> restorePurchases() async {
-
-    await inAppPurchase.restorePurchases();
-  }
-
-  void buyProduct(ProductDetails productDetails) {
-    final PurchaseParam purchaseParam = PurchaseParam(productDetails: productDetails);
-    inAppPurchase.buyConsumable(purchaseParam: purchaseParam, autoConsume: false);
-  }
-
-  Future<bool> sendPurchaseToServer(PurchaseDetails purchase) async {
-    // For Google Play
-    if (purchase.verificationData.source == 'google_play') {
-      bool verified = await _verifyWithGoogle(purchase);
-      return verified;
-    }
-    // For Apple App Store
-    else if (purchase.verificationData.source == 'app_store') {
-      return await _verifyWithApple(purchase);
-    }
-    return false;
-  }
-
-// Mock Google Play verification (Replace with your backend logic)
-  Future<bool> _verifyWithGoogle(PurchaseDetails purchase) async {
-    // final String purchaseToken = purchase.verificationData.serverVerificationData;
-
-    // Send token to your backend for validation
-    return await verifyPurchaseWithServer(purchase);
-  }
-
-// Mock Apple verification (Replace with your backend logic)
-  Future<bool> _verifyWithApple(PurchaseDetails purchase) async {
-    // final String receiptData = purchase.verificationData.serverVerificationData;
-    return await verifyPurchaseWithServer(purchase);
-  }
-
-  Future<bool> verifyPurchaseWithServer(PurchaseDetails purchaseDetails) async {
-    return await HttpActionsClient.verifyPurchase(purchaseDetails); // Simulating network delay
-  }
+//   Future<void> _initializeInAppPurchases() async {
+//     final bool isAvailable = await inAppPurchase.isAvailable();
+//
+//
+//     setState(() {
+//       available = isAvailable;
+//     });
+//
+//     if (isAvailable) {
+//
+//       final ProductDetailsResponse response = await inAppPurchase.queryProductDetails(PurchaseConstants.productIds);
+//       if (response.error == null) {
+//         setState(() {
+//           products = response.productDetails;
+//         });
+//       }
+//     }
+//   }
+//
+//   Future<void> handlePurchaseUpdates(List<PurchaseDetails> purchaseDetailsList) async{
+//     setState(() {
+//       purchases.addAll(purchaseDetailsList);
+//     });
+//
+//     for (final PurchaseDetails purchaseDetails in purchaseDetailsList) {
+//
+//       if (purchaseDetails.status == PurchaseStatus.purchased || purchaseDetails.status == PurchaseStatus.restored) {
+//         //bool isValid = true; // TODO: server await verifyPurchaseOnServer(purchaseDetails);
+//         if (purchaseDetails.pendingCompletePurchase) {
+//           deliverProduct(purchaseDetails);
+//         }else{
+//           final InAppPurchaseAndroidPlatformAddition  androidAddition =
+//           inAppPurchase.getPlatformAddition<InAppPurchaseAndroidPlatformAddition>();
+//
+//           await androidAddition.consumePurchase(purchaseDetails);
+//
+//         }
+//       } else if (purchaseDetails.status == PurchaseStatus.error) {
+//         // Handle error
+//         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+//           content: Text( '${AppLocalizations.of(context)!.purchase_error} ${purchaseDetails.error}'), showCloseIcon: true, duration: const Duration(seconds: 5),
+//         ));
+//       }
+//     }
+//   }
+//
+//   /*
+//    * A purchase is sent here in order to be validated on server and then completed.
+//    * If server validation fails, we keep the purchase in the shared prefs in order to be retried in 30 seconds.
+//    */
+//   Future<void> deliverProduct(PurchaseDetails purchaseDetails) async{
+//
+//     try {
+//       bool success = await sendPurchaseToServer(purchaseDetails);
+//       if (success) {
+//
+//         inAppPurchase.completePurchase(purchaseDetails);
+//
+//         final InAppPurchaseAndroidPlatformAddition  androidAddition =
+//         inAppPurchase.getPlatformAddition<InAppPurchaseAndroidPlatformAddition>();
+//
+//         await androidAddition.consumePurchase(purchaseDetails);
+//
+//       } else {
+//
+//         if (mounted) {
+//           ScaffoldMessenger.of(context).showSnackBar( SnackBar(
+//             content: Text(AppLocalizations.of(context)!.purchase_handling),
+//             showCloseIcon: true,
+//             duration:  const Duration(seconds: 5),
+//           ));
+//         }
+//
+//       }
+//     } catch (e) {
+//     }
+//
+//   }
+//
+//   Future<void> restorePurchases() async {
+//
+//     await inAppPurchase.restorePurchases();
+//   }
+//
+//   void buyProduct(ProductDetails productDetails) {
+//     final PurchaseParam purchaseParam = PurchaseParam(productDetails: productDetails);
+//     inAppPurchase.buyConsumable(purchaseParam: purchaseParam, autoConsume: false);
+//   }
+//
+//   Future<bool> sendPurchaseToServer(PurchaseDetails purchase) async {
+//     // For Google Play
+//     if (purchase.verificationData.source == 'google_play') {
+//       bool verified = await _verifyWithGoogle(purchase);
+//       return verified;
+//     }
+//     // For Apple App Store
+//     else if (purchase.verificationData.source == 'app_store') {
+//       return await _verifyWithApple(purchase);
+//     }
+//     return false;
+//   }
+//
+// // Mock Google Play verification (Replace with your backend logic)
+//   Future<bool> _verifyWithGoogle(PurchaseDetails purchase) async {
+//     // final String purchaseToken = purchase.verificationData.serverVerificationData;
+//
+//     // Send token to your backend for validation
+//     return await verifyPurchaseWithServer(purchase);
+//   }
+//
+// // Mock Apple verification (Replace with your backend logic)
+//   Future<bool> _verifyWithApple(PurchaseDetails purchase) async {
+//     // final String receiptData = purchase.verificationData.serverVerificationData;
+//     return await verifyPurchaseWithServer(purchase);
+//   }
+//
+//   Future<bool> verifyPurchaseWithServer(PurchaseDetails purchaseDetails) async {
+//     return await HttpActionsClient.verifyPurchase(purchaseDetails); // Simulating network delay
+//   }
 
   /*
    * If shared prefs have a value , make a call to retrieve user
@@ -1212,10 +1212,10 @@ void setupFirebaseListeners() async{
     dateKeysNew.add(DateUtilsFt.formattedDateWithOffset(-1));
     dateKeysNew.add(DateUtilsFt.formattedDateWithOffset(0));
     dateKeysNew.add(DateUtilsFt.formattedDateWithOffset(1));
-
-    print('Dates new are ' + dateKeysNew.first);
-    print('Dates new are ' + dateKeysNew[1]);
-    print('Dates new are ' + dateKeysNew[2]);
+    //
+    // print('Dates new are ' + dateKeysNew.first);
+    // print('Dates new are ' + dateKeysNew[1]);
+    // print('Dates new are ' + dateKeysNew[2]);
 
     List<String> dateKeysOld  = AppContext.eventsPerDayMap.keys.toList();
     for (String keyOld in dateKeysOld){

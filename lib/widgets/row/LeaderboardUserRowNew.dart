@@ -51,21 +51,20 @@ class LeaderBoardUserFullInfoRow extends StatefulWidget {
     user.userBets.sort();
 
     return
-       Stack(
-        clipBehavior: Clip.none, // Allow positioning outside the container
-        children: [
+       // Stack(
+       //  clipBehavior: Clip.none, // Allow positioning outside the container
+       //  children: [
 
     // return
-    Container(
-      padding: const EdgeInsets.all(10),
-      margin: const EdgeInsets.symmetric(vertical: 4, horizontal: 0),
+       Card(
+        elevation: 6,
+        margin: const EdgeInsets.symmetric(vertical: 4, horizontal: 0),
+        child:
+      Padding(
+          padding: const EdgeInsets.all(16),
+          child:
 
-      decoration: BoxDecoration(
-        color: const Color(ColorConstants.my_dark_grey)
-        , // Dark background color
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: Column(
+ Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // Top Row: Profile Picture and Main Info
@@ -98,7 +97,7 @@ class LeaderBoardUserFullInfoRow extends StatefulWidget {
                         Text(
                           user.username.length < 18 ? user.username : user.username.substring(0, 17),
                           style: const TextStyle(
-                            color: Colors.white,
+                            color: Colors.black87,
                             fontSize: 18,
                             fontWeight: FontWeight.bold,
                           ),
@@ -183,35 +182,36 @@ class LeaderBoardUserFullInfoRow extends StatefulWidget {
           ),
         ],
       ),
-    ),
+    )
+       );
 
           // Small Green Box at Top-Left Corner
-          Positioned(
-            top: -5, // Slightly above the container
-            left: -5, // Slightly left of the container
-            child:
+          // Positioned(
+          //   top: -5, // Slightly above the container
+          //   left: -5, // Slightly left of the container
+          //   child:
+          //
+          //   _buildTiltedPosition(isCurrentLeaderBoard ? '${user.balance.position} ${AppLocalizations.of(context)!.out_of} ${user.balance.totalUsers}' : BetUtils.getLocalizedMonthString(context, user.balance.month, user.balance.year))
+          //
+          //
+          // ),
+          //
+          // if (AppContext.user.mongoUserId != Constants.defMongoId
+          //     && AppContext.user.mongoUserId != user.mongoUserId && isCurrentLeaderBoard
+          // && isLeaderBoardWinner)
+          // Positioned(
+          //     top: 0, // Slightly above the container
+          //     right: 5, // Slightly left of the container
+          //     child:
+          //
+          //     _buildPredsButton()
+          //
+          //
+          // ),
+        // ],
 
-            _buildTiltedPosition(isCurrentLeaderBoard ? '${user.balance.position} ${AppLocalizations.of(context)!.out_of} ${user.balance.totalUsers}' : BetUtils.getLocalizedMonthString(context, user.balance.month, user.balance.year))
 
-
-          ),
-
-          if (AppContext.user.mongoUserId != Constants.defMongoId
-              && AppContext.user.mongoUserId != user.mongoUserId && isCurrentLeaderBoard
-          && isLeaderBoardWinner)
-          Positioned(
-              top: 0, // Slightly above the container
-              right: 5, // Slightly left of the container
-              child:
-
-              _buildPredsButton()
-
-
-          ),
-        ],
-
-
-    );
+    // );
   }
 
 
@@ -335,7 +335,7 @@ class LeaderBoardUserFullInfoRow extends StatefulWidget {
         Text(
           value,
           style: const TextStyle(
-            color: Colors.white,
+            color: Colors.black87,
             fontSize: 16,
             fontWeight: FontWeight.bold,
             fontStyle: FontStyle.italic
@@ -413,7 +413,7 @@ class LeaderBoardUserFullInfoRow extends StatefulWidget {
             '👀 ${AppLocalizations.of(context)!.view_predictions_text}',
             style: const TextStyle(
               fontSize: 10,
-              color: Colors.white,
+              color: Colors.grey,
               fontWeight: FontWeight.bold,
               fontStyle: FontStyle.italic,
             ),

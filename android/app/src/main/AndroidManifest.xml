@@ -12,6 +12,7 @@
 
    <application
         android:label="flutter_app"
+        android:enableOnBackInvokedCallback="true"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity

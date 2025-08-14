@@ -2,6 +2,8 @@ import 'dart:async';
 import 'dart:ui';
 import 'package:collection/collection.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:in_app_purchase_android/in_app_purchase_android.dart';
+
 
 
 import 'package:flutter/cupertino.dart';
@@ -9,6 +11,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_app/models/constants/Constants.dart';
 import 'package:flutter_app/models/context/AppContext.dart';
 import 'package:flutter_app/utils/client/HttpActionsClient.dart';
+import 'package:in_app_purchase/in_app_purchase.dart';
 
 
 import '../helper/SharedPrefs.dart';
@@ -16,7 +19,9 @@ import '../models/FantasyLeagueInvitation.dart';
 import '../models/User.dart';
 import '../models/UserBet.dart';
 import '../models/constants/ColorConstants.dart';
+import '../models/constants/PurchaseConstants.dart';
 import '../widgets/custom/FantasyLeagueCard.dart';
+import '../widgets/dialog/DialogTextWithButtons.dart';
 import '../widgets/row/FantasyLeagueInvitationRow.dart';
 import '../widgets/dialog/DialogWizardLeagueNameStep1.dart';
 
@@ -51,6 +56,12 @@ class MyFantasyLeaguesPage extends StatefulWidget{//}WithName{
 
 class MyFantasyLeaguesPageState extends State<MyFantasyLeaguesPage>  with SingleTickerProviderStateMixin{
 
+  final InAppPurchase inAppPurchase = InAppPurchase.instance;
+  List<ProductDetails> products = [];
+  List<PurchaseDetails> purchases = [];
+  StreamSubscription<List<PurchaseDetails>>? subscription;
+  bool available = false;
+
   /*
    * Make o copy of the bets
    */
@@ -73,6 +84,7 @@ class MyFantasyLeaguesPageState extends State<MyFantasyLeaguesPage>  with Single
   @override
   void dispose() {
     _tabController.dispose();
+    subscription?.cancel();
     super.dispose();
   }
 
@@ -84,6 +96,17 @@ class MyFantasyLeaguesPageState extends State<MyFantasyLeaguesPage>  with Single
     _tabController.addListener(() {
       setState(() {});
     });
+
+    // if (AppContext.user.mongoUserId != Constants.defMongoId) {
+    //
+    // }
+
+    Timer.periodic(const Duration(seconds: 30), (timer) {
+      //if (!isMinimized) {
+      restorePurchases();      //);
+      //}
+    }
+    );
 
     updateFantasyLeagues();
     Timer.periodic(const Duration(seconds: 15), (timer) {
@@ -101,11 +124,26 @@ class MyFantasyLeaguesPageState extends State<MyFantasyLeaguesPage>  with Single
       //}
     });
 
+
+    _initializeInAppPurchases();
+
+    subscription = inAppPurchase.purchaseStream.listen((purchaseDetailsList) {
+      handlePurchaseUpdates(purchaseDetailsList);
+    },onDone: () => subscription?.cancel(), onError: (error) {
+      if (mounted){
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text(AppLocalizations.of(context)!.purchase_error), showCloseIcon: true, duration: const Duration(seconds: 5),
+        ));
+      }
+      // Handle errors during the purchase flow.
+    });
+
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
+
     //userBets = context.user
 
    if (AppContext.user.mongoUserId == Constants.defMongoId){
@@ -205,7 +243,9 @@ class MyFantasyLeaguesPageState extends State<MyFantasyLeaguesPage>  with Single
 
         FantasyLeagueCard(
           fantasyLeague: fantasyLeague,
+          topUpCallback: promptDialogTopup,
           key: fantasyLeagueKey,
+          products: products,
           onOptOut: () {
 
             optout();
@@ -342,11 +382,11 @@ class MyFantasyLeaguesPageState extends State<MyFantasyLeaguesPage>  with Single
           fantasyLeague.invitations.sort();
           fantasyLeague.users.sort();
 
-          print('fantasy was ' + sharedPrefs.getByKey(sp_fantasy_league_id));
+          // print('fantasy was ' + sharedPrefs.getByKey(sp_fantasy_league_id));
        // if (AppContext.user.fantasyLeagueMongoId != fantasyLeagueIncoming.mongoId){
           sharedPrefs.updateFantasyLeagueId(fantasyLeagueIncoming.mongoId);
 
-          print('fantasy now is  ' + sharedPrefs.getByKey(sp_fantasy_league_id));
+          // print('fantasy now is  ' + sharedPrefs.getByKey(sp_fantasy_league_id));
         //}
 
       }
@@ -437,63 +477,160 @@ class MyFantasyLeaguesPageState extends State<MyFantasyLeaguesPage>  with Single
   }
 
 
-  // void _showAcceptConfirmation(FantasyLeague league) {
-  //   showDialog(
-  //     context: context, // or pass context directly
-  //     builder: (context) {
-  //       return AlertDialog(
-  //         title: const Text('Accept Invitation'),
-  //         content: const Text('Are you sure you want to accept this league invitation?'),
-  //         actions: [
-  //           TextButton(
-  //             onPressed: () => Navigator.pop(context),
-  //             child: const Text('Cancel'),
-  //           ),
-  //           ElevatedButton(
-  //             style: ElevatedButton.styleFrom(backgroundColor: Colors.green.shade300),
-  //             onPressed: () {
-  //               Navigator.pop(context); // Close dialog
-  //               FantasyLeagueInvitation fli = FantasyLeagueInvitation(email: AppContext.user.email);
-  //               fli.mongoId = league.invitationMongoId;
-  //               HttpActionsClient.acceptFantasyLeagueInvitation(fli);
-  //               print("Accepted invitation");
-  //             },
-  //             child: const Text('Accept'),
-  //           ),
-  //         ],
-  //       );
-  //     },
+  // void alertDialogTopUp() {
+  //   showDialog(context: context, builder: (context) =>
+  //       DialogTextWithButtons(topUpCallback: promptDialogTopup)
   //   );
   // }
-  //
-  // void _showDeclineConfirmation(FantasyLeague league) {
-  //   showDialog(
-  //     context: context, // or pass context directly
-  //     builder: (context) {
-  //       return AlertDialog(
-  //         title: const Text('Decline Invitation'),
-  //         content: const Text('Are you sure you want to decline this league invitation?'),
-  //         actions: [
-  //           TextButton(
-  //             onPressed: () => Navigator.pop(context),
-  //             child: const Text('Cancel', style: TextStyle(color: Colors.white)),
-  //           ),
-  //           ElevatedButton(
-  //             style: ElevatedButton.styleFrom(backgroundColor: Colors.red.shade300),
-  //             onPressed: () {
-  //               Navigator.pop(context); // Close dialog
-  //               FantasyLeagueInvitation fli = FantasyLeagueInvitation(email: AppContext.user.email);
-  //               fli.mongoId = league.invitationMongoId;
-  //               HttpActionsClient.rejectFantasyLeagueInvitation(fli);
-  //               print("Declined invitation");
-  //             },
-  //             child: const Text('Decline'),
-  //           ),
-  //         ],
-  //       );
-  //     },
-  //   );
-  // }
+
+  void promptDialogTopup(String productId) {
+    if (products.isEmpty){
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+        content: Text('No products available'), showCloseIcon: true, duration: Duration(seconds: 5),
+      ));
+
+      return;
+    }
+
+    ProductDetails? selected;
+    for(ProductDetails product in products) {
+      if (productId == product.id) {
+        selected = product;
+      }
+    }
+
+    if (selected == null) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text('Product not found $productId'), showCloseIcon: true, duration: const Duration(seconds: 5),
+      ));
+
+      return;
+    }
+
+    buyProduct(selected);
+  }
+
+  Future<void> _initializeInAppPurchases() async {
+    final bool isAvailable = await inAppPurchase.isAvailable();
+
+
+    setState(() {
+      available = isAvailable;
+    });
+
+    if (isAvailable) {
+
+      final ProductDetailsResponse response = await inAppPurchase.queryProductDetails(PurchaseConstants.productIds);
+      if (response.error == null) {
+        setState(() {
+          products = response.productDetails;
+        });
+      }else{
+        print('PRODUCTS ERROR');
+      }
+    }
+  }
+
+  Future<void> handlePurchaseUpdates(List<PurchaseDetails> purchaseDetailsList) async{
+    setState(() {
+      purchases.addAll(purchaseDetailsList);
+    });
+
+    for (final PurchaseDetails purchaseDetails in purchaseDetailsList) {
+
+      if (purchaseDetails.status == PurchaseStatus.purchased || purchaseDetails.status == PurchaseStatus.restored) {
+        //bool isValid = true; // TODO: server await verifyPurchaseOnServer(purchaseDetails);
+        if (purchaseDetails.pendingCompletePurchase) {
+          deliverProduct(purchaseDetails);
+        }else{
+          final InAppPurchaseAndroidPlatformAddition  androidAddition =
+          inAppPurchase.getPlatformAddition<InAppPurchaseAndroidPlatformAddition>();
+
+          await androidAddition.consumePurchase(purchaseDetails);
+
+        }
+      } else if (purchaseDetails.status == PurchaseStatus.error) {
+        // Handle error
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text( '${AppLocalizations.of(context)!.purchase_error} ${purchaseDetails.error}'), showCloseIcon: true, duration: const Duration(seconds: 5),
+        ));
+      }
+    }
+  }
+
+  /*
+   * A purchase is sent here in order to be validated on server and then completed.
+   * If server validation fails, we keep the purchase in the shared prefs in order to be retried in 30 seconds.
+   */
+  Future<void> deliverProduct(PurchaseDetails purchaseDetails) async{
+
+    try {
+      bool success = await sendPurchaseToServer(purchaseDetails);
+      if (success) {
+
+        inAppPurchase.completePurchase(purchaseDetails);
+
+        final InAppPurchaseAndroidPlatformAddition  androidAddition =
+        inAppPurchase.getPlatformAddition<InAppPurchaseAndroidPlatformAddition>();
+
+        await androidAddition.consumePurchase(purchaseDetails);
+
+      } else {
+
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar( SnackBar(
+            content: Text(AppLocalizations.of(context)!.purchase_handling),
+            showCloseIcon: true,
+            duration:  const Duration(seconds: 5),
+          ));
+        }
+
+      }
+    } catch (e) {
+    }
+
+  }
+
+  Future<void> restorePurchases() async {
+
+    await inAppPurchase.restorePurchases();
+  }
+
+  void buyProduct(ProductDetails productDetails) {
+    final PurchaseParam purchaseParam = PurchaseParam(productDetails: productDetails);
+    inAppPurchase.buyConsumable(purchaseParam: purchaseParam, autoConsume: false);
+  }
+
+  Future<bool> sendPurchaseToServer(PurchaseDetails purchase) async {
+    // For Google Play
+    if (purchase.verificationData.source == 'google_play') {
+      bool verified = await _verifyWithGoogle(purchase);
+      return verified;
+    }
+    // For Apple App Store
+    else if (purchase.verificationData.source == 'app_store') {
+      return await _verifyWithApple(purchase);
+    }
+    return false;
+  }
+
+// Mock Google Play verification (Replace with your backend logic)
+  Future<bool> _verifyWithGoogle(PurchaseDetails purchase) async {
+    // final String purchaseToken = purchase.verificationData.serverVerificationData;
+
+    // Send token to your backend for validation
+    return await verifyPurchaseWithServer(purchase);
+  }
+
+// Mock Apple verification (Replace with your backend logic)
+  Future<bool> _verifyWithApple(PurchaseDetails purchase) async {
+    // final String receiptData = purchase.verificationData.serverVerificationData;
+    return await verifyPurchaseWithServer(purchase);
+  }
+
+  Future<bool> verifyPurchaseWithServer(PurchaseDetails purchaseDetails) async {
+    return await HttpActionsClient.verifyPurchase(purchaseDetails); // Simulating network delay
+  }
 
 
 }
