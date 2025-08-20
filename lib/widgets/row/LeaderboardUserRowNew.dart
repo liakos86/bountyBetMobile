@@ -109,7 +109,7 @@ class LeaderBoardUserFullInfoRow extends StatefulWidget {
 
                         if (!isCurrentLeaderBoard)
                         Text(
-                        '${user.balance.position} ${AppLocalizations.of(context)!.out_of} ${user.balance.totalUsers}' ,
+                        '${user.globalPosition} ${AppLocalizations.of(context)!.out_of}${AppContext.user.totalUsers.toString()}',// ${user.balance.totalUsers}' ,
                           style: const TextStyle(
                             color: Colors.white,
                             fontSize: 18,
@@ -137,10 +137,10 @@ class LeaderBoardUserFullInfoRow extends StatefulWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              _buildSmallStatBox(user.balance.betPredictionsMonthlyText(), AppLocalizations.of(context)!.month_preds),
-              _buildSmallStatBox(user.balance.betPredictionsMonthlyPercentageText(), AppLocalizations.of(context)!.preds_perc),
-              _buildSmallStatBox(user.balance.monthlyROIPercentageText(), AppLocalizations.of(context)!.month_roi),
-              _buildSmallStatBox(user.balance.monthlyAmountROIText(), AppLocalizations.of(context)!.amount_returned),
+              // _buildSmallStatBox(user.balance.betPredictionsMonthlyText(), AppLocalizations.of(context)!.month_preds),
+              // _buildSmallStatBox(user.balance.betPredictionsMonthlyPercentageText(), AppLocalizations.of(context)!.preds_perc),
+              // _buildSmallStatBox(user.balance.monthlyROIPercentageText(), AppLocalizations.of(context)!.month_roi),
+              // _buildSmallStatBox(user.balance.monthlyAmountROIText(), AppLocalizations.of(context)!.amount_returned),
             ],
           ),
 
@@ -225,16 +225,16 @@ class LeaderBoardUserFullInfoRow extends StatefulWidget {
           padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 4),
           // margin: const EdgeInsets.symmetric(horizontal: 4),
           decoration: BoxDecoration(
-            color: const Color(ColorConstants.my_green), // Background color of the parallelogram
+            color: const Color(ColorConstants.my_blue), // Background color of the parallelogram
             borderRadius: BorderRadius.circular(8),
           ),
           child:
 
           Row(
             children: [
-              _buildTiltedStatBox(user.balance.betSlipsMonthlyText(), AppLocalizations.of(context)!.won_slips, 3, Colors.white),
-              _buildTiltedStatBox(user.balance.betSlipsMonthlyPercentageText(), AppLocalizations.of(context)!.slips_percent, 2, Colors.white),
-              _buildTiltedStatBox(user.balance.balanceLeaderBoard.toStringAsFixed(0), AppLocalizations.of(context)!.credits_with_sign, 2, Colors.amber),
+              // _buildTiltedStatBox(user.balance.betSlipsMonthlyText(), AppLocalizations.of(context)!.won_slips, 3, Colors.white),
+              // _buildTiltedStatBox(user.balance.betSlipsMonthlyPercentageText(), AppLocalizations.of(context)!.slips_percent, 2, Colors.white),
+              // _buildTiltedStatBox(user.balance.balanceLeaderBoard.toStringAsFixed(0), AppLocalizations.of(context)!.credits_with_sign, 2, Colors.amber),
             ],
           ),
 
@@ -361,7 +361,7 @@ class LeaderBoardUserFullInfoRow extends StatefulWidget {
         height: 24,
         decoration: BoxDecoration(
           shape: BoxShape.circle,
-          color: bet == null || bet.betStatus == BetStatus.WITHDRAWN ? Colors.blue.shade200 : bet.betStatus == BetStatus.WON ? const Color(ColorConstants.my_green) : Colors.red,// Color(0xFF2C2C2E), // Background color for circular icon
+          color: bet == null || bet.betStatus == BetStatus.WITHDRAWN ? Colors.blue.shade200 : bet.betStatus == BetStatus.WON ? const Color(ColorConstants.my_blue) : Colors.red,// Color(0xFF2C2C2E), // Background color for circular icon
         ),
         child: Icon(bet == null || bet.betStatus == BetStatus.WITHDRAWN ? Icons.question_mark : bet.betStatus == BetStatus.WON ? Icons.check :  Icons.close , color: color, size: 18),
       ),

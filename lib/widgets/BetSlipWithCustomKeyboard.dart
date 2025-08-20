@@ -8,6 +8,7 @@ import 'package:flutter_app/utils/BetUtils.dart';
 import '../models/UserPrediction.dart';
 import '../models/constants/ColorConstants.dart';
 import '../models/constants/Constants.dart';
+import '../models/context/AppContext.dart';
 import './row/SelectedOddRow.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
@@ -79,7 +80,7 @@ class BetSlipWithCustomKeyboardState extends State<BetSlipWithCustomKeyboard>{
     return
 
       Container(
-    color: Colors.grey.shade200,
+    color: Colors.white,
     child:
     SizedBox(
         height: initialHeight,
@@ -94,7 +95,7 @@ class BetSlipWithCustomKeyboardState extends State<BetSlipWithCustomKeyboard>{
           child:
               Container(
                 height: 50,
-                color:  const Color(ColorConstants.my_green) ,
+                color:  const Color(ColorConstants.my_blue) ,
                 child:
                     Row(
                       children:[
@@ -169,7 +170,7 @@ class BetSlipWithCustomKeyboardState extends State<BetSlipWithCustomKeyboard>{
                       )
                   ),
                   foregroundColor: MaterialStateProperty.all<Color>(Colors.white),
-                  backgroundColor: MaterialStateProperty.all<Color>(const Color(ColorConstants.my_green))
+                  backgroundColor: MaterialStateProperty.all<Color>(const Color(ColorConstants.my_blue))
               ),
               onPressed: () {
 
@@ -190,8 +191,25 @@ class BetSlipWithCustomKeyboardState extends State<BetSlipWithCustomKeyboard>{
         :
 
           Expanded(
-            flex: 3,
+            flex: 5,
                 child:
+                Align(
+                    alignment: Alignment.bottomCenter,
+                    child:
+                    Wrap(children:[
+
+                    Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 2),
+              child:
+                        Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+
+
+                        Text('Available ${AppContext.user.fantasyBalance.balance.toStringAsFixed(2)}'),
+                        Text(bettingAmount > 0 ? '${AppLocalizations.of(context)!.betslip_returning}${(bettingAmount * BetUtils.finalOddOf(selectedOdds)).toStringAsFixed(2)}' : BetUtils.finalOddOf(selectedOdds).toStringAsFixed(2)),
+                        ])
+                    ),
 
                 Align(
               alignment: Alignment.bottomCenter,
@@ -266,27 +284,27 @@ class BetSlipWithCustomKeyboardState extends State<BetSlipWithCustomKeyboard>{
 
                         ),
 
-                        Expanded(
-                          flex: 2,
-                          child: Container(
-                            height: 40,
-                            margin: const EdgeInsets.symmetric(horizontal: 2),
-                            padding: const EdgeInsets.all(2),
-                            decoration: BoxDecoration(
-                              color: const Color(ColorConstants.my_green),
-                              borderRadius: BorderRadius.circular(4),
-                            ),
-                            child:  Center(
-                              child: Text(
-                               'x ${BetUtils.finalOddOf(selectedOdds).toStringAsFixed(2)}', // Replace with your actual text
-                                style: const TextStyle(color: Colors.white, fontSize: 12),
-                                overflow: TextOverflow.ellipsis, // Prevents wrap
-                                maxLines: 1, // Ensures it stays on one line
-                                softWrap: false,
-                              ),
-                            ),
-                          ),
-                        ),
+                        // Expanded(
+                        //   flex: 2,
+                        //   child: Container(
+                        //     height: 40,
+                        //     margin: const EdgeInsets.symmetric(horizontal: 2),
+                        //     padding: const EdgeInsets.all(2),
+                        //     decoration: BoxDecoration(
+                        //       color: const Color(ColorConstants.my_blue),
+                        //       borderRadius: BorderRadius.circular(4),
+                        //     ),
+                        //     child:  Center(
+                        //       child: Text(
+                        //        'x ${BetUtils.finalOddOf(selectedOdds).toStringAsFixed(2)}', // Replace with your actual text
+                        //         style: const TextStyle(color: Colors.white, fontSize: 12),
+                        //         overflow: TextOverflow.ellipsis, // Prevents wrap
+                        //         maxLines: 1, // Ensures it stays on one line
+                        //         softWrap: false,
+                        //       ),
+                        //     ),
+                        //   ),
+                        // ),
 
 
                         (betPlacementStatus != BetPlacementStatus.PLACED) ?
@@ -336,7 +354,7 @@ class BetSlipWithCustomKeyboardState extends State<BetSlipWithCustomKeyboard>{
                             child: Center(
                                 child: CircularProgressIndicator()
                             ),
-                          ) : Text('${AppLocalizations.of(context)!.betslip_place_bet}${bettingAmount > 0 ? '${AppLocalizations.of(context)!.betslip_returning}${(bettingAmount * BetUtils.finalOddOf(selectedOdds)).toStringAsFixed(2)}' : ''}'),
+                          ) : Text(AppLocalizations.of(context)!.betslip_place_bet),
                         )),)
 
                             :
@@ -362,7 +380,7 @@ class BetSlipWithCustomKeyboardState extends State<BetSlipWithCustomKeyboard>{
                       )
                     ),
              //   ]
-                )
+                )]))
                 ),
               ]
           )

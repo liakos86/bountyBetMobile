@@ -121,8 +121,8 @@ class FantasyLeague implements Comparable<FantasyLeague>{
       "fantasyLeagueMongoId": mongoId,
       "creatorMongoUserId": AppContext.user.mongoUserId,
       "name": name,
-      "dtStart": dtStart.toUtc().toIso8601String() + 'Z',
-      "dtEnd": dtEnd.toUtc().toIso8601String() + 'Z',
+      "dtStart": dtStart.toIso8601String() + 'Z',
+      "dtEnd": dtEnd.toIso8601String() + 'Z',
       "supportedLeagueIds": selectedLeagueIds,
       "startingBalance": startingBalance,
       "allowTopUp": allowTopUp

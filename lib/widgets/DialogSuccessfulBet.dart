@@ -2,9 +2,10 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_app/models/UserBet.dart';
-import 'package:flutter_app/widgets/row/UserPredictionRowTilted.dart';
+import 'package:flutter_app/widgets/row/UserPredictionCardTilted.dart';
 
 import '../models/UserPrediction.dart';
+import '../models/context/AppContext.dart';
 
 class DialogSuccessfulBet extends StatelessWidget{
 
@@ -47,7 +48,7 @@ class DialogSuccessfulBet extends StatelessWidget{
   }
 
   Widget _buildSelectedOddRow(UserPrediction bettingOdd) {
-    return UserPredictionRowTilted(prediction: bettingOdd, callback: null);
+    return UserPredictionCardTilted(prediction: bettingOdd, callback: null, event: AppContext.findEvent(bettingOdd.eventId));
     // return UserBetPredictionRow(prediction: bettingOdd);
   }
 }

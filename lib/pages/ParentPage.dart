@@ -254,7 +254,7 @@ class ParentPageState extends State<ParentPage> with WidgetsBindingObserver {
     } else if (!user.validated){
       appBarTitle = '[${AppLocalizations.of(context)!.validation_pending}]';
     }else {// if (AppContext.user.balance.position > 0){
-      appBarTitle = '${AppLocalizations.of(context)!.position}[${AppContext.user.balance.position}${AppLocalizations.of(context)!.out_of}${AppContext.user.balance.totalUsers}]'  ;
+      appBarTitle = '${AppLocalizations.of(context)!.position}[${AppContext.user.globalPosition}${AppLocalizations.of(context)!.out_of}${AppContext.user.totalUsers.toString()}]'  ;
     }
 
     if (!mounted){
@@ -329,11 +329,11 @@ class ParentPageState extends State<ParentPage> with WidgetsBindingObserver {
                   WidgetSpan(
                     alignment: PlaceholderAlignment.middle, // Align icon with text
                     child:
-                    AppContext.user.balance.positionDelta >= 0 ?
+                    AppContext.user.fantasyBalance.positionDelta >= 0 ?
                     const Icon(
                       Icons.arrow_circle_up, // Replace with desired icon
                       size: 20,
-                      color: Color(ColorConstants.my_green),
+                      color: Color(ColorConstants.my_blue),
                     )
                         :
                     const Icon(
@@ -347,26 +347,26 @@ class ParentPageState extends State<ParentPage> with WidgetsBindingObserver {
                 if (AppContext.user.mongoUserId != User.defUser().mongoUserId
                     && AppContext.user.validated)
                   TextSpan(
-                    text: AppContext.user.balance.positionDelta >= 0 ? ' +${AppContext.user.balance.positionDelta}' : ' ${AppContext.user.balance.positionDelta}',
-                    style: TextStyle(color: AppContext.user.balance.positionDelta >= 0 ? const Color(ColorConstants.my_green) : Colors.redAccent)
+                    text: AppContext.user.fantasyBalance.positionDelta >= 0 ? ' +${AppContext.user.fantasyBalance.positionDelta}' : ' ${AppContext.user.fantasyBalance.positionDelta}',
+                    style: TextStyle(color: AppContext.user.fantasyBalance.positionDelta >= 0 ? const Color(ColorConstants.my_blue) : Colors.redAccent)
                   ),
 
                 const WidgetSpan(child: SizedBox(width: 8)),
 
-                if (AppContext.user.balance.balance > 0)
-                const WidgetSpan(
-                  alignment: PlaceholderAlignment.middle, // Align icon with text
-                  child: Icon(
-                    Icons.currency_exchange, // Replace with desired icon
-                    size: 20,
-                    color: Colors.amber,
-                  ),
-                ),
+                // if (AppContext.user.fantasyBalance.balance > 0)
+                // const WidgetSpan(
+                //   alignment: PlaceholderAlignment.middle, // Align icon with text
+                //   child: Icon(
+                //     Icons.currency_exchange, // Replace with desired icon
+                //     size: 20,
+                //     color: Colors.amber,
+                //   ),
+                // ),
 
 
-                TextSpan(
-                  text: AppContext.user.balance.balance > 0 ? AppContext.user.balance.balance.toStringAsFixed(2) : Constants.empty,
-                ),
+                // TextSpan(
+                //   text: AppContext.user.fantasyBalance.balance > 0 ? AppContext.user.fantasyBalance.balance.toStringAsFixed(2) : Constants.empty,
+                // ),
                ]))),
 
               // if (available && products.isNotEmpty && AppContext.user.mongoUserId != Constants.defMongoId && AppContext.user.validated && AppContext.user.balance.balance < 100000 )
@@ -416,7 +416,7 @@ class ParentPageState extends State<ParentPage> with WidgetsBindingObserver {
     FloatingActionButton(
     heroTag: 'btnParentLogin',
     onPressed: promptLoginOrRegister,
-    backgroundColor: const Color(ColorConstants.my_green),
+    backgroundColor: const Color(ColorConstants.my_blue),
     foregroundColor: Colors.black,
     mini: true, child:
     AppContext.user.mongoUserId == Constants.defMongoId ?
@@ -561,11 +561,11 @@ class ParentPageState extends State<ParentPage> with WidgetsBindingObserver {
 
   updateUserCallBack(UserBet newBet) {
 
-    double balance = AppContext.user.balance.balance;
+    double balance = AppContext.user.fantasyBalance.balance;
     double balanceNew = balance - newBet.betAmount;
 
     setState((){
-      AppContext.user.balance.balance = balanceNew;
+      AppContext.user.fantasyBalance.balance = balanceNew;
     });
 
   }
@@ -594,6 +594,10 @@ class ParentPageState extends State<ParentPage> with WidgetsBindingObserver {
 
       String localStartString = matchTimeFormat.format(incomingEvent.startAtLocalDateTime());
       String eventDateKey = localStartString.split(' ')[0];
+
+      if (eventDateKey == '2025-08-16'){
+        print(eventDateKey);
+      }
 
       if (!AppContext.eventsPerDayMap.containsKey(eventDateKey)){
         // print('SKIPPING GAME ' + incomingEvent.eventId.toString());

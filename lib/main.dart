@@ -117,7 +117,7 @@ class MyApp extends StatelessWidget {
 
       theme: ThemeData(
           textTheme: GoogleFonts.kanitTextTheme(),// GoogleFonts.poppinsTextTheme(),
-          primaryColor: const Color(ColorConstants.my_green)),
+          primaryColor: const Color(ColorConstants.my_blue)),
       home: ParentPage(),
     );
   }

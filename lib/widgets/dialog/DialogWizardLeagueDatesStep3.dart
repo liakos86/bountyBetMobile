@@ -27,6 +27,7 @@ class _DialogWizardLeagueDatesStep3State extends State<DialogWizardLeagueDatesSt
 
   // final DateTime _now = DateTime.now();
   final DateTime _now = DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day, 0, 0);
+  // final DateTime _now = DateTime.utc(DateTime.now().year, DateTime.now().month, DateTime.now().day, 0, 0);
 
   final DateFormat _dateFormat = DateFormat('MMM dd, yyyy');
 

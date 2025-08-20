@@ -52,12 +52,24 @@ class UserFantasyLeagueBalance implements Comparable<UserFantasyLeagueBalance>{
 
   }
 
+  String percentageROIText(){
+    if (betAmountOverall == 0){
+      return '0%';
+    }
+
+    return '${(( (betAmountOverallReturned - betAmountOverall) / (betAmountOverall)) * 100).toStringAsFixed(0)}%';
+  }
+
+  String amountROIText(){
+    return '${betAmountOverall.toStringAsFixed(0)}/${betAmountOverallReturned.toStringAsFixed(0)}' ;
+  }
+
 
   void copyFrom(UserFantasyLeagueBalance u) {
     betAmountOverall = u.betAmountOverall;
     betAmountOverallReturned = u.betAmountOverallReturned;
-    position = u.position;
-    positionDelta = u.positionDelta;
+    // position = u.position;
+    // positionDelta = u.positionDelta; // TODO this is done in DEVICE
     totalUsers = u.totalUsers;
     balance = u.balance;
     balanceLeaderBoard = u.balanceLeaderBoard;

@@ -38,7 +38,7 @@ class DisplayOdd extends StatelessWidget {
               border: Border.all(width: 1, color: Colors.grey),
               borderRadius: const BorderRadius.all(Radius.circular(8)),
               color: betPredictionType == (prediction)
-                  ?  const Color(ColorConstants.my_green)  // Colors.blueAccent
+                  ?  const Color(ColorConstants.my_blue)  // Colors.blueAccent
                   : Colors.grey[100],
             ),
 

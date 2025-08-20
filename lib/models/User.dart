@@ -24,9 +24,13 @@ class User implements Comparable<User>{
 
   String email = Constants.empty;
 
+  int globalPosition = 0;
+  int positionDelta = 0;
+  int totalUsers = 0;
+
   String errorMessage = Constants.empty;
 
-  UserMonthlyBalance balance = UserMonthlyBalance.defBalance();
+  // UserMonthlyBalance balance = UserMonthlyBalance.defBalance();
 
   UserFantasyLeagueBalance fantasyBalance = UserFantasyLeagueBalance.defBalance();
 
@@ -71,6 +75,9 @@ class User implements Comparable<User>{
 
 
     user.betAmountOverall = parsedJson['overallBetAmount']??0;
+    user.globalPosition = parsedJson['globalPosition']??0;
+    user.positionDelta = parsedJson['positionDelta']??0;
+    user.totalUsers = parsedJson['totalUsers']??0;
 
     user.overallWonBets = parsedJson['overallWonSlipsCount'];
     user.overallWonPredictions = parsedJson['overallWonEventsCount'];
@@ -79,15 +86,13 @@ class User implements Comparable<User>{
 
     user.userLevel = UserLevel.ofLevelCode(parsedJson['level']);
 
-    if(parsedJson['balanceObject'] != null) {
-      user.balance = UserMonthlyBalance.fromJson(parsedJson['balanceObject']);
-    }
+    // if(parsedJson['balanceObject'] != null) {
+    //   user.balance = UserMonthlyBalance.fromJson(parsedJson['balanceObject']);
+    // }
 
     if(parsedJson['fantasyLeagueBalanceObject'] != null) {
       user.fantasyBalance = UserFantasyLeagueBalance.fromJson(parsedJson['fantasyLeagueBalanceObject']);
     }
-
-
 
     if (parsedJson['userAwards'] != null){
       user.awards.clear();
@@ -138,7 +143,10 @@ class User implements Comparable<User>{
     overallLostPredictions = u.overallLostPredictions;
     overallWonPredictions = u.overallWonPredictions;
     overallWonBets = u.overallWonBets;
-    balance.copyBalancesFrom(u.balance);
+    globalPosition = u.globalPosition;
+    positionDelta = u.positionDelta;
+    totalUsers = u.totalUsers;
+    // balance.copyBalancesFrom(u.balance);
     fantasyLeagueMongoId = u.fantasyLeagueMongoId;
     // userBets = u.userBets;
     copyBets(u.userBets);
@@ -161,11 +169,11 @@ class User implements Comparable<User>{
 
   @override
   int compareTo(User other) {
-    if (this.balance.balanceLeaderBoard > other.balance.balanceLeaderBoard){//if (this.userPosition > other.userPosition){
+    if (this.overallWonBets > other.overallWonBets){//if (this.userPosition > other.userPosition){
       return -1;
     }
 
-    if (this.balance.balanceLeaderBoard < other.balance.balanceLeaderBoard){
+    if (this.overallWonBets < other.overallWonBets){
       return 1;
     }
 

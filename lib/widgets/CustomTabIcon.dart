@@ -21,7 +21,7 @@ class CustomTabIcon extends StatelessWidget {
       margin: const EdgeInsets.symmetric(vertical: 4.0),
       padding: const EdgeInsets.all(6.0),
       decoration: BoxDecoration(
-        color: isSelected ? const Color(ColorConstants.my_green) : Colors.grey[300],
+        color: isSelected ? const Color(ColorConstants.my_blue) : Colors.grey[300],
         borderRadius: BorderRadius.circular(50.0),
       ),
 

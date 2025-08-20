@@ -6,6 +6,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 import '../enums/WinnerType.dart';
+import '../models/constants/ColorConstants.dart';
 import '../models/constants/Constants.dart';
 import '../utils/cache/CustomCacheManager.dart';
 
@@ -110,7 +111,7 @@ class LogoWithName extends StatefulWidget {
                 Align(
                   alignment: Alignment.centerLeft,
                   child: Text( name + extraText(), overflow: TextOverflow.ellipsis, textAlign: TextAlign.left,
-                    style: TextStyle(fontWeight: WinnerType.NONE == winnerType && !goalScored ? FontWeight.w500 : FontWeight.w900, fontSize: fontSize, color: goalScored ? Colors.redAccent : Colors.white),)),
+                    style: TextStyle(fontWeight: WinnerType.NONE == winnerType && !goalScored ? FontWeight.w500 : FontWeight.w900, fontSize: fontSize, color: goalScored ? Colors.redAccent : const Color(ColorConstants.my_dark_grey)),)),
                  ]))),
 
         Expanded(

@@ -26,7 +26,7 @@ class ProgressBarWithCenteredText extends StatelessWidget{
              borderRadius: const BorderRadius.all(Radius.circular(8)),
              value: value,
              backgroundColor: Colors.red[400],
-             valueColor: const AlwaysStoppedAnimation<Color>(Color(ColorConstants.my_green)),
+             valueColor: const AlwaysStoppedAnimation<Color>(Color(ColorConstants.my_blue)),
            )
        ),
        Text(

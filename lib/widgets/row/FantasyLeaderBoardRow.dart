@@ -87,6 +87,9 @@ class _FantasyLeaderboardRowState extends State<FantasyLeaderboardRow> {
 
   @override
   Widget build(BuildContext context) {
+    bool roundBalance = _user.fantasyBalance.balance  == _user.fantasyBalance.balance.roundToDouble();
+    int digits = roundBalance ? 0 : 1;
+
     return Card(
       color: AppContext.user.mongoUserId == _user.mongoUserId ? Colors.blue[50] : Colors.white,
       margin: const EdgeInsets.symmetric(horizontal: 2, vertical: 4),
@@ -116,13 +119,13 @@ class _FantasyLeaderboardRowState extends State<FantasyLeaderboardRow> {
                   Text(_user.username,
                       maxLines:1,
                       style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
-                  Text(_user.fantasyBalance.balance.round().toString(),
+                  Text(_user.fantasyBalance.balance.toStringAsFixed(digits),
                       style: const TextStyle(fontSize: 14, color: Colors.grey)),
                 ],
               ),
             ),
 
-            if (products.isNotEmpty && AppContext.fantasyLeague.allowTopUp  && AppContext.user.mongoUserId != Constants.defMongoId && AppContext.user.validated && AppContext.user.balance.balance < 10 )
+            if (products.isNotEmpty && AppContext.user.mongoUserId == _user.mongoUserId && AppContext.fantasyLeague.allowTopUp  && AppContext.user.mongoUserId != Constants.defMongoId && AppContext.user.validated && AppContext.user.fantasyBalance.balance < 10 )
               ElevatedButton(
                 key: UniqueKey(),
                 onPressed: () {
@@ -157,6 +160,9 @@ class _FantasyLeaderboardRowState extends State<FantasyLeaderboardRow> {
                     style: const TextStyle(fontSize: 12)),
                 Text(
                     '❌ Bets: ${_user.fantasyBalance.overallLostBets}, Preds: ${_user.fantasyBalance.overallLostPredictions}',
+                    style: const TextStyle(fontSize: 12)),
+                Text(
+                    'ROI%: ${_user.fantasyBalance.percentageROIText()}, Ret:${_user.fantasyBalance.amountROIText()}',
                     style: const TextStyle(fontSize: 12)),
               ],
             ),

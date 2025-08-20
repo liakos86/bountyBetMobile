@@ -84,7 +84,7 @@ class GestureDetectorForOddsState extends State<GestureDetectorForOdds>{
                           border: Border.all(width: 1.5, color: Colors.grey),
                           borderRadius: BorderRadius.all(Radius.circular(8)),
                           color: selectedOdds.contains(prediction)
-                              ? const Color(ColorConstants.my_green)
+                              ? const Color(ColorConstants.my_blue)
                               : Colors.grey[100],
                         ),
 
@@ -118,7 +118,7 @@ class GestureDetectorForOddsState extends State<GestureDetectorForOdds>{
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
             // margin: EdgeInsets.symmetric(horizontal: 4),
             decoration: BoxDecoration(
-              color: const Color(ColorConstants.my_green), // Background color of the parallelogram
+              color: const Color(ColorConstants.my_blue), // Background color of the parallelogram
               borderRadius: BorderRadius.circular(8),
             ),
             child:

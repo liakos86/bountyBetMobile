@@ -65,7 +65,7 @@ class StatIncidentPictureWithText extends StatelessWidget{
       return const Icon(
         Icons.change_circle_rounded,  // Built-in Flutter icon
         size: 16,  // Icon size
-        color: Color(ColorConstants.my_green), // Icon color
+        color: Color(ColorConstants.my_blue), // Icon color
       );
 
      }

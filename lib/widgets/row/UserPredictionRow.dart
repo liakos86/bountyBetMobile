@@ -109,7 +109,7 @@ class UserPredictionRowState extends State<UserPredictionRow>{
                         prediction.betPredictionStatus==BetPredictionStatus.LOST ?
                         const Icon( Icons.highlight_remove, color:   Colors.red)
                             : prediction.betPredictionStatus==BetPredictionStatus.WON ?
-                        const Icon(Icons.check_circle_outline_outlined, color:   const Color(ColorConstants.my_green)) :
+                        const Icon(Icons.check_circle_outline_outlined, color:   const Color(ColorConstants.my_blue)) :
                         const Icon(Icons.pending_outlined, color:   Colors.black)
                           ) :
 

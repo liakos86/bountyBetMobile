@@ -33,31 +33,35 @@ class MatchEvent implements Comparable<MatchEvent>{
 		required this.start_at
   } );
 
+  MatchEvent.defEvent();
+
   Map<String, String> ?translations;
 
   int eventId = -1;
 
-  int leagueId;
+  int leagueId = -1;
 
   String display_status = Constants.empty;
 
-	String start_at;
+	String start_at = Constants.empty;
 
 	String start_at_local = Constants.empty;
 
+	String start_at_date_local = Constants.empty;
+
 	String round_info = Constants.empty;
 
-  String status;
+  String status = MatchEventStatus.NOTSTARTED.statusStr;
 
   int startMillis = 0;
 
-  String status_more;
+  String status_more = MatchEventStatusMore.NOT_STARTED.statusStr;
 
-  Team homeTeam ;
+  Team homeTeam = Team.defTeam();
 
   Score homeTeamScore = Score.def();
 
-  Team awayTeam;
+  Team awayTeam = Team.defTeam();
 
   Score awayTeamScore = Score.def();
 
@@ -524,6 +528,8 @@ class MatchEvent implements Comparable<MatchEvent>{
 		DateTime matchTime = startAtLocalDateTime();
 		startMillis = matchTime.millisecondsSinceEpoch;
 		start_at_local = '${matchTime.hour < 10 ? '0' : Constants.empty}${matchTime.hour}:${matchTime.minute < 10 ? '0' : Constants.empty}${matchTime.minute}' ;
+		start_at_date_local = DateFormat("MM-dd").format(matchTime);
+
 
 		if (currentPeriodStartTime == null){
 			currentPeriodStartTime = matchTime;

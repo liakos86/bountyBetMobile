@@ -79,7 +79,7 @@ class SoccerStatisticRowState extends State<SoccerStatisticRow> {
 
                           value: calcValueOf(statistic.home, statistic),
                           backgroundColor: Colors.red[200],
-                          valueColor: const AlwaysStoppedAnimation<Color>(Color(ColorConstants.my_green)),
+                          valueColor: const AlwaysStoppedAnimation<Color>(Color(ColorConstants.my_blue)),
                         ),
 
                         )
@@ -96,7 +96,7 @@ class SoccerStatisticRowState extends State<SoccerStatisticRow> {
 
                           value: calcValueOf(statistic.away, statistic),
                           backgroundColor: Colors.red[200],
-                          valueColor: const AlwaysStoppedAnimation<Color>(Color(ColorConstants.my_green)),
+                          valueColor: const AlwaysStoppedAnimation<Color>(Color(ColorConstants.my_blue)),
                         ),
                       ),),
 

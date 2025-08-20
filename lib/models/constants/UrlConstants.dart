@@ -12,7 +12,7 @@ class UrlConstants{
 
   static const String AUTH = SERVER_IP +  SRV_VERSION + '/rest/authorize';
   static const String GET_LEAGUE_EVENTS = SERVER_IP +  SRV_VERSION + '/rest/getLeagueEvents';
-  static const String GET_USER_BALANCES = SERVER_IP +  SRV_VERSION + '/rest/getUserBalances/';
+  // static const String GET_USER_BALANCES = SERVER_IP +  SRV_VERSION + '/rest/getUserBalances/';
   static const String GET_USER_BETS = SERVER_IP +  SRV_VERSION + '/rest/getUserBets/{1}/{2}';
   static const String GET_LIVE_EVENTS = SERVER_IP +  SRV_VERSION + '/rest/getLiveEvents';
   static const String GET_LEAGUES = SERVER_IP +  SRV_VERSION + '/rest/getLeagues';

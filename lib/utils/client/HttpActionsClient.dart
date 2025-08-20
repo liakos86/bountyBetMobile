@@ -801,44 +801,44 @@ class HttpActionsClient {
     }
   }
 
-  static Future<List<UserMonthlyBalance>> getUserBalancesAsync(String mongoId) async{
-    if (!connected){
-      connected = await checkInternetConnectivity();
-      if (!connected){
-        return <UserMonthlyBalance>[];
-      }
-    }
-
-
-    try {
-      if (access_token == null) {
-        final prefs = await SharedPreferences.getInstance();
-        access_token = prefs.getString(Constants.accessToken) ;
-        
-        // access_token = await SecureUtils().retrieveValue(
-        //     Constants.accessToken);
-        await authorizeAsync();
-        if (access_token == null) {
-          //print('COULD NOT AUTHORIZE ********************************************************************');
-          return <UserMonthlyBalance>[];
-        }
-      }
-
-      String getUserUrlFinal = UrlConstants.GET_USER_BALANCES + mongoId;
-      Response userResponse = await get(Uri.parse(getUserUrlFinal), headers:  {'Authorization': 'Bearer $access_token'}).timeout(const Duration(seconds: 30));
-
-      Iterable balancesIterable = json.decode(userResponse.body);
-      List<UserMonthlyBalance> balances = await Future.wait(
-        balancesIterable.map((model) async => await UserMonthlyBalance.fromJson(model)),
-      );
-
-      // //print('balances success');
-      return balances;
-    } catch (e) {
-      //print('Balance err');
-      return <UserMonthlyBalance>[];
-    }
-  }
+  // static Future<List<UserMonthlyBalance>> getUserBalancesAsync(String mongoId) async{
+  //   if (!connected){
+  //     connected = await checkInternetConnectivity();
+  //     if (!connected){
+  //       return <UserMonthlyBalance>[];
+  //     }
+  //   }
+  //
+  //
+  //   try {
+  //     if (access_token == null) {
+  //       final prefs = await SharedPreferences.getInstance();
+  //       access_token = prefs.getString(Constants.accessToken) ;
+  //
+  //       // access_token = await SecureUtils().retrieveValue(
+  //       //     Constants.accessToken);
+  //       await authorizeAsync();
+  //       if (access_token == null) {
+  //         //print('COULD NOT AUTHORIZE ********************************************************************');
+  //         return <UserMonthlyBalance>[];
+  //       }
+  //     }
+  //
+  //     String getUserUrlFinal = UrlConstants.GET_USER_BALANCES + mongoId;
+  //     Response userResponse = await get(Uri.parse(getUserUrlFinal), headers:  {'Authorization': 'Bearer $access_token'}).timeout(const Duration(seconds: 30));
+  //
+  //     Iterable balancesIterable = json.decode(userResponse.body);
+  //     List<UserMonthlyBalance> balances = await Future.wait(
+  //       balancesIterable.map((model) async => await UserMonthlyBalance.fromJson(model)),
+  //     );
+  //
+  //     // //print('balances success');
+  //     return balances;
+  //   } catch (e) {
+  //     //print('Balance err');
+  //     return <UserMonthlyBalance>[];
+  //   }
+  // }
 
   static Future<FantasyLeagueInvitation> createFantasyLeagueInvitation(FantasyLeagueInvitation fantasyLeagueInvitation)  async {
 
@@ -884,12 +884,12 @@ class HttpActionsClient {
     }
   }
 
-  static Future<FantasyLeagueInvitation> acceptFantasyLeagueInvitation(FantasyLeagueInvitation fantasyLeagueInvitation)  async {
+  static Future<FantasyLeague> acceptFantasyLeagueInvitation(FantasyLeagueInvitation fantasyLeagueInvitation)  async {
 
     if (!connected){
       connected = await checkInternetConnectivity();
       if (!connected){
-        return fantasyLeagueInvitation;
+        return FantasyLeague.defLeague();
       }
     }
 
@@ -904,7 +904,7 @@ class HttpActionsClient {
         await authorizeAsync();
         if (access_token == null) {
           // //print('COULD NOT AUTHORIZE ********************************************************************');
-          return fantasyLeagueInvitation;
+          return FantasyLeague.defLeague();
         }
       }
       var fantasyLeagueResponse = await put(Uri.parse(UrlConstants.PUT_ACCEPT_FANTASY_LEAGUE_INVITATION),
@@ -919,12 +919,12 @@ class HttpActionsClient {
 
       var responseDec = jsonDecode(fantasyLeagueResponse.body);
 
-      FantasyLeagueInvitation responseBean = await FantasyLeagueInvitation.fromJson(responseDec);
+      FantasyLeague responseBean = await FantasyLeague.fromJson(responseDec);
 
       return responseBean;
 
     }catch(e){
-      return fantasyLeagueInvitation;
+      return FantasyLeague.defLeague();
     }
   }
 
@@ -1142,6 +1142,8 @@ class HttpActionsClient {
   }
 
   static Future<bool> checkInternetConnectivity() async {
+
+    return true;
 
     print("CONN CHECK");
 

@@ -79,7 +79,7 @@ class LiveMatchRowTiltedState extends State<LiveMatchRowTilted> {
                     (gameWithOdds.odds != null && gameWithOdds.winnerCodeNormalTime != null &&
                         MatchEventStatus.FINISHED == MatchEventStatus.fromStatusText(gameWithOdds.status)) ?
                         SizedBox(height:60, child:
-              _buildWinnerOdds(gameWithOdds.odds, gameWithOdds.winnerCodeNormalTime)
+              BetUtils.buildWinnerOdds(gameWithOdds.odds, gameWithOdds.winnerCodeNormalTime)
                         )
 
                   :
@@ -92,33 +92,29 @@ class LiveMatchRowTiltedState extends State<LiveMatchRowTilted> {
                     flex: 14,
                     child:
 
-                        // Padding(
-                        //   padding: const EdgeInsets.only(left: 4),
-                        //   child:
-
-                GestureDetector(
-                  behavior: HitTestBehavior.translucent,
-                onTap: () {
-
-                  if (gameWithOdds.status != MatchEventStatus.INPROGRESS.statusStr && gameWithOdds.status != MatchEventStatus.FINISHED.statusStr){
-                    return;
-                  }
-
-                Navigator.push(
-                context,
-                MaterialPageRoute(
-
-                    builder:  (context) =>
-
-                        MatchInfoSoccerDetailsPage(key: UniqueKey(),
-                            event: gameWithOdds,
-                            eventCallback: getEvent)
-
-
-                )
-                );
-                },
-                child:
+                // GestureDetector(
+                //   behavior: HitTestBehavior.translucent,
+                // onTap: () {
+                //
+                //   if (gameWithOdds.status != MatchEventStatus.INPROGRESS.statusStr && gameWithOdds.status != MatchEventStatus.FINISHED.statusStr){
+                //     return;
+                //   }
+                //
+                // Navigator.push(
+                // context,
+                // MaterialPageRoute(
+                //
+                //     builder:  (context) =>
+                //
+                //         MatchInfoSoccerDetailsPage(key: UniqueKey(),
+                //             event: gameWithOdds,
+                //             eventCallback: getEvent)
+                //
+                //
+                // )
+                // );
+                // },
+                // child:
 
                     Column(
                     children: [
@@ -134,7 +130,7 @@ class LiveMatchRowTiltedState extends State<LiveMatchRowTilted> {
                             )
                       ]
                     )
-                )
+              //  )
                         // )
                         // )
                 ),
@@ -154,7 +150,7 @@ class LiveMatchRowTiltedState extends State<LiveMatchRowTilted> {
                         style: const TextStyle(
                           fontSize: 12,
                           fontWeight: FontWeight.bold,
-                          color: Colors.white),))
+                          color: Color(ColorConstants.my_dark_grey)),))
                     ]
                 )) //SECOND COLUMN END
                 :
@@ -168,7 +164,7 @@ class LiveMatchRowTiltedState extends State<LiveMatchRowTilted> {
                         style: const TextStyle(
                             fontSize: 12,
                             fontWeight: FontWeight.bold,
-                            color: Colors.white),
+                            color: Colors.black87),
                       ),
                       WidgetSpan(
                         alignment: PlaceholderAlignment.top,
@@ -200,13 +196,13 @@ class LiveMatchRowTiltedState extends State<LiveMatchRowTilted> {
                       Text(gameWithOdds.textScore(true), style: TextStyle(
                           fontSize: gameWithOdds.changeEvent == ChangeEvent.HOME_GOAL ? 13 : 12,
                           fontWeight:  FontWeight.w900,
-                          color: gameWithOdds.changeEvent == ChangeEvent.HOME_GOAL ? Colors.redAccent : Colors.white),)),
+                          color: gameWithOdds.changeEvent == ChangeEvent.HOME_GOAL ? Colors.redAccent : Colors.black87),)),
 
                       Padding(padding: const EdgeInsets.all(6), child:
                       Text(gameWithOdds.textScore(false), style: TextStyle(
                           fontSize: gameWithOdds.changeEvent == ChangeEvent.AWAY_GOAL ? 13 : 12,
                           fontWeight: FontWeight.w900,
-                          color: gameWithOdds.changeEvent == ChangeEvent.AWAY_GOAL ? Colors.redAccent : Colors.white),)),
+                          color: gameWithOdds.changeEvent == ChangeEvent.AWAY_GOAL ? Colors.redAccent : Colors.black87),)),
                     ]
                 )
 
@@ -236,7 +232,7 @@ class LiveMatchRowTiltedState extends State<LiveMatchRowTilted> {
                 //padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                 // margin: EdgeInsets.symmetric(horizontal: 4),
                 decoration: BoxDecoration(
-                    color: Colors.white,
+                    color: Colors.blue[100],
                     // Background color of the parallelogram
                     borderRadius: BorderRadius.circular(8),
                     //border: Border.all(color: Colors.black87, width: 1)
@@ -304,41 +300,41 @@ class LiveMatchRowTiltedState extends State<LiveMatchRowTilted> {
     });
   }
 
-  _buildWinnerOdds(MatchOdds? odds, int? winner_code) {
-    return Column(
-        mainAxisSize: MainAxisSize.max,
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-      children: [
-        Expanded(flex:1, child:
-        DisplayOdd(betPredictionType: BetPredictionType.HOME_WIN, prediction: winnerPredictionType(winner_code), odd: odds!.odd1)
-        ),
-        Expanded(flex:1, child:
-        DisplayOdd(betPredictionType: BetPredictionType.DRAW, prediction: winnerPredictionType(winner_code), odd: odds!.oddX)
-        ),
-        Expanded(flex:1, child:
-        DisplayOdd(betPredictionType: BetPredictionType.AWAY_WIN, prediction: winnerPredictionType(winner_code), odd: odds!.odd2)
-        ),
+  // _buildWinnerOdds(MatchOdds? odds, int? winner_code) {
+  //   return Column(
+  //       mainAxisSize: MainAxisSize.max,
+  //       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+  //     children: [
+  //       Expanded(flex:1, child:
+  //       DisplayOdd(betPredictionType: BetPredictionType.HOME_WIN, prediction: winnerPredictionType(winner_code), odd: odds!.odd1)
+  //       ),
+  //       Expanded(flex:1, child:
+  //       DisplayOdd(betPredictionType: BetPredictionType.DRAW, prediction: winnerPredictionType(winner_code), odd: odds!.oddX)
+  //       ),
+  //       Expanded(flex:1, child:
+  //       DisplayOdd(betPredictionType: BetPredictionType.AWAY_WIN, prediction: winnerPredictionType(winner_code), odd: odds!.odd2)
+  //       ),
+  //
+  //     ]
+  //
+  //   );
+  // }
 
-      ]
-
-    );
-  }
-
-  winnerPredictionType(int? winner_code) {
-    if (winner_code == 1){
-      return BetPredictionType.HOME_WIN;
-    }
-
-    if (winner_code == 2){
-      return BetPredictionType.AWAY_WIN;
-    }
-
-    if (winner_code == 3){
-      return BetPredictionType.DRAW;
-    }
-
-    return BetPredictionType.OVER_25;
-  }
+  // winnerPredictionType(int? winner_code) {
+  //   if (winner_code == 1){
+  //     return BetPredictionType.HOME_WIN;
+  //   }
+  //
+  //   if (winner_code == 2){
+  //     return BetPredictionType.AWAY_WIN;
+  //   }
+  //
+  //   if (winner_code == 3){
+  //     return BetPredictionType.DRAW;
+  //   }
+  //
+  //   return BetPredictionType.OVER_25;
+  // }
 
   flexSizeForLeading() {
     if ( MatchEventStatus.INPROGRESS.statusStr == gameWithOdds.status || MatchEventStatus.NOTSTARTED.statusStr == gameWithOdds.status ){

@@ -55,7 +55,35 @@ class _FantasyLeagueCardState extends State<FantasyLeagueCard> {
         .toList();
 
     if (fantasyLeague.users.isNotEmpty && fantasyLeague.status == FantasyLeagueStatus.RUNNING.statusCode) {
-      fantasyLeague.users.sort();
+      fantasyLeague.users.sort((a, b) {
+        // First compare by year (descending)
+        if ( a.fantasyBalance.balance > b.fantasyBalance.balance) {
+          return -1;
+        }
+
+        if ( a.fantasyBalance.balance < b.fantasyBalance.balance) {
+          return 1;
+        }
+
+        return 0;
+
+        // If years are equal, compare by month (descending)
+        // return b.balance.month.compareTo(a.balance.month);
+      });
+
+      for (int i = 0; i < fantasyLeague.users.length; i++) {
+
+        if (fantasyLeague.users[i].fantasyBalance.position == 0){
+          fantasyLeague.users[i].fantasyBalance.positionDelta = i+1;
+        }else if (fantasyLeague.users[i].fantasyBalance.position != i + 1) {
+          fantasyLeague.users[i].fantasyBalance.positionDelta =
+              fantasyLeague.users[i].fantasyBalance.position -
+                  (i + 1); // +1 to make it 1-based ranking
+        }
+
+          fantasyLeague.users[i].fantasyBalance.position =
+              i + 1; // +1 to make it 1-based ranking
+        }
     }
 
     return Card(
@@ -85,9 +113,27 @@ class _FantasyLeagueCardState extends State<FantasyLeagueCard> {
                           style: const TextStyle(fontSize: 14, color: Colors.grey),
                           maxLines: 1,
                         ),
+                        const SizedBox(height: 4),
+                        Row(
+                          children: [
+                            Icon(
+                              fantasyLeague.allowTopUp ? Icons.attach_money : Icons.money_off,
+                              color: fantasyLeague.allowTopUp ? Colors.green : Colors.red,
+                              size: 12,
+                            ),
+                            const SizedBox(width: 4),
+                            Text(
+                              fantasyLeague.allowTopUp ? 'Top-up allowed' : 'Top-up not allowed',
+                              style: const TextStyle(fontSize: 10, color: Colors.grey),
+                            ),
+                          ],
+                        ),
+
                       ],
                     ),
                   ),
+
+                  if (AppContext.user.mongoUserId == fantasyLeague.creatorUserId)
                   ElevatedButton.icon(
                     onPressed: () => _showEditLeaguesDialog(context),
                     style: ElevatedButton.styleFrom(
@@ -233,6 +279,7 @@ class _FantasyLeagueCardState extends State<FantasyLeagueCard> {
                   itemCount: fantasyLeague.users.length,
                   itemBuilder: (context, index) {
                     final user = fantasyLeague.users[index];
+
                     return FantasyLeaderboardRow(user: user, position: index + 1, products: products, topUpCallback: topUpCallback,);
                   },
                 ),

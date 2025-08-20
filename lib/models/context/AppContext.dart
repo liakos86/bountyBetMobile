@@ -37,7 +37,7 @@ class AppContext{
   AppContext();
 
 
-  static MatchEvent? findEvent(int eventId){
+  static MatchEvent findEvent(int eventId){
 
     for (MapEntry dayEntry in eventsPerDayMap.entries){
       for (LeagueWithData l in dayEntry.value){
@@ -49,7 +49,7 @@ class AppContext{
       }
     }
 
-    return null;//eventsPerDayMap.entries.first.value.events.first;
+    return MatchEvent.defEvent();//eventsPerDayMap.entries.first.value.events.first;
 
   }
 

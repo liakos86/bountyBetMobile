@@ -81,6 +81,8 @@ class MyFantasyLeaguesPageState extends State<MyFantasyLeaguesPage>  with Single
 
   GlobalKey  fantasyLeagueKey = GlobalKey();
 
+  // bool leagueFetched = false;
+
   @override
   void dispose() {
     _tabController.dispose();
@@ -162,6 +164,10 @@ class MyFantasyLeaguesPageState extends State<MyFantasyLeaguesPage>  with Single
             label: const Text('Login/Register'),
       ));
     }
+
+   // if (!leagueFetched){
+   //   return const Center(child: CircularProgressIndicator(color: Color(ColorConstants.my_green),));
+   // }
 
    const int items = 4;
    double width = MediaQuery.of(context).size.width;
@@ -378,16 +384,8 @@ class MyFantasyLeaguesPageState extends State<MyFantasyLeaguesPage>  with Single
       FantasyLeague? fantasyLeagueIncoming = leagues.firstWhereOrNull((element) => element.mongoId == AppContext.user.fantasyLeagueMongoId);
       if (fantasyLeagueIncoming != null){
           fantasyLeague.copyFrom(fantasyLeagueIncoming);
-
           fantasyLeague.invitations.sort();
-          fantasyLeague.users.sort();
-
-          // print('fantasy was ' + sharedPrefs.getByKey(sp_fantasy_league_id));
-       // if (AppContext.user.fantasyLeagueMongoId != fantasyLeagueIncoming.mongoId){
           sharedPrefs.updateFantasyLeagueId(fantasyLeagueIncoming.mongoId);
-
-          // print('fantasy now is  ' + sharedPrefs.getByKey(sp_fantasy_league_id));
-        //}
 
       }
     }else{
@@ -419,8 +417,10 @@ class MyFantasyLeaguesPageState extends State<MyFantasyLeaguesPage>  with Single
 
 
     setState(() {
+      // leagueFetched = true;
       invitations;
       fantasyLeague;
+      fantasyLeague.users;
       fantasyLeagues;
     });
 
@@ -466,6 +466,7 @@ class MyFantasyLeaguesPageState extends State<MyFantasyLeaguesPage>  with Single
       }
     }
 
+    bets.sort();
     setState((){
       bets;
     });

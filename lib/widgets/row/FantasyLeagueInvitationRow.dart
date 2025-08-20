@@ -30,6 +30,7 @@ class _FantasyLeagueInvitationRowState
     extends State<FantasyLeagueInvitationRow> {
   bool _accepted = false;
   bool _rejected = false;
+  bool _error = false;
 
   @override
   Widget build(BuildContext context) {
@@ -184,7 +185,7 @@ class _FantasyLeagueInvitationRowState
             //     },
             //   ),
             // ),
-            if (!_accepted && !_rejected) ...[
+            if (!_accepted && !_rejected && !_error) ...[
               SizedBox(height: 16),
               Row(
                 mainAxisAlignment: MainAxisAlignment.end,
@@ -218,7 +219,7 @@ class _FantasyLeagueInvitationRowState
               SizedBox(height: 16),
               Center(
                 child: Text(
-                  _accepted ? "Invitation accept response sent" : "Invitation reject response sent",
+                  _accepted ? "Invitation accept response sent" : _rejected ? "Invitation reject response sent" : 'Server error response',
                   style: TextStyle(color: _accepted ? Colors.green : Colors.red),
                 ),
               ),
@@ -246,10 +247,9 @@ class _FantasyLeagueInvitationRowState
               style: ElevatedButton.styleFrom(backgroundColor: Colors.green.shade300),
               onPressed: () {
                 Navigator.pop(context); // Close dialog
-                FantasyLeagueInvitation fli = FantasyLeagueInvitation(email: AppContext.user.email);
-                fli.mongoId = league.invitationMongoId;
-                HttpActionsClient.acceptFantasyLeagueInvitation(fli);
-                setState(() => _accepted = true);
+                acceptInvitation(league);
+
+                // setState(() => _accepted = true);
                 print("Accepted invitation");
               },
               child: const Text('Accept', style: TextStyle(color: Colors.white)),
@@ -288,5 +288,18 @@ class _FantasyLeagueInvitationRowState
         );
       },
     );
+  }
+
+  void acceptInvitation(FantasyLeague league) async{
+    FantasyLeagueInvitation fli = FantasyLeagueInvitation(email: AppContext.user.email);
+    fli.mongoId = league.invitationMongoId;
+    FantasyLeague fl = await HttpActionsClient.acceptFantasyLeagueInvitation(fli);
+    if (Constants.defMongoId == fl.mongoId){
+      setState(() => _error = true);
+    }else{
+
+      setState(() {_accepted = true; AppContext.fantasyLeague.copyFrom(fl);});
+    }
+
   }
 }

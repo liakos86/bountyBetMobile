@@ -10,7 +10,7 @@ import '../../models/context/AppContext.dart';
 import '../../models/match_event.dart';
 import 'LiveMatchRowTilted.dart';
 
-  class UpcomingOrEndedMatchRowTilted extends StatefulWidget {
+  class MatchRowTilted extends StatefulWidget {
 
     final List<UserPrediction> selectedOdds;
 
@@ -18,13 +18,13 @@ import 'LiveMatchRowTilted.dart';
 
     final Function(UserPrediction) callbackForOdds;
 
-    const UpcomingOrEndedMatchRowTilted({Key ?key, required this.gameWithOdds, required this.callbackForOdds, required this.selectedOdds}) : super(key: key);
+    const MatchRowTilted({Key ?key, required this.gameWithOdds, required this.callbackForOdds, required this.selectedOdds}) : super(key: key);
 
     @override
-    UpcomingOrEndedMatchRowTiltedState createState() => UpcomingOrEndedMatchRowTiltedState(gameWithOdds: gameWithOdds, selectedOdds: selectedOdds, callbackForOdds: callbackForOdds);
+    MatchRowTiltedState createState() => MatchRowTiltedState(gameWithOdds: gameWithOdds, selectedOdds: selectedOdds, callbackForOdds: callbackForOdds);
   }
 
-  class UpcomingOrEndedMatchRowTiltedState extends State<UpcomingOrEndedMatchRowTilted> {
+  class MatchRowTiltedState extends State<MatchRowTilted> {
 
     UserPrediction? selectedPrediction;
 
@@ -34,7 +34,7 @@ import 'LiveMatchRowTilted.dart';
 
     MatchEvent gameWithOdds;
 
-    UpcomingOrEndedMatchRowTiltedState({
+    MatchRowTiltedState({
       required this.selectedOdds,
       required this.gameWithOdds,
       required this.callbackForOdds
@@ -42,53 +42,45 @@ import 'LiveMatchRowTilted.dart';
 
     @override
     Widget build(BuildContext context) {
-      return
-
-        Stack(
-            clipBehavior: Clip.none, // Allow positioning outside the container
-            children: [
-
-        Container(
-          // padding: const EdgeInsets.all(2),
-      // margin: const EdgeInsets.only(bottom: 2, left: 12, right: 2),
-      decoration: const BoxDecoration(
-        border: Border(
-          bottom: BorderSide(
-            color: Colors.white,
-            width: 0.5,
-          ),
+      return Card(
+        elevation: 5,
+        margin: const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
+        clipBehavior: Clip.antiAlias, // Ensures children are clipped to the shape
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(8),
         ),
-      color: Color(ColorConstants.my_dark_grey)
-      , // Dark background color
-      // borderRadius: BorderRadius.circular(12),
-      ),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(8), // Must match the Card
+          child: Container(
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(8), // Apply same radius
+              border: const Border(
+                bottom: BorderSide(
+                  color: Colors.white,
+                  width: 0.5,
+                ),
+              ),
+            ),
+            child: Column(
+              children: [
+                /// Match row (title/info)
+                LiveMatchRowTilted(gameWithOdds: gameWithOdds,),
 
-      child:
+                /// Odds row
+                if (gameWithOdds.odds != null &&
+                    gameWithOdds.status == MatchEventStatus.NOTSTARTED.statusStr &&
+                    AppContext.fantasyLeague.status == FantasyLeagueStatus.RUNNING.statusCode &&
+                    AppContext.fantasyLeague.selectedLeagueIds.contains(gameWithOdds.leagueId))
 
-        Wrap( //top parent
-            spacing: 0,
-
-            children: [
-
-
-              LiveMatchRowTilted(gameWithOdds: gameWithOdds),
-
-
-
-              //ODDS ROW
-
-              if (gameWithOdds.odds != null
-                  && (MatchEventStatus.NOTSTARTED.statusStr ==  gameWithOdds.status)
-              &&  (FantasyLeagueStatus.RUNNING.statusCode == AppContext.fantasyLeague.status
-                      && AppContext.fantasyLeague.selectedLeagueIds.contains(gameWithOdds.leagueId)))
-                //TODO: && match time not passed
-
-               // Container(color: Colors.white, child:
-                Row(mainAxisSize: MainAxisSize.max,
-
-                  children: [
-                    Expanded(flex: 5,
-                        child: Padding(padding: const EdgeInsets.all(4),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 4),
+                    child: Row(
+                      children: [
+                        Expanded(
+                          flex: 5,
+                          child: Padding(
+                            padding: const EdgeInsets.all(4),
                             child: GestureDetectorForOdds(
                               key: UniqueKey(),
                               selectedOdds: selectedOdds,
@@ -99,9 +91,14 @@ import 'LiveMatchRowTilted.dart';
                               toRemove: [
                                 gameWithOdds.odds?.odd2,
                                 gameWithOdds.odds?.oddX
-                              ],))),
-                    Expanded(flex: 4,
-                        child: Padding(padding: const EdgeInsets.all(4),
+                              ],
+                            ),
+                          ),
+                        ),
+                        Expanded(
+                          flex: 4,
+                          child: Padding(
+                            padding: const EdgeInsets.all(4),
                             child: GestureDetectorForOdds(
                               key: UniqueKey(),
                               selectedOdds: selectedOdds,
@@ -112,9 +109,14 @@ import 'LiveMatchRowTilted.dart';
                               toRemove: [
                                 gameWithOdds.odds?.odd2,
                                 gameWithOdds.odds?.odd1
-                              ],))),
-                    Expanded(flex: 5,
-                        child: Padding(padding: const EdgeInsets.all(4),
+                              ],
+                            ),
+                          ),
+                        ),
+                        Expanded(
+                          flex: 5,
+                          child: Padding(
+                            padding: const EdgeInsets.all(4),
                             child: GestureDetectorForOdds(
                               key: UniqueKey(),
                               selectedOdds: selectedOdds,
@@ -125,28 +127,21 @@ import 'LiveMatchRowTilted.dart';
                               toRemove: [
                                 gameWithOdds.odds?.odd1,
                                 gameWithOdds.odds?.oddX
-                              ],)))
-                  ],
-                )
-      //),
-
-            ]
-        )
+                              ],
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+              ],
+            ),
+          ),
         ),
-
-              // Positioned(
-              //     top: 20, // Slightly above the container
-              //     left: 5, // Slightly left of the container
-              //     child:
-              //
-              //     _buildTiltedFavourite()
-              //
-              //
-              // ),
-
-        ]//stack children
-        );
+      );
     }
+
+
 
   // _buildTiltedFavourite() {
   //

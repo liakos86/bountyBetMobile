@@ -4,12 +4,18 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_app/enums/BetStatus.dart';
 
+import '../../enums/FantasyLeagueStatus.dart';
 import '../../models/UserPrediction.dart';
 import '../../models/UserBet.dart';
 import '../../models/constants/ColorConstants.dart';
 import '../../models/constants/Constants.dart';
-import 'UserPredictionRowTilted.dart';
+import '../../models/context/AppContext.dart';
+import 'LiveMatchRowTilted.dart';
+import 'MatchRowTilted.dart';
+// import 'UserPredictionCardTilted.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
+import 'UserPredictionCardTilted.dart';
 
 
 class UserBetRow extends StatefulWidget {
@@ -47,7 +53,7 @@ class UserBetRow extends StatefulWidget {
 
       Theme(
 
-        key: UniqueKey(),
+        key: PageStorageKey<String>('user_bet_${bet.betId}'),
     data: Theme.of(context).copyWith(
     listTileTheme: ListTileTheme.of(context).copyWith(
     dense: true,
@@ -55,9 +61,12 @@ class UserBetRow extends StatefulWidget {
     ),
       child:
       ExpansionTile(
-          backgroundColor: Colors.yellow[50],
 
-      initiallyExpanded: true,
+          collapsedBackgroundColor:  Colors.blue.shade50 ,
+          backgroundColor:   Colors.blue.shade50 ,
+
+
+          initiallyExpanded: true,
 
       tilePadding: const EdgeInsets.only(left: 8),
       subtitle: Text(maxLines:2, '$placementTime - Bet: ${bet.betAmount.toStringAsFixed(2)} \r\nbetId:${bet.betId}'),
@@ -66,7 +75,7 @@ class UserBetRow extends StatefulWidget {
           bet.betStatus==BetStatus.LOST ?
           const Icon( Icons.highlight_remove, color:   Colors.red)
               : ( bet.betStatus==BetStatus.WON ?
-          const Icon(Icons.check_circle_outline_outlined, color: Color(ColorConstants.my_green)) :
+          const Icon(Icons.check_circle_outline_outlined, color: Color(ColorConstants.my_blue)) :
           const Icon(Icons.downloading_outlined, color:   Colors.blueAccent) ),
 
 
@@ -78,8 +87,13 @@ class UserBetRow extends StatefulWidget {
   }
 
   Widget _buildSelectedOddRow(UserPrediction bettingOdd) {
-     // print('key is ' + bettingOdd.mongoId);
-    return UserPredictionRowTilted(key: PageStorageKey<String>('user_prediction_${bettingOdd.mongoId}'), prediction: bettingOdd, callback: null,);
+
+   // return MatchRowTilted(key: PageStorageKey<String>('user_prediction_${bettingOdd.mongoId}'), prediction: bettingOdd, gameWithOdds: AppContext.findEvent(bettingOdd.eventId), selectedOdds: null, callbackForOdds: null);
+
+    // return LiveMatchRowTilted(key: PageStorageKey<String>('user_prediction_${bettingOdd.mongoId}'), gameWithOdds: AppContext.findEvent(bettingOdd.eventId), prediction: bettingOdd);
+
+    // print('key is ' + bettingOdd.mongoId);
+    return UserPredictionCardTilted(key: PageStorageKey<String>('user_prediction_${bettingOdd.mongoId}'), prediction: bettingOdd, event: AppContext.findEvent(bettingOdd.eventId), callback: null,);
   }
 
 }

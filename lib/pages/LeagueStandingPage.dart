@@ -64,7 +64,7 @@ class LeagueStandingPageState extends State<LeagueStandingPage>{
   Widget build(BuildContext context) {
 
     if (season.id < 0){
-      return const CircularProgressIndicator(color: Color(ColorConstants.my_green),);
+      return const CircularProgressIndicator(color: Color(ColorConstants.my_blue),);
     }
 
     return
@@ -105,25 +105,25 @@ class LeagueStandingPageState extends State<LeagueStandingPage>{
             Expanded(
             flex: 5,
             child:
-              Text('#', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Color(ColorConstants.my_green)),)),
+              Text('#', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Color(ColorConstants.my_blue)),)),
 
 
             Expanded(
               flex: 1,
               child:
-              Text('W-D-L', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Color(ColorConstants.my_green)),)),
+              Text('W-D-L', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Color(ColorConstants.my_blue)),)),
 
 
               Expanded(
                   flex: 1,
                   child:
-              Text('GF:GA', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Color(ColorConstants.my_green)),)),
+              Text('GF:GA', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Color(ColorConstants.my_blue)),)),
 
             Expanded(
               flex: 1,
               child:
 
-              Text('Points', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Color(ColorConstants.my_green)),)),
+              Text('Points', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Color(ColorConstants.my_blue)),)),
 
 
             ],

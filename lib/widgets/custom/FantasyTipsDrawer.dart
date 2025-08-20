@@ -28,7 +28,7 @@ class FantasyTipsDrawer extends StatelessWidget {
         children: [
           DrawerHeader(
             decoration: const BoxDecoration(
-              color: Color(ColorConstants.my_green),
+              color: Color(ColorConstants.my_blue),
             ),
             child: Padding(
               padding: const EdgeInsets.all(8.0), // Add padding around the content
@@ -63,74 +63,74 @@ class FantasyTipsDrawer extends StatelessWidget {
                       const SizedBox(height: 16), // Add space before status
 
                       // RichText for position and balance
-                      RichText(
-                        text: TextSpan(
-                          children: [
-                            TextSpan(
-                              text: AppContext.user.balance.position > 0
-                                  ? '${AppLocalizations.of(context)!.position}[${AppContext.user.balance.position} of ${AppContext.user.balance.totalUsers}] '
-                                  : AppLocalizations.of(context)!.validation_pending,
-                              style: const TextStyle(
-                                color: Colors.white,
-                                fontSize: 14,
-                              ),
-                            ),
-                            const WidgetSpan(child: SizedBox(width: 8)),
+                      // RichText(
+                      //   text: TextSpan(
+                      //     children: [
+                      //       TextSpan(
+                      //         text: AppContext.user.balance.position > 0
+                      //             ? '${AppLocalizations.of(context)!.position}[${AppContext.user.balance.position} of ${AppContext.user.balance.totalUsers}] '
+                      //             : AppLocalizations.of(context)!.validation_pending,
+                      //         style: const TextStyle(
+                      //           color: Colors.white,
+                      //           fontSize: 14,
+                      //         ),
+                      //       ),
+                      //       const WidgetSpan(child: SizedBox(width: 8)),
 
 
-                            if (AppContext.user.mongoUserId != User.defUser().mongoUserId
-                                && AppContext.user.validated)
-                              WidgetSpan(
-                                  alignment: PlaceholderAlignment.middle, // Align icon with text
-                                  child:
-                                  AppContext.user.balance.positionDelta >= 0 ?
-                                  Icon(
-                                    Icons.arrow_circle_up, // Replace with desired icon
-                                    size: 20,
-                                    color: Colors.green[200],
-                                  )
-                                      :
-                                  const Icon(
-                                    Icons.arrow_circle_down, // Replace with desired icon
-                                    size: 20,
-                                    color: Colors.redAccent,
-                                  )
-                              ),
+                            // if (AppContext.user.mongoUserId != User.defUser().mongoUserId
+                            //     && AppContext.user.validated)
+                            //   WidgetSpan(
+                            //       alignment: PlaceholderAlignment.middle, // Align icon with text
+                            //       child:
+                            //       AppContext.user.balance.positionDelta >= 0 ?
+                            //       Icon(
+                            //         Icons.arrow_circle_up, // Replace with desired icon
+                            //         size: 20,
+                            //         color: Colors.green[200],
+                            //       )
+                            //           :
+                            //       const Icon(
+                            //         Icons.arrow_circle_down, // Replace with desired icon
+                            //         size: 20,
+                            //         color: Colors.redAccent,
+                            //       )
+                            //   ),
 
 
 
-                            if (AppContext.user.mongoUserId != User.defUser().mongoUserId
-                                && AppContext.user.validated)
-                              TextSpan(
-                                  text: AppContext.user.balance.positionDelta >= 0 ? ' +${AppContext.user.balance.positionDelta}' : ' -${AppContext.user.balance.positionDelta}',
-                                  style: TextStyle(color: AppContext.user.balance.positionDelta >= 0 ?  Colors.green[200] : Colors.redAccent)
-                              ),
-
-
-                            const WidgetSpan(child: SizedBox(width: 8)),
-
-                            AppContext.user.balance.balance > 0
-                                ? const WidgetSpan(
-                              alignment: PlaceholderAlignment.middle,
-                              child: Icon(
-                                Icons.currency_exchange,
-                                size: 20,
-                                color: Colors.amber,
-                              ),
-                            )
-                                : const TextSpan(text: Constants.empty),
-                            TextSpan(
-                              text: AppContext.user.balance.balance > 0
-                                  ? AppContext.user.balance.balance.toStringAsFixed(2)
-                                  : Constants.empty,
-                              style: const TextStyle(
-                                color: Colors.white,
-                                fontSize: 14,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
+                            // if (AppContext.user.mongoUserId != User.defUser().mongoUserId
+                            //     && AppContext.user.validated)
+                            //   TextSpan(
+                            //       text: AppContext.user.balance.positionDelta >= 0 ? ' +${AppContext.user.balance.positionDelta}' : ' -${AppContext.user.balance.positionDelta}',
+                            //       style: TextStyle(color: AppContext.user.balance.positionDelta >= 0 ?  Colors.green[200] : Colors.redAccent)
+                            //   ),
+                            //
+                            //
+                            // const WidgetSpan(child: SizedBox(width: 8)),
+                            //
+                            // AppContext.user.balance.balance > 0
+                            //     ? const WidgetSpan(
+                            //   alignment: PlaceholderAlignment.middle,
+                            //   child: Icon(
+                            //     Icons.currency_exchange,
+                            //     size: 20,
+                            //     color: Colors.amber,
+                            //   ),
+                            // )
+                            //     : const TextSpan(text: Constants.empty),
+                            // TextSpan(
+                            //   text: AppContext.user.balance.balance > 0
+                            //       ? AppContext.user.balance.balance.toStringAsFixed(2)
+                            //       : Constants.empty,
+                            //   style: const TextStyle(
+                            //     color: Colors.white,
+                            //     fontSize: 14,
+                            //   ),
+                            // ),
+                      //     ],
+                      //   ),
+                      // ),
                     ],
                   ),
 

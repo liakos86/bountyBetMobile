@@ -229,7 +229,7 @@ class MockUtils {
 
   static User mockUser() {
     User user = User("1234", "Mocker", <UserBet>[]);
-    user.balance = UserMonthlyBalance.defBalance();
+    //user.balance = UserMonthlyBalance.defBalance();
 
     user.overallLostBets=5;
     user.overallWonBets=12;

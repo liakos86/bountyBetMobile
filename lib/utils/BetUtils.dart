@@ -1,11 +1,15 @@
- import 'package:flutter_app/enums/MatchEventStatusMore.dart';
+ import 'package:flutter/cupertino.dart';
+import 'package:flutter_app/enums/MatchEventStatusMore.dart';
 
+import '../enums/BetPredictionType.dart';
 import '../enums/MatchEventStatus.dart';
 import '../enums/WinnerType.dart';
 import '../models/UserPrediction.dart';
  import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import '../models/match_event.dart';
+import '../models/match_odds.dart';
+import '../widgets/DisplayOdd.dart';
 
 class BetUtils{
 
@@ -88,6 +92,42 @@ class BetUtils{
 
     return WinnerType.NONE;
 
+  }
+
+  static buildWinnerOdds(MatchOdds? odds, int? winner_code) {
+    return Column(
+        mainAxisSize: MainAxisSize.max,
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        children: [
+          Expanded(flex:1, child:
+          DisplayOdd(betPredictionType: BetPredictionType.HOME_WIN, prediction: winnerPredictionType(winner_code), odd: odds!.odd1)
+          ),
+          Expanded(flex:1, child:
+          DisplayOdd(betPredictionType: BetPredictionType.DRAW, prediction: winnerPredictionType(winner_code), odd: odds!.oddX)
+          ),
+          Expanded(flex:1, child:
+          DisplayOdd(betPredictionType: BetPredictionType.AWAY_WIN, prediction: winnerPredictionType(winner_code), odd: odds!.odd2)
+          ),
+
+        ]
+
+    );
+  }
+
+  static winnerPredictionType(int? winner_code) {
+    if (winner_code == 1){
+      return BetPredictionType.HOME_WIN;
+    }
+
+    if (winner_code == 2){
+      return BetPredictionType.AWAY_WIN;
+    }
+
+    if (winner_code == 3){
+      return BetPredictionType.DRAW;
+    }
+
+    return BetPredictionType.OVER_25;
   }
 
 

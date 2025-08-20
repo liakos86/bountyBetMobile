@@ -309,7 +309,7 @@ class OddsPageState extends State<OddsPage> with SingleTickerProviderStateMixin{
           ))
           },
 
-          backgroundColor: const Color(ColorConstants.my_green),
+          backgroundColor: const Color(ColorConstants.my_blue),
 
           child:  Text(BetUtils.finalOddOf(selectedOdds).toStringAsFixed(2), style: TextStyle(fontSize: (BetUtils.finalOddOf(selectedOdds )  < 100) ? 16 : (BetUtils.finalOddOf(selectedOdds )  < 1000) ? 15 : 12)),
         ),
@@ -319,7 +319,7 @@ class OddsPageState extends State<OddsPage> with SingleTickerProviderStateMixin{
   }
 
   Widget _buildRow(LeagueWithData league, int item) {
-   return LeagueExpandableTile(key: PageStorageKey<LeagueWithData>(league),  isAlwaysExpanded: false, leagueWithData: league, expandAll: selectedIndex==item, events: league.events, callbackForOdds: fixOddsCallback, selectedOdds: selectedOdds, favourites: favourites(),);
+   return LeagueExpandableTile(key: PageStorageKey<String>('oddsLeague${league.league.league_id}$item'),  isAlwaysExpanded: false, leagueWithData: league, expandAll: selectedIndex==item, events: league.events, callbackForOdds: fixOddsCallback, selectedOdds: selectedOdds, favourites: favourites(),);
   }
 
   void removeOddCallback(UserPrediction? toRemove){
@@ -383,7 +383,7 @@ class OddsPageState extends State<OddsPage> with SingleTickerProviderStateMixin{
     }
 
 
-    if (bettingAmount > AppContext.user.balance.balance){
+    if (bettingAmount > AppContext.user.fantasyBalance.balance){
       //String msg = 'Cannot place bet. insufficient funds.';
       //alertDialogTopUp();
       return BetPlacementStatus.FAILED_INSUFFICIENT_FUNDS;

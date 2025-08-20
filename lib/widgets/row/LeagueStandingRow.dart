@@ -154,7 +154,7 @@ class LeagueStandingRowState extends State<LeagueStandingRow> {
             padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
             // margin: EdgeInsets.symmetric(horizontal: 4),
             decoration: BoxDecoration(
-              color: const Color(ColorConstants.my_green), // Background color of the parallelogram
+              color: const Color(ColorConstants.my_blue), // Background color of the parallelogram
               borderRadius: BorderRadius.circular(8),
             ),
             child:

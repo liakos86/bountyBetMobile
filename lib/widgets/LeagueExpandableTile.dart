@@ -5,7 +5,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_app/enums/MatchEventStatus.dart';
 import 'package:flutter_app/models/match_event.dart';
-import 'package:flutter_app/widgets/row/UpcomingMatchRowTilted.dart';
+import 'package:flutter_app/widgets/row/MatchRowTilted.dart';
 
 import '../enums/FantasyLeagueStatus.dart';
 import '../helper/SharedPrefs.dart';
@@ -97,8 +97,8 @@ class LeagueExpandableTile extends StatefulWidget {
     iconColor: Colors.transparent,
     collapsedIconColor: Colors.transparent,
     initiallyExpanded: expandAll,
-    collapsedBackgroundColor: (AppContext.fantasyLeague != null && FantasyLeagueStatus.RUNNING.statusCode == AppContext.fantasyLeague?.status && AppContext.fantasyLeague!.selectedLeagueIds.contains(leagueWithData.league.league_id)) ? Colors.yellow.shade200 : Colors.grey.shade200,
-    backgroundColor:  (AppContext.fantasyLeague != null && FantasyLeagueStatus.RUNNING.statusCode == AppContext.fantasyLeague?.status && AppContext.fantasyLeague!.selectedLeagueIds.contains(leagueWithData.league.league_id)) ? Colors.yellow.shade400 : Colors.yellow[50],
+    collapsedBackgroundColor: ( FantasyLeagueStatus.RUNNING.statusCode == AppContext.fantasyLeague.status && AppContext.fantasyLeague.selectedLeagueIds.contains(leagueWithData.league.league_id)) ? Colors.blue.shade50 : Colors.grey.shade50,
+    backgroundColor:  ( FantasyLeagueStatus.RUNNING.statusCode == AppContext.fantasyLeague.status && AppContext.fantasyLeague.selectedLeagueIds.contains(leagueWithData.league.league_id)) ? Colors.blue.shade50 : Colors.yellow[50],
     // tilePadding: EdgeInsets.zero, // No padding for the tile
     childrenPadding: EdgeInsets.zero,
     subtitle: Text(leagueWithData.league.getLocalizedName(), style: const TextStyle(color: Colors.black, fontWeight: FontWeight.w700, fontSize: 10),),
@@ -222,7 +222,7 @@ class LeagueExpandableTile extends StatefulWidget {
 
 
   Widget _buildSelectedOddRow(MatchEvent event) {
-     return UpcomingOrEndedMatchRowTilted(key: UniqueKey(), gameWithOdds: event, selectedOdds: selectedOdds, callbackForOdds: callbackForOdds);
+     return MatchRowTilted(key: UniqueKey(), gameWithOdds: event, selectedOdds: selectedOdds, callbackForOdds: callbackForOdds);
   }
 
     updateFav(bool newfav) {
