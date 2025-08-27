@@ -73,7 +73,7 @@ class DialogTabbedLoginOrRegisterState extends State<DialogTabbedLoginOrRegister
 
       AlertDialog(
         // title: const Text('Welcome'),
-          backgroundColor: const Color(ColorConstants.my_dark_grey),
+          backgroundColor: Colors.white,// const Color(ColorConstants.my_dark_grey),
           // titleTextStyle: const TextStyle(color: Colors.white, fontSize: 20),
           insetPadding: EdgeInsets.zero,
           contentPadding: const EdgeInsets.all(2.0),
@@ -107,7 +107,7 @@ class DialogTabbedLoginOrRegisterState extends State<DialogTabbedLoginOrRegister
       Scaffold(
 
           appBar: AppBar(
-            backgroundColor: const Color(ColorConstants.my_dark_grey),
+            backgroundColor: Colors.white,// const Color(ColorConstants.my_dark_grey),
             toolbarHeight: 5,
             bottom:
 

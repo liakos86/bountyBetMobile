@@ -1,9 +1,18 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
+import '../../models/FantasyLeague.dart';
 import 'DialogWizardLeagueLeaguesStep2.dart';
 
 class DialogWizardLeagueNameStep1 extends StatefulWidget {
+
+  final Function(FantasyLeague) updateCallback;
+
+  DialogWizardLeagueNameStep1({Key? key, required this.updateCallback}) : super (key: key);
+
+
+
+
   @override
   State<DialogWizardLeagueNameStep1> createState() => _LeagueNameDialogState();
 }
@@ -11,6 +20,13 @@ class DialogWizardLeagueNameStep1 extends StatefulWidget {
 class _LeagueNameDialogState extends State<DialogWizardLeagueNameStep1> {
   final TextEditingController _nameController = TextEditingController();
   String? _error;
+  // Function(FantasyLeague) updateCallback = (a)=>{} ;
+
+  // @override
+  // void initState() {
+  //   updateCallback = widget.updateCallback;
+  // }
+
 
   void _onNext() {
     final name = _nameController.text.trim();
@@ -60,7 +76,7 @@ class _LeagueNameDialogState extends State<DialogWizardLeagueNameStep1> {
     showDialog(
       context: context,
       barrierDismissible: false,
-      builder: (_) => DialogWizardLeagueLeaguesStep2(leagueName: name),
+      builder: (_) => DialogWizardLeagueLeaguesStep2(leagueName: name, updateCallback: widget.updateCallback),
     );
   }
 

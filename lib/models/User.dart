@@ -44,6 +44,7 @@ class User implements Comparable<User>{
   int overallLostPredictions = 0;
 
   double betAmountOverall = 0;
+  double betAmountOverallReturned = 0;
 
 
   List<UserBet> userBets = <UserBet>[];
@@ -75,6 +76,8 @@ class User implements Comparable<User>{
 
 
     user.betAmountOverall = parsedJson['overallBetAmount']??0;
+    user.betAmountOverallReturned = parsedJson['overallBetAmountReturned']??0;
+
     user.globalPosition = parsedJson['globalPosition']??0;
     user.positionDelta = parsedJson['positionDelta']??0;
     user.totalUsers = parsedJson['totalUsers']??0;
@@ -114,7 +117,7 @@ class User implements Comparable<User>{
     return overallWonBets / (overallWonBets + overallLostBets) ;
   }
 
-  double betPredsOverallPercentage(){
+  double betPredictionsOverallPercentage(){
     if (overallWonPredictions + overallLostPredictions == 0){
       return 0;
     }
@@ -122,6 +125,9 @@ class User implements Comparable<User>{
     return overallWonPredictions / (overallWonPredictions + overallLostPredictions) ;
   }
 
+  String betPredictionsOverallPercentageText(){
+    return '${(betPredictionsOverallPercentage() * 100) .toStringAsFixed(0)}%';
+  }
 
   String betSlipsOverallText(){
     return '$overallWonBets/${overallWonBets + overallLostBets}';
@@ -132,6 +138,14 @@ class User implements Comparable<User>{
     return '$overallWonPredictions/${overallWonPredictions + overallLostPredictions}';
   }
 
+  String overallROIPercentageText(){
+    if (betAmountOverall == 0){
+      return '0%';
+    }
+
+    return '${(( (betAmountOverallReturned - betAmountOverall) / (betAmountOverall)) * 100).toStringAsFixed(0)}%';
+  }
+
   void deepCopyFrom(User u) {
     // userPosition = u.userPosition;
     email = u.email;
@@ -139,6 +153,7 @@ class User implements Comparable<User>{
     username = u.username;
     mongoUserId = u.mongoUserId;
     betAmountOverall = u.betAmountOverall;
+    betAmountOverallReturned = u.betAmountOverallReturned;
     overallLostBets = u.overallLostBets;
     overallLostPredictions = u.overallLostPredictions;
     overallWonPredictions = u.overallWonPredictions;

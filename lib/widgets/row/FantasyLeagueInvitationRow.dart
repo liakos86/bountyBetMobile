@@ -186,11 +186,13 @@ class _FantasyLeagueInvitationRowState
             //   ),
             // ),
             if (!_accepted && !_rejected && !_error) ...[
-              SizedBox(height: 16),
+              SizedBox(height: 8),
+
+              Column(children:[
               Row(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
-                  (AppContext.user.fantasyLeagueMongoId == null) ?
+
                   TextButton(
                     onPressed: () {
                       _showDeclineConfirmation(league);
@@ -198,23 +200,31 @@ class _FantasyLeagueInvitationRowState
                       // setState(() => _accepted = true);
                     },
                     child: Text("Decline"),
-                  ) : SizedBox(),
+                  ) ,
 
-                  (AppContext.user.fantasyLeagueMongoId == null) ?
+
                   ElevatedButton(
                     onPressed: () {
-                      _showAcceptConfirmation(league);
+                      (AppContext.user.fantasyLeagueMongoId == null) ?
+                      _showAcceptConfirmation(league) : {};
                       //widget.onAccept();
                       // setState(() => _accepted = true);
                     },
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.green.shade400, // Greenish hue
+                      backgroundColor: (AppContext.user.fantasyLeagueMongoId == null) ? Colors.green.shade400 : Colors.grey.shade400, // Greenish hue
                       foregroundColor: Colors.white,          // Text color
                     ),
                     child: Text("Accept"),
-                  ) : Text('You need to opt-out ${AppContext.fantasyLeague!.name} in order to accept'),
+                  ) ,
+
+
                 ],
               ),
+
+                if (AppContext.user.fantasyLeagueMongoId != null)
+                Text('You need to opt-out ${AppContext.fantasyLeague.name} in order to accept')
+
+                ]),
             ] else ...[
               SizedBox(height: 16),
               Center(

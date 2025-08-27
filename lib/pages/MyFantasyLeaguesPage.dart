@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:ui';
 import 'package:collection/collection.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:in_app_purchase_android/in_app_purchase_android.dart';
 
 
@@ -14,6 +15,7 @@ import 'package:flutter_app/utils/client/HttpActionsClient.dart';
 import 'package:in_app_purchase/in_app_purchase.dart';
 
 
+import '../enums/FantasyLeagueStatus.dart';
 import '../helper/SharedPrefs.dart';
 import '../models/FantasyLeagueInvitation.dart';
 import '../models/User.dart';
@@ -54,13 +56,14 @@ class MyFantasyLeaguesPage extends StatefulWidget{//}WithName{
 
 }
 
-class MyFantasyLeaguesPageState extends State<MyFantasyLeaguesPage>  with SingleTickerProviderStateMixin{
+class MyFantasyLeaguesPageState extends State<MyFantasyLeaguesPage>  with SingleTickerProviderStateMixin, WidgetsBindingObserver{
 
   final InAppPurchase inAppPurchase = InAppPurchase.instance;
   List<ProductDetails> products = [];
   List<PurchaseDetails> purchases = [];
   StreamSubscription<List<PurchaseDetails>>? subscription;
   bool available = false;
+  bool isMinimized = false;
 
   /*
    * Make o copy of the bets
@@ -81,14 +84,31 @@ class MyFantasyLeaguesPageState extends State<MyFantasyLeaguesPage>  with Single
 
   GlobalKey  fantasyLeagueKey = GlobalKey();
 
-  // bool leagueFetched = false;
-
   @override
   void dispose() {
     _tabController.dispose();
     subscription?.cancel();
     super.dispose();
   }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    super.didChangeAppLifecycleState(state);
+
+    if (state == AppLifecycleState.paused) {
+      // App is minimized or moved to the background
+      setState(() {
+        isMinimized = true;
+      });
+    } else if (state == AppLifecycleState.resumed) {
+      // App is active again
+      print('RESUMED!!!!!!!');
+      setState(() {
+        isMinimized = false;
+      });
+    }
+  }
+
 
   @override
   void initState(){
@@ -104,26 +124,24 @@ class MyFantasyLeaguesPageState extends State<MyFantasyLeaguesPage>  with Single
     // }
 
     Timer.periodic(const Duration(seconds: 30), (timer) {
-      //if (!isMinimized) {
+      if (!isMinimized) {
       restorePurchases();      //);
-      //}
+      }
     }
     );
 
     updateFantasyLeagues();
     Timer.periodic(const Duration(seconds: 15), (timer) {
-      //if (!isMinimized) {
+      if (!isMinimized) {
          updateFantasyLeagues();
-        //);
-      //}
+      }
     }
     );
 
     Timer.periodic(const Duration(seconds: 10), (timer) {
-      //if (!isMinimized) {
-      updateBets(AppContext.user.userBets);//update the copy from the new bets
-      //);
-      //}
+      if (!isMinimized) {
+        updateBets(AppContext.user.userBets);//update the copy from the new bets
+      }
     });
 
 
@@ -145,8 +163,6 @@ class MyFantasyLeaguesPageState extends State<MyFantasyLeaguesPage>  with Single
 
   @override
   Widget build(BuildContext context) {
-
-    //userBets = context.user
 
    if (AppContext.user.mongoUserId == Constants.defMongoId){
       return
@@ -227,7 +243,7 @@ class MyFantasyLeaguesPageState extends State<MyFantasyLeaguesPage>  with Single
                           context: context,
                           barrierDismissible: false,
                           builder: (_) =>
-                              DialogWizardLeagueNameStep1(),
+                              DialogWizardLeagueNameStep1(updateCallback: update),
                         );
                       },
                       style: ElevatedButton.styleFrom(
@@ -378,6 +394,10 @@ class MyFantasyLeaguesPageState extends State<MyFantasyLeaguesPage>  with Single
   }
 
   void updateFantasyLeagues() async{
+    if (AppContext.user.mongoUserId == Constants.defMongoId){
+      return;
+    }
+
     List<FantasyLeague> leagues = await HttpActionsClient.getFantasyLeaguesAsync();
 
     if (AppContext.user.fantasyLeagueMongoId != null) {
@@ -394,7 +414,7 @@ class MyFantasyLeaguesPageState extends State<MyFantasyLeaguesPage>  with Single
     }
 
 
-    List<FantasyLeague> invitationsIncoming = (leagues.where((e) => e.isInvitation).toList());
+    List<FantasyLeague> invitationsIncoming = (leagues.where((e) => e.isInvitation && e.users.isNotEmpty && e.status != FantasyLeagueStatus.ABANDONED.statusCode).toList());
     for (FantasyLeague invitationIncoming in invitationsIncoming){
       FantasyLeague? invitationExisting = invitations.firstWhereOrNull((element) => element.mongoId == invitationIncoming.mongoId);
       if (invitationExisting != null){
@@ -593,6 +613,9 @@ class MyFantasyLeaguesPageState extends State<MyFantasyLeaguesPage>  with Single
   }
 
   Future<void> restorePurchases() async {
+    if (AppContext.user.mongoUserId == Constants.defMongoId){
+      return;
+    }
 
     await inAppPurchase.restorePurchases();
   }
@@ -631,6 +654,14 @@ class MyFantasyLeaguesPageState extends State<MyFantasyLeaguesPage>  with Single
 
   Future<bool> verifyPurchaseWithServer(PurchaseDetails purchaseDetails) async {
     return await HttpActionsClient.verifyPurchase(purchaseDetails); // Simulating network delay
+  }
+
+  void update(FantasyLeague league){
+    setState(() {
+      fantasyLeague.copyFrom(league);
+      AppContext.user.fantasyLeagueMongoId = league.mongoId;
+    }
+    );
   }
 
 

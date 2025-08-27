@@ -137,8 +137,6 @@ class FantasyLeague implements Comparable<FantasyLeague>{
     this.name = other.name;
     this.dtStart = other.dtStart;
     this.dtEnd = other.dtEnd;
-    this.selectedLeagueIds.clear();
-    this.selectedLeagueIds.addAll(other.selectedLeagueIds);
     this.creatorUserId = other.creatorUserId;
     this.status = other.status;
     this.allowTopUp = other.allowTopUp;
@@ -148,6 +146,20 @@ class FantasyLeague implements Comparable<FantasyLeague>{
     this.invitations.clear();
     this.invitations.addAll(other.invitations);
 
+    // this.selectedLeagueIds.clear();
+    // this.selectedLeagueIds.addAll(other.selectedLeagueIds);
+
+    for (int incoming in other.selectedLeagueIds){
+      if (!selectedLeagueIds.contains(incoming)){
+        selectedLeagueIds.add(incoming);
+      }
+    }
+
+    for (int existing in List.of(selectedLeagueIds)){
+      if (!other.selectedLeagueIds.contains(existing)){
+        selectedLeagueIds.remove(existing);
+      }
+    }
 
     for (User userIncoming in other.users){
       User? userExisting = users.firstWhereOrNull((element) => element.mongoUserId == userIncoming.mongoUserId);
@@ -155,6 +167,13 @@ class FantasyLeague implements Comparable<FantasyLeague>{
         userExisting.deepCopyFrom(userIncoming);
      }else{
         users.add(userIncoming);
+      }
+    }
+
+    for (User userExisting in List.of(users)){
+      User? userIncoming = users.firstWhereOrNull((element) => element.mongoUserId == userExisting.mongoUserId);
+      if (userIncoming == null){
+        users.remove(userExisting);
       }
     }
 

@@ -4,7 +4,6 @@ import 'package:flutter_app/utils/client/HttpActionsClient.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import '../models/User.dart';
-import '../models/constants/ColorConstants.dart';
 
 class DialogLogin extends StatefulWidget {
   final Function callback;
@@ -16,97 +15,116 @@ class DialogLogin extends StatefulWidget {
 }
 
 class DialogLoginState extends State<DialogLogin> {
-  DialogLoginState({
-    required this.callback,
-  });
+  DialogLoginState({required this.callback});
 
   bool executingCall = false;
 
   Function callback = (User user) => {};
 
   String emailOrUsername = '';
-
   String password = '';
 
   bool obscureText = true;
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      color: const Color(ColorConstants.my_dark_grey),
-      child: SingleChildScrollView( // Make the scrollable area take the full available space
+    return Center(
+      child: Card(
+        color: Colors.white,
+        margin: const EdgeInsets.all(4),
+        elevation: 6,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center, // Align items in the center
-            crossAxisAlignment: CrossAxisAlignment.stretch, // Make them stretch to fit width
-            children: [
-              // Email/Username input
-              TextField(
-                style: const TextStyle(color: Colors.white),
-                onChanged: (text) {
-                  emailOrUsername = text;
-                },
-                decoration:  InputDecoration(
-                  border: const OutlineInputBorder(),
-                  hintText: AppLocalizations.of(context)!.email_or_username,
-                  hintStyle: const TextStyle(color: Colors.white),
-                ),
-              ),
-              const SizedBox(height: 16), // Add spacing between fields
+          padding: const EdgeInsets.all(8),
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 400),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Flexible(
+                  fit: FlexFit.loose,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      // Email or Username
+                      TextField(
+                        style: const TextStyle(color: Colors.black),
+                        onChanged: (text) {
+                          emailOrUsername = text;
+                        },
+                        decoration: InputDecoration(
+                          border: const OutlineInputBorder(),
+                          hintText: AppLocalizations.of(context)!.email_or_username,
+                          hintStyle: const TextStyle(color: Colors.black54),
+                        ),
+                      ),
+                      const SizedBox(height: 16),
 
-              // Password input
-              TextField(
-                style: const TextStyle(color: Colors.white),
-                obscureText: obscureText,
-                onChanged: (text) {
-                  password = text;
-                },
-                decoration: InputDecoration(
-                  border: const OutlineInputBorder(),
-                  hintText: AppLocalizations.of(context)!.password,
-                  hintStyle: const TextStyle(color: Colors.white),
-                  suffixIcon: IconButton(
-                    icon: Icon(
-                      obscureText ? Icons.visibility_off : Icons.visibility,
-                      color: Colors.white,
-                    ),
-                    onPressed: () {
-                      setState(() {
-                        obscureText = !obscureText; // Toggle password visibility
-                      });
-                    },
+                      // Password
+                      TextField(
+                        style: const TextStyle(color: Colors.black),
+                        obscureText: obscureText,
+                        onChanged: (text) {
+                          password = text;
+                        },
+                        decoration: InputDecoration(
+                          border: const OutlineInputBorder(),
+                          hintText: AppLocalizations.of(context)!.password,
+                          hintStyle: const TextStyle(color: Colors.black54),
+                          suffixIcon: IconButton(
+                            icon: Icon(
+                              obscureText ? Icons.visibility_off : Icons.visibility,
+                              color: Colors.black,
+                            ),
+                            onPressed: () {
+                              setState(() {
+                                obscureText = !obscureText;
+                              });
+                            },
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 24),
+                    ],
                   ),
                 ),
-              ),
-              const SizedBox(height: 16), // Add spacing between fields
 
-              // Login button
-              SizedBox(
-                width: double.infinity,
-                child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    foregroundColor: Colors.white,
-                    backgroundColor: Colors.red.shade500,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(4.0),
+                // Login Button fixed to bottom
+                Align(
+                  alignment: Alignment.bottomCenter,
+                  child: SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        foregroundColor: Colors.white,
+                        backgroundColor: Colors.black,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(4.0),
+                        ),
+                      ),
+                      onPressed: executingCall
+                          ? null
+                          : () {
+                        setState(() {
+                          executingCall = true;
+                        });
+                        loginWith(emailOrUsername, password);
+                      },
+                      child: executingCall
+                          ? const SizedBox(
+                        width: 24,
+                        height: 24,
+                        child: CircularProgressIndicator(
+                          color: Colors.white,
+                          strokeWidth: 2,
+                        ),
+                      )
+                          : Text(AppLocalizations.of(context)!.login),
                     ),
                   ),
-                  onPressed: () {
-                    if (executingCall) {
-                      return;
-                    }
-                    setState(() {
-                      executingCall = true;
-                    });
-                    loginWith(emailOrUsername, password);
-                  },
-                  child: executingCall
-                      ? const CircularProgressIndicator()
-                      : Text(AppLocalizations.of(context)!.login),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
@@ -115,27 +133,28 @@ class DialogLoginState extends State<DialogLogin> {
 
   void loginWith(String emailOrUsername, String password) async {
     if (emailOrUsername.length < 5) {
-
-      ScaffoldMessenger.of(context).showSnackBar(  SnackBar(
-        content: Text(AppLocalizations.of(context)!.validation_username), showCloseIcon: true, duration: const Duration(seconds: 5),
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text(AppLocalizations.of(context)!.validation_username),
+        showCloseIcon: true,
+        duration: const Duration(seconds: 5),
       ));
 
       setState(() {
         executingCall = false;
       });
-
       return;
     }
 
     if (password.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(  SnackBar(
-        content: Text(AppLocalizations.of(context)!.validation_invalid_username), showCloseIcon: true, duration: const Duration(seconds: 5),
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text(AppLocalizations.of(context)!.validation_invalid_username),
+        showCloseIcon: true,
+        duration: const Duration(seconds: 5),
       ));
 
       setState(() {
         executingCall = false;
       });
-
       return;
     }
 
@@ -144,15 +163,13 @@ class DialogLoginState extends State<DialogLogin> {
     if (userFromServer != null && userFromServer.errorMessage.isEmpty) {
       callback.call(userFromServer);
     } else {
-
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar( SnackBar(
-          content: Text(
-            (userFromServer == null)
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text((userFromServer == null)
               ? AppLocalizations.of(context)!.validation_invalid_username
               : userFromServer.errorMessage.isEmpty
               ? AppLocalizations.of(context)!.validation_invalid_username
-              : userFromServer.errorMessage,),
+              : userFromServer.errorMessage),
           showCloseIcon: true,
           duration: const Duration(seconds: 5),
         ));

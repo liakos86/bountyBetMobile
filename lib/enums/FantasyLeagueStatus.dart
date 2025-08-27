@@ -4,9 +4,9 @@ enum FantasyLeagueStatus{
 
   RUNNING(statusCode: 2),
 
-  ABANDONED(statusCode: 3),
+  COMPLETED(statusCode: 3),
 
-  COMPLETED(statusCode: 4);
+  ABANDONED(statusCode: 4);
 
   final int statusCode;
 

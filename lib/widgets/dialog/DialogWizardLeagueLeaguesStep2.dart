@@ -10,11 +10,14 @@ import 'DialogWizardLeagueDatesStep3.dart';
 class DialogWizardLeagueLeaguesStep2 extends StatefulWidget {
   final String leagueName;
 
+  final Function(FantasyLeague) updateCallback;
+
   final List<int> initialSelectedLeagueIds;
   final bool isEdit; // new flag
 
   const DialogWizardLeagueLeaguesStep2({
     required this.leagueName,
+    required this.updateCallback,
     this.initialSelectedLeagueIds = const [],
     this.isEdit = false,
   });
@@ -27,10 +30,13 @@ class DialogWizardLeagueLeaguesStep2 extends StatefulWidget {
 class _LeagueSelectionDialogState extends State<DialogWizardLeagueLeaguesStep2> {
   late List<int> _selectedLeagueIds;
 
+  // Function(FantasyLeague) updateCallback = (a)=>{};
+
   @override
   void initState() {
     super.initState();
     _selectedLeagueIds = List<int>.from(widget.initialSelectedLeagueIds);
+    // updateCallback = widget.updateCallback;
   }
 
 
@@ -49,7 +55,7 @@ class _LeagueSelectionDialogState extends State<DialogWizardLeagueLeaguesStep2> 
     });
   }
 
-  void _onNext() {
+  Future<void> _onNext() async{
     if (_selectedLeagueIds.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text("Please select at least one league.")),
@@ -57,12 +63,17 @@ class _LeagueSelectionDialogState extends State<DialogWizardLeagueLeaguesStep2> 
       return;
     }
 
-    Navigator.of(context).pop(); // Close this step
+
 
     if (!widget.isEdit) {
+      Navigator.of(context).pop(); // Close this step
       _showNextStep(context, widget.leagueName, _selectedLeagueIds);
     }else{
-      editLeague();
+      Navigator.of(context).pop();
+      await editLeague();
+      // if (mounted) {
+      //   Navigator.of(context).pop(); // Close this step
+      // }
     }
 
 
@@ -142,16 +153,17 @@ class _LeagueSelectionDialogState extends State<DialogWizardLeagueLeaguesStep2> 
       builder: (_) => DialogWizardLeagueDatesStep3(
         leagueName: name,
         selectedLeagueIds: selectedLeagueIds,
+        updateCallback: widget.updateCallback
       ),
     );
   }
 
-  void editLeague () async{
+  Future<void>  editLeague () async{
     FantasyLeague fCopy = AppContext.fantasyLeague.clone();
     fCopy.selectedLeagueIds = _selectedLeagueIds;
     fCopy = await HttpActionsClient.editFantasyLeague(fCopy);
     if (fCopy.mongoId != Constants.defMongoId){
-      AppContext.fantasyLeague.copyFrom(fCopy);
+      await widget.updateCallback.call(fCopy);
     }
   }
 

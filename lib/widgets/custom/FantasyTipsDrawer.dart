@@ -21,7 +21,7 @@ class FantasyTipsDrawer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Drawer(
-      backgroundColor: const Color(ColorConstants.my_dark_grey),
+      backgroundColor: Colors.white,// const Color(ColorConstants.my_dark_grey),
       child: ListView(
         // Important: Remove any padding from the ListView.
         padding: EdgeInsets.zero,
@@ -177,8 +177,8 @@ class FantasyTipsDrawer extends StatelessWidget {
     Row(children:[
               Expanded(
                   flex: 1,
-                  child: ProgressBarWithCenteredText(text:'${AppLocalizations.of(context)!.all_time_predictions}  ${(AppContext.user.betPredsOverallPercentage() * 100).toStringAsFixed(0)}%  =  ${AppContext.user.betPredictionsOverallText()}', // Display percentage
-                      value: AppContext.user.betPredsOverallPercentage())
+                  child: ProgressBarWithCenteredText(text:'${AppLocalizations.of(context)!.all_time_predictions}  ${(AppContext.user.betPredictionsOverallPercentage() * 100).toStringAsFixed(0)}%  =  ${AppContext.user.betPredictionsOverallText()}', // Display percentage
+                      value: AppContext.user.betPredictionsOverallPercentage())
               )]),
 
 

@@ -149,9 +149,11 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
         return;
       }
 
-      if (payload['changeEvent'] != null){
+      if (payload['changeEvent'] != null){//match event
         sendChangeEventNotifications(payload);
-      }else if (payload['leagueName'] != null){
+      }else if (payload['mongoReceiverId'] != null){//invitation
+        sendLeagueInvitationNotification(payload);
+      } else if (payload['leagueName'] != null){//league start
         sendStartLeagueNotification(payload);
       }
 
@@ -189,6 +191,53 @@ void sendStartLeagueNotification(Map<String, dynamic> payload) async{
     generateUniqueNotificationId(),
     'Fantasy League ' + event.leagueName + ' has started!',
     event.dtStart + ' - ' + event.dtEnd,
+    // changeEventSoccer.changeEvent.displayName,
+    NotificationDetails(
+      iOS: const DarwinNotificationDetails(),//TODO: needs setup for IOS
+      android: AndroidNotificationDetails(
+        'high_importance_channel_fantasy_tips', // id
+        'High Importance Notifications ft',
+        // groupKey: null,
+        groupKey: 'unique_key_${event.uniqueId}',
+        // 'MY FOREGROUND SERVICE',
+        largeIcon: FilePathAndroidBitmap(file),
+        // largeIcon: icon,//  '@mipmap/ic_launcher',
+        priority: Priority.high,
+        ongoing: false,
+      ),
+    ),
+  );
+
+}
+
+void sendLeagueInvitationNotification(Map<String, dynamic> payload) async{
+
+  final prefs = await SharedPreferences.getInstance();
+  await prefs.reload();
+  var mongoUserId = prefs.getString(Constants.mongoId) ?? Constants.empty;
+  if (mongoUserId == Constants.empty){
+    return;
+  }
+
+  StartLeagueEvent event = StartLeagueEvent.fromJson(payload);
+
+
+  if (event.mongoReceiverId != mongoUserId){
+    return;
+  }
+
+  if (_processedUuids.contains(event.uniqueId)) {
+    return;
+  }
+
+  String file = await ImageUtils.downloadAndSaveFile(event.imgUrl, event.leagueName);
+
+  _processedUuids.add(event.uniqueId);
+
+  flutterLocalNotificationsPlugin.show(
+    generateUniqueNotificationId(),
+    event.invitingUsername??'(${event.invitingEmail!}) is inviting you into Fantasy League ${event.leagueName}',
+    '${event.dtStart} - ${event.dtEnd}',
     // changeEventSoccer.changeEvent.displayName,
     NotificationDetails(
       iOS: const DarwinNotificationDetails(),//TODO: needs setup for IOS

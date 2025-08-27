@@ -2,7 +2,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_app/enums/BetStatus.dart';
 import 'package:flutter_app/models/constants/ColorConstants.dart';
-import 'package:flutter_app/utils/BetUtils.dart';
 
 import '../../models/User.dart';
 import '../../models/UserBet.dart';
@@ -51,9 +50,6 @@ class LeaderBoardUserFullInfoRow extends StatefulWidget {
     user.userBets.sort();
 
     return
-       // Stack(
-       //  clipBehavior: Clip.none, // Allow positioning outside the container
-       //  children: [
 
     // return
        Card(
@@ -64,7 +60,7 @@ class LeaderBoardUserFullInfoRow extends StatefulWidget {
           padding: const EdgeInsets.all(16),
           child:
 
- Column(
+        Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // Top Row: Profile Picture and Main Info
@@ -130,19 +126,19 @@ class LeaderBoardUserFullInfoRow extends StatefulWidget {
 
             ],
           ),
-          const SizedBox(height: 12),
+          // const SizedBox(height: 6),
 
 
           // Additional Stats
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              // _buildSmallStatBox(user.balance.betPredictionsMonthlyText(), AppLocalizations.of(context)!.month_preds),
-              // _buildSmallStatBox(user.balance.betPredictionsMonthlyPercentageText(), AppLocalizations.of(context)!.preds_perc),
-              // _buildSmallStatBox(user.balance.monthlyROIPercentageText(), AppLocalizations.of(context)!.month_roi),
-              // _buildSmallStatBox(user.balance.monthlyAmountROIText(), AppLocalizations.of(context)!.amount_returned),
-            ],
-          ),
+          // Row(
+          //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          //   children: [
+          //     _buildSmallStatBox(user.betPredictionsOverallText(), AppLocalizations.of(context)!.overall_preds),
+          //     _buildSmallStatBox(user.betPredictionsOverallPercentageText(), AppLocalizations.of(context)!.preds_perc),
+          //     _buildSmallStatBox(user.overallROIPercentageText(), AppLocalizations.of(context)!. total_roi),
+          //     // _buildSmallStatBox(user.balance.monthlyAmountROIText(), AppLocalizations.of(context)!.amount_returned),
+          //   ],
+          // ),
 
           if (isCurrentLeaderBoard)
           const SizedBox(height: 8),
@@ -232,6 +228,11 @@ class LeaderBoardUserFullInfoRow extends StatefulWidget {
 
           Row(
             children: [
+              _buildTiltedStatBox(user.betPredictionsOverallText(), AppLocalizations.of(context)!.overall_preds, 2, Colors.white),
+              _buildTiltedStatBox(user.betSlipsOverallText(), AppLocalizations.of(context)!.overall_slips, 2, Colors.white),
+              _buildTiltedStatBox(user.betPredictionsOverallPercentageText(), AppLocalizations.of(context)!.preds_perc, 2, Colors.white),
+              _buildTiltedStatBox(user.overallROIPercentageText(), AppLocalizations.of(context)!. total_roi, 2, Colors.amber),
+
               // _buildTiltedStatBox(user.balance.betSlipsMonthlyText(), AppLocalizations.of(context)!.won_slips, 3, Colors.white),
               // _buildTiltedStatBox(user.balance.betSlipsMonthlyPercentageText(), AppLocalizations.of(context)!.slips_percent, 2, Colors.white),
               // _buildTiltedStatBox(user.balance.balanceLeaderBoard.toStringAsFixed(0), AppLocalizations.of(context)!.credits_with_sign, 2, Colors.amber),

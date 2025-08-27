@@ -72,7 +72,7 @@
 
        "close" : "Κλείσιμο",
 
-       "position" : "θέση",
+       "position" : "παγκόσμια θέση",
 
        "validation_pending" : "εκκρεμεί επιβεβαίωση",
 
@@ -126,10 +126,14 @@
 
 
        "month_preds" : "Προβλ.\nΜήνα",
+       "overall_preds" : "Σύνολο\nΠροβλ.",
+       "overall_slips" : "Σύνολο\nΔελτ.",
 
        "preds_perc" : "Προβλ.\nΠοσ.",
 
        "month_roi": "Μήνας\nROI",
+        "total_roi": "Σύνολο\nROI",
+
 
        "amount_returned" : "Ποντάρ.\nΕπιστροφή",
 

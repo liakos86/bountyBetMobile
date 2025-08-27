@@ -10,10 +10,14 @@ import 'DialogWizardLeagueOptionsStep4.dart';
 class DialogWizardLeagueDatesStep3 extends StatefulWidget {
   final String leagueName;
   final List<int> selectedLeagueIds;
+  final Function(FantasyLeague) updateCallback;
+
 
   const DialogWizardLeagueDatesStep3({
     required this.leagueName,
     required this.selectedLeagueIds,
+    required this.updateCallback,
+
   });
 
   @override
@@ -111,7 +115,7 @@ class _DialogWizardLeagueDatesStep3State extends State<DialogWizardLeagueDatesSt
     showDialog(
       context: context,
       barrierDismissible: false,
-      builder: (_) => DialogWizardLeagueOptionsStep4(league: league),
+      builder: (_) => DialogWizardLeagueOptionsStep4(league: league, updateCallback: widget.updateCallback),
     );
   }
 

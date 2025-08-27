@@ -22,6 +22,12 @@ class StartLeagueEvent{
 
   String uniqueId;
 
+  //invite only
+  String? mongoReceiverId;
+  String? invitingUsername;
+  String? invitingEmail;
+
+
   static StartLeagueEvent fromJson(Map<String, dynamic> jsonValues){
     String leagueId = (jsonValues['leagueId']);
     String leagueName = (jsonValues['leagueName']);
@@ -29,7 +35,14 @@ class StartLeagueEvent{
     String dtEnd = (jsonValues['dtEnd']);
     String uniqueId = (jsonValues['uniqueId']);
     String imgUrl = (jsonValues['imgUrl']);
-    return StartLeagueEvent(leagueId: leagueId, uniqueId: uniqueId, imgUrl: imgUrl, leagueName: leagueName, dtStart: dtStart, dtEnd: dtEnd);
+    String? mongoReceiverId = (jsonValues['mongoReceiverId']);
+    String? invitingUsername = (jsonValues['invitingUsername']);
+    String? invitingEmail = (jsonValues['invitingEmail']);
+    StartLeagueEvent sle = StartLeagueEvent(leagueId: leagueId, uniqueId: uniqueId, imgUrl: imgUrl, leagueName: leagueName, dtStart: dtStart, dtEnd: dtEnd);
+    sle.mongoReceiverId = mongoReceiverId;
+    sle.invitingUsername = invitingUsername;
+    sle.invitingEmail = invitingEmail;
+    return sle;
   }
 
 }

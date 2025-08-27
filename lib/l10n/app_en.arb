@@ -79,7 +79,7 @@
 
         "close" : "Close",
 
-        "position" : "pos",
+        "position" : "global pos",
 
         "validation_pending" : "validation pending",
 
@@ -139,10 +139,13 @@
         "credits_with_sign" : "$ Credits",
 
         "month_preds" : "Month\nPreds",
+        "overall_preds" : "Total\nPreds",
+        "overall_slips" : "Total\nSlips",
 
         "preds_perc" : "Preds\nPerc",
 
         "month_roi": "Month\nROI",
+        "total_roi": "Total\nROI",
 
         "amount_returned" : "Bet\nReturned",
 

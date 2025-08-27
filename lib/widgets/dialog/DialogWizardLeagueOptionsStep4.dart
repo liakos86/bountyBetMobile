@@ -3,13 +3,18 @@ import 'package:flutter/material.dart';
 import '../../models/FantasyLeague.dart';
 import '../../models/constants/Constants.dart';
 import '../../models/context/AppContext.dart';
+import '../../pages/MyFantasyLeaguesPage.dart';
 import 'DialogWizardLeagueConfirmStep5.dart';
 import '../../utils/client/HttpActionsClient.dart';
 
 class DialogWizardLeagueOptionsStep4 extends StatefulWidget {
   final FantasyLeague league;
+  final Function(FantasyLeague) updateCallback;
 
-  const DialogWizardLeagueOptionsStep4({required this.league});
+  const DialogWizardLeagueOptionsStep4({
+    required this.league,
+    required this.updateCallback
+  });
 
   @override
   State<DialogWizardLeagueOptionsStep4> createState() => _DialogWizardLeagueOptionsStep4State();
@@ -82,8 +87,7 @@ class _DialogWizardLeagueOptionsStep4State extends State<DialogWizardLeagueOptio
   void createLeague(FantasyLeague league) async{
     FantasyLeague league = await HttpActionsClient.createFantasyLeague(widget.league);
     if (league.mongoId != Constants.defMongoId) {
-      AppContext.fantasyLeague.copyFrom(league);
-      AppContext.user.fantasyLeagueMongoId = league.mongoId;
+      widget.updateCallback.call(league);
     }
   }
 }
