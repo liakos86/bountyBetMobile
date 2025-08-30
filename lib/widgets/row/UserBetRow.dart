@@ -47,44 +47,114 @@ class UserBetRow extends StatefulWidget {
 
 
    @override
-  Widget build(BuildContext context) {
+   Widget build(BuildContext context) {
+     return Card(
+       key: PageStorageKey<String>('user_bet_${bet.betId}'),
+       color: Colors.blue.shade50,
+       margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+       child: Padding(
+         padding: const EdgeInsets.all(8.0),
+         child: Column(
+           crossAxisAlignment: CrossAxisAlignment.start,
+           children: [
 
-    return
+             // Title row with leading icon and possible earnings
+             Row(
+               crossAxisAlignment: CrossAxisAlignment.start,
+               children: [
+                 Padding(
+                   padding: const EdgeInsets.only(right: 8.0),
+                   child: _buildStatusIcon(),
+                 ),
+                 Expanded(
+                   child: Column(
+                     crossAxisAlignment: CrossAxisAlignment.start,
+                     children: [
+                       Text(
+                         '${AppLocalizations.of(context)!.possible_earnings} ${bet.toReturn().toStringAsFixed(2)}',
+                         style: const TextStyle(
+                           fontSize: 14,
+                           color: Colors.black87,
+                           fontWeight: FontWeight.bold,
+                         ),
+                       ),
+                       const SizedBox(height: 4),
+                       Text(
+                         '$placementTime - Bet: ${bet.betAmount.toStringAsFixed(2)} \r\nbetId:${bet.betId}',
+                         maxLines: 2,
+                         style: Theme.of(context).textTheme.bodySmall,
+                       ),
+                     ],
+                   ),
+                 ),
+               ],
+             ),
 
-      Theme(
+             const SizedBox(height: 8),
 
-        key: PageStorageKey<String>('user_bet_${bet.betId}'),
-    data: Theme.of(context).copyWith(
-    listTileTheme: ListTileTheme.of(context).copyWith(
-    dense: true,
-    ),
-    ),
-      child:
-      ExpansionTile(
+             // Children predictions
+             Column(
+               children: bet.predictions
+                   .map((item) => _buildSelectedOddRow(item))
+                   .toList(),
+             ),
+           ],
+         ),
+       ),
+     );
+   }
 
-          collapsedBackgroundColor:  Colors.blue.shade50 ,
-          backgroundColor:   Colors.blue.shade50 ,
-
-
-          initiallyExpanded: true,
-
-      tilePadding: const EdgeInsets.only(left: 8),
-      subtitle: Text(maxLines:2, '$placementTime - Bet: ${bet.betAmount.toStringAsFixed(2)} \r\nbetId:${bet.betId}'),
-      leading:
-
-          bet.betStatus==BetStatus.LOST ?
-          const Icon( Icons.highlight_remove, color:   Colors.red)
-              : ( bet.betStatus==BetStatus.WON ?
-          const Icon(Icons.check_circle_outline_outlined, color: Color(ColorConstants.my_blue)) :
-          const Icon(Icons.downloading_outlined, color:   Colors.blueAccent) ),
+   Widget _buildStatusIcon() {
+     switch (bet.betStatus) {
+       case BetStatus.LOST:
+         return const Icon(Icons.highlight_remove, color: Colors.red);
+       case BetStatus.WON:
+         return const Icon(Icons.check_circle_outline_outlined, color: Color(ColorConstants.my_blue));
+       default:
+         return const Icon(Icons.downloading_outlined, color: Colors.blueAccent);
+     }
+   }
 
 
-
-      title: Text('${AppLocalizations.of(context)!.possible_earnings} ${bet.toReturn().toStringAsFixed(2)}',
-          style: const TextStyle(fontSize: 14, color: Colors.black87, fontWeight: FontWeight.bold)),
-      children: bet.predictions.map((item)=> _buildSelectedOddRow(item)).toList()
-    ));
-  }
+   //  @override
+  // Widget build(BuildContext context) {
+  //
+  //   return
+  //
+  //     Theme(
+  //
+  //       key: PageStorageKey<String>('user_bet_${bet.betId}'),
+  //   data: Theme.of(context).copyWith(
+  //   listTileTheme: ListTileTheme.of(context).copyWith(
+  //   dense: true,
+  //   ),
+  //   ),
+  //     child:
+  //     ExpansionTile(
+  //
+  //         collapsedBackgroundColor:  Colors.blue.shade50 ,
+  //         backgroundColor:   Colors.blue.shade50 ,
+  //
+  //
+  //         initiallyExpanded: true,
+  //
+  //     tilePadding: const EdgeInsets.only(left: 8),
+  //     subtitle: Text(maxLines:2, '$placementTime - Bet: ${bet.betAmount.toStringAsFixed(2)} \r\nbetId:${bet.betId}'),
+  //     leading:
+  //
+  //         bet.betStatus==BetStatus.LOST ?
+  //         const Icon( Icons.highlight_remove, color:   Colors.red)
+  //             : ( bet.betStatus==BetStatus.WON ?
+  //         const Icon(Icons.check_circle_outline_outlined, color: Color(ColorConstants.my_blue)) :
+  //         const Icon(Icons.downloading_outlined, color:   Colors.blueAccent) ),
+  //
+  //
+  //
+  //     title: Text('${AppLocalizations.of(context)!.possible_earnings} ${bet.toReturn().toStringAsFixed(2)}',
+  //         style: const TextStyle(fontSize: 14, color: Colors.black87, fontWeight: FontWeight.bold)),
+  //     children: bet.predictions.map((item)=> _buildSelectedOddRow(item)).toList()
+  //   ));
+  // }
 
   Widget _buildSelectedOddRow(UserPrediction bettingOdd) {
 

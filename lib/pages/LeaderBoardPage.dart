@@ -16,6 +16,7 @@ import '../models/constants/Constants.dart';
 import '../utils/BetUtils.dart';
 import '../widgets/CustomTabIcon.dart';
 import '../widgets/dialog/DialogMonthWinner.dart';
+import '../widgets/row/GlobalLeaderBoardRow.dart';
 import 'LivePage.dart';
 
 
@@ -217,7 +218,7 @@ class LeaderBoardPageState extends State<LeaderBoardPage> with SingleTickerProvi
       itemCount: leaders.length,
       itemBuilder: (context, item) {
       User user = leaders[item];
-      return _buildUserRow(user, true, isPreviousMonthWinner, 'curr$item${user.mongoUserId}');
+      return _buildUserRow(user, item,  true, isPreviousMonthWinner, 'curr$item${user.mongoUserId}');
       },
       ),
       ),
@@ -371,8 +372,9 @@ class LeaderBoardPageState extends State<LeaderBoardPage> with SingleTickerProvi
   }
 
 
-  Widget _buildUserRow(User leader, bool isCurrentLeaderBoard, bool isCurrentLeaderBoardWinner, String key) {
-    return LeaderBoardUserFullInfoRow(user: leader, isCurrentLeaderBoard: isCurrentLeaderBoard, isLeaderBoardWinner: isCurrentLeaderBoardWinner, key: PageStorageKey<String>(key));
+  Widget _buildUserRow(User leader, int item, bool isCurrentLeaderBoard, bool isCurrentLeaderBoardWinner, String key) {
+    return GlobalLeaderboardRow(user: leader, position: item+1, key: PageStorageKey<String>(key));
+    // return LeaderBoardUserFullInfoRow(user: leader, isCurrentLeaderBoard: isCurrentLeaderBoard, isLeaderBoardWinner: isCurrentLeaderBoardWinner, key: PageStorageKey<String>(key));
 
   }
 
@@ -382,6 +384,8 @@ class LeaderBoardPageState extends State<LeaderBoardPage> with SingleTickerProvi
     user.username = AppContext.user.username;
     // user.balance = balance;
 
+
+    return GlobalLeaderboardRow(user: user, position: item, key: PageStorageKey<String>(key));
     return LeaderBoardUserFullInfoRow(user: user, isCurrentLeaderBoard: false, isLeaderBoardWinner: false, key: PageStorageKey<String>(key));
   }
 

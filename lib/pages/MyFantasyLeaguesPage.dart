@@ -586,8 +586,8 @@ class MyFantasyLeaguesPageState extends State<MyFantasyLeaguesPage>  with Single
   Future<void> deliverProduct(PurchaseDetails purchaseDetails) async{
 
     try {
-      bool success = await sendPurchaseToServer(purchaseDetails);
-      if (success) {
+      double? success = await sendPurchaseToServer(purchaseDetails);
+      if (success!=null && success > 0) {
 
         inAppPurchase.completePurchase(purchaseDetails);
 
@@ -595,6 +595,13 @@ class MyFantasyLeaguesPageState extends State<MyFantasyLeaguesPage>  with Single
         inAppPurchase.getPlatformAddition<InAppPurchaseAndroidPlatformAddition>();
 
         await androidAddition.consumePurchase(purchaseDetails);
+
+        setState(() {
+          for (var u in fantasyLeague.users) {
+            u.fantasyBalance.balance += success;
+          }
+        }
+        );
 
       } else {
 
@@ -625,21 +632,21 @@ class MyFantasyLeaguesPageState extends State<MyFantasyLeaguesPage>  with Single
     inAppPurchase.buyConsumable(purchaseParam: purchaseParam, autoConsume: false);
   }
 
-  Future<bool> sendPurchaseToServer(PurchaseDetails purchase) async {
+  Future<double?> sendPurchaseToServer(PurchaseDetails purchase) async {
     // For Google Play
     if (purchase.verificationData.source == 'google_play') {
-      bool verified = await _verifyWithGoogle(purchase);
+      double? verified = await _verifyWithGoogle(purchase);
       return verified;
     }
     // For Apple App Store
     else if (purchase.verificationData.source == 'app_store') {
       return await _verifyWithApple(purchase);
     }
-    return false;
+    return null;
   }
 
 // Mock Google Play verification (Replace with your backend logic)
-  Future<bool> _verifyWithGoogle(PurchaseDetails purchase) async {
+  Future<double?> _verifyWithGoogle(PurchaseDetails purchase) async {
     // final String purchaseToken = purchase.verificationData.serverVerificationData;
 
     // Send token to your backend for validation
@@ -647,12 +654,12 @@ class MyFantasyLeaguesPageState extends State<MyFantasyLeaguesPage>  with Single
   }
 
 // Mock Apple verification (Replace with your backend logic)
-  Future<bool> _verifyWithApple(PurchaseDetails purchase) async {
+  Future<double?> _verifyWithApple(PurchaseDetails purchase) async {
     // final String receiptData = purchase.verificationData.serverVerificationData;
     return await verifyPurchaseWithServer(purchase);
   }
 
-  Future<bool> verifyPurchaseWithServer(PurchaseDetails purchaseDetails) async {
+  Future<double?> verifyPurchaseWithServer(PurchaseDetails purchaseDetails) async {
     return await HttpActionsClient.verifyPurchase(purchaseDetails); // Simulating network delay
   }
 

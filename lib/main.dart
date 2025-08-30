@@ -22,6 +22,7 @@ import 'models/constants/Constants.dart';
 import 'models/context/AppContext.dart';
 import 'models/notification/ChangeEventSoccer.dart';
 import 'models/notification/StartLeagueEvent.dart';
+import 'models/notification/TopupLeagueEvent.dart';
 
 
 /// Create a [AndroidNotificationChannel] for heads up notifications
@@ -145,12 +146,14 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
     final payload = message.data;
 
     try {
-      if (payload['changeEvent'] == null && payload['leagueName'] == null){
+      if (payload['changeEvent'] == null && payload['leagueName'] == null && payload['topUpUser'] == null){
         return;
       }
 
       if (payload['changeEvent'] != null){//match event
         sendChangeEventNotifications(payload);
+      }else if (payload['topUpUser'] != null){//invitation
+        sendLeagueTopUpNotification(payload);
       }else if (payload['mongoReceiverId'] != null){//invitation
         sendLeagueInvitationNotification(payload);
       } else if (payload['leagueName'] != null){//league start
@@ -238,6 +241,55 @@ void sendLeagueInvitationNotification(Map<String, dynamic> payload) async{
     generateUniqueNotificationId(),
     event.invitingUsername??'(${event.invitingEmail!}) is inviting you into Fantasy League ${event.leagueName}',
     '${event.dtStart} - ${event.dtEnd}',
+    // changeEventSoccer.changeEvent.displayName,
+    NotificationDetails(
+      iOS: const DarwinNotificationDetails(),//TODO: needs setup for IOS
+      android: AndroidNotificationDetails(
+        'high_importance_channel_fantasy_tips', // id
+        'High Importance Notifications ft',
+        // groupKey: null,
+        groupKey: 'unique_key_${event.uniqueId}',
+        // 'MY FOREGROUND SERVICE',
+        largeIcon: FilePathAndroidBitmap(file),
+        // largeIcon: icon,//  '@mipmap/ic_launcher',
+        priority: Priority.high,
+        ongoing: false,
+      ),
+    ),
+  );
+
+}
+
+void sendLeagueTopUpNotification(Map<String, dynamic> payload) async{
+
+  final prefs = await SharedPreferences.getInstance();
+  await prefs.reload();
+  var fantasyLeagueMongoId = prefs.getString(sp_fantasy_league_id) ?? Constants.empty;
+  var mongoUserId = prefs.getString(Constants.mongoId) ?? Constants.empty;
+
+  if (fantasyLeagueMongoId == Constants.empty || mongoUserId == Constants.empty){
+    return;
+  }
+
+  TopupLeagueEvent event = TopupLeagueEvent.fromJson(payload);
+
+
+  if (event.leagueId != fantasyLeagueMongoId || mongoUserId == event.topUpUserId){
+    return;
+  }
+
+  if (_processedUuids.contains(event.uniqueId)) {
+    return;
+  }
+
+  String file = await ImageUtils.downloadAndSaveFile(event.imgUrl, event.leagueName);
+
+  _processedUuids.add(event.uniqueId);
+
+  flutterLocalNotificationsPlugin.show(
+    generateUniqueNotificationId(),
+    '${event.topUpUser} has TOPPED UP Fantasy League ${event.leagueName}',
+    event.leagueName,
     // changeEventSoccer.changeEvent.displayName,
     NotificationDetails(
       iOS: const DarwinNotificationDetails(),//TODO: needs setup for IOS

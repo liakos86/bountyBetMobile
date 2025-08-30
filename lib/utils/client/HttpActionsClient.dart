@@ -50,11 +50,11 @@ class HttpActionsClient {
     return connected;
   }
 
-  static Future<bool> verifyPurchase(PurchaseDetails purchaseDetails) async{
+  static Future<double?> verifyPurchase(PurchaseDetails purchaseDetails) async{
     if (!connected){
       connected = await checkInternetConnectivity();
       if (!connected){
-        return false;
+        return null;
       }
     }
 
@@ -68,7 +68,7 @@ class HttpActionsClient {
         await authorizeAsync();
         if (access_token == null) {
           //print('register COULD NOT AUTHORIZE ********************************************************************');
-          return false;
+          return null;
         }
       }
 
@@ -96,7 +96,7 @@ class HttpActionsClient {
 
     }catch(e){
       //print(e);
-      return false;
+      return null;
     }
   }
 

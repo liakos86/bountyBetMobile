@@ -146,6 +146,10 @@ class User implements Comparable<User>{
     return '${(( (betAmountOverallReturned - betAmountOverall) / (betAmountOverall)) * 100).toStringAsFixed(0)}%';
   }
 
+  String overallROIAmountText(){
+   return '$betAmountOverall/$betAmountOverallReturned';
+  }
+
   void deepCopyFrom(User u) {
     // userPosition = u.userPosition;
     email = u.email;
