@@ -110,9 +110,12 @@ class LogoWithName extends StatefulWidget {
               children:  [
                 Align(
                   alignment: Alignment.centerLeft,
-                  child: Text( name + extraText(), overflow: TextOverflow.ellipsis, textAlign: TextAlign.left,
-                    style: TextStyle(fontWeight: WinnerType.NONE == winnerType && !goalScored ? FontWeight.w500 : FontWeight.w900, fontSize: fontSize, color: goalScored ? Colors.redAccent : const Color(ColorConstants.my_dark_grey)),)),
+                  child: Text(  extraText(name), overflow: TextOverflow.ellipsis, textAlign: TextAlign.left,
+                    style: TextStyle(fontWeight: getFontWeight(), fontSize: fontSize, color: goalScored ? Colors.redAccent : const Color(ColorConstants.my_dark_grey)),)),
                  ]))),
+
+
+        
 
         Expanded(
             flex: 2,
@@ -138,12 +141,32 @@ class LogoWithName extends StatefulWidget {
     );
   }
 
-  String extraText() {
+  String extraText(String name) {
     if ((WinnerType.AGGREGATED_HOME == winnerType && isHomeTeam) || (WinnerType.AGGREGATED_AWAY == winnerType && !isHomeTeam)) {
-      return '*' ;
+      return name.length > 18 ? '${name.substring(0, 18)}*' : '$name*';
     }
 
-    return (Constants.empty);
+    return name;
+  }
+
+  FontWeight getFontWeight(){
+    if (WinnerType.NONE == winnerType) {
+      return FontWeight.w500 ;
+    }
+
+    if ((WinnerType.AGGREGATED_HOME == winnerType && isHomeTeam) || (WinnerType.AGGREGATED_AWAY == winnerType && !isHomeTeam)){
+      return FontWeight.w900;
+    }
+
+    if ((WinnerType.NORMAL_HOME == winnerType && isHomeTeam) || (WinnerType.NORMAL_AWAY == winnerType && !isHomeTeam)){
+      return FontWeight.w900;
+    }
+
+    if (goalScored){
+      return FontWeight.w900;
+    }
+
+    return FontWeight.w500 ;
   }
 
 

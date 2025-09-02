@@ -72,7 +72,7 @@ class League implements Comparable<League>{
       li.priority += 10000;
     }
 
-    if (AppContext.fantasyLeague != null && AppContext.fantasyLeague!.selectedLeagueIds.contains(li.league_id)){
+    if (AppContext.fantasyLeague.selectedLeagueIds.contains(li.league_id)){
       li.isFavourite = true;
       li.priority += 20000;
     }

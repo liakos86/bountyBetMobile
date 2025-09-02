@@ -1,13 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:in_app_purchase/in_app_purchase.dart';
-import 'package:intl/intl.dart';
 
 import '../../models/User.dart';
-import '../../models/constants/Constants.dart';
 import '../../models/context/AppContext.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
-import '../dialog/DialogTextWithButtons.dart';
 
 
 class GlobalLeaderboardRow extends StatefulWidget {
@@ -78,6 +73,8 @@ class _GlobalLeaderboardRowState extends State<GlobalLeaderboardRow> {
   @override
   Widget build(BuildContext context) {
 
+
+
     return Card(
       color: AppContext.user.mongoUserId == _user.mongoUserId ? Colors.blue[50] : Colors.white,
       margin: const EdgeInsets.symmetric(horizontal: 2, vertical: 4),
@@ -107,6 +104,10 @@ class _GlobalLeaderboardRowState extends State<GlobalLeaderboardRow> {
                   Text(_user.username,
                       maxLines:1,
                       style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
+
+                  Text(_user.betSlipsPercentageText(),
+                      maxLines:1,
+                      style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w400)),
 
                 ],
               ),

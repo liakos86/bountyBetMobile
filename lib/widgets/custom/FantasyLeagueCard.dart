@@ -219,7 +219,7 @@ class _FantasyLeagueCardState extends State<FantasyLeagueCard> {
                     onPressed: () => _showInviteDialog(context),
                     child: const Text('Invite'),
                   )
-                      : const Text('⏳ Waiting for the league to start...'),
+                      : fantasyLeague.status == FantasyLeagueStatus.PENDING.statusCode ? const Text('⏳ Waiting for the league to start...') : const SizedBox(height:0),
                 ),
               ),
             if (fantasyLeague.invitations.isNotEmpty &&

@@ -147,7 +147,27 @@ class User implements Comparable<User>{
   }
 
   String overallROIAmountText(){
-   return '$betAmountOverall/$betAmountOverallReturned';
+    bool roundBalance = betAmountOverall  == betAmountOverall.roundToDouble();
+    int digits = roundBalance ? 0 : 1;
+
+    bool roundBalanceRet = betAmountOverallReturned  == betAmountOverallReturned.roundToDouble();
+    int digitsRet = roundBalanceRet ? 0 : 1;
+
+   return '${betAmountOverall.toStringAsFixed(digits)}/${betAmountOverallReturned.toStringAsFixed(digitsRet)}';
+  }
+
+  String betSlipsPercentageText(){
+    if (overallWonBets + overallLostBets == 0){
+      return 'bets 0%';
+    }
+
+    double slipsPercentage = (overallWonBets * 100) / (overallWonBets + overallLostBets) ;
+    bool roundBalance = slipsPercentage  == slipsPercentage.roundToDouble();
+    int digits = roundBalance ? 0 : 1;
+
+
+    return 'bets ${slipsPercentage.toStringAsFixed(digits)}%';
+
   }
 
   void deepCopyFrom(User u) {

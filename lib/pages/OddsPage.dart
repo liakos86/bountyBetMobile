@@ -88,7 +88,7 @@ class OddsPageState extends State<OddsPage> with SingleTickerProviderStateMixin{
     registerUserCallback = widget.registerUserCallback;
     // topUpCallback = widget.topUpCallback;
 
-    _tabController = TabController(length: 3, vsync: this, initialIndex: 1);
+    _tabController = TabController(length: 5, vsync: this, initialIndex: 2);
     _tabController.addListener(() {
       setState(() {});
     });
@@ -112,7 +112,7 @@ class OddsPageState extends State<OddsPage> with SingleTickerProviderStateMixin{
       return DialogProgressText(text: AppLocalizations.of(context)!.loading);
     }
 
-    const int items = 3;
+    const int items = 5;
     double width = MediaQuery.of(context).size.width;
     const double labelPadding = 2;
     double labelWidth = (width - (labelPadding * (items - 1)))  / items;
@@ -146,11 +146,12 @@ class OddsPageState extends State<OddsPage> with SingleTickerProviderStateMixin{
 
                 tabs: [
                   // CustomTabIcon(width: labelWidth, text: getDateWithOffset(-2), isSelected: _tabController.index == 0,),
-                  CustomTabIcon(width: labelWidth, text: AppContext.eventsPerDayMap.keys.toList()[2], isSelected: _tabController.index == 0,),
-                  CustomTabIcon(width: labelWidth, text: AppLocalizations.of(context)!.today, isSelected: _tabController.index == 1,),
-                  CustomTabIcon(width: labelWidth, text: AppContext.eventsPerDayMap.keys.toList()[0], isSelected: _tabController.index == 2,),
-                  // CustomTabIcon(width: labelWidth, text: getDateWithOffset(2), isSelected: _tabController.index == 4,),
-                ],
+                  CustomTabIcon(width: labelWidth, text: DateUtilsFt.formatDateForLabelDisplay(-2), isSelected: _tabController.index == 0,),
+                  CustomTabIcon(width: labelWidth, text: DateUtilsFt.formatDateForLabelDisplay(-1), isSelected: _tabController.index == 1,),
+                  CustomTabIcon(width: labelWidth, text: AppLocalizations.of(context)!.today, isSelected: _tabController.index == 2,),
+                  CustomTabIcon(width: labelWidth, text: DateUtilsFt.formatDateForLabelDisplay(1), isSelected: _tabController.index == 3,),
+                  CustomTabIcon(width: labelWidth, text: DateUtilsFt.formatDateForLabelDisplay(2), isSelected: _tabController.index == 4,),
+                  ],
 
                 onTap: (index) {
                   setState(() {
@@ -172,6 +173,23 @@ class OddsPageState extends State<OddsPage> with SingleTickerProviderStateMixin{
             controller: _tabController,
             children: [
 
+
+
+              ListView.builder(
+
+                  key: const PageStorageKey<String>(
+                      'pageOdds-1'),
+                  // controller: _scrollController0,
+                  padding: const EdgeInsets.all(0),
+                  // itemCount: AppContext.eventsPerDayMap.entries.elementAt(2).value.length,
+                  itemCount:  AppContext.eventsPerDayMap[DateUtilsFt.formattedDateWithOffset(-2)]?.length,
+                  itemBuilder: (context, item) {
+                    return _buildRow(AppContext.eventsPerDayMap[DateUtilsFt.formattedDateWithOffset(-2)]!.elementAt(item), item);
+                    // return _buildRow(AppContext.eventsPerDayMap.entries.elementAt(2).value[item], item);
+                  }),
+
+
+
               ListView.builder(
 
                   key: const PageStorageKey<String>(
@@ -184,6 +202,9 @@ class OddsPageState extends State<OddsPage> with SingleTickerProviderStateMixin{
                     return _buildRow(AppContext.eventsPerDayMap[DateUtilsFt.formattedDateWithOffset(-1)]!.elementAt(item), item);
                     // return _buildRow(AppContext.eventsPerDayMap.entries.elementAt(2).value[item], item);
                   }),
+
+
+
 
               ListView.builder(
 
@@ -212,46 +233,19 @@ class OddsPageState extends State<OddsPage> with SingleTickerProviderStateMixin{
                   }),
 
 
-              // ListView.builder(
-              //     key: const PageStorageKey<String>(
-              //         'pageOdds1'),
-              //    // controller: _scrollController1,
-              //     padding: const EdgeInsets.all(0),
-              //     itemCount: AppContext.eventsPerDayMap.entries.elementAt(1).value.length,
-              //     itemBuilder: (context, item) {
-              //       return _buildRow(AppContext.eventsPerDayMap.entries.elementAt(1).value[item], item);
-              //     }),
-              //
-              // ListView.builder(
-              //     key: const PageStorageKey<String>(
-              //         'pageOdds2'),
-              //     // controller: _scrollController1,
-              //     padding: const EdgeInsets.all(0),
-              //     itemCount: AppContext.eventsPerDayMap.entries.elementAt(1).value.length,
-              //     itemBuilder: (context, item) {
-              //       return _buildRow(AppContext.eventsPerDayMap.entries.elementAt(1).value[item], item);
-              //     }),
+              ListView.builder(
 
-              // ListView.builder(
-              //     key: const PageStorageKey<String>(
-              //         'pageOdds3'),
-              //     // controller: _scrollController1,
-              //     padding: const EdgeInsets.all(0),
-              //     itemCount: AppContext.eventsPerDayMap.entries.elementAt(1).value.length,
-              //     itemBuilder: (context, item) {
-              //       return _buildRow(AppContext.eventsPerDayMap.entries.elementAt(1).value[item], item);
-              //     }),
-              //
-              //
-              // ListView.builder(
-              //     key: const PageStorageKey<String>(
-              //         'pageOdds4'),
-              //   // controller: _scrollController2,
-              //     padding: const EdgeInsets.all(0),
-              //     itemCount: AppContext.eventsPerDayMap.entries.elementAt(0).value.length,
-              //     itemBuilder: (context, item) {
-              //       return _buildRow(AppContext.eventsPerDayMap.entries.elementAt(0).value[item], item);
-              //     }),
+                  key: const PageStorageKey<String>(
+                      'pageOdds3'),
+                  // controller: _scrollController0,
+                  padding: const EdgeInsets.all(0),
+                  // itemCount: AppContext.eventsPerDayMap.entries.elementAt(2).value.length,
+                  itemCount: AppContext.eventsPerDayMap[DateUtilsFt.formattedDateWithOffset(2)]?.length,
+                  itemBuilder: (context, item) {
+                    return _buildRow(AppContext.eventsPerDayMap[DateUtilsFt.formattedDateWithOffset(2)]!.elementAt(item), item);
+                    // return _buildRow(AppContext.eventsPerDayMap.entries.elementAt(2).value[item], item);
+                  }),
+
 
             ],)
           ),

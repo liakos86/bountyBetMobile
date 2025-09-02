@@ -16,13 +16,14 @@ class CustomTabIcon extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
+      // height:50,
       width: width,
       //color: isSelected ? const Color(ColorConstants.my_green) : Colors.grey.shade200,
       margin: const EdgeInsets.symmetric(vertical: 4.0),
       padding: const EdgeInsets.all(6.0),
       decoration: BoxDecoration(
         color: isSelected ? const Color(ColorConstants.my_blue) : Colors.grey[300],
-        borderRadius: BorderRadius.circular(50.0),
+        borderRadius: BorderRadius.circular(20.0),
       ),
 
       child: Align(alignment: Alignment.center, child: Text(text,maxLines: 1, style: TextStyle( color: isSelected? Colors.white : Colors.grey[500], fontSize: 12, fontStyle: FontStyle.italic,  fontWeight: isSelected? FontWeight.bold : FontWeight.normal),),)
