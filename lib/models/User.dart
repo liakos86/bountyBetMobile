@@ -20,6 +20,8 @@ class User implements Comparable<User>{
 
   bool validated = false;
 
+  bool passwordReset = false;
+
   String username = Constants.empty;
 
   String email = Constants.empty;
@@ -72,6 +74,10 @@ class User implements Comparable<User>{
 
     if(parsedJson['fantasyLeagueMongoId'] != null) {
       user.fantasyLeagueMongoId = parsedJson['fantasyLeagueMongoId'];
+    }
+
+    if(parsedJson['passwordReset'] != null) {
+      user.passwordReset = parsedJson['passwordReset'] as bool;
     }
 
 
@@ -174,6 +180,7 @@ class User implements Comparable<User>{
     // userPosition = u.userPosition;
     email = u.email;
     validated = u.validated;
+    passwordReset = u.passwordReset;
     username = u.username;
     mongoUserId = u.mongoUserId;
     betAmountOverall = u.betAmountOverall;

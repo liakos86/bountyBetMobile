@@ -42,6 +42,7 @@
      "login" : "Login",
 
      "register" : "Register",
+     "forgot_pass" : "Forgot Password",
 
      "status_suspended" : "Suspended",
      "status_postponed" : "Postponed",
@@ -208,6 +209,7 @@
 
         "password" : "password",
         "password_repeat" : "repeat password",
+        "password_reset" : "Reset password",
 
         "@congrats_text": {
           "placeholders": {

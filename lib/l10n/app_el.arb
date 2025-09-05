@@ -38,6 +38,7 @@
     "today" : "Σήμερα",
     "login" : "Είσοδος",
     "register" : "Εγγραφή",
+    "forgot_pass" : "Ξέχασα τον κωδικό",
 
     "status_postponed" : "Αναβολή",
     "status_suspended" : "Ματαίωση",
@@ -222,6 +223,7 @@
 
          "username" : "όνομα χρήστη",
          "password" : "κωδικός πρόσβασης",
-         "password_repeat" : "επανάληψη κωδικού"
+         "password_repeat" : "επανάληψη κωδικού",
+         "password_reset" : "Επαναφορά κωδικού"
 
 }
