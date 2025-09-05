@@ -401,6 +401,95 @@ class HttpActionsClient {
 
   }
 
+
+  static Future<String?> forgotPasswordClaim(String email) async {
+    if (!connected){
+      connected = await checkInternetConnectivity();
+      if (!connected){
+        return null;
+      }
+    }
+
+    try {
+      if (access_token == null) {
+        final prefs = await SharedPreferences.getInstance();
+        access_token = prefs.getString(Constants.accessToken) ;
+        // access_token = await SecureUtils().retrieveValue(
+        //     Constants.accessToken);
+        await authorizeAsync();
+        if (access_token == null) {
+          //print('reg COULD NOT AUTHORIZE ********************************************************************');
+          return null;
+        }
+      }
+
+
+      Response forgotPassResponse = await post(
+          Uri.parse(UrlConstants.POST_FORGOT_PASS),
+          headers: {
+            "Accept": "application/json",
+            "Content-Type": "application/json",
+            'Authorization': 'Bearer $access_token'
+          },
+          body: jsonEncode(toJsonForgotPass(email)),
+          encoding: Encoding.getByName("utf-8")).timeout(
+          const Duration(seconds: 30));
+
+      var responseDec = jsonDecode(forgotPassResponse.body);
+      String emailResp = responseDec['email'];
+
+      return emailResp;
+
+    } catch (e) {
+      //print(e);
+      return null;
+    }
+
+  }
+
+  static Future<User> forgotPasswordSelectNew(String email, String oldPass, String newPass) async {
+    if (!connected){
+      connected = await checkInternetConnectivity();
+      if (!connected){
+        return User.defUser();
+      }
+    }
+
+    try {
+      if (access_token == null) {
+        final prefs = await SharedPreferences.getInstance();
+        access_token = prefs.getString(Constants.accessToken) ;
+        // access_token = await SecureUtils().retrieveValue(
+        //     Constants.accessToken);
+        await authorizeAsync();
+        if (access_token == null) {
+          //print('reg COULD NOT AUTHORIZE ********************************************************************');
+          return User.defUser();
+        }
+      }
+
+
+      Response forgotPassResponse = await post(
+          Uri.parse(UrlConstants.POST_FORGOT_PASS_SELECT_NEW),
+          headers: {
+            "Accept": "application/json",
+            "Content-Type": "application/json",
+            'Authorization': 'Bearer $access_token'
+          },
+          body: jsonEncode(toJsonResetPass(email, oldPass, newPass)),
+          encoding: Encoding.getByName("utf-8")).timeout(
+          const Duration(seconds: 30));
+
+      var responseDec = jsonDecode(forgotPassResponse.body);
+      return User.fromJson(responseDec);
+
+    } catch (e) {
+      //print(e);
+      return User.defUser();
+    }
+
+  }
+
   static Future<User> register(String username, String email, String password) async {
     if (!connected){
       connected = await checkInternetConnectivity();
@@ -710,33 +799,27 @@ class HttpActionsClient {
 
   static Map<String, dynamic> toJsonLogin(emailOrUsername, password) {
 
-    var encryptedWithAES_2 = encryptWithAES(emailOrUsername, createKey(UrlConstants.URL_ENC));
-    var encryptedWithAES = encryptWithAES(password, createKey(encryptedWithAES_2.base64));
+    // var encryptedWithAES_2 = encryptWithAES(emailOrUsername, createKey(UrlConstants.URL_ENC));
+    // var encryptedWithAES = encryptWithAES(password, createKey(encryptedWithAES_2.base64));
 
     // //print('sending ' +encryptedWithAES_2.base64 + ' size ' + encryptedWithAES_2.base64.length.toString() );
     // //print('sending ' +encryptedWithAES.base64+ ' size ' + encryptedWithAES.base64.length.toString() );
 
     return {
-      "email": encryptedWithAES_2.base64,
-      "password": encryptedWithAES.base64,
+      "email": emailOrUsername, // encryptedWithAES_2.base64,
+      "password": password, // encryptedWithAES.base64,
       "username": emailOrUsername
     };
   }
 
   static Map<String, dynamic> toJsonRegister(email, password) {
 
-    // var encryptedWithAES = encryptWithAES(password, email);
-    var encryptedWithAES_2 = encryptWithAES(email, createKey(UrlConstants.URL_ENC));
-    var encryptedWithAES = encryptWithAES(password, createKey(encryptedWithAES_2.base64));
-    // var encryptedWithAES_2 = encryptWithAES(email, encryptedWithAES.base64);
-
-
-    // //print('sending ' +encryptedWithAES_2.base64 + ' size ' + encryptedWithAES_2.base64.length.toString() );
-    // //print('sending ' +encryptedWithAES.base64+ ' size ' + encryptedWithAES.base64.length.toString() );
+    // var encryptedWithAES_2 = encryptWithAES(email, createKey(UrlConstants.URL_ENC));
+    // var encryptedWithAES = encryptWithAES(password, createKey(encryptedWithAES_2.base64));
 
     return {
-      "email": encryptedWithAES_2.base64,
-      "password": encryptedWithAES.base64
+      "email": email, //encryptedWithAES_2.base64,
+      "password": password, //encryptedWithAES.base64
     };
   }
 
@@ -746,18 +829,33 @@ class HttpActionsClient {
         email, createKey(UrlConstants.URL_ENC));
     var encryptedWithAES = encryptWithAES(
         password, createKey(encryptedWithAES_2.base64));
-    // var encryptedWithAES_2 = encryptWithAES(email, encryptedWithAES.base64);
-
-
-    // //print('sending ' + encryptedWithAES_2.base64 + ' size ' +
-    //     encryptedWithAES_2.base64.length.toString());
-    // //print('sending ' + encryptedWithAES.base64 + ' size ' +
-    //     encryptedWithAES.base64.length.toString());
 
     return {
-      "email": encryptedWithAES_2.base64,
-      "password": encryptedWithAES.base64,
+      "email": email, //encryptedWithAES_2.base64,
+      "password": password, // encryptedWithAES.base64,
       "username": username
+    };
+  }
+
+  static Map<String, dynamic> toJsonResetPass(email, passwordOld, passwordNew) {
+
+    // var encryptedwithaesEmail = encryptWithAES(
+    //     email, createKey(UrlConstants.URL_ENC));
+    // var encryptedwithaesNew = encryptWithAES(
+    //     passwordOld, createKey(UrlConstants.URL_ENC));
+    // var encryptedwithaesOld = encryptWithAES(
+    //     passwordOld, createKey(UrlConstants.URL_ENC));
+
+    return {
+      "email": email, //encryptedwithaesEmail.base64,
+      "passwordOld": passwordOld, // encryptedwithaesOld.base64,
+      "passwordNew": passwordNew, // encryptedwithaesNew.base64
+    };
+  }
+
+  static Map<String, dynamic> toJsonForgotPass(email) {
+    return {
+      "email": email,
     };
   }
 
