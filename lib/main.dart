@@ -335,6 +335,11 @@ void sendChangeEventNotifications(Map<String, dynamic> payload) async{
 
       _processedUuids.add(changeEventSoccer.uniqueId);
 
+      if (changeEventSoccer.changeEvent == ChangeEvent.FULL_TIME){
+        sharedPrefs.removeFavEvent(changeEventSoccer.eventId.toString());
+      }
+
+
       flutterLocalNotificationsPlugin.show(
         generateUniqueNotificationId(),
         notificationBodyFrom(changeEventSoccer),
