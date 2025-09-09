@@ -117,7 +117,7 @@ class _FantasyLeagueCardState extends State<FantasyLeagueCard> {
                         Row(
                           children: [
                             Text(
-                              'Initial credits: ${fantasyLeague.startingBalance} / ' ,
+                              'Initial credits: ${fantasyLeague.startingBalance.toStringAsFixed(0)} / ' ,
                               style: const TextStyle(fontSize: 10, color: Colors.grey),
                             ),
                             Icon(
@@ -168,7 +168,7 @@ class _FantasyLeagueCardState extends State<FantasyLeagueCard> {
               ),
             ),
             Expanded(
-              flex: 1,
+              flex: 2,
               child: Center(
                 child: GridView.builder(
                   shrinkWrap: true,
