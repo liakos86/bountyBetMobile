@@ -100,7 +100,7 @@ class HttpActionsClient {
     }
   }
 
-  static Future<List<FantasyLeague>> getFantasyLeaguesAsync() async {
+  static Future<List<FantasyLeague>> getFantasyLeaguesAsync(String mongoUserId) async {
 
     List<FantasyLeague> jsonLeaguesData = <FantasyLeague>[];
     if (!connected){
@@ -122,7 +122,7 @@ class HttpActionsClient {
           return jsonLeaguesData;
         }
       }
-      String fantasyLeaguesUrlFinal = UrlConstants.GET_FANTASY_LEAGUES.replaceFirst("{1}", AppContext.user.mongoUserId);
+      String fantasyLeaguesUrlFinal = UrlConstants.GET_FANTASY_LEAGUES.replaceFirst("{1}", mongoUserId);
 
       Response leaguesResponse = await get(Uri.parse(fantasyLeaguesUrlFinal), headers:  {'Authorization': 'Bearer $access_token'}).timeout(const Duration(seconds: 20));
       Iterable leaguesIterable = json.decode(leaguesResponse.body);
@@ -1284,8 +1284,9 @@ class HttpActionsClient {
 
   static void listenConnChanges(Function(bool conn) updateConnState) {
     Connectivity().onConnectivityChanged.listen(
-          (ConnectivityResult result) {
-        //print("Connectivity Result: $result");
+          (results) {
+            ConnectivityResult result = results.first;
+            //print("Connectivity Result: $result");
         if (result == ConnectivityResult.mobile) {
           connected = true;
         } else if (result == ConnectivityResult.wifi) {

@@ -13,6 +13,7 @@ import 'package:flutter_app/models/constants/Constants.dart';
 import 'package:flutter_app/models/context/AppContext.dart';
 import 'package:flutter_app/utils/client/HttpActionsClient.dart';
 import 'package:in_app_purchase/in_app_purchase.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 
 import '../enums/FantasyLeagueStatus.dart';
@@ -394,13 +395,22 @@ class MyFantasyLeaguesPageState extends State<MyFantasyLeaguesPage>  with Single
   }
 
   void updateFantasyLeagues() async{
-    if (AppContext.user.mongoUserId == Constants.defMongoId){
-      return;
+    SharedPreferences sh_prefs =  await SharedPreferences.getInstance();
+
+    String? mongoUserId = AppContext.user.mongoUserId;
+    if (mongoUserId == Constants.defMongoId){
+      mongoUserId =  sh_prefs.getString(Constants.mongoId);
+      if (mongoUserId == null){
+        return;
+      }
     }
 
-    List<FantasyLeague> leagues = await HttpActionsClient.getFantasyLeaguesAsync();
+    List<FantasyLeague> leagues = await HttpActionsClient.getFantasyLeaguesAsync(mongoUserId);
 
-    if (AppContext.user.fantasyLeagueMongoId != null) {
+      String? fantasyLeagueMongoId = AppContext.user.fantasyLeagueMongoId ;
+      fantasyLeagueMongoId ??= sh_prefs.getString(sp_fantasy_league_id);
+
+    if (fantasyLeagueMongoId != null) {
       FantasyLeague? fantasyLeagueIncoming = leagues.firstWhereOrNull((element) => element.mongoId == AppContext.user.fantasyLeagueMongoId);
       if (fantasyLeagueIncoming != null){
           fantasyLeague.copyFrom(fantasyLeagueIncoming);
