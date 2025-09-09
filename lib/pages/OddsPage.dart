@@ -3,9 +3,7 @@ import 'dart:async';
 import 'package:flutter_app/enums/BetStatus.dart';
 import 'package:flutter_app/utils/client/HttpActionsClient.dart';
 import 'package:flutter_app/widgets/DialogTabbedLoginOrRegister.dart';
-import 'package:flutter_app/widgets/dialog/DialogTextWithButtons.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -17,13 +15,11 @@ import 'package:flutter_app/widgets/BetSlipWithCustomKeyboard.dart';
 import 'package:flutter_app/widgets/LeagueExpandableTile.dart';
 import 'package:intl/intl.dart';
 
-
 import '../models/UserBet.dart';
 import '../models/UserPrediction.dart';
 import '../models/LeagueWithData.dart';
 import '../models/beans/PlaceBetResponseBean.dart';
 import '../models/constants/ColorConstants.dart';
-import '../models/constants/MatchConstants.dart';
 import '../models/context/AppContext.dart';
 import '../utils/BetUtils.dart';
 import '../utils/DateUtils.dart';
@@ -33,24 +29,20 @@ import '../widgets/row/DialogProgressBarWithText.dart';
 
 class OddsPage extends StatefulWidget{//}WithName {
 
-
   final Function updateUserCallback;
   final Function loginUserCallback;
   final Function registerUserCallback;
-  // final Function topUpCallback;
-
   final List<UserPrediction> selectedOdds;
 
   @override
   OddsPageState createState() => OddsPageState();
 
-  OddsPage({
+  const OddsPage({
     Key? key,
     required this.updateUserCallback,
     required this.loginUserCallback,
     required this.registerUserCallback,
     required this.selectedOdds,
-    // required this.topUpCallback
   } ) : super(key: key);
 
 }
@@ -62,14 +54,13 @@ class OddsPageState extends State<OddsPage> with SingleTickerProviderStateMixin{
   /*
   * Required because user can deleted selected odds from the betslip directly.
    */
-  late List<UserPrediction> selectedOdds;// = <UserPrediction>[];
+  late List<UserPrediction> selectedOdds;
 
   int selectedIndex = -1;
 
   Function updateUserCallback = ()=>{ };
   Function loginUserCallback = ()=>{ };
   Function registerUserCallback = ()=>{ };
-  // Function topUpCallback = ()=>{ };
 
   late TabController _tabController;
 
@@ -86,7 +77,6 @@ class OddsPageState extends State<OddsPage> with SingleTickerProviderStateMixin{
     updateUserCallback = widget.updateUserCallback;
     loginUserCallback = widget.loginUserCallback;
     registerUserCallback = widget.registerUserCallback;
-    // topUpCallback = widget.topUpCallback;
 
     _tabController = TabController(length: 5, vsync: this, initialIndex: 2);
     _tabController.addListener(() {
@@ -117,11 +107,6 @@ class OddsPageState extends State<OddsPage> with SingleTickerProviderStateMixin{
     const double labelPadding = 2;
     double labelWidth = (width - (labelPadding * (items - 1)))  / items;
 
-
-    // print('Calling odds build ' + AppContext.eventsPerDayMap.keys.toList().length.toString());
-    // print('odds build  date ' + AppContext.eventsPerDayMap.keys.toList()[0] +' / '+ AppContext.eventsPerDayMap.keys.toList()[1] + ' / ' +  AppContext.eventsPerDayMap.keys.toList()[2]);
-
-
     return
 
       Scaffold(
@@ -137,15 +122,9 @@ class OddsPageState extends State<OddsPage> with SingleTickerProviderStateMixin{
                 labelPadding: const EdgeInsets.symmetric(horizontal: labelPadding),
                 indicator: const BoxDecoration(),
                 controller: _tabController,
-
                 isScrollable: true,
-                // indicatorColor: Colors.redAccent,
-                // indicatorWeight: 6,
                 tabAlignment: TabAlignment.center,
-                // unselectedLabelColor: Colors.black54.withOpacity(0.2),
-
                 tabs: [
-                  // CustomTabIcon(width: labelWidth, text: getDateWithOffset(-2), isSelected: _tabController.index == 0,),
                   CustomTabIcon(width: labelWidth, text: DateUtilsFt.formatDateForLabelDisplay(-2), isSelected: _tabController.index == 0,),
                   CustomTabIcon(width: labelWidth, text: DateUtilsFt.formatDateForLabelDisplay(-1), isSelected: _tabController.index == 1,),
                   CustomTabIcon(width: labelWidth, text: AppLocalizations.of(context)!.today, isSelected: _tabController.index == 2,),
@@ -173,79 +152,46 @@ class OddsPageState extends State<OddsPage> with SingleTickerProviderStateMixin{
             controller: _tabController,
             children: [
 
-
-
               ListView.builder(
-
-                  key: const PageStorageKey<String>(
-                      'pageOdds-1'),
-                  // controller: _scrollController0,
+                  key: const PageStorageKey<String>('pageOdds-1'),
                   padding: const EdgeInsets.all(0),
-                  // itemCount: AppContext.eventsPerDayMap.entries.elementAt(2).value.length,
                   itemCount:  AppContext.eventsPerDayMap[DateUtilsFt.formattedDateWithOffset(-2)]?.length,
                   itemBuilder: (context, item) {
                     return _buildRow(AppContext.eventsPerDayMap[DateUtilsFt.formattedDateWithOffset(-2)]!.elementAt(item), item);
-                    // return _buildRow(AppContext.eventsPerDayMap.entries.elementAt(2).value[item], item);
                   }),
 
-
-
               ListView.builder(
-
-                  key: const PageStorageKey<String>(
-                      'pageOdds0'),
-                  // controller: _scrollController0,
+                  key: const PageStorageKey<String>('pageOdds0'),
                   padding: const EdgeInsets.all(0),
-                  // itemCount: AppContext.eventsPerDayMap.entries.elementAt(2).value.length,
                   itemCount:  AppContext.eventsPerDayMap[DateUtilsFt.formattedDateWithOffset(-1)]?.length,
                   itemBuilder: (context, item) {
                     return _buildRow(AppContext.eventsPerDayMap[DateUtilsFt.formattedDateWithOffset(-1)]!.elementAt(item), item);
-                    // return _buildRow(AppContext.eventsPerDayMap.entries.elementAt(2).value[item], item);
                   }),
-
-
-
 
               ListView.builder(
 
-                  key: const PageStorageKey<String>(
-                      'pageOdds1'),
-                  // controller: _scrollController0,
+                  key: const PageStorageKey<String>('pageOdds1'),
                   padding: const EdgeInsets.all(0),
-                  // itemCount: AppContext.eventsPerDayMap.entries.elementAt(2).value.length,
                   itemCount: AppContext.eventsPerDayMap[DateUtilsFt.formattedDateWithOffset(0)]?.length,
                   itemBuilder: (context, item) {
                     return _buildRow(AppContext.eventsPerDayMap[DateUtilsFt.formattedDateWithOffset(0)]!.elementAt(item), item);
-                    // return _buildRow(AppContext.eventsPerDayMap.entries.elementAt(2).value[item], item);
                   }),
 
               ListView.builder(
-
-                  key: const PageStorageKey<String>(
-                      'pageOdds2'),
-                  // controller: _scrollController0,
+                  key: const PageStorageKey<String>('pageOdds2'),
                   padding: const EdgeInsets.all(0),
-                  // itemCount: AppContext.eventsPerDayMap.entries.elementAt(2).value.length,
                   itemCount: AppContext.eventsPerDayMap[DateUtilsFt.formattedDateWithOffset(1)]?.length,
                   itemBuilder: (context, item) {
                     return _buildRow(AppContext.eventsPerDayMap[DateUtilsFt.formattedDateWithOffset(1)]!.elementAt(item), item);
-                    // return _buildRow(AppContext.eventsPerDayMap.entries.elementAt(2).value[item], item);
                   }),
 
-
               ListView.builder(
-
-                  key: const PageStorageKey<String>(
-                      'pageOdds3'),
-                  // controller: _scrollController0,
+                  key: const PageStorageKey<String>('pageOdds3'),
                   padding: const EdgeInsets.all(0),
-                  // itemCount: AppContext.eventsPerDayMap.entries.elementAt(2).value.length,
                   itemCount: AppContext.eventsPerDayMap[DateUtilsFt.formattedDateWithOffset(2)]?.length,
                   itemBuilder: (context, item) {
                     return _buildRow(AppContext.eventsPerDayMap[DateUtilsFt.formattedDateWithOffset(2)]!.elementAt(item), item);
-                    // return _buildRow(AppContext.eventsPerDayMap.entries.elementAt(2).value[item], item);
                   }),
-
 
             ],)
           ),
@@ -255,52 +201,28 @@ class OddsPageState extends State<OddsPage> with SingleTickerProviderStateMixin{
           foregroundColor: Colors.white,
           onPressed: ()=> {
 
+            //user not valid
             if (AppContext.user.mongoUserId != Constants.defMongoId && !AppContext.user.validated){
               alertDialog('${AppLocalizations.of(context)!.mail_requires_validation} ${AppContext.user.email}' )
-            }else if (AppContext.user.mongoUserId == Constants.defMongoId){
-
-          showDialog(context: context, builder: (context) =>
-
-              DialogTabbedLoginOrRegister(
-                registerCallback: registerUserCallback,
-                loginCallback: loginUserCallback,
-              )
-          )
-
-
-
-            } else if (selectedOdds.isNotEmpty)
+            }
+            //user not logged
+            else if (AppContext.user.mongoUserId == Constants.defMongoId){
 
               showDialog(context: context, builder: (context) =>
+                  DialogTabbedLoginOrRegister(
+                    registerCallback: registerUserCallback,
+                    loginCallback: loginUserCallback,
+                  )
+              )
 
-              AlertDialog(
+            }
+            //open betslip
+            else if (selectedOdds.isNotEmpty){
+              showOddsDialog()
+            }
 
-                backgroundColor: Colors.black,
-          insetPadding: EdgeInsets.zero,
-          contentPadding: const EdgeInsets.all(0),
-          buttonPadding: EdgeInsets.zero,
-          alignment: Alignment.bottomCenter,
-          elevation: 20,
+            //do nothing
 
-
-          content:
-
-          Builder(
-          builder: (context) {
-          // Get available height and width of the build area of this widget. Make a choice depending on the size.
-          var height =  (selectedOdds.length * 100) + 100 < MediaQuery.of(context).size.height * (2/3) ? ((selectedOdds.length * 100) + 100).toDouble() : MediaQuery.of(context).size.height * (2/3);//  MediaQuery.of(context).size.height * (2/3);
-          var width = MediaQuery.of(context).size.width;
-
-          return
-            SizedBox(
-              width: width,
-              height: height,
-              child : BetSlipWithCustomKeyboard(key: UniqueKey(), initialHeight: height, selectedOdds: selectedOdds, callbackForBetPlacement: placeBetCallback, callbackForBetRemoval: removeOddCallback, )
-            );
-
-          })
-
-          ))
           },
 
           backgroundColor: const Color(ColorConstants.my_blue),
@@ -485,10 +407,115 @@ class OddsPageState extends State<OddsPage> with SingleTickerProviderStateMixin{
     return true;
   }
 
-  // void alertDialogTopUp() {
-  //   showDialog(context: context, builder: (context) =>
-  //     DialogTextWithButtons(topUpCallback: topUpCallback)
-  //   );
-  // }
+  showOddsDialog() {
 
+    //WORKS FINE
+    showDialog<BetPlacementStatus>(
+      context: context,
+      barrierDismissible: true,
+      builder: (context) {
+
+        return Dialog(
+          backgroundColor: Colors.black,
+          insetPadding: EdgeInsets.zero,
+          alignment: Alignment.bottomCenter,
+          elevation: 20,
+          child: SafeArea(
+            child: LayoutBuilder(
+              builder: (context, constraints) {
+                return SingleChildScrollView(
+                  reverse: true,
+                  padding: EdgeInsets.only(
+                    bottom: MediaQuery.of(context).viewInsets.bottom,
+                  ),
+                  child: ConstrainedBox(
+                    constraints: BoxConstraints(
+                      minHeight: 100,
+                      maxHeight: constraints.maxHeight * 0.6, // Don't use fixed height
+                    ),
+                    child: IntrinsicHeight(
+                      child: BetSlipWithCustomKeyboard(
+                        selectedOdds: selectedOdds,
+                        initialHeight: constraints.maxHeight * 0.6, // If needed
+                        callbackForBetPlacement: placeBetCallback,
+                        callbackForBetRemoval: removeOddCallback,
+                      ),
+                    ),
+                  ),
+                );
+              },
+            ),
+          ),
+        );
+      },
+    );
+
+  }
+
+}
+
+
+
+class BottomSheetContent extends StatefulWidget {
+  const BottomSheetContent({super.key});
+
+  @override
+  State<BottomSheetContent> createState() => _BottomSheetContentState();
+}
+
+class _BottomSheetContentState extends State<BottomSheetContent> {
+  final FocusNode _focusNode = FocusNode();
+  final TextEditingController _controller = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      Future.delayed(const Duration(milliseconds: 200), () {
+        if (mounted) {
+          FocusScope.of(context).requestFocus(_focusNode);
+        }
+      });
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return SafeArea(
+      child: Padding(
+        padding: EdgeInsets.only(
+          bottom: MediaQuery.of(context).viewInsets.bottom,
+        ),
+        child: Container(
+          padding: const EdgeInsets.all(16),
+          decoration: const BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+          ),
+          child: Wrap(
+            children: [
+              const Text("Enter amount"),
+              const SizedBox(height: 12),
+              TextField(
+                controller: _controller,
+                focusNode: _focusNode,
+                keyboardType: TextInputType.number,
+                decoration: const InputDecoration(
+                  border: OutlineInputBorder(),
+                ),
+              ),
+              const SizedBox(height: 12),
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+                child: const Text("Done"),
+              )
+            ],
+          ),
+        ),
+      ),
+    );
+  }
 }
