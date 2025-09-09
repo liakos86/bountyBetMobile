@@ -4,6 +4,7 @@ import 'package:flutter_app/models/constants/ColorConstants.dart';
 import 'package:flutter_app/widgets/DialogLogin.dart';
 
 import 'CustomTabIcon.dart';
+import 'DialogForgotPass.dart';
 import 'DialogRegister.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
@@ -53,7 +54,7 @@ class DialogTabbedLoginOrRegisterState extends State<DialogTabbedLoginOrRegister
     loginCallback = widget.loginCallback;
     registerCallback = widget.registerCallback;
 
-    _tabController = TabController(length: 2, vsync: this, initialIndex: 0);
+    _tabController = TabController(length: 3, vsync: this, initialIndex: 0);
     _tabController.addListener(() {
       setState(() {});
     });
@@ -64,7 +65,7 @@ class DialogTabbedLoginOrRegisterState extends State<DialogTabbedLoginOrRegister
   @override
   Widget build(BuildContext context) {
 
-    const int items = 2;
+    const int items = 3;
     double width = MediaQuery.of(context).size.width;
     const double labelPadding = 4;
     double labelWidth = (width / items ) - (labelPadding*items);
@@ -101,7 +102,7 @@ class DialogTabbedLoginOrRegisterState extends State<DialogTabbedLoginOrRegister
       child:
 
       DefaultTabController(
-        length: 2,
+        length: 3,
         child:
 
       Scaffold(
@@ -125,6 +126,7 @@ class DialogTabbedLoginOrRegisterState extends State<DialogTabbedLoginOrRegister
               tabs: [
                 CustomTabIcon(width: labelWidth, text: AppLocalizations.of(context)!.register, isSelected: _tabController.index == 0,),
                 CustomTabIcon(width: labelWidth, text: AppLocalizations.of(context)!.login, isSelected: _tabController.index == 1,),
+                CustomTabIcon(width: labelWidth, text: AppLocalizations.of(context)!.forgot_pass, isSelected: _tabController.index == 2,),
               ],
 
               onTap: (index) {
@@ -143,6 +145,7 @@ class DialogTabbedLoginOrRegisterState extends State<DialogTabbedLoginOrRegister
 
               DialogRegister(callback: registerCallback),
               DialogLogin(callback: loginCallback),
+              const DialogForgotPass(),
 
             ],),
 

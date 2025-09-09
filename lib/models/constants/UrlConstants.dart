@@ -47,6 +47,10 @@ class UrlConstants{
 
   static const POST_REGISTER_USER = SERVER_IP + SRV_VERSION + '/rest/registerUser';
 
+  static const POST_FORGOT_PASS = SERVER_IP + SRV_VERSION + '/rest/forgotPasswordClaim';
+
+  static const POST_FORGOT_PASS_SELECT_NEW = SERVER_IP + SRV_VERSION + '/rest/forgotPasswordSelectNew';
+
   static const POST_LOGIN_USER = SERVER_IP + SRV_VERSION + '/rest/loginUser';
 
   static const POST_VERIFY_PURCHASE = SERVER_IP + SRV_VERSION + '/rest/verifyPurchase';

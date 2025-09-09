@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 
 import '../models/User.dart';
 import '../models/constants/Constants.dart';
+import '../utils/StringUtils.dart';
 
 class DialogRegister extends StatefulWidget {
   Function callback = (User user) => {};
@@ -163,7 +164,7 @@ class DialogRegisterState extends State<DialogRegister> {
   }
 
   void registerWith(String email, String password, String username) async {
-    String? userError = validateUsername(username);
+    String? userError = StringUtils.validateUsername(username, context);
     if (userError != null) {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         content: Text(userError),
@@ -177,10 +178,10 @@ class DialogRegisterState extends State<DialogRegister> {
       return;
     }
 
-    String? emailError = validateEmail(email);
-    if (emailError != null) {
+    bool emailValid = StringUtils.validateEmail(email);
+    if (!emailValid) {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text(emailError),
+        content: Text(AppLocalizations.of(context)!.validation_invalid_email),
         showCloseIcon: true,
         duration: const Duration(seconds: 5),
       ));
@@ -191,7 +192,7 @@ class DialogRegisterState extends State<DialogRegister> {
       return;
     }
 
-    String? passError = validatePassword(password);
+    String? passError = StringUtils.validatePassword(password, passwordRepeat, context);
     if (passError != null) {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         content: Text(passError),
@@ -207,7 +208,7 @@ class DialogRegisterState extends State<DialogRegister> {
 
     User? userFromServer = await HttpActionsClient.register(username, email, password);
 
-    if (userFromServer != null && userFromServer.errorMessage != Constants.empty) {
+    if (userFromServer.errorMessage != Constants.empty) {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         content: Text(userFromServer.errorMessage),
         showCloseIcon: true,
@@ -220,7 +221,7 @@ class DialogRegisterState extends State<DialogRegister> {
       return;
     }
 
-    if (userFromServer == null || userFromServer.errorMessage.isNotEmpty) {
+    if (userFromServer.errorMessage.isNotEmpty) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
           content: Text('Registration failed'),
@@ -238,46 +239,4 @@ class DialogRegisterState extends State<DialogRegister> {
     callback.call(userFromServer);
   }
 
-  String? validatePassword(String password) {
-    if (password.length < 6 || password.length > 12) {
-      return AppLocalizations.of(context)!.validation_password_length;
-    }
-
-    if (!RegExp(r'[0-9]').hasMatch(password)) {
-      return AppLocalizations.of(context)!.validation_password_number;
-    }
-
-    if (!RegExp(r'[!@#$%^&*(),.?":{}|<>]').hasMatch(password)) {
-      return AppLocalizations.of(context)!.validation_password_special;
-    }
-
-    if (passwordRepeat != password) {
-      return AppLocalizations.of(context)!.password_repeat_missmatch;
-    }
-
-    return null;
-  }
-
-  String? validateEmail(String email) {
-    String pattern = r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$";
-    RegExp regex = RegExp(pattern);
-
-    if (email.isEmpty || !regex.hasMatch(email)) {
-      return AppLocalizations.of(context)!.validation_invalid_email;
-    }
-
-    return null;
-  }
-
-  String? validateUsername(String username) {
-    if (username.length < 6 || username.length > 18) {
-      return AppLocalizations.of(context)!.validation_invalid_username_length;
-    }
-
-    if (!RegExp(r'^[a-zA-Z0-9]+$').hasMatch(username)) {
-      return AppLocalizations.of(context)!.validation_invalid_username_char;
-    }
-
-    return null;
-  }
 }
