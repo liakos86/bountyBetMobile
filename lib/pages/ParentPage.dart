@@ -26,6 +26,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import '../enums/ChangeEvent.dart';
 import '../enums/MatchEventStatus.dart';
+import '../helper/SharedPrefs.dart';
+import '../models/FantasyLeague.dart';
 import '../models/notification/ChangeEventSoccer.dart';
 import '../models/League.dart';
 import '../models/Section.dart';
@@ -238,9 +240,9 @@ class ParentPageState extends State<ParentPage> with WidgetsBindingObserver {
     user.deepCopyFrom(value);
 
 
-    // if (user.mongoUserId != Constants.defMongoId) {
-    //   restorePurchases();
-    // }
+    if (user.mongoUserId == Constants.defMongoId) {
+      AppContext.fantasyLeague.copyFrom(FantasyLeague.defLeague());
+    }
 
     if (user.mongoUserId == Constants.defMongoId ){
      // updateUserMongoId(value);
@@ -270,6 +272,7 @@ class ParentPageState extends State<ParentPage> with WidgetsBindingObserver {
 
     fantasyLeaguesPageKey.currentState?.setState(() {
       AppContext.user;
+      AppContext.fantasyLeague;
     });
 
   }
@@ -502,8 +505,12 @@ class ParentPageState extends State<ParentPage> with WidgetsBindingObserver {
     final SharedPreferences shprefs = await SharedPreferences.getInstance();
     if (user.mongoUserId != Constants.defMongoId) {
       shprefs.setString(Constants.mongoId, user.mongoUserId);
+      if (user.fantasyLeagueMongoId != null) {
+        shprefs.setString(sp_fantasy_league_id, user.fantasyLeagueMongoId??'');
+      }
     }else{
       shprefs.remove(Constants.mongoId);
+      shprefs.remove(sp_fantasy_league_id);
     }
   }
 
