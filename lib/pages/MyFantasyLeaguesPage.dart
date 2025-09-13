@@ -24,6 +24,8 @@ import '../models/UserBet.dart';
 import '../models/constants/ColorConstants.dart';
 import '../models/constants/PurchaseConstants.dart';
 import '../widgets/custom/FantasyLeagueCard.dart';
+import '../widgets/custom/FantasyLeagueCompletedCard.dart';
+import '../widgets/dialog/DialogFantasyLeagueWinner.dart';
 import '../widgets/dialog/DialogTextWithButtons.dart';
 import '../widgets/row/FantasyLeagueInvitationRow.dart';
 import '../widgets/dialog/DialogWizardLeagueNameStep1.dart';
@@ -66,6 +68,7 @@ class MyFantasyLeaguesPageState extends State<MyFantasyLeaguesPage>  with Single
   bool available = false;
   bool isMinimized = false;
 
+  bool alertDialogOpen = false;
   /*
    * Make o copy of the bets
    */
@@ -73,7 +76,7 @@ class MyFantasyLeaguesPageState extends State<MyFantasyLeaguesPage>  with Single
 
   FantasyLeague fantasyLeague;
 
-  List<FantasyLeague> fantasyLeagues = <FantasyLeague>[];
+  List<FantasyLeague> completedFantasyLeagues = <FantasyLeague>[];
 
   List<FantasyLeague> invitations = <FantasyLeague>[];
 
@@ -132,7 +135,7 @@ class MyFantasyLeaguesPageState extends State<MyFantasyLeaguesPage>  with Single
     );
 
     updateFantasyLeagues();
-    Timer.periodic(const Duration(seconds: 15), (timer) {
+    Timer.periodic(const Duration(seconds: 45), (timer) {
       if (!isMinimized) {
          updateFantasyLeagues();
       }
@@ -359,7 +362,7 @@ class MyFantasyLeaguesPageState extends State<MyFantasyLeaguesPage>  with Single
             
 
 
-            (fantasyLeagues.isEmpty) ?
+            (completedFantasyLeagues.isEmpty) ?
 
             const Align(alignment: Alignment.center,
                 child: Column(
@@ -383,8 +386,14 @@ class MyFantasyLeaguesPageState extends State<MyFantasyLeaguesPage>  with Single
 
                 :
 
-            Text(fantasyLeagues[0].name),
-
+            ListView.builder(
+              key: const PageStorageKey<String>('pageLeaguesCompleted'),
+              padding: const EdgeInsets.all(8),
+              itemCount: completedFantasyLeagues.length,
+              itemBuilder: (context, item) {
+                return _buildCompletedLeagueRow(completedFantasyLeagues[item], 'comp$item${completedFantasyLeagues[item].mongoId}');
+              },
+            ),
 
           ],)
             )
@@ -442,21 +451,37 @@ class MyFantasyLeaguesPageState extends State<MyFantasyLeaguesPage>  with Single
     }
 
     //TODO
-    // fantasyLeagues.clear();
-    // fantasyLeagues.addAll(leagues.where((e) => !e.isInvitation && e.mongoId != AppContext.user.fantasyLeagueMongoId));
 
+    List<FantasyLeague> completedLeaguesIncoming = (leagues.where((e) => e.status == FantasyLeagueStatus.COMPLETED.statusCode).toList());
+    for (FantasyLeague completedIncoming in completedLeaguesIncoming){
+      FantasyLeague? completedExisting = completedFantasyLeagues.firstWhereOrNull((element) => element.mongoId == completedIncoming.mongoId);
+      if (completedExisting != null){
+        completedExisting.copyFrom(completedIncoming);
+      }else{
+        completedFantasyLeagues.add(completedIncoming);
+      }
+    }
+
+    for (FantasyLeague completedExisting in List.of(completedFantasyLeagues)){
+      FantasyLeague? completedIncoming = completedLeaguesIncoming.firstWhereOrNull((element) => element.mongoId == completedExisting.mongoId);
+      if (completedIncoming == null){
+        completedFantasyLeagues.remove(completedExisting);
+      }
+    }
 
     setState(() {
       // leagueFetched = true;
       invitations;
       fantasyLeague;
-      fantasyLeague.users;
-      fantasyLeagues;
+      // fantasyLeague.users;
+      completedFantasyLeagues;
     });
 
     fantasyLeagueKey.currentState?.setState(() {
       fantasyLeague;
     });
+
+    checkCompletedLeagueNotification();
 
   }
   Widget _buildInvitationRow(FantasyLeague league, String key) {
@@ -679,6 +704,57 @@ class MyFantasyLeaguesPageState extends State<MyFantasyLeaguesPage>  with Single
       AppContext.user.fantasyLeagueMongoId = league.mongoId;
     }
     );
+  }
+
+
+  void confirmWinner(bool dontShowAgain, String mongoId){
+    alertDialogOpen = false;
+    if (dontShowAgain) {
+      print('ACKING ' + mongoId);
+      sharedPrefs.appendAckLeagueId(mongoId);
+    }
+  }
+
+
+  void alertFantasyLeagueLeaderBoard(FantasyLeague completedLeague) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      showDialog(
+        context: context,
+        builder: (context) => DialogFantasyLeagueWinner(
+          league: completedLeague,
+          confirmWinnerCallback: confirmWinner,
+        ),
+      );
+    });
+  }
+
+  void checkCompletedLeagueNotification() async{
+    if (alertDialogOpen){
+      return;
+    }
+
+    FantasyLeague maxDtEndLeague = FantasyLeague.defLeague();
+    if (completedFantasyLeagues.isNotEmpty) {
+      maxDtEndLeague = completedFantasyLeagues.reduce((a, b) =>
+      a.dtEnd.isAfter(b.dtEnd) ? a : b);
+
+      print('League with max dtEnd: ${maxDtEndLeague.mongoId}');
+    } else {
+      return;
+    }
+
+    bool isAck = await sharedPrefs.isFantasyLeagueAcknowledged(maxDtEndLeague.mongoId);
+    if (isAck){
+      print('ACK ALREADY League with max dtEnd: ${maxDtEndLeague.mongoId}');
+      return;
+    }
+
+    alertDialogOpen = true;
+    alertFantasyLeagueLeaderBoard(maxDtEndLeague);
+  }
+
+  Widget _buildCompletedLeagueRow(FantasyLeague completedFantasyLeague, String key) {
+    return FantasyLeagueCompletedCard(fantasyLeague: completedFantasyLeague, key: PageStorageKey<String>(key));
   }
 
 

@@ -35,6 +35,16 @@ class SharedPrefs {
     _sharedPrefs?.setStringList(sp_won_months, current);
   }
 
+  void appendAckLeagueId(String value){
+    List<String> current =  _sharedPrefs?.getStringList(sp_ack_league_ids) ?? <String>[];
+    if (current.contains(value)) {
+      throw Exception("FLID ALREADY IS IN ACK $value");
+    }
+
+    current.add(value);
+    _sharedPrefs?.setStringList(sp_ack_league_ids, current);
+  }
+
   void appendLeagueId(String value){
     List<String> current =  _sharedPrefs?.getStringList(sp_fav_league_ids) ?? <String>[];//favEventIds;
     if (current.contains(value)) {
@@ -97,6 +107,16 @@ class SharedPrefs {
     return true;
   }
 
+  Future<bool> isFantasyLeagueAcknowledged(String id) async{
+    await _sharedPrefs?.reload();
+    List<String> current =  _sharedPrefs?.getStringList(sp_ack_league_ids) ?? <String>[];
+    if (!current.contains(id)) {
+      return false;
+    }
+
+    return true;
+  }
+
 }
 
 final sharedPrefs = SharedPrefs();
@@ -104,4 +124,5 @@ final sharedPrefs = SharedPrefs();
 const String sp_fav_event_ids = "fav_event_ids";
 const String sp_fav_league_ids = "fav_league_ids";
 const String sp_won_months = "won_months";
+const String sp_ack_league_ids = "ack_league_ids";
 const String sp_fantasy_league_id = "fantasy_league_id";

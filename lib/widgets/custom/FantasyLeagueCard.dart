@@ -56,34 +56,9 @@ class _FantasyLeagueCardState extends State<FantasyLeagueCard> {
 
     if (fantasyLeague.users.isNotEmpty && fantasyLeague.status == FantasyLeagueStatus.RUNNING.statusCode) {
       fantasyLeague.users.sort((a, b) {
-        // First compare by year (descending)
-        if ( a.fantasyBalance.balance > b.fantasyBalance.balance) {
-          return -1;
-        }
-
-        if ( a.fantasyBalance.balance < b.fantasyBalance.balance) {
-          return 1;
-        }
-
-        return 0;
-
-        // If years are equal, compare by month (descending)
-        // return b.balance.month.compareTo(a.balance.month);
+        return a.fantasyBalance.compareTo(b.fantasyBalance);
       });
 
-      for (int i = 0; i < fantasyLeague.users.length; i++) {
-
-        if (fantasyLeague.users[i].fantasyBalance.position == 0){
-          fantasyLeague.users[i].fantasyBalance.positionDelta = i+1;
-        }else if (fantasyLeague.users[i].fantasyBalance.position != i + 1) {
-          fantasyLeague.users[i].fantasyBalance.positionDelta =
-              fantasyLeague.users[i].fantasyBalance.position -
-                  (i + 1); // +1 to make it 1-based ranking
-        }
-
-          fantasyLeague.users[i].fantasyBalance.position =
-              i + 1; // +1 to make it 1-based ranking
-        }
     }
 
     return Card(
@@ -287,8 +262,9 @@ class _FantasyLeagueCardState extends State<FantasyLeagueCard> {
                   itemCount: fantasyLeague.users.length,
                   itemBuilder: (context, index) {
                     final user = fantasyLeague.users[index];
+                    final int position = user.fantasyBalance.position;
 
-                    return FantasyLeaderboardRow(user: user, position: index + 1, products: products, topUpCallback: topUpCallback,);
+                    return FantasyLeaderboardRow(user: user, position:  position > 0 ? position :  index + 1, products: products, topUpCallback: topUpCallback,);
                   },
                 ),
               ),

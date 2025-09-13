@@ -46,6 +46,7 @@ class FantasyLeague implements Comparable<FantasyLeague>{
   List<int> selectedLeagueIds = <int>[];
 
   String creatorUserId = Constants.defMongoId;
+  User? creatorUser = User.defUser();
 
   int status = FantasyLeagueStatus.PENDING.statusCode;
 
@@ -99,6 +100,16 @@ class FantasyLeague implements Comparable<FantasyLeague>{
       }
 
       l.users = users;
+    }
+
+
+    if (parsedJson['creatorUser'] != null){
+      User user = await User.fromJson(parsedJson['creatorUser']);
+      l.creatorUser = user;
+
+      FantasyLeagueInvitation adminInv = FantasyLeagueInvitation(email: user.email);
+      adminInv.mongoId = 'admin_invitation';
+      l.invitations.add(adminInv);
     }
 
     l.mongoId = mongoId;

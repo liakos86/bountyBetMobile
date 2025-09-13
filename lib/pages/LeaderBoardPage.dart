@@ -8,14 +8,10 @@ import 'package:flutter_app/widgets/row/LeaderBoardUserFullInfoRow.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 
-import '../helper/SharedPrefs.dart';
 import '../models/User.dart';
 import '../models/UserMonthlyBalance.dart';
 import '../models/constants/ColorConstants.dart';
 import '../models/constants/Constants.dart';
-import '../utils/BetUtils.dart';
-import '../widgets/CustomTabIcon.dart';
-import '../widgets/dialog/DialogMonthWinner.dart';
 import '../widgets/row/GlobalLeaderBoardRow.dart';
 import 'LivePage.dart';
 
@@ -38,8 +34,8 @@ class LeaderBoardPageState extends State<LeaderBoardPage> with SingleTickerProvi
 
   bool isMinimized = false;
 
-  bool alertDialogOpen = false;
-
+  // bool alertDialogOpen = false;
+  //
   bool isPreviousMonthWinner = false;
 
   // UserMonthlyBalance iAmMonthWinner = UserMonthlyBalance.defBalance();
@@ -388,55 +384,5 @@ class LeaderBoardPageState extends State<LeaderBoardPage> with SingleTickerProvi
     return GlobalLeaderboardRow(user: user, position: item, key: PageStorageKey<String>(key));
     return LeaderBoardUserFullInfoRow(user: user, isCurrentLeaderBoard: false, isLeaderBoardWinner: false, key: PageStorageKey<String>(key));
   }
-
-  void confirmWinner(UserMonthlyBalance balance, bool dontShowAgain){
-    alertDialogOpen = false;
-    if (dontShowAgain) {
-      sharedPrefs.appendWonMonth(balance.month.toString() + balance.year.toString());
-    }
-  }
-
-
-  // void alertMonthWinner(List<User> users) {
-  //   WidgetsBinding.instance.addPostFrameCallback((_) {
-  //     showDialog(
-  //       context: context,
-  //       builder: (context) => DialogMonthWinner(
-  //         users: users,
-  //         confirmWinnerCallback: confirmWinner,
-  //       ),
-  //     );
-  //   });
-  // }
-
-  // void checkMonthWinnerNotification(List<User>? previousMonthWinners) async{
-  //   if (alertDialogOpen){
-  //     return;
-  //   }
-  //
-  //   User currentUser = AppContext.user;
-  //   if (currentUser.mongoUserId == Constants.defMongoId ){
-  //     return;
-  //   }
-  //
-  //   if (previousMonthWinners==null || previousMonthWinners.isEmpty){
-  //     return;
-  //   }
-  //
-  //   User userInWinnersCheck = previousMonthWinners.firstWhere((element) => element.mongoUserId == AppContext.user.mongoUserId, orElse: () => User.defUser());
-  //   isPreviousMonthWinner = userInWinnersCheck.mongoUserId != Constants.defMongoId;
-  //
-  //   User firstUser = previousMonthWinners.first;
-  //   String previousMonthYear = firstUser.balance.month.toString() + firstUser.balance.year.toString();
-  //   bool isPreviousMonthSettled = await sharedPrefs.isInWonMonths(previousMonthYear);
-  //   if (isPreviousMonthSettled){
-  //     return;
-  //   }
-  //
-  //
-  //   alertDialogOpen = true;
-  //   alertMonthWinner(previousMonthWinners);
-  //
-  // }
 
 }

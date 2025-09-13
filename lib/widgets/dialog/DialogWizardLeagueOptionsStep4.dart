@@ -63,9 +63,25 @@ class _DialogWizardLeagueOptionsStep4State extends State<DialogWizardLeagueOptio
               );
             }).toList(),
           ),
-          SizedBox(height: 24),
+
+          SizedBox(height: 12),
+          Row(
+            children: [
+              const Icon(Icons.info_outline, color: Colors.blue),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Text(
+
+                  'A user with < 10 credits can add-on extra credits for all users in league',
+                  style: const TextStyle(fontSize: 10, color: Colors.black87),
+                ),
+              ),
+            ],
+          ),
+
+          SizedBox(height: 4),
           CheckboxListTile(
-            title: Text("Allow top-up during league"),
+            title: Text("Allow add-on"),
             value: _allowTopUp,
             onChanged: (val) => setState(() => _allowTopUp = val ?? false),
           ),

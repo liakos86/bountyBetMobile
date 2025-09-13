@@ -108,6 +108,7 @@
        "cancel_button_text" : "Cancel",
        "view_predictions_text" : "View preds",
        "congrats_text" : "Congratulations! You finished in position {position} with {credits} credits! You can now view for FREE all the users' predictions for current month!",
+       "congrats_text_fantasy" : "Congratulations! You finished in position {position} with {credits} credits at league {league}!",
        "leaders_previous_month_text" : "Here are the previous month winners! Keep the good work to be able to view all the users' predictions for free!",
 
        "dont_show_again_checkbox_label" : "don't show again",
@@ -171,7 +172,7 @@
 
         "preds_next_month" : "Cannot place bet. Please select predictions only for current month",
 
-        "match_in_progress" : "Cannot place bet. Match in progress",
+        "match_in_progress" : "League end date must be before all matches",
 
         "action" : "Action required",
 
