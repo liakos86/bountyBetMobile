@@ -162,7 +162,7 @@ class LeaderBoardPageState extends State<LeaderBoardPage> with SingleTickerProvi
               //   controller: _tabController,
               //   children: [
 
-                (!leaders.isEmpty) ?
+                (leaders.isEmpty) ?
 
                 Align(alignment: Alignment.center,
                       child: Column(
