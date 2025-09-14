@@ -162,15 +162,19 @@ class LeaderBoardPageState extends State<LeaderBoardPage> with SingleTickerProvi
               //   controller: _tabController,
               //   children: [
 
-                (leaders.isEmpty) ?
+                (!leaders.isEmpty) ?
 
                 Align(alignment: Alignment.center,
                       child: Column(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: <Widget>[
                             // Icon on top
-                            const ImageIcon(size:100, AssetImage('assets/images/leaders-100.png')),
-                            const SizedBox(height: 20),  // Space between icon and text
+                              const Icon(
+                                Icons.sports_soccer,  // Built-in Flutter icon
+                                size: 60,  // Icon size
+                                color: Colors.grey, // Icon color
+                              ),
+                              const SizedBox(height: 20),
                             // Text below the icon
                             Text(
                               AppLocalizations.of(context)!.empty_list,

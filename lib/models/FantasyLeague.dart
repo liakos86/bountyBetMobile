@@ -120,11 +120,14 @@ class FantasyLeague implements Comparable<FantasyLeague>{
 
   @override
   int compareTo(FantasyLeague other) {
+
+
+
     if (dtStart.isAfter(other.dtStart)){
-      return 1;
+      return -1;
     }
 
-    return -1;
+    return 1;
   }
 
   Map<String, dynamic> toJson() {

@@ -10,7 +10,7 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import '../../models/constants/Constants.dart';
 import '../../models/context/AppContext.dart';
-import '../row/FantasyLeaderBoardRow.dart';
+import '../row/FantasyLeaderBoardCompletedRow.dart';
 
 class DialogFantasyLeagueWinner extends StatefulWidget {
   final FantasyLeague league;
@@ -154,7 +154,7 @@ class _DialogFantasyLeagueWinnerState extends State<DialogFantasyLeagueWinner>
   }
 
   Widget _buildLeaderUserRowPlain(User user, String key) {
-    return FantasyLeaderboardRow(user: user, position: user.fantasyBalance.finalPosition, products: const <ProductDetails>[], topUpCallback: ()=>{},);
+    return FantasyLeaderBoardCompletedRow(user: user, position: user.fantasyBalance.finalPosition);
   }
 }
 

@@ -296,13 +296,17 @@ class MyFantasyLeaguesPageState extends State<MyFantasyLeaguesPage>  with Single
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
                     // Icon on top
-                    const ImageIcon(size:100, AssetImage('assets/images/money-bag-100.png')),
+                    const Icon(
+                      Icons.sports_soccer,  // Built-in Flutter icon
+                      size: 60,  // Icon size
+                      color: Colors.grey, // Icon color
+                    ),
                     const SizedBox(height: 20),  // Space between icon and text
                     // Text below the icon
                     Text(
                       AppLocalizations.of(context)!.no_pending_bets,
                       style: const TextStyle(
-                        fontSize: 16,
+                        fontSize: 14,
                         fontWeight: FontWeight.bold,
                         color: Color(ColorConstants.my_dark_grey),
                       ),
@@ -334,13 +338,17 @@ class MyFantasyLeaguesPageState extends State<MyFantasyLeaguesPage>  with Single
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
                     // Icon on top
-                    ImageIcon(size:100, AssetImage('assets/images/money-bag-100.png')),
+                    const Icon(
+                      Icons.sports_soccer,  // Built-in Flutter icon
+                      size: 60,  // Icon size
+                      color: Colors.grey, // Icon color
+                    ),
                     const SizedBox(height: 20),  // Space between icon and text
                     // Text below the icon
                     const Text(
                       'No invitations',
                       style: TextStyle(
-                        fontSize: 16,
+                        fontSize: 14,
                         fontWeight: FontWeight.bold,
                         color: Color(ColorConstants.my_dark_grey),
                       ),
@@ -369,13 +377,17 @@ class MyFantasyLeaguesPageState extends State<MyFantasyLeaguesPage>  with Single
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
                     // Icon on top
-                    ImageIcon(size:100, AssetImage('assets/images/money-bag-100.png')),
-                    const SizedBox(height: 20),  // Space between icon and text
+                    const Icon(
+                      Icons.sports_soccer,  // Built-in Flutter icon
+                      size: 60,  // Icon size
+                      color: Colors.grey, // Icon color
+                    ),
+                    const SizedBox(height: 20),  // Space between icon and text  // Space between icon and text
                     // Text below the icon
                     const Text(
                       'No completed leagues',
                       style: TextStyle(
-                        fontSize: 16,
+                        fontSize: 14,
                         fontWeight: FontWeight.bold,
                         color: Color(ColorConstants.my_dark_grey),
                       ),
@@ -452,7 +464,7 @@ class MyFantasyLeaguesPageState extends State<MyFantasyLeaguesPage>  with Single
 
     //TODO
 
-    List<FantasyLeague> completedLeaguesIncoming = (leagues.where((e) => e.status == FantasyLeagueStatus.COMPLETED.statusCode).toList());
+    List<FantasyLeague> completedLeaguesIncoming = (leagues.where((e) => e.status == FantasyLeagueStatus.COMPLETED.statusCode && !e.isInvitation).toList());
     for (FantasyLeague completedIncoming in completedLeaguesIncoming){
       FantasyLeague? completedExisting = completedFantasyLeagues.firstWhereOrNull((element) => element.mongoId == completedIncoming.mongoId);
       if (completedExisting != null){
@@ -468,6 +480,8 @@ class MyFantasyLeaguesPageState extends State<MyFantasyLeaguesPage>  with Single
         completedFantasyLeagues.remove(completedExisting);
       }
     }
+
+    completedFantasyLeagues.sort();
 
     setState(() {
       // leagueFetched = true;
@@ -531,13 +545,6 @@ class MyFantasyLeaguesPageState extends State<MyFantasyLeaguesPage>  with Single
 
     return UserBetRow(key: PageStorageKey<String>(key), bet: bet);
   }
-
-
-  // void alertDialogTopUp() {
-  //   showDialog(context: context, builder: (context) =>
-  //       DialogTextWithButtons(topUpCallback: promptDialogTopup)
-  //   );
-  // }
 
   void promptDialogTopup(String productId) {
     if (products.isEmpty){

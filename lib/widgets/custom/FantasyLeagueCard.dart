@@ -143,7 +143,7 @@ class _FantasyLeagueCardState extends State<FantasyLeagueCard> {
               ),
             ),
             Expanded(
-              flex: 2,
+              flex: leagues.length > 5 ? 2 : 1,
               child: Center(
                 child: GridView.builder(
                   shrinkWrap: true,

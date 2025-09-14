@@ -8,7 +8,7 @@ import '../../models/FantasyLeague.dart';
 import '../../models/User.dart';
 
 
-import '../row/FantasyLeaderBoardRow.dart';
+import '../row/FantasyLeaderBoardCompletedRow.dart';
 
 
 
@@ -32,6 +32,13 @@ class FantasyLeagueCompletedCard extends StatefulWidget {
    @override
   void initState() {
     fantasyLeague = widget.fantasyLeague;
+    if (fantasyLeague.users.isNotEmpty) {
+      fantasyLeague.users.sort((a, b) {
+        return a.fantasyBalance.compareTo(b.fantasyBalance);
+      });
+
+    }
+
      super.initState();
   }
 
@@ -40,7 +47,7 @@ class FantasyLeagueCompletedCard extends StatefulWidget {
    Widget build(BuildContext context) {
      return Card(
        key: PageStorageKey<String>('fantasy_league_comp_${fantasyLeague.mongoId}'),
-       color: Colors.blue.shade50,
+       color: Colors.grey.shade50,
        margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
        child: Padding(
          padding: const EdgeInsets.all(8.0),
@@ -60,7 +67,7 @@ class FantasyLeagueCompletedCard extends StatefulWidget {
                        Text(
                          fantasyLeague.name,
                          style: const TextStyle(
-                           fontSize: 14,
+                           fontSize: 16,
                            color: Colors.black87,
                            fontWeight: FontWeight.bold,
                          ),
@@ -94,7 +101,7 @@ class FantasyLeagueCompletedCard extends StatefulWidget {
 
 
   Widget _buildLeagueUserRow(User user) {
-    return FantasyLeaderboardRow(user: user, position: user.fantasyBalance.finalPosition, products: <ProductDetails>[], topUpCallback: ()=>{},);
+    return FantasyLeaderBoardCompletedRow(user: user, position: user.fantasyBalance.finalPosition);
   }
 
 }
