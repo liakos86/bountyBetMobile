@@ -218,5 +218,9 @@
             "credits": {}
           }},
 
+      "error_own_invite" : "You cannot invite yourself",
+      "error_generic" : "A generic error occurred",
+      "error_max_pending_inv" : "Too many open invitations for league",
+
      "run_this" : "flutter gen-l10n"
 }

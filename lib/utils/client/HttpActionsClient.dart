@@ -24,6 +24,7 @@ import '../../models/Section.dart';
 import '../../models/User.dart';
 import '../../models/UserMonthlyBalance.dart';
 import '../../models/constants/Constants.dart';
+import '../../models/constants/ErrorConstants.dart';
 import '../../models/context/AppContext.dart';
 import '../../models/match_event.dart';
 import '../SecureUtils.dart';
@@ -943,6 +944,7 @@ class HttpActionsClient {
     if (!connected){
       connected = await checkInternetConnectivity();
       if (!connected){
+        fantasyLeagueInvitation.errorMsg = ErrorConstants.ERR_CON;
         return fantasyLeagueInvitation;
       }
     }
@@ -954,10 +956,9 @@ class HttpActionsClient {
       if (access_token == null) {
         final prefs = await SharedPreferences.getInstance();
         access_token = prefs.getString(Constants.accessToken) ;
-        // access_token = await SecureUtils().retrieveValue(Constants.accessToken);
         await authorizeAsync();
         if (access_token == null) {
-          // //print('COULD NOT AUTHORIZE ********************************************************************');
+          fantasyLeagueInvitation.errorMsg = ErrorConstants.ERR_AUTH;
           return fantasyLeagueInvitation;
         }
       }
@@ -978,6 +979,7 @@ class HttpActionsClient {
       return responseBean;
 
     }catch(e){
+      fantasyLeagueInvitation.errorMsg = ErrorConstants.ERR_GENERIC;
       return fantasyLeagueInvitation;
     }
   }

@@ -5,15 +5,18 @@ import 'package:in_app_purchase/in_app_purchase.dart';
 import '../../enums/FantasyLeagueInvitationStatus.dart';
 import '../../enums/FantasyLeagueStatus.dart';
 import '../../models/FantasyLeague.dart';
+import '../../models/FantasyLeagueInvitation.dart';
 import '../../models/League.dart';
+import '../../models/constants/Constants.dart';
 import '../../models/context/AppContext.dart';
+import '../../utils/StringUtils.dart';
 import '../dialog/DialogWizardLeagueLeaguesStep2.dart';
 import '../row/FantasyLeaderBoardRow.dart';
 
 class FantasyLeagueCard extends StatefulWidget {
   final FantasyLeague? fantasyLeague;
   final VoidCallback onOptOut;
-  final void Function(String email) onInviteEmail;
+  final Future<FantasyLeagueInvitation> Function(String email) onInviteEmail;
   final List<ProductDetails> products;
   final Function topUpCallback;
 
@@ -306,7 +309,7 @@ class _FantasyLeagueCardState extends State<FantasyLeagueCard> {
                 child: const Text('Cancel'),
               ),
               ElevatedButton(
-                onPressed: () {
+                onPressed: () async{
                   final email = controller.text.trim();
                   final emailRegex = RegExp(r"^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$");
 
@@ -315,8 +318,16 @@ class _FantasyLeagueCardState extends State<FantasyLeagueCard> {
                   } else if (widget.fantasyLeague!.invitedEmails.contains(email)) {
                     setStateDialog(() => error = 'This email has already been invited.');
                   } else {
-                    Navigator.pop(context);
-                    widget.onInviteEmail(email);
+
+                    FantasyLeagueInvitation inv = await widget.onInviteEmail(email);
+
+                    if (inv.errorMsg != Constants.empty) {
+                      setStateDialog(() =>
+                      error = StringUtils.getLocalizedMessage(context, inv.errorMsg));
+                    }else {
+                      Navigator.pop(context);
+                    }
+
                   }
                 },
                 child: const Text('Send Invite'),

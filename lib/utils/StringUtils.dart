@@ -1,6 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
+import '../models/constants/ErrorConstants.dart';
+
 class StringUtils{
 
   static bool validateEmail(String email) {
@@ -45,6 +47,21 @@ class StringUtils{
 
     return null;
   }
+
+  static String getLocalizedMessage(BuildContext context, String key) {
+
+    final localizations = AppLocalizations.of(context)!;
+
+    switch (key) {
+      case ErrorConstants.ERR_INV_OWN_INVITE:
+        return localizations.error_own_invite;
+      case ErrorConstants.ERR_INV_MAX_PEND_INV:
+        return localizations.error_max_pending_inv;
+      default:
+        return localizations.error_generic;
+    }
+  }
+
 
 
 }

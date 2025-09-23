@@ -279,11 +279,7 @@ class MyFantasyLeaguesPageState extends State<MyFantasyLeaguesPage>  with Single
 
             print("Opted out!");
           },
-          onInviteEmail: (email) async{
-            FantasyLeagueInvitation invitation = FantasyLeagueInvitation(email: email);
-            invitation = await HttpActionsClient.createFantasyLeagueInvitation(invitation);
-            print('Invited: $email');
-          },
+          onInviteEmail: inviteUserByEmail,
         )
 
                 : SizedBox(),
@@ -765,4 +761,11 @@ class MyFantasyLeaguesPageState extends State<MyFantasyLeaguesPage>  with Single
   }
 
 
+
+  Future<FantasyLeagueInvitation> inviteUserByEmail(String email)async{
+    FantasyLeagueInvitation invitation = FantasyLeagueInvitation(email: email);
+    invitation = await HttpActionsClient.createFantasyLeagueInvitation(invitation);
+    print('Invited: $email');
+    return invitation;
+  }
 }

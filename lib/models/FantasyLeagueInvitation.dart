@@ -14,7 +14,9 @@ class FantasyLeagueInvitation implements Comparable<FantasyLeagueInvitation>{
 
   });
 
-  String mongoId = '';
+  String errorMsg = Constants.empty;
+
+  String mongoId = Constants.empty;
 
   int status = FantasyLeagueInvitationStatus.PENDING.statusCode;
 
@@ -22,26 +24,22 @@ class FantasyLeagueInvitation implements Comparable<FantasyLeagueInvitation>{
 
   String email;
 
-  String fantasyLeagueMongoId = '';
-
+  String fantasyLeagueMongoId = Constants.empty;
 
 
   static Future<FantasyLeagueInvitation> fromJson(Map<String, dynamic> parsedJson) async{
 
-    String mongoId = parsedJson['mongoId'];
-    String fantasyLeagueMongoId = parsedJson['fantasyLeagueMongoId'];
-    String email = parsedJson['email'];
+    String mongoId = parsedJson['mongoId'] ?? Constants.empty;
+    String fantasyLeagueMongoId = parsedJson['fantasyLeagueMongoId'] ?? Constants.empty;
+    String email = parsedJson['email'] ?? Constants.empty;
     int status = parsedJson['status'] as int;
 
     DateFormat formatter = DateFormat("MMM d, yyyy, h:mm:ss a");
-    DateTime dtExpiration = formatter.parse(parsedJson['dtExpiration']);
+    DateTime dtExpiration = parsedJson['dtExpiration'] != null ? formatter.parse(parsedJson['dtExpiration']) : DateTime.now();
 
 
     FantasyLeagueInvitation l = FantasyLeagueInvitation(
-
         email: email,
-
-
        );
     l.dtExpiration = dtExpiration;
 
@@ -54,6 +52,12 @@ class FantasyLeagueInvitation implements Comparable<FantasyLeagueInvitation>{
 
     l.fantasyLeagueMongoId = fantasyLeagueMongoId;
     l.mongoId = mongoId;
+
+    if (parsedJson['errorMsg'] != null) {
+      String errorMsg = parsedJson['errorMsg'];
+      l.errorMsg = errorMsg;
+    }
+
     return l;
   }
 
