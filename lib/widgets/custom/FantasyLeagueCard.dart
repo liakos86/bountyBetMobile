@@ -205,15 +205,28 @@ class _FantasyLeagueCardState extends State<FantasyLeagueCard> {
                 flex: 1,
                 child: Center(
                   child: fantasyLeague.creatorUserId == AppContext.user.mongoUserId
-                      ? ElevatedButton(
+                      ?
+                  ElevatedButton(
                     style: ElevatedButton.styleFrom(
                       foregroundColor: Colors.white,
                       backgroundColor: Colors.green.shade400,
                       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                     ),
-                    onPressed: () => canInviteExtraUsers ? _showInviteDialog(context) : widget.extraUsersAlertCallback.call(),
-                    child: const Text('Invite'),
+                    onPressed: () => canInviteExtraUsers
+                        ? _showInviteDialog(context)
+                        : widget.extraUsersAlertCallback.call(),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        if (!canInviteExtraUsers) ...[
+                          const Icon(Icons.lock, size: 16, color: Colors.white),
+                          const SizedBox(width: 4),
+                        ],
+                        const Text('Invite'),
+                      ],
+                    ),
                   )
+
                       : fantasyLeague.status == FantasyLeagueStatus.PENDING.statusCode ? const Text('⏳ Waiting for the league to start...') : const SizedBox(height:0),
                 ),
               ),
