@@ -76,6 +76,10 @@
 
        "topup_text" : "The selected credits can be used whenever you like. They will not affect your leaderboard position, until you place a bet (of any odd).",
 
+       "extra_leagues_text" : "Unlocking this feature gives you access to up to 10 championships for for fantasy league!",
+
+       "i_want_it_text" : "I want it",
+
         "topup_button_text" : "Top Up",
 
         "close" : "Close",

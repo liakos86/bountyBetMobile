@@ -8,8 +8,10 @@ import '../../models/FantasyLeague.dart';
 import '../../models/FantasyLeagueInvitation.dart';
 import '../../models/League.dart';
 import '../../models/constants/Constants.dart';
+import '../../models/constants/PurchaseConstants.dart';
 import '../../models/context/AppContext.dart';
 import '../../utils/StringUtils.dart';
+import '../dialog/DialogTextExtraLeagues.dart';
 import '../dialog/DialogWizardLeagueLeaguesStep2.dart';
 import '../row/FantasyLeaderBoardRow.dart';
 
@@ -19,6 +21,8 @@ class FantasyLeagueCard extends StatefulWidget {
   final Future<FantasyLeagueInvitation> Function(String email) onInviteEmail;
   final List<ProductDetails> products;
   final Function topUpCallback;
+  final Function() extraLeaguesAlertCallback;
+  final Function() extraUsersAlertCallback;
 
   const FantasyLeagueCard({
     Key? key,
@@ -27,6 +31,8 @@ class FantasyLeagueCard extends StatefulWidget {
     required this.onInviteEmail,
     required this.products,
     required this.topUpCallback,
+    required this.extraLeaguesAlertCallback,
+    required this.extraUsersAlertCallback,
   }) : super(key: key);
 
   @override
@@ -35,12 +41,15 @@ class FantasyLeagueCard extends StatefulWidget {
 
 class _FantasyLeagueCardState extends State<FantasyLeagueCard> {
 
+  // late Function extraLeaguesAlertCallback;
+
   List<ProductDetails> products = [];
 
   late Function topUpCallback;
 
   @override
   void initState(){
+    // extraLeaguesCallback = widget.extraLeaguesAlertCallback;
     topUpCallback = widget.topUpCallback;
     products = widget.products;
     super.initState();
@@ -63,6 +72,14 @@ class _FantasyLeagueCardState extends State<FantasyLeagueCard> {
       });
 
     }
+
+    bool canInviteExtraUsers = true;
+    if (fantasyLeague.users.length >= 5) {
+      canInviteExtraUsers =
+          AppContext.user.purchases.any((purchase) => purchase.productId ==
+              PurchaseConstants.extra_users);
+    }
+
 
     return Card(
       elevation: 6,
@@ -194,7 +211,7 @@ class _FantasyLeagueCardState extends State<FantasyLeagueCard> {
                       backgroundColor: Colors.green.shade400,
                       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                     ),
-                    onPressed: () => _showInviteDialog(context),
+                    onPressed: () => canInviteExtraUsers ? _showInviteDialog(context) : widget.extraUsersAlertCallback.call(),
                     child: const Text('Invite'),
                   )
                       : fantasyLeague.status == FantasyLeagueStatus.PENDING.statusCode ? const Text('⏳ Waiting for the league to start...') : const SizedBox(height:0),
@@ -372,12 +389,16 @@ class _FantasyLeagueCardState extends State<FantasyLeagueCard> {
       context: context,
       builder: (_) => DialogWizardLeagueLeaguesStep2(
         isEdit: true,
+        products: products,
+        alertDialogExtraLeagues: widget.extraLeaguesAlertCallback,
         leagueName: widget.fantasyLeague!.name,
         updateCallback: (a)=>{},
         initialSelectedLeagueIds: widget.fantasyLeague!.selectedLeagueIds,
       ),
     );
   }
+
+
 
 }
 

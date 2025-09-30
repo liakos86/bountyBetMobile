@@ -39,7 +39,7 @@ import '../models/match_event.dart';
 import '../utils/DateUtils.dart';
 import '../widgets/DialogUserRegistered.dart';
 import '../widgets/custom/FantasyTipsDrawer.dart';
-import '../widgets/dialog/DialogTextWithButtons.dart';
+import '../widgets/dialog/DialogTextTopUp.dart';
 import '../widgets/row/DialogProgressBarWithText.dart';
 import 'LeaderBoardPage.dart';
 import 'LivePage.dart';

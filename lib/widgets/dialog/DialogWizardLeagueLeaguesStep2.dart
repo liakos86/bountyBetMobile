@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:in_app_purchase_platform_interface/src/types/product_details.dart';
 
 import '../../models/FantasyLeague.dart';
 import '../../models/League.dart';
 import '../../models/constants/Constants.dart';
+import '../../models/constants/PurchaseConstants.dart';
 import '../../models/context/AppContext.dart';
 import '../../utils/client/HttpActionsClient.dart';
 import 'DialogWizardLeagueDatesStep3.dart';
@@ -12,14 +15,19 @@ class DialogWizardLeagueLeaguesStep2 extends StatefulWidget {
 
   final Function(FantasyLeague) updateCallback;
 
+  final Function() alertDialogExtraLeagues;
+
   final List<int> initialSelectedLeagueIds;
   final bool isEdit; // new flag
+  final List<ProductDetails> products;
 
   const DialogWizardLeagueLeaguesStep2({
     required this.leagueName,
     required this.updateCallback,
     this.initialSelectedLeagueIds = const [],
     this.isEdit = false,
+    required this.products,
+    required this.alertDialogExtraLeagues,
   });
 
 
@@ -30,23 +38,44 @@ class DialogWizardLeagueLeaguesStep2 extends StatefulWidget {
 class _LeagueSelectionDialogState extends State<DialogWizardLeagueLeaguesStep2> {
   late List<int> _selectedLeagueIds;
 
+  late int maxLeagues;
+
   // Function(FantasyLeague) updateCallback = (a)=>{};
 
   @override
   void initState() {
     super.initState();
     _selectedLeagueIds = List<int>.from(widget.initialSelectedLeagueIds);
-    // updateCallback = widget.updateCallback;
+    maxLeagues = 3;
+
+    bool hasExtraLeagues = AppContext.user.purchases.any((purchase) => purchase.productId == PurchaseConstants.extra_leagues);
+
+    if (hasExtraLeagues) {
+      maxLeagues = 10;
+    }
+
   }
 
 
   void _onLeagueTap(int id) {
     if (_selectedLeagueIds.contains(id)) return;
-    if (_selectedLeagueIds.length >= 10) return;
+    if (_selectedLeagueIds.length >= maxLeagues) {
+
+        Fluttertoast.showToast(
+          msg: "Unlock more leagues! Max leagues are $maxLeagues",
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.BOTTOM,
+          backgroundColor: Colors.black,
+          textColor: Colors.white,
+          fontSize: 14.0,
+        );
+      return;
+    }
 
     setState(() {
       _selectedLeagueIds.add(id);
     });
+
   }
 
   void _onDeselect(int id) {
@@ -57,12 +86,29 @@ class _LeagueSelectionDialogState extends State<DialogWizardLeagueLeaguesStep2> 
 
   Future<void> _onNext() async{
     if (_selectedLeagueIds.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Please select at least one league.")),
+      Fluttertoast.showToast(
+        msg: "Please select at least one league.",
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.BOTTOM,
+        backgroundColor: Colors.black,
+        textColor: Colors.white,
+        fontSize: 14.0,
       );
+
       return;
     }
 
+    if (_selectedLeagueIds.length > maxLeagues) {
+      Fluttertoast.showToast(
+        msg: "Max leagues are $maxLeagues",
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.BOTTOM,
+        backgroundColor: Colors.black,
+        textColor: Colors.white,
+        fontSize: 14.0,
+      );
+      return;
+    }
 
 
     if (!widget.isEdit) {
@@ -90,28 +136,84 @@ class _LeagueSelectionDialogState extends State<DialogWizardLeagueLeaguesStep2> 
 
 
     return AlertDialog(
-      title: Text("Step 2: Select Leagues"),
+      title:
+      //Column(
+        //mainAxisSize: MainAxisSize.max,
+        //children: [
+          const Text("Step 2: Select Leagues", style: TextStyle(fontSize: 22)),
+          // const SizedBox(width: 8),
+
+        // ],
+      // ),
       content: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
+
+          if (maxLeagues < 10)
+            Align(
+              alignment: Alignment.centerLeft,
+              child: TextButton.icon(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                  widget.alertDialogExtraLeagues.call();
+                },
+                icon: const Icon(Icons.lock_open),
+                label: const Text("Unlock leagues"),
+              ),
+            ),
+
+          if (maxLeagues == 10)
+            Align(
+              alignment: Alignment.centerLeft,
+              child: TextButton.icon(
+                onPressed: () {
+                  //nothing
+                },
+                icon: const Icon(Icons.lock),
+                label: const Text("Pro leagues enabled"),
+              ),
+            ),
+
           if (_selectedLeagueIds.isNotEmpty) ...[
             Align(
               alignment: Alignment.centerLeft,
               child: Text("Selected:", style: TextStyle(fontWeight: FontWeight.bold)),
             ),
-            SizedBox(height: 8),
-            Wrap(
-              spacing: 8,
+            const SizedBox(height: 8),
+            GridView.count(
+              shrinkWrap: true,
+              physics: NeverScrollableScrollPhysics(),
+              crossAxisCount: 2,
+              crossAxisSpacing: 4,
+              mainAxisSpacing: 4,
+              childAspectRatio: 3.5, // Adjust as needed
               children: _selectedLeagueIds.map((id) {
                 final league = allLeaguesMap[id]!;
                 return InputChip(
-                  avatar: CircleAvatar(backgroundImage: NetworkImage(league.logo ?? '')),
-                  label: Text(league.name),
+                  avatar: CircleAvatar(
+                    backgroundImage: NetworkImage(league.logo ?? ''),
+                  ),
+                  label: Text(
+                    league.name,
+                    overflow: TextOverflow.ellipsis, // Truncate long names
+                  ),
                   onDeleted: () => _onDeselect(id),
                 );
               }).toList(),
             ),
-            Divider(height: 20),
+
+            // Wrap(
+            //   spacing: 4,
+            //   children: _selectedLeagueIds.map((id) {
+            //     final league = allLeaguesMap[id]!;
+            //     return InputChip(
+            //       avatar: CircleAvatar(backgroundImage: NetworkImage(league.logo ?? '')),
+            //       label: Text(league.name),
+            //       onDeleted: () => _onDeselect(id),
+            //     );
+            //   }).toList(),
+            // ),
+            const Divider(height: 10),
           ],
           Expanded(
             child: ListView(

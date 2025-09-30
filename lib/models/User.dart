@@ -6,6 +6,7 @@ import 'FantasyLeague.dart';
 // import 'UserAward.dart';
 import 'UserFantasyLeagueBalance.dart';
 import 'UserMonthlyBalance.dart';
+import 'UserPurchase.dart';
 import 'constants/Constants.dart';
 
 class User implements Comparable<User>{
@@ -32,11 +33,11 @@ class User implements Comparable<User>{
 
   String errorMessage = Constants.empty;
 
-  // UserMonthlyBalance balance = UserMonthlyBalance.defBalance();
-
   UserFantasyLeagueBalance fantasyBalance = UserFantasyLeagueBalance.defBalance();
 
   List<UserMonthlyBalance> awards = <UserMonthlyBalance>[];
+
+  List<UserPurchase> purchases = <UserPurchase>[];
 
   UserLevel userLevel = UserLevel.bettingVisitor;
 
@@ -69,6 +70,15 @@ class User implements Comparable<User>{
 
     User user = User(parsedJson['mongoId'].toString(), parsedJson['username'].toString(), bets);
 
+    List<UserPurchase> purchases = <UserPurchase>[];
+    if (parsedJson['purchases'] != null){
+      purchases.addAll( (parsedJson['purchases'] as List)
+          .map((data) =>  UserPurchase.fromJson(data))
+          .toList()
+      );
+    }
+
+    user.purchases = purchases;
     user.validated = parsedJson['validated'] as bool;
     user.email = parsedJson['email'];
 
@@ -94,10 +104,6 @@ class User implements Comparable<User>{
     user.overallLostPredictions = parsedJson['overallLostEventsCount'];
 
     user.userLevel = UserLevel.ofLevelCode(parsedJson['level']);
-
-    // if(parsedJson['balanceObject'] != null) {
-    //   user.balance = UserMonthlyBalance.fromJson(parsedJson['balanceObject']);
-    // }
 
     if(parsedJson['fantasyLeagueBalanceObject'] != null) {
       user.fantasyBalance = UserFantasyLeagueBalance.fromJson(parsedJson['fantasyLeagueBalanceObject']);
@@ -197,6 +203,7 @@ class User implements Comparable<User>{
     // userBets = u.userBets;
     copyBets(u.userBets);
     copyAwards(u.awards);
+    copyPurchases(u.purchases);
 
 
     if (u.fantasyBalance.mongoId != Constants.defMongoId) {
@@ -259,6 +266,24 @@ class User implements Comparable<User>{
       UserMonthlyBalance existing = awards.firstWhere((element) => element.mongoId == incoming.mongoId , orElse: () => UserMonthlyBalance.defBalance());
       if (existing.mongoId == Constants.defMongoId){
         awards.add(incoming);
+      }
+    }
+  }
+
+  void copyPurchases(List<UserPurchase> incomingPurchases) {
+    for (UserPurchase purchase in List.of(purchases)){
+      UserPurchase incoming = incomingPurchases.firstWhere((element) => element.mongoId == purchase.mongoId , orElse: () => UserPurchase.def());
+      if (incoming.mongoId == Constants.defMongoId){
+        purchases.remove(purchase);
+      }else{
+        purchase.copyFrom(incoming);
+      }
+    }
+
+    for (UserPurchase incoming in incomingPurchases){
+      UserPurchase existing = purchases.firstWhere((element) => element.mongoId == incoming.mongoId , orElse: () => UserPurchase.def());
+      if (existing.mongoId == Constants.defMongoId){
+        purchases.add(incoming);
       }
     }
   }

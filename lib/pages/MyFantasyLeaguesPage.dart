@@ -26,7 +26,9 @@ import '../models/constants/PurchaseConstants.dart';
 import '../widgets/custom/FantasyLeagueCard.dart';
 import '../widgets/custom/FantasyLeagueCompletedCard.dart';
 import '../widgets/dialog/DialogFantasyLeagueWinner.dart';
-import '../widgets/dialog/DialogTextWithButtons.dart';
+import '../widgets/dialog/DialogTextExtraLeagues.dart';
+import '../widgets/dialog/DialogTextExtraUsers.dart';
+import '../widgets/dialog/DialogTextTopUp.dart';
 import '../widgets/row/FantasyLeagueInvitationRow.dart';
 import '../widgets/dialog/DialogWizardLeagueNameStep1.dart';
 
@@ -247,7 +249,10 @@ class MyFantasyLeaguesPageState extends State<MyFantasyLeaguesPage>  with Single
                           context: context,
                           barrierDismissible: false,
                           builder: (_) =>
-                              DialogWizardLeagueNameStep1(updateCallback: update),
+                              DialogWizardLeagueNameStep1(
+                                  updateCallback: update,
+                                  alertDialogExtraLeaguesCallback: alertDialogExtraLeagues,
+                                  products: products),
                         );
                       },
                       style: ElevatedButton.styleFrom(
@@ -270,6 +275,8 @@ class MyFantasyLeaguesPageState extends State<MyFantasyLeaguesPage>  with Single
         FantasyLeagueCard(
           fantasyLeague: fantasyLeague,
           topUpCallback: promptDialogTopup,
+          extraLeaguesAlertCallback: alertDialogExtraLeagues,
+          extraUsersAlertCallback: alertDialogExtraUsers,
           key: fantasyLeagueKey,
           products: products,
           onOptOut: () {
@@ -479,6 +486,10 @@ class MyFantasyLeaguesPageState extends State<MyFantasyLeaguesPage>  with Single
 
     completedFantasyLeagues.sort();
 
+    if (!mounted){
+      return;
+    }
+
     setState(() {
       // leagueFetched = true;
       invitations;
@@ -569,6 +580,60 @@ class MyFantasyLeaguesPageState extends State<MyFantasyLeaguesPage>  with Single
     buyProduct(selected);
   }
 
+  void promptDialogExtraLeagues() {
+    if (products.isEmpty){
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+        content: Text('No products available'), showCloseIcon: true, duration: Duration(seconds: 5),
+      ));
+
+      return;
+    }
+
+    ProductDetails? selected;
+    for(ProductDetails product in products) {
+      if (PurchaseConstants.extra_leagues == product.id) {
+        selected = product;
+      }
+    }
+
+    if (selected == null) {
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+        content: Text('Product not found ${PurchaseConstants.extra_leagues}'), showCloseIcon: true, duration: Duration(seconds: 5),
+      ));
+
+      return;
+    }
+
+    buyProduct(selected);
+  }
+
+  void promptDialogExtraUsers() {
+    if (products.isEmpty){
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+        content: Text('No products available'), showCloseIcon: true, duration: Duration(seconds: 5),
+      ));
+
+      return;
+    }
+
+    ProductDetails? selected;
+    for(ProductDetails product in products) {
+      if (PurchaseConstants.extra_users == product.id) {
+        selected = product;
+      }
+    }
+
+    if (selected == null) {
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+        content: Text('Product not found ${PurchaseConstants.extra_users}'), showCloseIcon: true, duration: Duration(seconds: 5),
+      ));
+
+      return;
+    }
+
+    buyProduct(selected);
+  }
+
   Future<void> _initializeInAppPurchases() async {
     final bool isAvailable = await inAppPurchase.isAvailable();
 
@@ -605,7 +670,9 @@ class MyFantasyLeaguesPageState extends State<MyFantasyLeaguesPage>  with Single
           final InAppPurchaseAndroidPlatformAddition  androidAddition =
           inAppPurchase.getPlatformAddition<InAppPurchaseAndroidPlatformAddition>();
 
-          await androidAddition.consumePurchase(purchaseDetails);
+          if (purchaseDetails.productID != PurchaseConstants.extra_leagues && purchaseDetails.productID != PurchaseConstants.extra_users) {
+            await androidAddition.consumePurchase(purchaseDetails);
+          }
 
         }
       } else if (purchaseDetails.status == PurchaseStatus.error) {
@@ -632,7 +699,9 @@ class MyFantasyLeaguesPageState extends State<MyFantasyLeaguesPage>  with Single
         final InAppPurchaseAndroidPlatformAddition  androidAddition =
         inAppPurchase.getPlatformAddition<InAppPurchaseAndroidPlatformAddition>();
 
-        await androidAddition.consumePurchase(purchaseDetails);
+        if (purchaseDetails.productID != PurchaseConstants.extra_leagues && purchaseDetails.productID != PurchaseConstants.extra_users) {
+          await androidAddition.consumePurchase(purchaseDetails);
+        }
 
         setState(() {
           for (var u in fantasyLeague.users) {
@@ -642,6 +711,11 @@ class MyFantasyLeaguesPageState extends State<MyFantasyLeaguesPage>  with Single
         );
 
       } else {
+
+        if (purchaseDetails.productID == PurchaseConstants.extra_leagues || purchaseDetails.productID == PurchaseConstants.extra_users) {
+          //TODO: ALERt SUCCESS
+          return;
+        }
 
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar( SnackBar(
@@ -667,7 +741,12 @@ class MyFantasyLeaguesPageState extends State<MyFantasyLeaguesPage>  with Single
 
   void buyProduct(ProductDetails productDetails) {
     final PurchaseParam purchaseParam = PurchaseParam(productDetails: productDetails);
-    inAppPurchase.buyConsumable(purchaseParam: purchaseParam, autoConsume: false);
+
+    if (productDetails.id == PurchaseConstants.extra_leagues || productDetails.id == PurchaseConstants.extra_users){
+      inAppPurchase.buyNonConsumable(purchaseParam: purchaseParam);
+    }else {
+      inAppPurchase.buyConsumable(purchaseParam: purchaseParam, autoConsume: false);
+    }
   }
 
   Future<double?> sendPurchaseToServer(PurchaseDetails purchase) async {
@@ -765,7 +844,19 @@ class MyFantasyLeaguesPageState extends State<MyFantasyLeaguesPage>  with Single
   Future<FantasyLeagueInvitation> inviteUserByEmail(String email)async{
     FantasyLeagueInvitation invitation = FantasyLeagueInvitation(email: email);
     invitation = await HttpActionsClient.createFantasyLeagueInvitation(invitation);
-    print('Invited: $email');
+    // print('Invited: $email');
     return invitation;
+  }
+
+  void alertDialogExtraLeagues() {
+    showDialog(context: context, builder: (context) =>
+        DialogTextExtraLeagues(extraLeaguesCallback: promptDialogExtraLeagues)
+    );
+  }
+
+  void alertDialogExtraUsers() {
+    showDialog(context: context, builder: (context) =>
+        DialogTextExtraUsers(extraUsersCallback: promptDialogExtraUsers)
+    );
   }
 }

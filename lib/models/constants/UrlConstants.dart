@@ -8,7 +8,7 @@ class UrlConstants{
 
   static const SRV_VERSION = "fantasyTips";
 
-  static const SERVER_IP = "http://" + SERVER_IP_PLAIN + "/";// ":8080/";//'http://192.168.43.17:8080/';  // for mobile hotspot
+  static const SERVER_IP = "https://" + SERVER_IP_PLAIN + "/";// ":8080/";//'http://192.168.43.17:8080/';  // for mobile hotspot
 
   static const String AUTH = SERVER_IP +  SRV_VERSION + '/rest/authorize';
   static const String GET_LEAGUE_EVENTS = SERVER_IP +  SRV_VERSION + '/rest/getLeagueEvents';

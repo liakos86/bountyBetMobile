@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:in_app_purchase_platform_interface/src/types/product_details.dart';
 
 import '../../models/FantasyLeague.dart';
 import 'DialogWizardLeagueLeaguesStep2.dart';
@@ -8,7 +9,11 @@ class DialogWizardLeagueNameStep1 extends StatefulWidget {
 
   final Function(FantasyLeague) updateCallback;
 
-  DialogWizardLeagueNameStep1({Key? key, required this.updateCallback}) : super (key: key);
+  final Function() alertDialogExtraLeaguesCallback;
+
+  final List<ProductDetails> products;
+
+  DialogWizardLeagueNameStep1({Key? key, required this.updateCallback, required this.products, required this.alertDialogExtraLeaguesCallback}) : super (key: key);
 
 
 
@@ -37,7 +42,7 @@ class _LeagueNameDialogState extends State<DialogWizardLeagueNameStep1> {
     } else {
       // Proceed to next step, pass name along
       Navigator.of(context).pop(); // Close this dialog
-      _showNextStep(context, name); // Open next dialog
+      _showNextStep(context, name, widget.products); // Open next dialog
     }
   }
 
@@ -72,11 +77,11 @@ class _LeagueNameDialogState extends State<DialogWizardLeagueNameStep1> {
     );
   }
 
-  void _showNextStep(BuildContext context, String name) {
+  void _showNextStep(BuildContext context, String name, List<ProductDetails> products) {
     showDialog(
       context: context,
       barrierDismissible: false,
-      builder: (_) => DialogWizardLeagueLeaguesStep2(leagueName: name, updateCallback: widget.updateCallback),
+      builder: (_) => DialogWizardLeagueLeaguesStep2(leagueName: name, updateCallback: widget.updateCallback, products: products, alertDialogExtraLeagues: widget.alertDialogExtraLeaguesCallback,),
     );
   }
 

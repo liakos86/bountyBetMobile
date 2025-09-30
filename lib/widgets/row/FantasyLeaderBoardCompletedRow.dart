@@ -7,7 +7,7 @@ import '../../models/constants/Constants.dart';
 import '../../models/context/AppContext.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
-import '../dialog/DialogTextWithButtons.dart';
+import '../dialog/DialogTextTopUp.dart';
 
 
 class FantasyLeaderBoardCompletedRow extends StatefulWidget {

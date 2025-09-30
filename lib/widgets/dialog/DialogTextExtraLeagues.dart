@@ -5,11 +5,11 @@ import 'package:flutter_app/models/constants/PurchaseConstants.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 
-class DialogTextWithButtons extends StatelessWidget{//} StatefulWidget {
+class DialogTextExtraLeagues extends StatelessWidget{//} StatefulWidget {
 
-  final Function topUpCallback;
+  final Function extraLeaguesCallback;
 
-  const DialogTextWithButtons({super.key, required this.topUpCallback});
+  const DialogTextExtraLeagues({super.key, required this.extraLeaguesCallback});
 
     @override
     Widget build(BuildContext context) {
@@ -36,7 +36,7 @@ class DialogTextWithButtons extends StatelessWidget{//} StatefulWidget {
             children: [
 
               Text(
-                AppLocalizations.of(context)!.topup_text,
+                AppLocalizations.of(context)!.extra_leagues_text,
                 style: const TextStyle(fontSize: 16.0),
               ),
               const SizedBox(height: 20.0),
@@ -50,8 +50,8 @@ class DialogTextWithButtons extends StatelessWidget{//} StatefulWidget {
               ElevatedButton(
                 onPressed: () {
                   // Handle button press
+                  extraLeaguesCallback.call();
                   Navigator.pop(context);
-                  topUpCallback.call(PurchaseConstants.topup1000);
                 },
                 style: ElevatedButton.styleFrom(
                   foregroundColor: Colors.white, backgroundColor: Colors.red[400],  // Text color
@@ -62,7 +62,7 @@ class DialogTextWithButtons extends StatelessWidget{//} StatefulWidget {
                 ),
                 child: Text(
 
-                  '${AppLocalizations.of(context)!.topup_button_text} 1000',
+                  '${AppLocalizations.of(context)!.i_want_it_text} ',
                   maxLines: 1,
                   style: const TextStyle(
 
@@ -73,32 +73,6 @@ class DialogTextWithButtons extends StatelessWidget{//} StatefulWidget {
                 ),
               )),
 
-                  const SizedBox(width: 4),
-
-                  Expanded(flex:1, child:
-                  ElevatedButton(
-                    onPressed: () {
-                      // Handle button press
-                      Navigator.pop(context);
-                      topUpCallback.call(PurchaseConstants.topup3000);
-                    },
-                    style: ElevatedButton.styleFrom(
-                      foregroundColor: Colors.white, backgroundColor: Colors.red[400],  // Text color
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(20), // Rounded radius
-                      ),
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8), // Button size
-                    ),
-                    child: Text(
-                      '${AppLocalizations.of(context)!.topup_button_text} 3000',
-                      maxLines: 1,
-                      style: const TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.bold,
-                          fontStyle: FontStyle.italic
-                      ),
-                    ),
-                  )),
 
                   ]
               ),

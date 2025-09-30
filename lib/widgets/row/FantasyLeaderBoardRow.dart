@@ -7,7 +7,7 @@ import '../../models/constants/Constants.dart';
 import '../../models/context/AppContext.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
-import '../dialog/DialogTextWithButtons.dart';
+import '../dialog/DialogTextTopUp.dart';
 
 
 class FantasyLeaderboardRow extends StatefulWidget {
@@ -174,7 +174,7 @@ class _FantasyLeaderboardRowState extends State<FantasyLeaderboardRow> {
 
   void alertDialogTopUp() {
     showDialog(context: context, builder: (context) =>
-        DialogTextWithButtons(topUpCallback: topUpCallback)
+        DialogTextTopUp(topUpCallback: topUpCallback)
     );
   }
 }
