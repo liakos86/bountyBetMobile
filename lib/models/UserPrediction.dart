@@ -106,4 +106,7 @@ class UserPrediction{
     homeScore = incoming.homeScore;
   }
 
+  static int compareByValueDescending(UserPrediction a, UserPrediction b) {
+    return b.value.compareTo(a.value); // Descending order
+  }
 }

@@ -7,7 +7,6 @@ import 'package:flutter_app/enums/BetPredictionType.dart';
 import 'package:flutter_app/enums/WinnerType.dart';
 import 'package:flutter_app/widgets/LogoWithName.dart';
 
-import '../../enums/Sport.dart';
 import '../../models/UserPrediction.dart';
 import '../../models/constants/ColorConstants.dart';
 
