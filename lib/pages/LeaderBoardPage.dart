@@ -9,7 +9,9 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 
 import '../models/User.dart';
+import '../models/UserBet.dart';
 import '../models/UserMonthlyBalance.dart';
+import '../models/UserPrediction.dart';
 import '../models/constants/ColorConstants.dart';
 import '../models/constants/Constants.dart';
 import '../widgets/row/GlobalLeaderBoardRow.dart';
@@ -364,6 +366,9 @@ class LeaderBoardPageState extends State<LeaderBoardPage> with SingleTickerProvi
       }
 
 
+      for (var l in leaders) {
+        l.userBets.sort();
+      }
       setState(() {
         leaders;
       });
@@ -386,7 +391,7 @@ class LeaderBoardPageState extends State<LeaderBoardPage> with SingleTickerProvi
 
 
     return GlobalLeaderboardRow(user: user, position: item, key: PageStorageKey<String>(key));
-    return LeaderBoardUserFullInfoRow(user: user, isCurrentLeaderBoard: false, isLeaderBoardWinner: false, key: PageStorageKey<String>(key));
+    //return LeaderBoardUserFullInfoRow(user: user, isCurrentLeaderBoard: false, isLeaderBoardWinner: false, key: PageStorageKey<String>(key));
   }
 
 }

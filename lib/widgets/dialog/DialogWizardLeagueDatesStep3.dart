@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl/intl.dart';
 
 import '../../models/FantasyLeague.dart';
@@ -27,7 +28,7 @@ class DialogWizardLeagueDatesStep3 extends StatefulWidget {
 class _DialogWizardLeagueDatesStep3State extends State<DialogWizardLeagueDatesStep3> {
   DateTime? _start;
   DateTime? _end;
-  String? _error;
+  // String? _error;
 
   // final DateTime _now = DateTime.now();
   final DateTime _now = DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day, 0, 0);
@@ -79,18 +80,37 @@ class _DialogWizardLeagueDatesStep3State extends State<DialogWizardLeagueDatesSt
   }
 
   void _onNext() {
-    setState(() => _error = null);
+   // setState(() => _error = null);
 
     if (_start == null || _end == null) {
-      _error = "Please select both start and end dates.";
+      Fluttertoast.showToast(
+        msg: "Please select both start and end dates",
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.BOTTOM,
+        backgroundColor: Colors.black,
+        textColor: Colors.white,
+        fontSize: 14.0,
+      );
+      return;
     } else if (_start!.isBefore(_now)) {
-      _error = "Start date cannot be before today.";
+      Fluttertoast.showToast(
+        msg: "Start date cannot be before today",
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.BOTTOM,
+        backgroundColor: Colors.black,
+        textColor: Colors.white,
+        fontSize: 14.0,
+      );
+      return;
     } else if (!_isEndValid(_start!, _end!)) {
-      _error = "End date must be after start and within 1 year.";
-    }
-
-    if (_error != null) {
-      setState(() {}); // Show error
+      Fluttertoast.showToast(
+        msg: "End date must be after start and within 1 year",
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.BOTTOM,
+        backgroundColor: Colors.black,
+        textColor: Colors.white,
+        fontSize: 14.0,
+      );
       return;
     }
 
@@ -155,10 +175,10 @@ class _DialogWizardLeagueDatesStep3State extends State<DialogWizardLeagueDatesSt
               ),
             ],
           ),
-          if (_error != null) ...[
-            SizedBox(height: 16),
-            Text(_error!, style: TextStyle(color: Colors.red)),
-          ]
+          // if (_error != null) ...[
+          //   SizedBox(height: 16),
+          //   Text(_error!, style: TextStyle(color: Colors.red)),
+          // ]
         ],
       ),
       actions: [

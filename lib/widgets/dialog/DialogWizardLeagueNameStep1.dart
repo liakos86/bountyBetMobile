@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:in_app_purchase_platform_interface/src/types/product_details.dart';
 
 import '../../models/FantasyLeague.dart';
@@ -24,7 +25,7 @@ class DialogWizardLeagueNameStep1 extends StatefulWidget {
 
 class _LeagueNameDialogState extends State<DialogWizardLeagueNameStep1> {
   final TextEditingController _nameController = TextEditingController();
-  String? _error;
+  //String? _error;
   // Function(FantasyLeague) updateCallback = (a)=>{} ;
 
   // @override
@@ -35,10 +36,16 @@ class _LeagueNameDialogState extends State<DialogWizardLeagueNameStep1> {
 
   void _onNext() {
     final name = _nameController.text.trim();
-    if (name.isEmpty) {
-      setState(() => _error = "Name is required.");
-    } else if (name.length > 50) {
-      setState(() => _error = "Name cannot exceed 50 characters.");
+    if (name.isEmpty || name.length > 50 || name.length < 3) {
+      Fluttertoast.showToast(
+        msg: "Name must be between 3 and 50 characters",
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.BOTTOM,
+        backgroundColor: Colors.black,
+        textColor: Colors.white,
+        fontSize: 14.0,
+      );
+
     } else {
       // Proceed to next step, pass name along
       Navigator.of(context).pop(); // Close this dialog
@@ -56,9 +63,9 @@ class _LeagueNameDialogState extends State<DialogWizardLeagueNameStep1> {
           TextField(
             controller: _nameController,
             maxLength: 50,
-            decoration: InputDecoration(
+            decoration: const InputDecoration(
               labelText: "League Name",
-              errorText: _error,
+              //errorText: _error,
               border: OutlineInputBorder(),
             ),
           ),

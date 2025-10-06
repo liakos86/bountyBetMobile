@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
 
 import '../../models/User.dart';
+import '../../models/UserBet.dart';
+import '../../models/UserPrediction.dart';
 import '../../models/context/AppContext.dart';
+import '../../models/match_event.dart';
+import 'UserPastPredictionCompact.dart';
 
 
 
@@ -20,6 +24,7 @@ class GlobalLeaderboardRow extends StatefulWidget {
 class _GlobalLeaderboardRowState extends State<GlobalLeaderboardRow> {
   late User _user;
   late int position;
+  UserPrediction? lastPrediction;
 
   @override
   void initState() {
@@ -72,66 +77,84 @@ class _GlobalLeaderboardRowState extends State<GlobalLeaderboardRow> {
 
   @override
   Widget build(BuildContext context) {
+    UserBet? lastBet = _user.userBets.isNotEmpty ? _user.userBets[0] : null;
 
-
+    // MatchEvent? lastEvent;
+    if (lastBet != null && lastBet.predictions.isNotEmpty) {
+      lastBet.predictions.sort(UserPrediction.compareByValueDescending);
+      lastPrediction = lastBet.predictions[0];
+      // lastEvent = lastPrediction!.event; // Make sure this is correctly set from your model
+    }
 
     return Card(
       color: AppContext.user.mongoUserId == _user.mongoUserId ? Colors.blue[50] : Colors.white,
       margin: const EdgeInsets.symmetric(horizontal: 2, vertical: 4),
       child: Padding(
-        padding: const EdgeInsets.all(12),
-        child: Row(
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Rank and movement
-            Column(
+
+            /// Main user row
+            Row(
               children: [
-                Text(
-                  // '#${_user.fantasyBalance.position}',
-                  '#$position',
-                  style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                // Rank and movement
+                Column(
+                  children: [
+                    Text(
+                      '#$position',
+                      style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                    ),
+                    const SizedBox(height: 4),
+                    _buildAnimatedDeltaIcon(_user.positionDelta),
+                  ],
                 ),
-                const SizedBox(height: 4),
-                _buildAnimatedDeltaIcon(_user.positionDelta),
+                const SizedBox(width: 16),
+
+                // Username and balance
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(_user.username,
+                          maxLines: 1,
+                          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
+                      Text(_user.betSlipsPercentageText(),
+                          maxLines: 1,
+                          style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w400)),
+                    ],
+                  ),
+                ),
+
+                // Stats (wins/losses)
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    Text('✅ Bets: ${_user.overallWonBets}, Preds: ${_user.overallWonPredictions}',
+                        style: const TextStyle(fontSize: 12)),
+                    Text('❌ Bets: ${_user.overallLostBets}, Preds: ${_user.overallLostPredictions}',
+                        style: const TextStyle(fontSize: 12)),
+                    Text('ROI%: ${_user.overallROIPercentageText()}, Ret:${_user.overallROIAmountText()}',
+                        style: const TextStyle(fontSize: 12)),
+                  ],
+                ),
               ],
             ),
-            const SizedBox(width: 16),
 
-            // Username and balance
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(_user.username,
-                      maxLines:1,
-                      style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
+            /// Spacer
+            if (lastPrediction != null ) const SizedBox(height: 6),
 
-                  Text(_user.betSlipsPercentageText(),
-                      maxLines:1,
-                      style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w400)),
-
-                ],
+            /// UserPredictionCardCompact
+            if (lastPrediction != null )
+              UserPastPredictionCompact(
+                prediction: lastPrediction!,
+                // event: lastEvent,
               ),
-            ),
-
-            // Stats (wins/losses)
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.end,
-              children: [
-                Text(
-                    '✅ Bets: ${_user.overallWonBets}, Preds: ${_user.overallWonPredictions}',
-                    style: const TextStyle(fontSize: 12)),
-                Text(
-                    '❌ Bets: ${_user.overallLostBets}, Preds: ${_user.overallLostPredictions}',
-                    style: const TextStyle(fontSize: 12)),
-                Text(
-                    'ROI%: ${_user.overallROIPercentageText()}, Ret:${_user.overallROIAmountText()}',
-                    style: const TextStyle(fontSize: 12)),
-              ],
-            ),
           ],
         ),
       ),
     );
   }
+
 
 }

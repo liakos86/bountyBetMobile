@@ -73,11 +73,14 @@ class _FantasyLeagueCardState extends State<FantasyLeagueCard> {
 
     }
 
-    bool canInviteExtraUsers = true;
-    if (fantasyLeague.users.length >= 5) {
-      canInviteExtraUsers =
-          AppContext.user.purchases.any((purchase) => purchase.productId ==
-              PurchaseConstants.extra_users);
+    bool shouldAlertExtraUsers = false;
+    if (fantasyLeague.users.length >= 5
+        && fantasyLeague.users.length <= 10) {
+        shouldAlertExtraUsers =
+        !AppContext.user.purchases.any((purchase) =>
+        purchase.productId ==
+            PurchaseConstants.extra_users);
+
     }
 
 
@@ -200,7 +203,8 @@ class _FantasyLeagueCardState extends State<FantasyLeagueCard> {
               ),
             ),
             if (//fantasyLeague.invitations.isNotEmpty && //not empty due to admin user handled as invitation
-                (fantasyLeague.status == FantasyLeagueStatus.PENDING.statusCode || fantasyLeague.status == FantasyLeagueStatus.RUNNING.statusCode))
+                (fantasyLeague.users.length <10
+                    && (fantasyLeague.status == FantasyLeagueStatus.PENDING.statusCode || fantasyLeague.status == FantasyLeagueStatus.RUNNING.statusCode)))
               Expanded(
                 flex: 1,
                 child: Center(
@@ -212,13 +216,13 @@ class _FantasyLeagueCardState extends State<FantasyLeagueCard> {
                       backgroundColor: Colors.green.shade400,
                       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                     ),
-                    onPressed: () => canInviteExtraUsers
-                        ? _showInviteDialog(context)
-                        : widget.extraUsersAlertCallback.call(),
+                    onPressed: () => shouldAlertExtraUsers
+                        ? widget.extraUsersAlertCallback.call()
+                        : _showInviteDialog(context),
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        if (!canInviteExtraUsers) ...[
+                        if (shouldAlertExtraUsers) ...[
                           const Icon(Icons.lock, size: 16, color: Colors.white),
                           const SizedBox(width: 4),
                         ],
