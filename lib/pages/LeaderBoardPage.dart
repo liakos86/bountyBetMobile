@@ -15,6 +15,7 @@ import '../models/UserPrediction.dart';
 import '../models/constants/ColorConstants.dart';
 import '../models/constants/Constants.dart';
 import '../widgets/row/GlobalLeaderBoardRow.dart';
+import '../widgets/row/GlobalMonthLeaderBoardRow.dart';
 import 'LivePage.dart';
 
 
@@ -181,7 +182,7 @@ class LeaderBoardPageState extends State<LeaderBoardPage> with SingleTickerProvi
                             Text(
                               AppLocalizations.of(context)!.empty_list,
                                 style: const TextStyle(
-                                fontSize: 16,
+                                fontSize: 14,
                                 fontWeight: FontWeight.bold,
                                 color: Color(ColorConstants.my_dark_grey),
                               ),
@@ -378,20 +379,20 @@ class LeaderBoardPageState extends State<LeaderBoardPage> with SingleTickerProvi
 
 
   Widget _buildUserRow(User leader, int item, bool isCurrentLeaderBoard, bool isCurrentLeaderBoardWinner, String key) {
-    return GlobalLeaderboardRow(user: leader, position: item+1, key: PageStorageKey<String>(key));
+    return GlobalLeaderboardRow(user: leader, key: PageStorageKey<String>(key));
     // return LeaderBoardUserFullInfoRow(user: leader, isCurrentLeaderBoard: isCurrentLeaderBoard, isLeaderBoardWinner: isCurrentLeaderBoardWinner, key: PageStorageKey<String>(key));
 
   }
 
-  Widget _buildBalanceRow(int item, UserMonthlyBalance balance, String key) {
-    User user = User.defUser();
-    user.mongoUserId = AppContext.user.mongoUserId;
-    user.username = AppContext.user.username;
-    // user.balance = balance;
-
-
-    return GlobalLeaderboardRow(user: user, position: item, key: PageStorageKey<String>(key));
-    //return LeaderBoardUserFullInfoRow(user: user, isCurrentLeaderBoard: false, isLeaderBoardWinner: false, key: PageStorageKey<String>(key));
-  }
+  // Widget _buildBalanceRow(int item, UserMonthlyBalance balance, String key) {
+  //   User user = User.defUser();
+  //   user.mongoUserId = AppContext.user.mongoUserId;
+  //   user.username = AppContext.user.username;
+  //   // user.balance = balance;
+  //
+  //
+  //   return GlobalLeaderboardRow(user: user, position: item, key: PageStorageKey<String>(key));
+  //   //return LeaderBoardUserFullInfoRow(user: user, isCurrentLeaderBoard: false, isLeaderBoardWinner: false, key: PageStorageKey<String>(key));
+  // }
 
 }

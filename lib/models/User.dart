@@ -49,6 +49,8 @@ class User implements Comparable<User>{
   double betAmountOverall = 0;
   double betAmountOverallReturned = 0;
 
+  double overallRoi = 0;
+  double currentMonthRoi = 0;
 
   List<UserBet> userBets = <UserBet>[];
 
@@ -90,6 +92,13 @@ class User implements Comparable<User>{
       user.passwordReset = parsedJson['passwordReset'] as bool;
     }
 
+    if(parsedJson['currentMonthRoi'] != null) {
+      user.currentMonthRoi = parsedJson['currentMonthRoi'] as double;
+    }
+
+    if(parsedJson['overallRoi'] != null) {
+      user.overallRoi = parsedJson['overallRoi'] as double;
+    }
 
     user.betAmountOverall = parsedJson['overallBetAmount']??0;
     user.betAmountOverallReturned = parsedJson['overallBetAmountReturned']??0;
@@ -98,10 +107,10 @@ class User implements Comparable<User>{
     user.positionDelta = parsedJson['positionDelta']??0;
     user.totalUsers = parsedJson['totalUsers']??0;
 
-    user.overallWonBets = parsedJson['overallWonSlipsCount'];
-    user.overallWonPredictions = parsedJson['overallWonEventsCount'];
-    user.overallLostBets = parsedJson['overallLostSlipsCount'];
-    user.overallLostPredictions = parsedJson['overallLostEventsCount'];
+    user.overallWonBets = parsedJson['overallWonSlipsCount']??0;
+    user.overallWonPredictions = parsedJson['overallWonEventsCount']??0;
+    user.overallLostBets = parsedJson['overallLostSlipsCount']??0;
+    user.overallLostPredictions = parsedJson['overallLostEventsCount']??0;
 
     user.userLevel = UserLevel.ofLevelCode(parsedJson['level']);
 
@@ -185,6 +194,8 @@ class User implements Comparable<User>{
   void deepCopyFrom(User u) {
     // userPosition = u.userPosition;
     email = u.email;
+    currentMonthRoi = u.currentMonthRoi;
+    overallRoi = u.overallRoi;
     validated = u.validated;
     passwordReset = u.passwordReset;
     username = u.username;
@@ -222,12 +233,12 @@ class User implements Comparable<User>{
 
   @override
   int compareTo(User other) {
-    if (this.overallWonBets > other.overallWonBets){//if (this.userPosition > other.userPosition){
-      return -1;
+    if (this.globalPosition > other.globalPosition){//if (this.userPosition > other.userPosition){
+      return 1;
     }
 
-    if (this.overallWonBets < other.overallWonBets){
-      return 1;
+    if (this.globalPosition < other.globalPosition){
+      return -1;
     }
 
     return 0;

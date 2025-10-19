@@ -3,11 +3,14 @@ import 'package:in_app_purchase/in_app_purchase.dart';
 import 'package:intl/intl.dart';
 
 import '../../models/User.dart';
+import '../../models/UserBet.dart';
+import '../../models/UserPrediction.dart';
 import '../../models/constants/Constants.dart';
 import '../../models/context/AppContext.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import '../dialog/DialogTextTopUp.dart';
+import 'UserPastPredictionCompact.dart';
 
 
 class FantasyLeaderboardRow extends StatefulWidget {
@@ -30,8 +33,7 @@ class _FantasyLeaderboardRowState extends State<FantasyLeaderboardRow> {
   late int position;
   List<ProductDetails> products = [];
   late Function topUpCallback;
-  // late UserFantasyLeagueBalance _fb;
-  //final NumberFormat _formatter = NumberFormat.compactCurrency(symbol: '\$');
+  UserPrediction? lastPrediction;
 
   @override
   void initState() {
@@ -40,7 +42,7 @@ class _FantasyLeaderboardRowState extends State<FantasyLeaderboardRow> {
     _user = widget.user;
     position = widget.position;
     products = widget.products;
-    // _fb = _user.fantasyBalance;
+    _prepareLastPrediction(); // 👈 add this
   }
 
   @override
@@ -50,7 +52,7 @@ class _FantasyLeaderboardRowState extends State<FantasyLeaderboardRow> {
       setState(() {
         _user = widget.user;
         position = widget.position;
-        // _fb = _user.fantasyBalance;
+        _prepareLastPrediction(); // 👈 add this
       });
     }
   }
@@ -95,7 +97,13 @@ class _FantasyLeaderboardRowState extends State<FantasyLeaderboardRow> {
       margin: const EdgeInsets.symmetric(horizontal: 2, vertical: 4),
       child: Padding(
         padding: const EdgeInsets.all(12),
-        child: Row(
+        child:
+
+       Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+
+        Row(
           children: [
             // Rank and movement
             Column(
@@ -152,23 +160,73 @@ class _FantasyLeaderboardRowState extends State<FantasyLeaderboardRow> {
 
 
             // Stats (wins/losses)
+            // Column(
+            //   crossAxisAlignment: CrossAxisAlignment.end,
+            //   children: [
+            //     Text(
+            //         '✅ Bets: ${_user.fantasyBalance.overallWonBets}, Preds: ${_user.fantasyBalance.overallWonPredictions}',
+            //         style: const TextStyle(fontSize: 12)),
+            //     Text(
+            //         '❌ Bets: ${_user.fantasyBalance.overallLostBets}, Preds: ${_user.fantasyBalance.overallLostPredictions}',
+            //         style: const TextStyle(fontSize: 12)),
+            //     Text(
+            //         'ROI%: ${_user.fantasyBalance.percentageROIText()}, Ret:${_user.fantasyBalance.amountROIText()}',
+            //         style: const TextStyle(fontSize: 12)),
+            //   ],
+            // ),
+
+
             Column(
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
-                Text(
-                    '✅ Bets: ${_user.fantasyBalance.overallWonBets}, Preds: ${_user.fantasyBalance.overallWonPredictions}',
-                    style: const TextStyle(fontSize: 12)),
-                Text(
-                    '❌ Bets: ${_user.fantasyBalance.overallLostBets}, Preds: ${_user.fantasyBalance.overallLostPredictions}',
-                    style: const TextStyle(fontSize: 12)),
-                Text(
-                    'ROI%: ${_user.fantasyBalance.percentageROIText()}, Ret:${_user.fantasyBalance.amountROIText()}',
-                    style: const TextStyle(fontSize: 12)),
+                Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Icon(Icons.check_circle, color: Colors.green, size: 16),
+                    const SizedBox(width: 4),
+                    Text(
+                        'Bets: ${_user.fantasyBalance.overallWonBets}, Preds: ${_user.fantasyBalance.overallWonPredictions}',
+                        style: const TextStyle(fontSize: 12)),
+                  ],
+                ),
+                Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Icon(Icons.cancel, color: Colors.red, size: 16),
+                    const SizedBox(width: 4),
+                    Text(
+                        'Bets: ${_user.fantasyBalance.overallLostBets}, Preds: ${_user.fantasyBalance.overallLostPredictions}',
+                        style: const TextStyle(fontSize: 12)),
+                  ],
+                ),
+                // Optionally, ROI Section
+                Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Icon(Icons.trending_up, color: Colors.blueGrey, size: 16),
+                    const SizedBox(width: 4),
+                    Text(
+                        'ROI: ${_user.fantasyBalance.percentageROIText()}, Ret:${_user.fantasyBalance.amountROIText()}',
+                        style: const TextStyle(fontSize: 12)),
+                  ],
+                ),
               ],
-            ),
+            )
+
           ],
         ),
-      ),
+
+          if (lastPrediction != null) const SizedBox(height: 6),
+          if (lastPrediction != null)
+            UserPastPredictionCompact(
+              prediction: lastPrediction!,
+            ),
+
+        ]
+
+       )
+
+    ),
     );
   }
 
@@ -177,4 +235,17 @@ class _FantasyLeaderboardRowState extends State<FantasyLeaderboardRow> {
         DialogTextTopUp(topUpCallback: topUpCallback)
     );
   }
+
+
+  void _prepareLastPrediction() {
+    lastPrediction = null;
+    if (_user.userBets.isNotEmpty) {
+      UserBet lastBet = _user.userBets[0];
+      if (lastBet.predictions.isNotEmpty) {
+        lastBet.predictions.sort(UserPrediction.compareByValueDescending);
+        lastPrediction = lastBet.predictions[0];
+      }
+    }
+  }
+
 }

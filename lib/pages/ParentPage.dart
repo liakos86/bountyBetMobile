@@ -2,8 +2,6 @@ import 'dart:async';
 import 'dart:io';
 import 'dart:ui';
 import 'package:collection/collection.dart';
-import 'package:fluttertoast/fluttertoast.dart';
-import 'package:in_app_purchase_android/in_app_purchase_android.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 
@@ -14,12 +12,10 @@ import 'package:flutter_app/models/UserBet.dart';
 import 'package:flutter_app/models/constants/Constants.dart';
 import 'package:flutter_app/models/constants/JsonConstants.dart';
 import 'package:flutter_app/models/LeagueWithData.dart';
-import 'package:flutter_app/models/constants/PurchaseConstants.dart';
 import 'package:flutter_app/models/context/AppContext.dart';
 import 'package:flutter_app/pages/OddsPage.dart';
 import 'package:flutter_app/utils/client/HttpActionsClient.dart';
 import 'package:flutter_app/widgets/DialogTabbedLoginOrRegister.dart';
-import 'package:in_app_purchase/in_app_purchase.dart';
 import 'package:intl/intl.dart';
 
 import 'package:shared_preferences/shared_preferences.dart';
@@ -39,11 +35,9 @@ import '../models/match_event.dart';
 import '../utils/DateUtils.dart';
 import '../widgets/DialogUserRegistered.dart';
 import '../widgets/custom/FantasyTipsDrawer.dart';
-import '../widgets/dialog/DialogTextTopUp.dart';
 import '../widgets/row/DialogProgressBarWithText.dart';
 import 'LeaderBoardPage.dart';
 import 'LivePage.dart';
-import 'MyBetsPage.dart';
 import 'MyFantasyLeaguesPage.dart';
 
   /*
@@ -69,18 +63,11 @@ import 'MyFantasyLeaguesPage.dart';
  */
 class ParentPageState extends State<ParentPage> with WidgetsBindingObserver {
 
-  // final InAppPurchase inAppPurchase = InAppPurchase.instance;
-  // List<ProductDetails> products = [];
-  // List<PurchaseDetails> purchases = [];
-  // StreamSubscription<List<PurchaseDetails>>? subscription;
-  // bool available = false;
   String appBarTitle = 'FantasyTips';
   User user = AppContext.user;
 
-  /*
-   * Shared prefs
-   */
-  // Future<SharedPreferences> prefs = SharedPreferences.getInstance();
+  bool offline = false;
+
 
   /*
    * The index of the page navigator.
@@ -110,15 +97,15 @@ class ParentPageState extends State<ParentPage> with WidgetsBindingObserver {
   static GlobalKey leaderBoardPageKey = GlobalKey();
   static GlobalKey fantasyLeaguesPageKey = GlobalKey();
 
-  updateConnState(bool conn){
-
-    if (!conn) {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-        content: Text('Network connection lost'), showCloseIcon: true, duration: Duration(seconds: 5),
-      ));
-    }
-
-  }
+  // updateConnState(bool conn){
+  //
+  //   if (!conn) {
+  //     ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+  //       content: Text('Network connection lost'), showCloseIcon: true, duration: Duration(seconds: 5),
+  //     ));
+  //   }
+  //
+  // }
 
   /*
    * Fetch the leagues async
@@ -130,7 +117,7 @@ class ParentPageState extends State<ParentPage> with WidgetsBindingObserver {
 
     retrieveUserFromPrefs();
 
-    HttpActionsClient.listenConnChanges(updateConnState);
+    HttpActionsClient.listenConnChanges();
 
 
    AppContext.eventsPerDayMap. putIfAbsent(DateUtilsFt.formattedDateWithOffset(-2), () => <LeagueWithData>[]);
@@ -148,10 +135,10 @@ class ParentPageState extends State<ParentPage> with WidgetsBindingObserver {
 
   WidgetsBinding.instance.addPostFrameCallback((_) => setLocale(context));
 
+  pagesList.add(MyFantasyLeaguesPage(key: fantasyLeaguesPageKey, loginOrRegisterCallback: promptLoginOrRegister, fantasyLeague: AppContext.fantasyLeague));
   pagesList.add(OddsPage(key: oddsPageKey, updateUserCallback: updateUserCallBack, loginUserCallback: loginUserCallback, registerUserCallback: registerUserCallback, selectedOdds: selectedOdds));
   pagesList.add(LivePage(key: livePageKey, liveLeagues: AppContext.liveLeagues));
   pagesList.add(LeaderBoardPage());
-  pagesList.add(MyFantasyLeaguesPage(key: fantasyLeaguesPageKey, loginOrRegisterCallback: promptLoginOrRegister, fantasyLeague: AppContext.fantasyLeague));
 
   HttpActionsClient.authorizeAsync().then((a) =>
 
@@ -244,7 +231,7 @@ class ParentPageState extends State<ParentPage> with WidgetsBindingObserver {
       AppContext.fantasyLeague.copyFrom(FantasyLeague.defLeague());
     }
 
-    if (user.mongoUserId == Constants.defMongoId ){
+    if (user.mongoUserId == Constants.defMongoId || offline){
      // updateUserMongoId(value);
       appBarTitle = AppLocalizations.of(context)!.football;
     } else if (!user.validated){
@@ -392,18 +379,34 @@ class ParentPageState extends State<ParentPage> with WidgetsBindingObserver {
 
       ),
 
-      body:
+        body: Column(
+          children: [
 
-         (loadingAfterResume)?
-       DialogProgressText(text:  AppLocalizations.of(context)!.loading)
-    :
 
-      /**
-       * The following widget guarantees that no reload will be performed between clicks of the bottom bar.
-       */
-      IndexedStack(
-              index: selectedPageIndex,
-              children: [pagesList[0], pagesList[1], pagesList[2], pagesList[3]]),
+            Expanded(
+              child: (loadingAfterResume)
+                  ? DialogProgressText(text: AppLocalizations.of(context)!.loading)
+                  : IndexedStack(
+                index: selectedPageIndex,
+                children: [pagesList[0], pagesList[1], pagesList[2], pagesList[3]],
+              ),
+            ),
+
+            if (offline)
+              Container(
+                width: double.infinity,
+                color: Colors.redAccent,
+                padding: const EdgeInsets.symmetric(vertical: 4),
+                child: const Center(
+                  child: Text(
+                    'You are currently offline',
+                    style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                  ),
+                ),
+              ),
+          ],
+        ),
+
 
       bottomNavigationBar: BottomNavigationBar(
         selectedFontSize: 18,
@@ -415,6 +418,10 @@ class ParentPageState extends State<ParentPage> with WidgetsBindingObserver {
         currentIndex: selectedPageIndex,
         items: [
           BottomNavigationBarItem(
+              icon: const Icon(Icons.currency_exchange),// ImageIcon(AssetImage('assets/images/money-bag-100.png')),//  Icon(Icons.home),
+              label: 'Fantasy'
+          ),
+          BottomNavigationBarItem(
             icon: const Icon(Icons.date_range_outlined),//ImageIcon(AssetImage('assets/images/calendar-100.png')),//  Icon(Icons.home),
             label: AppLocalizations.of(context)!.matches
           ),
@@ -425,10 +432,6 @@ class ParentPageState extends State<ParentPage> with WidgetsBindingObserver {
           BottomNavigationBarItem(
               icon: const Icon(Icons.leaderboard),// ImageIcon(AssetImage('assets/images/leaders-100.png')),//  Icon(Icons.home),
               label: AppLocalizations.of(context)!.leaders
-          ),
-          BottomNavigationBarItem(
-              icon: const Icon(Icons.currency_exchange),// ImageIcon(AssetImage('assets/images/money-bag-100.png')),//  Icon(Icons.home),
-              label: 'Fantasy'
           ),
 
         ],
@@ -925,6 +928,25 @@ void setupFirebaseListeners() async{
 
   Future<void> updateUserFromServer(String mongoUserId) async {
     User userNew = await HttpActionsClient.getUserAsync(mongoUserId);
+    if (userNew.mongoUserId == Constants.offlineMongoId){
+
+      setState(() {
+        user.mongoUserId = userNew.mongoUserId;
+        offline = true;
+        appBarTitle = AppLocalizations.of(context)!.football;
+      });
+
+
+
+      return;
+    }else{
+      if (offline){
+        setState(() {
+          offline = false;
+        });
+      }
+    }
+
     if (userNew.mongoUserId == Constants.defMongoId){
       return;
     }
@@ -956,7 +978,7 @@ void setupFirebaseListeners() async{
       return;
     }
 
-    if(Constants.defMongoId == user.mongoUserId){
+    if(Constants.defMongoId == user.mongoUserId || Constants.offlineMongoId == user.mongoUserId){
       user.mongoUserId = mongoIdFromPrefs;
     }
 
@@ -1008,16 +1030,10 @@ void setupFirebaseListeners() async{
     );
 
     Timer.periodic(const Duration(seconds: 10), (timer) {
-      if(isMinimized){
-        return;
-      }
 
-      if (!isMinimized && User.defUser().mongoUserId != user.mongoUserId) {
-        updateUserFromServer(user.mongoUserId);
-        return;
-      }
+      periodicUserUpdate();
 
-      retrieveUserFromPrefs();
+
 
     });
   }
@@ -1046,6 +1062,27 @@ void setupFirebaseListeners() async{
         AppContext.eventsPerDayMap.putIfAbsent(keyNew, () => <LeagueWithData>[]);
       }
     }
+  }
+
+  Future<void> periodicUserUpdate() async{
+    if(isMinimized){
+      return;
+    }
+
+    if (Constants.defMongoId != user.mongoUserId) {
+      String userMongoId = user.mongoUserId;
+      if (Constants.offlineMongoId == userMongoId) {
+        String? mongoIdFromPrefs = await mongoIdPrefs();
+        if (mongoIdFromPrefs != null) {
+          userMongoId = mongoIdFromPrefs;
+        }
+      }
+
+      updateUserFromServer(userMongoId);
+      return;
+    }
+
+    retrieveUserFromPrefs();
   }
 
 

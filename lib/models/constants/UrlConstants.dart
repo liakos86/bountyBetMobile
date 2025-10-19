@@ -3,7 +3,8 @@ class UrlConstants{
   //static const SERVER_IP_PLAIN = "liakos86-32935.portmap.host";
 
   // static const SERVER_IP_PLAIN = "172.18.128.1";
-  // static const SERVER_IP_PLAIN = "192.168.1.5";
+  // static const SERVER_IP_PLAIN = "192.168.1.3";
+
   static const SERVER_IP_PLAIN = "fantasytips.org";// "78.47.111.32"; //'172.18.128.1';//
 
   static const SRV_VERSION = "fantasyTips";

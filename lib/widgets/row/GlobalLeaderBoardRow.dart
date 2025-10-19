@@ -4,18 +4,16 @@ import '../../models/User.dart';
 import '../../models/UserBet.dart';
 import '../../models/UserPrediction.dart';
 import '../../models/context/AppContext.dart';
-import '../../models/match_event.dart';
 import 'UserPastPredictionCompact.dart';
 
 
 
 class GlobalLeaderboardRow extends StatefulWidget {
   final User user;
-  final int position;
+  // final int position;
 
 
-  const GlobalLeaderboardRow({Key? key, required this.user,
-    required this.position}) : super(key: key);
+  const GlobalLeaderboardRow({Key? key, required this.user}) : super(key: key);
 
   @override
   State<GlobalLeaderboardRow> createState() => _GlobalLeaderboardRowState();
@@ -23,23 +21,23 @@ class GlobalLeaderboardRow extends StatefulWidget {
 
 class _GlobalLeaderboardRowState extends State<GlobalLeaderboardRow> {
   late User _user;
-  late int position;
+  // late int position;
   UserPrediction? lastPrediction;
 
   @override
   void initState() {
     super.initState();
     _user = widget.user;
-    position = widget.position;
+    // position = widget.position;
   }
 
   @override
   void didUpdateWidget(covariant GlobalLeaderboardRow oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (oldWidget.user != widget.user || oldWidget.position != widget.position) {
+    if (oldWidget.user != widget.user || oldWidget.user.globalPosition != widget.user.globalPosition) {
       setState(() {
         _user = widget.user;
-        position = widget.position;
+        // position = widget.position;
         // _fb = _user.fantasyBalance;
       });
     }
@@ -102,7 +100,7 @@ class _GlobalLeaderboardRowState extends State<GlobalLeaderboardRow> {
                 Column(
                   children: [
                     Text(
-                      '#$position',
+                      '#${_user.globalPosition}',
                       style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                     ),
                     const SizedBox(height: 4),
@@ -119,9 +117,20 @@ class _GlobalLeaderboardRowState extends State<GlobalLeaderboardRow> {
                       Text(_user.username,
                           maxLines: 1,
                           style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
-                      Text(_user.betSlipsPercentageText(),
-                          maxLines: 1,
-                          style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w400)),
+
+                      Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          const Icon(Icons.trending_up, color: Colors.blueGrey, size: 16),
+                          const SizedBox(width: 4),
+                          Text(
+                              'ROI: ${_user.overallRoi.toStringAsFixed(2)}%',
+                              style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w400)),
+                        ],
+                      ),
+                      // Text('ROI: ${_user.overallRoi}%',
+                      //     maxLines: 1,
+                      //     style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w400)),
                     ],
                   ),
                 ),
@@ -130,14 +139,32 @@ class _GlobalLeaderboardRowState extends State<GlobalLeaderboardRow> {
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
-                    Text('✅ Bets: ${_user.overallWonBets}, Preds: ${_user.overallWonPredictions}',
-                        style: const TextStyle(fontSize: 12)),
-                    Text('❌ Bets: ${_user.overallLostBets}, Preds: ${_user.overallLostPredictions}',
-                        style: const TextStyle(fontSize: 12)),
-                    Text('ROI%: ${_user.overallROIPercentageText()}, Ret:${_user.overallROIAmountText()}',
-                        style: const TextStyle(fontSize: 12)),
+                    Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const Icon(Icons.check_circle, color: Colors.green, size: 16),
+                        const SizedBox(width: 4),
+                        Text(
+                          'Bets: ${_user.overallWonBets}, Preds: ${_user.overallWonPredictions}',
+                          style: const TextStyle(fontSize: 12),
+                        ),
+                      ],
+                    ),
+                    Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const Icon(Icons.cancel, color: Colors.red, size: 16),
+                        const SizedBox(width: 4),
+                        Text(
+                          'Bets: ${_user.overallLostBets}, Preds: ${_user.overallLostPredictions}',
+                          style: const TextStyle(fontSize: 12),
+                        ),
+                      ],
+                    ),
+
                   ],
-                ),
+                )
+
               ],
             ),
 

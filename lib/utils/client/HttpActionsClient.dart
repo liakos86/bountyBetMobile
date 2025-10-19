@@ -1,5 +1,6 @@
 import 'dart:collection';
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_app/models/UserBet.dart';
@@ -107,6 +108,9 @@ class HttpActionsClient {
     if (!connected){
       connected = await checkInternetConnectivity();
       if (!connected){
+        FantasyLeague def = FantasyLeague.defLeague();
+        def.mongoId = Constants.offlineMongoId;
+        jsonLeaguesData.add(def);
         return jsonLeaguesData;
       }
     }
@@ -120,6 +124,9 @@ class HttpActionsClient {
         await authorizeAsync();
         if (access_token == null) {
           //print('COULD NOT AUTHORIZE ********************************************************************');
+          FantasyLeague def = FantasyLeague.defLeague();
+          def.mongoId = Constants.offlineMongoId;
+          jsonLeaguesData.add(def);
           return jsonLeaguesData;
         }
       }
@@ -132,11 +139,17 @@ class HttpActionsClient {
           try {
             return await FantasyLeague.fromJson(model);
           } catch (e) {
-            return null; // or log the error if needed
+            FantasyLeague def = FantasyLeague.defLeague();
+            def.mongoId = Constants.offlineMongoId;
+            jsonLeaguesData.add(def);
+            return jsonLeaguesData; // or log the error if needed
           }
         }),
       ).then((results) => results.where((league) => league != null).cast<FantasyLeague>().toList());// List<League>.from(leaguesIterable.map((model) async => await League.fromJson(model)));
     } catch (e) {
+      FantasyLeague def = FantasyLeague.defLeague();
+      def.mongoId = Constants.offlineMongoId;
+      jsonLeaguesData.add(def);
 
       print('ERROR REST ----FANTASY  LEAGUES MOCKING............');
     }
@@ -640,7 +653,11 @@ class HttpActionsClient {
           }
         }),
       ).then((results) => results.where((league) => league != null).cast<League>().toList());// List<League>.from(leaguesIterable.map((model) async => await League.fromJson(model)));
-    } catch (e) {
+    }  on TimeoutException catch (e) {
+      connected = false;
+    }  on SocketException catch (e) {
+      connected = false;
+    }catch (e) {
       String msg = e.toString();
 
       const int lineLength = 30; // Define the line length
@@ -651,7 +668,7 @@ class HttpActionsClient {
         result.write('\n'); // Add a newline after every 30 characters
       }
 
-      showToastInChunks(e.toString());
+      // showToastInChunks(e.toString());
       //print('ERROR REST ---- LEAGUES MOCKING............');
     }
 
@@ -861,16 +878,17 @@ class HttpActionsClient {
   }
 
   static Future<User> getUserAsync(String mongoId) async{
-    if (Constants.defMongoId == mongoId){
-      return User.defUser();
-    }
-
-
     if (!connected){
       connected = await checkInternetConnectivity();
       if (!connected){
-        return User.defUser();
+        User def =  User.defUser();
+        def.mongoUserId = Constants.offlineMongoId;
+        return def;
       }
+    }
+
+    if (Constants.defMongoId == mongoId){
+      return User.defUser();
     }
 
 
@@ -895,7 +913,12 @@ class HttpActionsClient {
       Response userResponse = await get(Uri.parse(getUserUrlFinal), headers:  {'Authorization': 'Bearer $access_token'}).timeout(const Duration(seconds: 30));
       var responseDec = await jsonDecode(userResponse.body);
       return User.fromJson(responseDec);
-    } catch (e) {
+    } on TimeoutException catch (e) {
+      connected = false;
+      User def =  User.defUser();
+      def.mongoUserId = Constants.offlineMongoId;
+      return def;
+    }catch (e) {
       return User.defUser();
     }
   }
@@ -1243,7 +1266,7 @@ class HttpActionsClient {
 
   static Future<bool> checkInternetConnectivity() async {
 
-    return true;
+    // return true;
 
     print("CONN CHECK");
 
@@ -1284,7 +1307,8 @@ class HttpActionsClient {
     return false; // No accessible server found
   }
 
-  static void listenConnChanges(Function(bool conn) updateConnState) {
+  // static void listenConnChanges(Function(bool conn) updateConnState) {
+  static void listenConnChanges() {
     Connectivity().onConnectivityChanged.listen(
           (results) {
             ConnectivityResult result = results.first;
@@ -1297,7 +1321,7 @@ class HttpActionsClient {
           connected = false;
         }
 
-        updateConnState.call(connected);
+        // updateConnState.call(connected);
       },
       onError: (error) {
         //print("Error: $error");

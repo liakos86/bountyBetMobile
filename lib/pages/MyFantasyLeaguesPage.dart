@@ -71,6 +71,9 @@ class MyFantasyLeaguesPageState extends State<MyFantasyLeaguesPage>  with Single
   bool isMinimized = false;
 
   bool alertDialogOpen = false;
+
+  bool offline = false;
+
   /*
    * Make o copy of the bets
    */
@@ -170,6 +173,8 @@ class MyFantasyLeaguesPageState extends State<MyFantasyLeaguesPage>  with Single
   @override
   Widget build(BuildContext context) {
 
+
+
    if (AppContext.user.mongoUserId == Constants.defMongoId){
       return
 
@@ -235,6 +240,31 @@ class MyFantasyLeaguesPageState extends State<MyFantasyLeaguesPage>  with Single
         TabBarView(
           controller: _tabController,
           children: [
+
+            (offline)?
+            Align(alignment: Alignment.center,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    // Icon on top
+                    const Icon(
+                      Icons.network_check,  // Built-in Flutter icon
+                      size: 60,  // Icon size
+                      color: Colors.grey, // Icon color
+                    ),
+                    const SizedBox(height: 20),
+                    // Text below the icon
+                    Text(
+                      'You are offline',
+                      style: const TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.bold,
+                        color: Color(ColorConstants.my_dark_grey),
+                      ),
+                    ),
+                  ],
+                )
+            )            :
 
             (AppContext.user.fantasyLeagueMongoId == null) ?
 
@@ -430,6 +460,28 @@ class MyFantasyLeaguesPageState extends State<MyFantasyLeaguesPage>  with Single
     }
 
     List<FantasyLeague> leagues = await HttpActionsClient.getFantasyLeaguesAsync(mongoUserId);
+    if (leagues.length == 1 && leagues[0].mongoId == Constants.offlineMongoId){
+      if (!mounted){
+        return;
+      }
+
+      setState(() {
+        offline = true;
+      });
+
+      return;
+    }
+
+    if (!mounted){
+      return;
+    }
+
+    if (offline){
+      setState(() {
+        offline = false;
+      });
+    }
+
 
       String? fantasyLeagueMongoId = AppContext.user.fantasyLeagueMongoId ;
       fantasyLeagueMongoId ??= sh_prefs.getString(sp_fantasy_league_id);
@@ -543,6 +595,10 @@ class MyFantasyLeaguesPageState extends State<MyFantasyLeaguesPage>  with Single
     }
 
     bets.sort();
+    if (!mounted){
+      return;
+    }
+
     setState((){
       bets;
     });

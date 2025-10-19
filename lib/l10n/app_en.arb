@@ -155,7 +155,7 @@
 
         "amount_returned" : "Bet\nReturned",
 
-        "leaderboard_info" : "First 5 users can view all leader board predictions for next month for free! ",
+        "leaderboard_info" : "Positions calculated based on ROI (Ratio of returned amount to bet amount). ",
 
         "leaderboard_info_pos" : "You currently are in position: ",
 
@@ -167,7 +167,7 @@
 
         "mail_requires_validation" : "Your account requires validation. Please check inbox of ",
 
-        "empty_list" : "No data yet...",
+        "empty_list" : "No data",
         "no_live_games" : "No live games at the moment",
 
         "max_selection":"Max selections size is ",

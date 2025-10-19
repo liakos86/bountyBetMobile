@@ -3,6 +3,7 @@ class Constants {
   static const int MAX_BET_PREDICTIONS = 10;
   static const int maxBet = 99999;
   static const String defMongoId = 'default';
+  static const String offlineMongoId = 'offline';
   static const String empty = '';
   static const String comma = ',';
   static const String underscore = '_';

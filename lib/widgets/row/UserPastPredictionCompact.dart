@@ -82,8 +82,15 @@ class _UserPastPredictionCompactState extends State<UserPastPredictionCompact> {
             ),
   
             const Spacer(),
-  
+
             /// Odd Value Box
+            // DisplayOdd(
+            //   betPredictionType: prediction.betPredictionType!,
+            //   prediction: prediction.betPredictionType!,
+            //   odd: prediction,
+            // ),
+
+
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
               decoration: BoxDecoration(
@@ -92,9 +99,9 @@ class _UserPastPredictionCompactState extends State<UserPastPredictionCompact> {
                 border: Border.all(color: Colors.blueAccent),
               ),
               child: Text(
-                prediction.value.toStringAsFixed(2),
+                prediction.betPredictionType!.text + prediction.value.toStringAsFixed(2),
                 style: const TextStyle(
-                    fontSize: 13, fontWeight: FontWeight.bold, color: Colors.blueAccent),
+                    fontSize: 12, fontWeight: FontWeight.bold, color: Colors.blueAccent),
               ),
             ),
 
