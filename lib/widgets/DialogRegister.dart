@@ -1,4 +1,3 @@
-import 'package:flutter_app/models/constants/ColorConstants.dart';
 import 'package:flutter_app/utils/client/HttpActionsClient.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
@@ -214,21 +213,6 @@ class DialogRegisterState extends State<DialogRegister> {
         showCloseIcon: true,
         duration: const Duration(seconds: 5),
       ));
-
-      setState(() {
-        executingCall = false;
-      });
-      return;
-    }
-
-    if (userFromServer.errorMessage.isNotEmpty) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-          content: Text('Registration failed'),
-          showCloseIcon: true,
-          duration: Duration(seconds: 5),
-        ));
-      }
 
       setState(() {
         executingCall = false;

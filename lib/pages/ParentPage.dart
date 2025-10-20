@@ -268,9 +268,9 @@ class ParentPageState extends State<ParentPage> with WidgetsBindingObserver {
   Widget build(BuildContext context) {
 
 
-
     return Scaffold(
       appBar: AppBar(
+
         // toolbarHeight: 2,
         bottom: PreferredSize(
             preferredSize: const Size.fromHeight(2.0),
@@ -282,6 +282,7 @@ class ParentPageState extends State<ParentPage> with WidgetsBindingObserver {
             )
 
       ),
+
           title:
 
           Row(
@@ -375,11 +376,24 @@ class ParentPageState extends State<ParentPage> with WidgetsBindingObserver {
 
     );
     }
-        )
+        ),
+
+
+        actions: [
+          Padding(
+            padding: const EdgeInsets.only(right: 12.0),
+            child: CircleAvatar(
+              backgroundImage: AssetImage('assets/images/ft_logo.png'),
+              radius: 16,
+              backgroundColor: Colors.transparent,
+            ),
+          ),
+        ],
+
 
       ),
 
-        body: Column(
+      body: Column(
           children: [
 
 
@@ -444,7 +458,7 @@ class ParentPageState extends State<ParentPage> with WidgetsBindingObserver {
         },
       ),
 
-      drawer: FantasyTipsDrawer(logoutCallback: logoutUser)
+      drawer: FantasyTipsDrawer(logoutCallback: logoutUser),
 
 
     );
@@ -468,6 +482,8 @@ class ParentPageState extends State<ParentPage> with WidgetsBindingObserver {
 
       Navigator.pop(context);
 
+      checkFirebasePermission();
+
       String content = Constants.empty;
       if (user.errorMessage != Constants.empty){
         content = user.errorMessage;
@@ -480,6 +496,19 @@ class ParentPageState extends State<ParentPage> with WidgetsBindingObserver {
           DialogUserRegistered(text: content)
       );
 
+  }
+
+  Future<NotificationSettings> checkFirebasePermission() async {
+    FirebaseMessaging messaging = FirebaseMessaging.instance;
+    return await messaging.requestPermission(
+      alert: true,
+      announcement: false,
+      badge: true,
+      carPlay: false,
+      criticalAlert: false,
+      provisional: false,
+      sound: true,
+    );
   }
 
   loginUserCallback(User user) async{

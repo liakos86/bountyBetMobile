@@ -68,6 +68,15 @@ dependencies:
 
 
 dev_dependencies:
+
+  flutter_launcher_icons: ^0.13.1
+
+flutter_launcher_icons:
+  android: true
+  ios: false
+  image_path: "assets/images/ft_logo.png"
+  adaptive_icon_background: "#FFFFFF"
+
   flutter_test:
     sdk: flutter
   #gen_lang: 0.1.3

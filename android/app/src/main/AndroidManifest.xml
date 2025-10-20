@@ -12,7 +12,7 @@
 
 
    <application
-        android:label="flutter_app"
+        android:label="Fantasy Tips"
         android:enableOnBackInvokedCallback="true"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
