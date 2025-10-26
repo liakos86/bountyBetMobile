@@ -29,11 +29,11 @@
 
     "points" : "points",
 
-    "won" : "bets won",
+    "won" : "slips won",
 
     "buypreds" : "Buy predictions of ",
 
-    "monthlybetswon" : "Monthly bets won:",
+    "monthlybetswon" : "Monthly slips won:",
 
     "monthlypredswon" : "Monthly correct predictions:",
 
@@ -43,6 +43,11 @@
 
      "register" : "Register",
      "forgot_pass" : "Forgot Password",
+
+       "tab_fantasy": "Fantasy",
+       "tab_predictions": "Predictions",
+       "tab_invitations": "Invitations",
+       "tab_past_leagues": "Past Leagues",
 
      "status_suspended" : "Suspended",
      "status_postponed" : "Postponed",
@@ -88,7 +93,7 @@
 
         "validation_pending" : "validation pending",
 
-        "all_time_bets" : "All time bets",
+        "all_time_bets" : "All time slips",
         "all_time_predictions" : "All time predictions",
 
           "max_bet_amount" : "Max bet amount is",
@@ -120,9 +125,9 @@
        "out_of" : " out of ",
 
        "winners" : "Winners",
-       "no_pending_bets" : "No pending bets",
-       "no_lost_bets" : "No lost bets",
-        "no_won_bets" : "No won bets",
+       "no_pending_bets" : "No pending slips",
+       "no_lost_bets" : "No lost slips",
+        "no_won_bets" : "No won slips",
 
        "me" : "My stats",
 
@@ -132,7 +137,7 @@
 
        "matches" : "Matches",
 
-       "bets" : "My bets",
+       "bets" : "My preds",
 
 
        "email_verification" : "A verification email has been sent to ",
@@ -168,7 +173,7 @@
         "mail_requires_validation" : "Your account requires validation. Please check inbox of ",
 
         "empty_list" : "No data",
-        "no_live_games" : "No live games at the moment",
+        "no_live_games" : "No games",
 
         "max_selection":"Max selections size is ",
 
@@ -203,8 +208,8 @@
 
         "statistics" : "Statistics",
 
-        "betslip_positive_amount" : "Please select a positive bet amount",
-        "betslip_place_bet" : "Place bet ",
+        "betslip_positive_amount" : "Please select a positive amount",
+        "betslip_place_bet" : "Place prediction ",
         "betslip_returning" : " returning ",
         "betslip_selections" : " selections to return: ",
 

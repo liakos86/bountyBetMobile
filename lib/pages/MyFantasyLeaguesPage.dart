@@ -215,10 +215,27 @@ class MyFantasyLeaguesPageState extends State<MyFantasyLeaguesPage>  with Single
             controller: _tabController,
 
             tabs: [
-              CustomTabIcon(width: labelWidth, text: 'Current League', isSelected: _tabController.index == 0,),
-              CustomTabIcon(width: labelWidth, text: 'Predictions', isSelected: _tabController.index == 1,),
-              CustomTabIcon(width: labelWidth,  text: 'Invitations', isSelected: _tabController.index == 2,),
-              CustomTabIcon(width: labelWidth,  text: 'Past Leagues', isSelected: _tabController.index == 3,),
+              CustomTabIcon(
+                width: labelWidth,
+                text: AppLocalizations.of(context)!.tab_fantasy,
+                isSelected: _tabController.index == 0,
+              ),
+              CustomTabIcon(
+                width: labelWidth,
+                text: AppLocalizations.of(context)!.tab_predictions,
+                isSelected: _tabController.index == 1,
+              ),
+              CustomTabIcon(
+                width: labelWidth,
+                text: AppLocalizations.of(context)!.tab_invitations,
+                isSelected: _tabController.index == 2,
+              ),
+              CustomTabIcon(
+                width: labelWidth,
+                text: AppLocalizations.of(context)!.tab_past_leagues,
+                isSelected: _tabController.index == 3,
+              ),
+
             ],
 
             onTap: (index) {

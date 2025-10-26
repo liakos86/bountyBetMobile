@@ -108,17 +108,19 @@ class LeagueExpandableTile extends StatefulWidget {
           mainAxisSize: MainAxisSize.min,
     children:[
 
-      if (!expandAll && AppContext.fantasyLeague != null && AppContext.fantasyLeague!.selectedLeagueIds.contains(leagueWithData.league.league_id))
+      if (!expandAll && AppContext.fantasyLeague.selectedLeagueIds.contains(leagueWithData.league.league_id))
         Container(
           width: 80,
-          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+          height: 32,
+          alignment: Alignment.center,
+          padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 4),
           decoration: BoxDecoration(
-           color: Colors.green.shade300,
+           color: Colors.green.shade500,
             borderRadius: BorderRadius.circular(4),
           ),
           child: Text(
-            AppContext.fantasyLeague!.name ,
-            style: const TextStyle(fontSize: 12, color: Colors.white),
+            'Fantasy' ,
+            style: const TextStyle(fontSize: 12, color: Colors.white, height: 1.0,),
             maxLines:1
           ),
         ),

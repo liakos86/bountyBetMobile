@@ -24,6 +24,7 @@ import '../models/context/AppContext.dart';
 import '../utils/BetUtils.dart';
 import '../utils/DateUtils.dart';
 import '../widgets/CustomTabIcon.dart';
+import '../widgets/NoGames.dart';
 import '../widgets/row/DialogProgressBarWithText.dart';
 
 
@@ -152,6 +153,12 @@ class OddsPageState extends State<OddsPage> with SingleTickerProviderStateMixin{
             controller: _tabController,
             children: [
 
+              (AppContext.eventsPerDayMap[DateUtilsFt.formattedDateWithOffset(-2)] == null
+                  || AppContext.eventsPerDayMap[DateUtilsFt.formattedDateWithOffset(-2)]!.isEmpty) ?
+              NoGames()
+
+                  :
+
               ListView.builder(
                   key: const PageStorageKey<String>('pageOdds-1'),
                   padding: const EdgeInsets.all(0),
@@ -160,6 +167,12 @@ class OddsPageState extends State<OddsPage> with SingleTickerProviderStateMixin{
                     return _buildRow(AppContext.eventsPerDayMap[DateUtilsFt.formattedDateWithOffset(-2)]!.elementAt(item), item);
                   }),
 
+              (AppContext.eventsPerDayMap[DateUtilsFt.formattedDateWithOffset(-1)] == null
+                  || AppContext.eventsPerDayMap[DateUtilsFt.formattedDateWithOffset(-1)]!.isEmpty) ?
+              NoGames()
+
+                  :
+
               ListView.builder(
                   key: const PageStorageKey<String>('pageOdds0'),
                   padding: const EdgeInsets.all(0),
@@ -167,6 +180,12 @@ class OddsPageState extends State<OddsPage> with SingleTickerProviderStateMixin{
                   itemBuilder: (context, item) {
                     return _buildRow(AppContext.eventsPerDayMap[DateUtilsFt.formattedDateWithOffset(-1)]!.elementAt(item), item);
                   }),
+
+              (AppContext.eventsPerDayMap[DateUtilsFt.formattedDateWithOffset(0)] == null
+                  || AppContext.eventsPerDayMap[DateUtilsFt.formattedDateWithOffset(0)]!.isEmpty) ?
+                  NoGames()
+
+                  :
 
               ListView.builder(
 
@@ -177,6 +196,12 @@ class OddsPageState extends State<OddsPage> with SingleTickerProviderStateMixin{
                     return _buildRow(AppContext.eventsPerDayMap[DateUtilsFt.formattedDateWithOffset(0)]!.elementAt(item), item);
                   }),
 
+              (AppContext.eventsPerDayMap[DateUtilsFt.formattedDateWithOffset(1)] == null
+                  || AppContext.eventsPerDayMap[DateUtilsFt.formattedDateWithOffset(1)]!.isEmpty) ?
+              NoGames()
+
+                  :
+
               ListView.builder(
                   key: const PageStorageKey<String>('pageOdds2'),
                   padding: const EdgeInsets.all(0),
@@ -184,6 +209,13 @@ class OddsPageState extends State<OddsPage> with SingleTickerProviderStateMixin{
                   itemBuilder: (context, item) {
                     return _buildRow(AppContext.eventsPerDayMap[DateUtilsFt.formattedDateWithOffset(1)]!.elementAt(item), item);
                   }),
+
+
+              (AppContext.eventsPerDayMap[DateUtilsFt.formattedDateWithOffset(2)] == null
+                  || AppContext.eventsPerDayMap[DateUtilsFt.formattedDateWithOffset(2)]!.isEmpty) ?
+              NoGames()
+
+                  :
 
               ListView.builder(
                   key: const PageStorageKey<String>('pageOdds3'),

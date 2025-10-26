@@ -458,7 +458,7 @@ class ParentPageState extends State<ParentPage> with WidgetsBindingObserver {
         },
       ),
 
-      drawer: FantasyTipsDrawer(logoutCallback: logoutUser),
+      drawer: FantasyTipsDrawer(logoutCallback: logoutUser, deleteCallback: deleteUser),
 
 
     );
@@ -651,6 +651,10 @@ class ParentPageState extends State<ParentPage> with WidgetsBindingObserver {
 
           String localStartString = matchTimeFormat.format(incomingLiveEvent.startAtLocalDateTime());
           String eventDateKey = localStartString.split(' ')[0];
+
+          if (AppContext.eventsPerDayMap[eventDateKey] == null){
+            continue;
+          }
 
           for (LeagueWithData lwt in AppContext.eventsPerDayMap[eventDateKey]!) {//incoming exists then copy
             List<MatchEvent> liveEvents = lwt.events;//.where((element) => element.status == MatchEventStatus.INPROGRESS.statusStr).toList();
@@ -989,6 +993,24 @@ void setupFirebaseListeners() async{
     updatePrefsMongoUserId(User.defUser());
 
     updateUser(User.defUser());
+
+    if(!mounted){
+      return;
+    }
+
+    Navigator.pop(context);
+  }
+
+  void deleteUser() async{
+
+    String? deletedUserId = await HttpActionsClient.deleteUser(AppContext.user.mongoUserId);
+    if (deletedUserId != null){
+
+      updatePrefsMongoUserId(User.defUser());
+
+      updateUser(User.defUser());
+
+    }
 
     if(!mounted){
       return;

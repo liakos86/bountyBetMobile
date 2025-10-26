@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_app/models/constants/ColorConstants.dart';
 
+import '../../models/constants/Constants.dart';
 import '../../models/context/AppContext.dart';
 import '../dialog/DialogTextWithConfirmCancel.dart';
 import 'AwardContainerWithText.dart';
@@ -11,9 +12,10 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class FantasyTipsDrawer extends StatelessWidget {
 
-  const FantasyTipsDrawer({super.key, required this.logoutCallback});
+  const FantasyTipsDrawer({super.key, required this.logoutCallback, required this.deleteCallback});
 
   final Function logoutCallback;
+  final Function deleteCallback;
 
   @override
   Widget build(BuildContext context) {
@@ -25,7 +27,7 @@ class FantasyTipsDrawer extends StatelessWidget {
         children: [
           DrawerHeader(
             decoration: const BoxDecoration(
-              color: Color(ColorConstants.my_blue),
+              color: Colors.black87,
             ),
             child: Padding(
               padding: const EdgeInsets.all(8.0), // Add padding around the content
@@ -172,6 +174,34 @@ class FantasyTipsDrawer extends StatelessWidget {
                 style: TextStyle(
                   decoration: TextDecoration.underline,
                   color: Colors.blue,
+                  fontSize: 12,
+                ),
+                textAlign: TextAlign.center,
+              ),
+            ),
+          ),
+
+
+          const SizedBox(height: 24),
+          // Attribution link
+
+          if (AppContext.user.mongoUserId != Constants.defMongoId && AppContext.user.mongoUserId != Constants.offlineMongoId)
+          Padding(
+            padding: const EdgeInsets.all(12.0),
+            child: GestureDetector(
+              onTap: () async {
+
+                showDialog(context: context, builder: (context) =>
+                    DialogTextWithConfirmCancel(confirmCallback: deleteCallback, text: 'ARE YOU SURE YOU WANT TO DELETE YOUR ACCOUNT???')
+                );
+
+
+              },
+              child: Text(
+                'Delete my account',
+                style: TextStyle(
+                  decoration: TextDecoration.underline,
+                  color: Colors.red,
                   fontSize: 12,
                 ),
                 textAlign: TextAlign.center,

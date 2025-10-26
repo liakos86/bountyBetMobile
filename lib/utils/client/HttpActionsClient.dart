@@ -1233,6 +1233,54 @@ class HttpActionsClient {
     }
   }
 
+  static Future<String?> deleteUser(String mongoId)  async {
+
+    if (!connected){
+      connected = await checkInternetConnectivity();
+      if (!connected){
+        return null;
+      }
+    }
+
+
+    try {
+
+      if (access_token == null) {
+        final prefs = await SharedPreferences.getInstance();
+        access_token = prefs.getString(Constants.accessToken) ;
+        // access_token = await SecureUtils().retrieveValue(Constants.accessToken);
+        await authorizeAsync();
+        if (access_token == null) {
+          // //print('COULD NOT AUTHORIZE ********************************************************************');
+          return null;
+        }
+      }
+
+      var encodedUserId = jsonEncode( {
+        "mongoUserId": mongoId,
+      });
+
+      var fantasyLeagueResponse = await post(Uri.parse(UrlConstants.POST_DELETE_USER),
+          headers: {
+            "Accept": "application/json",
+            "Content-Type": "application/json",
+            'Authorization': 'Bearer $access_token'
+          },
+          body: encodedUserId,
+          encoding: Encoding.getByName("utf-8")).timeout(
+          const Duration(seconds: 20));
+
+      var responseDec = jsonDecode(fantasyLeagueResponse.body);
+
+      String mongoUserId = responseDec['mongoUserId'];
+
+      return mongoUserId;
+
+    }catch(e){
+      return  null;
+    }
+  }
+
 
   static Future<Map<int, MatchEvent>> convertJsonLiveMatchesToObjects(Map jsonLeaguesData) async{
     Map<int, MatchEvent> newEventsPerDayMap = LinkedHashMap();

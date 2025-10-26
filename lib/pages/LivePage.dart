@@ -11,6 +11,7 @@ import '../models/LeagueWithData.dart';
 import '../models/constants/ColorConstants.dart';
 import '../models/context/AppContext.dart';
 import '../widgets/LeagueExpandableTile.dart';
+import '../widgets/NoGames.dart';
 import '../widgets/row/DialogProgressBarWithText.dart';
 
 final pageBucket = PageStorageBucket();
@@ -56,28 +57,7 @@ class LivePageState extends State<LivePage> with WidgetsBindingObserver{
 
     //leaguesWd = allLeagues.where((element) => element.events.where((element) => element.status == MatchEventStatus.INPROGRESS.statusStr).toList().isNotEmpty).toList();// <LeagueWithData>[];
     if (liveLeagues.isEmpty){
-      return Align(alignment: Alignment.center,  child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: <Widget>[
-          // Icon on top
-          const Icon(
-            Icons.sports_soccer,  // Built-in Flutter icon
-            size: 60,  // Icon size
-            color: Colors.grey, // Icon color
-          ),
-          const SizedBox(height: 20),  // Space between icon and text
-          // Text below the icon
-          Text(
-            AppLocalizations.of(context)!.no_live_games,
-            style: const TextStyle(
-              fontSize: 14,
-              fontWeight: FontWeight.bold,
-              color: Color(ColorConstants.my_dark_grey),
-            ),
-          ),
-        ],
-      )
-      );
+      return NoGames();
     }
 
     return Scaffold(
@@ -112,11 +92,6 @@ class LivePageState extends State<LivePage> with WidgetsBindingObserver{
     sharedPrefs.reload();
     return sharedPrefs.getListByKey(sp_fav_event_ids);
   }
-
-  callBackForExpansion(int index){
-
-  }
-  
   
 
 }

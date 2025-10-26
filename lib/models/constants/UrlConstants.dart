@@ -42,6 +42,8 @@ class UrlConstants{
 
   static const POST_OPTOUT_FANTASY_LEAGUE = SERVER_IP + SRV_VERSION + '/rest/optoutFantasyLeague';
 
+  static const POST_DELETE_USER = SERVER_IP + SRV_VERSION + '/rest/deleteUser';
+
   static const GET_USER_URL = SERVER_IP + SRV_VERSION + '/rest/getUser/';
 
   static const GET_EVENT_STATISTICS_URL = SERVER_IP + SRV_VERSION + '/rest/getEventStatistics/';
