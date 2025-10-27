@@ -188,7 +188,7 @@ class MyFantasyLeaguesPageState extends State<MyFantasyLeaguesPage>  with Single
             foregroundColor: Colors.black,
             onPressed: () => { loginOrRegisterCallback.call()
                },
-            label: const Text('Login/Register'),
+            label: Text(AppLocalizations.of(context)!.login_register),
       ));
     }
 
@@ -310,11 +310,11 @@ class MyFantasyLeaguesPageState extends State<MyFantasyLeaguesPage>  with Single
                         backgroundColor: AppContext.user.validated ? Colors.green.shade400 : Colors.grey.shade400 ,
                         foregroundColor: Colors.white,
                       ),
-                      child: const Text("Create League"),
+                      child: Text(AppLocalizations.of(context)!.createLeague),
                     ),
 
                     if (!AppContext.user.validated)
-                      Text('Check your email inbox to validate account')
+                      Text('${AppLocalizations.of(context)!.mail_requires_validation}${AppContext.user.email}')
 
                   ],
                 )
@@ -636,8 +636,8 @@ class MyFantasyLeaguesPageState extends State<MyFantasyLeaguesPage>  with Single
 
   void promptDialogTopup(String productId) {
     if (products.isEmpty){
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-        content: Text('No products available'), showCloseIcon: true, duration: Duration(seconds: 5),
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text(AppLocalizations.of(context)!.noProductsAvailable), showCloseIcon: true, duration: const Duration(seconds: 5),
       ));
 
       return;
@@ -663,8 +663,8 @@ class MyFantasyLeaguesPageState extends State<MyFantasyLeaguesPage>  with Single
 
   void promptDialogExtraLeagues() {
     if (products.isEmpty){
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-        content: Text('No products available'), showCloseIcon: true, duration: Duration(seconds: 5),
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text(AppLocalizations.of(context)!.noProductsAvailable), showCloseIcon: true, duration: const Duration(seconds: 5),
       ));
 
       return;
@@ -690,8 +690,8 @@ class MyFantasyLeaguesPageState extends State<MyFantasyLeaguesPage>  with Single
 
   void promptDialogExtraUsers() {
     if (products.isEmpty){
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-        content: Text('No products available'), showCloseIcon: true, duration: Duration(seconds: 5),
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text(AppLocalizations.of(context)!.noProductsAvailable), showCloseIcon: true, duration: const Duration(seconds: 5),
       ));
 
       return;

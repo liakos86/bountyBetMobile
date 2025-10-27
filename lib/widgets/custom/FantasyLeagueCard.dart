@@ -2,6 +2,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:in_app_purchase/in_app_purchase.dart';
 
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
 import '../../enums/FantasyLeagueInvitationStatus.dart';
 import '../../enums/FantasyLeagueStatus.dart';
 import '../../models/FantasyLeague.dart';
@@ -85,6 +87,17 @@ class _FantasyLeagueCardState extends State<FantasyLeagueCard> {
 
     }
 
+    final pendingInvitations = fantasyLeague.invitations
+        .where((i) => i.status == FantasyLeagueInvitationStatus.PENDING.statusCode)
+        .toList();
+
+    final hasInvitations = pendingInvitations.isNotEmpty;
+
+// Either a comma-separated email list or the count
+    final invitationText = hasInvitations
+        ? pendingInvitations.map((i) => i.email).join(', ')
+        : '${pendingInvitations.length}';
+
 
     return Card(
       elevation: 6,
@@ -127,15 +140,15 @@ class _FantasyLeagueCardState extends State<FantasyLeagueCard> {
                             ),
                             const SizedBox(width: 4),
                             Text(
-                              fantasyLeague.allowTopUp ? 'Top-up allowed' : 'Top-up not allowed',
+                              fantasyLeague.allowTopUp ? AppLocalizations.of(context)!.topup_allowed : AppLocalizations.of(context)!.topup_notallowed ,
                               style: const TextStyle(fontSize: 10, color: Colors.grey),
                             ),
                           ],
                         ),
 
                         if (fantasyLeague.status == FantasyLeagueStatus.RUNNING.statusCode && fantasyLeague.invitations.isNotEmpty)
-                          Text('Invitations pending: ${fantasyLeague.invitations.where((i) => i.status == FantasyLeagueInvitationStatus.PENDING.statusCode).length}',
-                              style: const TextStyle(fontSize: 10, color: Colors.grey))
+                          Text('${AppLocalizations.of(context)!.invitations_pend}${invitationText}',
+                              style: const TextStyle(fontSize: 10, color: Colors.grey, fontWeight: FontWeight.bold))
 
                       ],
                     ),
@@ -162,7 +175,7 @@ class _FantasyLeagueCardState extends State<FantasyLeagueCard> {
                       backgroundColor: Colors.red.shade200,
                       padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
                     ),
-                    child: const Text('Opt-out', style: TextStyle(fontSize: 12)),
+                    child: Text(AppLocalizations.of(context)!.opt_out, style: TextStyle(fontSize: 12)),
                   ),
                 ],
               ),
@@ -228,12 +241,12 @@ class _FantasyLeagueCardState extends State<FantasyLeagueCard> {
                           const Icon(Icons.lock, size: 16, color: Colors.white),
                           const SizedBox(width: 4),
                         ],
-                        const Text('Invite'),
+                        Text(AppLocalizations.of(context)!.invite),
                       ],
                     ),
                   )
 
-                      : fantasyLeague.status == FantasyLeagueStatus.PENDING.statusCode ? const Text('⏳ Waiting for the league to start...') : const SizedBox(height:0),
+                      : fantasyLeague.status == FantasyLeagueStatus.PENDING.statusCode ? Text('⏳ ${AppLocalizations.of(context)!.waiting_to_start}') : const SizedBox(height:0),
                 ),
               ),
             if (fantasyLeague.invitations.isNotEmpty &&
@@ -323,7 +336,7 @@ class _FantasyLeagueCardState extends State<FantasyLeagueCard> {
       builder: (context) {
         return StatefulBuilder(
           builder: (context, setStateDialog) => AlertDialog(
-            title: const Text('Invite by Email'),
+            title: Text(AppLocalizations.of(context)!.invite_email),
             content: SingleChildScrollView(
               child: Column(
                 mainAxisSize: MainAxisSize.min,
@@ -342,7 +355,7 @@ class _FantasyLeagueCardState extends State<FantasyLeagueCard> {
             actions: [
               TextButton(
                 onPressed: () => Navigator.pop(context),
-                child: const Text('Cancel'),
+                child: Text(AppLocalizations.of(context)!.cancel),
               ),
               ElevatedButton(
                 onPressed: () async{
@@ -350,9 +363,9 @@ class _FantasyLeagueCardState extends State<FantasyLeagueCard> {
                   final emailRegex = RegExp(r"^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$");
 
                   if (!emailRegex.hasMatch(email)) {
-                    setStateDialog(() => error = 'Invalid email address.');
+                    setStateDialog(() => error = AppLocalizations.of(context)!.email_invalid);
                   } else if (widget.fantasyLeague!.invitedEmails.contains(email)) {
-                    setStateDialog(() => error = 'This email has already been invited.');
+                    setStateDialog(() => error = AppLocalizations.of(context)!.already_inv);
                   } else {
 
                     FantasyLeagueInvitation inv = await widget.onInviteEmail(email);
@@ -366,7 +379,7 @@ class _FantasyLeagueCardState extends State<FantasyLeagueCard> {
 
                   }
                 },
-                child: const Text('Send Invite'),
+                child: Text(AppLocalizations.of(context)!.invite),
               ),
             ],
           ),

@@ -231,5 +231,52 @@
       "error_generic" : "A generic error occurred",
       "error_max_pending_inv" : "Too many open invitations for league",
 
+        "loginRegister": "Login / Register",
+        "createLeague": "Create League",
+        "selectLeaguesStep": "Step {step}: Select Leagues",
+        "@selectLeaguesStep": {
+          "description": "Title of the wizard step where user selects leagues",
+          "placeholders": {
+            "step": {}
+          }
+        },
+        "unlockLeagues": "Unlock leagues",
+        "proLeaguesEnabled": "Pro leagues enabled",
+        "selected": "Selected:",
+        "cancel": "Cancel",
+        "next": "Next",
+        "save": "Save",
+        "pleaseSelectAtLeastOneLeague": "Please select at least one league.",
+        "maxLeaguesAre": "Max leagues are {maxLeagues}",
+        "@maxLeaguesAre": {
+          "description": "Toast when user hits max allowed leagues",
+          "placeholders": {
+            "maxLeagues": {}
+          }
+        },
+        "purchaseError": "Purchase error",
+        "noProductsAvailable": "No products available",
+        "productNotFound": "Product not found {productId}",
+        "@productNotFound": {
+          "placeholders": {
+            "productId": {}
+          }
+        },
+        "youAreOffline": "You are offline",
+
+        "opt_out": "Opt-out",
+        "invite": "Invite",
+        "invitations_pend": "Invitations pending: ",
+
+        "topup_allowed" : "Top-up allowed",
+        "topup_notallowed" : "Top-up not allowed",
+
+        "waiting_to_start" : "Waiting for the league to start...",
+
+        "invite_email" : "Invite by Email",
+
+        "already_inv" : "This email has already been invited.",
+        "email_invalid" : "Invalid email address.",
+
      "run_this" : "flutter gen-l10n"
 }

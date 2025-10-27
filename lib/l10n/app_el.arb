@@ -237,6 +237,58 @@
                            "placeholders": {
                              "position": {},
                              "credits": {}
-                           }}
+                           }},
+
+           "createLeague": "Νέο Πρωτάθλημα",
+           "selectLeaguesStep": "Βήμα {step}: Επιλογή Πρωταθλημάτων",
+           "@selectLeaguesStep": {
+             "description": "Τίτλος του βήματος wizard όπου ο χρήστης επιλέγει πρωταθλήματα",
+             "placeholders": {
+               "step": {}
+             }
+           },
+           "unlockLeagues": "Ξεκλείδωμα πρωταθλημάτων",
+           "proLeaguesEnabled": "Οι Pro πρωταθλήματα είναι ενεργές",
+           "selected": "Επιλεγμένα:",
+           "cancel": "Ακύρωση",
+           "next": "Επόμενο",
+           "save": "Αποθήκευση",
+           "pleaseSelectAtLeastOneLeague": "Παρακαλώ επιλέξτε τουλάχιστον ένα πρωτάθλημα.",
+           "maxLeaguesAre": "Το μέγιστο αριθμός πρωταθλημάτων είναι {maxLeagues}",
+           "@maxLeaguesAre": {
+             "description": "Toast όταν ο χρήστης φτάσει στο μέγιστο επιτρεπόμενο αριθμό πρωταθλημάτων",
+             "placeholders": {
+               "maxLeagues": {}
+             }
+           },
+           "purchaseError": "Σφάλμα αγοράς",
+           "noProductsAvailable": "Δεν υπάρχουν διαθέσιμα προϊόντα",
+           "productNotFound": "Το προϊόν δεν βρέθηκε {productId}",
+           "@productNotFound": {
+             "placeholders": {
+               "productId": {}
+             }
+           },
+           "youAreOffline": "Είστε εκτός σύνδεσης",
+
+        "invite": "Πρόσκληση",
+        "invitations_pend": "Εκκρεμείς προσκλήσεις: ",
+
+
+        "topup_allowed" : "Top-up επιτρέπεται",
+        "topup_notallowed" : "Top-up not δεν επιτρέπεται",
+
+        "already_inv" : "Υπάρχει ήδη πρόσκληση με αυτό το email.",
+
+
+
+        "invite_email" : "Πρόσκληση με Email",
+
+        "waiting_to_start" : "Περιμένετε την έναρξη...",
+
+        "email_invalid" : "Λάθος διεύθυνση email.",
+
+           "opt_out": "Αποχώρηση"
+
 
 }
