@@ -23,6 +23,7 @@ class FantasyLeagueCard extends StatefulWidget {
   final Function topUpCallback;
   final Function() extraLeaguesAlertCallback;
   final Function() extraUsersAlertCallback;
+  final Function(FantasyLeague) updateCallback;
 
   const FantasyLeagueCard({
     Key? key,
@@ -33,6 +34,7 @@ class FantasyLeagueCard extends StatefulWidget {
     required this.topUpCallback,
     required this.extraLeaguesAlertCallback,
     required this.extraUsersAlertCallback,
+    required this.updateCallback,
   }) : super(key: key);
 
   @override
@@ -409,7 +411,7 @@ class _FantasyLeagueCardState extends State<FantasyLeagueCard> {
         products: products,
         alertDialogExtraLeagues: widget.extraLeaguesAlertCallback,
         leagueName: widget.fantasyLeague!.name,
-        updateCallback: (a)=>{},
+        updateCallback: widget.updateCallback,
         initialSelectedLeagueIds: widget.fantasyLeague!.selectedLeagueIds,
       ),
     );

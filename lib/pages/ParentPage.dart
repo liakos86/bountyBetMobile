@@ -264,6 +264,31 @@ class ParentPageState extends State<ParentPage> with WidgetsBindingObserver {
 
   }
 
+  Future<void> updateFantasyLeague(User value) async {
+
+    if (Constants.defMongoId == value.mongoUserId || value.fantasyLeagueMongoId == null){
+      return;
+    }
+
+    List<FantasyLeague> leagues = await HttpActionsClient.getFantasyLeaguesAsync(value.mongoUserId);
+    FantasyLeague? fantasyLeagueIncoming = leagues.firstWhereOrNull((element) => element.mongoId == value.fantasyLeagueMongoId);
+    if (fantasyLeagueIncoming == null){
+      return;
+    }
+
+    AppContext.fantasyLeague.copyFrom(fantasyLeagueIncoming);
+
+    if (!mounted){
+      return;
+    }
+
+    fantasyLeaguesPageKey.currentState?.setState(() {
+      AppContext.user;
+      AppContext.fantasyLeague;
+    });
+
+  }
+
   @override
   Widget build(BuildContext context) {
 
@@ -515,6 +540,7 @@ class ParentPageState extends State<ParentPage> with WidgetsBindingObserver {
 
     updatePrefsMongoUserId(user);
     updateUser(user);
+    updateFantasyLeague(user);
 
     if (!mounted){
       return;

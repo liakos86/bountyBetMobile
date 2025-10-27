@@ -292,6 +292,10 @@ class MyFantasyLeaguesPageState extends State<MyFantasyLeaguesPage>  with Single
 
                     ElevatedButton(
                       onPressed: () {
+                        if (!AppContext.user.validated){
+                          return;
+                        }
+
                         showDialog(
                           context: context,
                           barrierDismissible: false,
@@ -303,11 +307,14 @@ class MyFantasyLeaguesPageState extends State<MyFantasyLeaguesPage>  with Single
                         );
                       },
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.green.shade400,
+                        backgroundColor: AppContext.user.validated ? Colors.green.shade400 : Colors.grey.shade400 ,
                         foregroundColor: Colors.white,
                       ),
                       child: const Text("Create League"),
                     ),
+
+                    if (!AppContext.user.validated)
+                      Text('Check your email inbox to validate account')
 
                   ],
                 )
@@ -321,6 +328,7 @@ class MyFantasyLeaguesPageState extends State<MyFantasyLeaguesPage>  with Single
 
         FantasyLeagueCard(
           fantasyLeague: fantasyLeague,
+          updateCallback: update,
           topUpCallback: promptDialogTopup,
           extraLeaguesAlertCallback: alertDialogExtraLeagues,
           extraUsersAlertCallback: alertDialogExtraUsers,
@@ -854,6 +862,7 @@ class MyFantasyLeaguesPageState extends State<MyFantasyLeaguesPage>  with Single
   }
 
   void update(FantasyLeague league){
+    print('LEAGUE NEW');
     setState(() {
       fantasyLeague.copyFrom(league);
       AppContext.user.fantasyLeagueMongoId = league.mongoId;

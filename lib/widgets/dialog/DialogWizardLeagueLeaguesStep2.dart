@@ -145,7 +145,12 @@ class _LeagueSelectionDialogState extends State<DialogWizardLeagueLeaguesStep2> 
 
         // ],
       // ),
-      content: Column(
+
+    content:
+    SizedBox(
+        width: double.maxFinite,
+        height: MediaQuery.of(context).size.height * 0.9,
+        child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
 
@@ -234,7 +239,7 @@ class _LeagueSelectionDialogState extends State<DialogWizardLeagueLeaguesStep2> 
             ),
           ),
         ],
-      ),
+      )),
       actions: [
         TextButton(
           onPressed: () => Navigator.of(context).pop(), // Cancel
@@ -265,7 +270,7 @@ class _LeagueSelectionDialogState extends State<DialogWizardLeagueLeaguesStep2> 
     fCopy.selectedLeagueIds = _selectedLeagueIds;
     fCopy = await HttpActionsClient.editFantasyLeague(fCopy);
     if (fCopy.mongoId != Constants.defMongoId){
-      await widget.updateCallback.call(fCopy);
+      widget.updateCallback.call(fCopy);
     }
   }
 
