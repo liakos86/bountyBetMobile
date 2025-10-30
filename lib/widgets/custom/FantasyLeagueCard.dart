@@ -392,8 +392,8 @@ class _FantasyLeagueCardState extends State<FantasyLeagueCard> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: const Text(AppLocalizations.of(context)!.opt_out_confim),
-          content: const Text(AppLocalizations.of(context)!.opt_out_text),
+          title: Text(AppLocalizations.of(context)!.opt_out_confirm),
+          content: Text(AppLocalizations.of(context)!.opt_out_text),
           actions: [
             TextButton(
               child: Text(AppLocalizations.of(context)!.cancel_button_text),
