@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:ui';
 import 'package:collection/collection.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:in_app_purchase_android/in_app_purchase_android.dart';
 
 
@@ -28,7 +27,6 @@ import '../widgets/custom/FantasyLeagueCompletedCard.dart';
 import '../widgets/dialog/DialogFantasyLeagueWinner.dart';
 import '../widgets/dialog/DialogTextExtraLeagues.dart';
 import '../widgets/dialog/DialogTextExtraUsers.dart';
-import '../widgets/dialog/DialogTextTopUp.dart';
 import '../widgets/row/FantasyLeagueInvitationRow.dart';
 import '../widgets/dialog/DialogWizardLeagueNameStep1.dart';
 
@@ -313,8 +311,8 @@ class MyFantasyLeaguesPageState extends State<MyFantasyLeaguesPage>  with Single
                       child: Text(AppLocalizations.of(context)!.createLeague),
                     ),
 
-                    if (!AppContext.user.validated)
-                      Text('${AppLocalizations.of(context)!.mail_requires_validation}${AppContext.user.email}')
+                    if (!AppContext.user.validated && AppContext.user.mongoUserId != Constants.defMongoId)
+                      Text('${AppLocalizations.of(context)!.mail_requires_validation}${AppContext.user.email}', maxLines: 2 )
 
                   ],
                 )

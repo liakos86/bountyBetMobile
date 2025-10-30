@@ -35,64 +35,69 @@ class _UserPastPredictionCompactState extends State<UserPastPredictionCompact> {
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(2)),
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
-        child: Row(
+        child:
+
+        Row(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-  
             /// Home Team Logo
             CircleAvatar(
               backgroundImage: NetworkImage(prediction.homeTeam.logo),
               radius: 14,
               backgroundColor: Colors.transparent,
             ),
-  
+
             const SizedBox(width: 6),
-  
-            /// Home Team Name
-            Text(
-              prediction.homeTeam.getLocalizedName(),
-              style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w500),
-              overflow: TextOverflow.ellipsis,
+
+            /// Home Team Name (right aligned)
+            Expanded(
+              flex: 3,
+              child: Text(
+                prediction.homeTeam.getLocalizedName(),
+                style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w500),
+                textAlign: TextAlign.right,
+                overflow: TextOverflow.ellipsis,
+                maxLines: 1,
+              ),
             ),
-  
-            const SizedBox(width: 6),
-  
-            /// Score
+
+            const SizedBox(width: 8),
+
+            /// Score (centered)
             Text(
               "${scoreText(true)} - ${scoreText(false)}",
               style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
+              textAlign: TextAlign.center,
             ),
-  
-            const SizedBox(width: 6),
-  
-            /// Away Team Name
-            Text(
-              prediction.awayTeam.getLocalizedName(),
-              style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w500),
-              overflow: TextOverflow.ellipsis,
+
+            const SizedBox(width: 8),
+
+            /// Away Team Name (left aligned)
+            Expanded(
+              flex: 3,
+              child: Text(
+                prediction.awayTeam.getLocalizedName(),
+                style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w500),
+                textAlign: TextAlign.left,
+                overflow: TextOverflow.ellipsis,
+                maxLines: 1,
+              ),
             ),
-  
+
             const SizedBox(width: 6),
-  
+
             /// Away Team Logo
             CircleAvatar(
               backgroundImage: NetworkImage(prediction.awayTeam.logo),
               radius: 14,
               backgroundColor: Colors.transparent,
             ),
-  
+
             const Spacer(),
 
             /// Odd Value Box
-            // DisplayOdd(
-            //   betPredictionType: prediction.betPredictionType!,
-            //   prediction: prediction.betPredictionType!,
-            //   odd: prediction,
-            // ),
-
-
             Container(
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
               decoration: BoxDecoration(
                 color: Colors.blue.shade50,
                 borderRadius: BorderRadius.circular(6),
@@ -101,16 +106,16 @@ class _UserPastPredictionCompactState extends State<UserPastPredictionCompact> {
               child: Text(
                 prediction.betPredictionType!.text + prediction.value.toStringAsFixed(2),
                 style: const TextStyle(
-                    fontSize: 12, fontWeight: FontWeight.bold, color: Colors.blueAccent),
+                  fontSize: 12,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.blueAccent,
+                ),
               ),
             ),
-
-              // Padding(
-              //   padding: const EdgeInsets.only(left: 8),
-              //   child: _buildResultIcon(),
-              // )
           ],
-        ),
+        )
+
+
       ),
     );
   }
