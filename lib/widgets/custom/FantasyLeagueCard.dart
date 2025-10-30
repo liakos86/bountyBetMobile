@@ -13,7 +13,6 @@ import '../../models/constants/Constants.dart';
 import '../../models/constants/PurchaseConstants.dart';
 import '../../models/context/AppContext.dart';
 import '../../utils/StringUtils.dart';
-import '../dialog/DialogTextExtraLeagues.dart';
 import '../dialog/DialogWizardLeagueLeaguesStep2.dart';
 import '../row/FantasyLeaderBoardRow.dart';
 
@@ -393,18 +392,18 @@ class _FantasyLeagueCardState extends State<FantasyLeagueCard> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: const Text('Confirm Opt-Out'),
-          content: const Text('Are you sure you want to opt out of this league? This action cannot be undone.'),
+          title: const Text(AppLocalizations.of(context)!.opt_out_confim),
+          content: const Text(AppLocalizations.of(context)!.opt_out_text),
           actions: [
             TextButton(
-              child: const Text('Cancel'),
+              child: Text(AppLocalizations.of(context)!.cancel_button_text),
               onPressed: () => Navigator.of(context).pop(),
             ),
             ElevatedButton(
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.red.shade300,
               ),
-              child: const Text('Opt-Out', style: TextStyle(color: Colors.white)),
+              child: Text(AppLocalizations.of(context)!.opt_out, style: TextStyle(color: Colors.white)),
               onPressed: () {
                 Navigator.of(context).pop();
                 widget.onOptOut();

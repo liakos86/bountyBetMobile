@@ -264,6 +264,9 @@
         },
         "youAreOffline": "You are offline",
 
+
+        "opt_out_confirm" : "Confirm Opt-Out",
+        "opt_out_text" : "Are you sure you want to opt out of this league? This action cannot be undone!",
         "opt_out": "Opt-out",
         "invite": "Invite",
         "invitations_pend": "Invitations pending: ",
