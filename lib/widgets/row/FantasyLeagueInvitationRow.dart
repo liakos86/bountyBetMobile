@@ -7,6 +7,8 @@ import '../../models/League.dart';
 import '../../models/constants/Constants.dart';
 import '../../models/context/AppContext.dart';
 import '../../utils/client/HttpActionsClient.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
 
 
 class FantasyLeagueInvitationRow extends StatefulWidget {
@@ -108,7 +110,7 @@ class _FantasyLeagueInvitationRowState
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text("Initial Balance:", style: TextStyle(fontWeight: FontWeight.w600)),
+                Text(AppLocalizations.of(context)!.initial_credits, style: TextStyle(fontWeight: FontWeight.w600)),
                 Text("\$${league.startingBalance.toStringAsFixed(0)}"),
               ],
             ),
@@ -118,7 +120,7 @@ class _FantasyLeagueInvitationRowState
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text("Top-Up Allowed:", style: TextStyle(fontWeight: FontWeight.w600)),
+                Text(AppLocalizations.of(context)!.topup_allowed, style: TextStyle(fontWeight: FontWeight.w600)),
                 Row(
                   children: [
                     Icon(
@@ -127,64 +129,13 @@ class _FantasyLeagueInvitationRowState
                       size: 18,
                     ),
                     SizedBox(width: 6),
-                    Text(league.allowTopUp ? "Yes" : "No"),
+                    Text(league.allowTopUp ? AppLocalizations.of(context)!.yes : AppLocalizations.of(context)!.no),
                   ],
                 ),
               ],
             ),
 
 
-            // Center(
-          //     child:
-          //     Wrap(
-          //     alignment: WrapAlignment.center,
-          //
-          //     spacing: 12,
-          //     runSpacing: 8,
-          //     children: league.selectedLeagueIds.map((id) {
-          //       final League? l = AppContext.allLeaguesMap[id];
-          //       return Column(
-          //         mainAxisSize: MainAxisSize.min,
-          //         children: [
-          //           CircleAvatar(
-          //             backgroundImage: NetworkImage(l?.logo ?? 'https://xscore.cc/resb/team/barcelona.png'),
-          //             radius: 20,
-          //           ),
-          //           SizedBox(height: 4),
-          //           Text(
-          //             l?.name ?? 'league name',
-          //             style: TextStyle(fontSize: 12),
-          //           ),
-          //         ],
-          //       );
-          //     }).toList(),
-          //   )
-          // ),
-
-            // SizedBox(
-            //   height: 55,
-            //   child: ListView.separated(
-            //     scrollDirection: Axis.horizontal,
-            //     itemCount: league.selectedLeagueIds.length,
-            //     separatorBuilder: (context, _) => SizedBox(width: 12),
-            //     itemBuilder: (context, index) {
-            //       final League? l = AppContext.allLeaguesMap[league.selectedLeagueIds[index]] ;
-            //       return Column(
-            //         children: [
-            //           CircleAvatar(
-            //             backgroundImage: NetworkImage(l?.logo ?? 'https://xscore.cc/resb/team/barcelona.png'),
-            //             radius: 20,
-            //           ),
-            //           SizedBox(height: 4),
-            //           Text(
-            //             l?.name ?? 'league name',
-            //             style: TextStyle(fontSize: 12),
-            //           ),
-            //         ],
-            //       );
-            //     },
-            //   ),
-            // ),
             if (!_accepted && !_rejected && !_error) ...[
               SizedBox(height: 8),
 
@@ -199,7 +150,7 @@ class _FantasyLeagueInvitationRowState
                       // widget.onDecline();
                       // setState(() => _accepted = true);
                     },
-                    child: Text("Decline"),
+                    child: Text(AppLocalizations.of(context)!.decline_button_text),
                   ) ,
 
 
@@ -214,7 +165,7 @@ class _FantasyLeagueInvitationRowState
                       backgroundColor: (AppContext.user.fantasyLeagueMongoId == null) ? Colors.green.shade400 : Colors.grey.shade400, // Greenish hue
                       foregroundColor: Colors.white,          // Text color
                     ),
-                    child: Text("Accept"),
+                    child: Text(AppLocalizations.of(context)!.accept_button_text),
                   ) ,
 
 
@@ -222,14 +173,14 @@ class _FantasyLeagueInvitationRowState
               ),
 
                 if (AppContext.user.fantasyLeagueMongoId != null)
-                Text('You need to opt-out ${AppContext.fantasyLeague.name} in order to accept')
+                Text('${AppLocalizations.of(context)!.optout_first} ${AppContext.fantasyLeague.name}')
 
                 ]),
             ] else ...[
               SizedBox(height: 16),
               Center(
                 child: Text(
-                  _accepted ? "Invitation accept response sent" : _rejected ? "Invitation reject response sent" : 'Server error response',
+                  _accepted ? AppLocalizations.of(context)!.inv_accept  : _rejected ? AppLocalizations.of(context)!.inv_reject : 'Server error response',
                   style: TextStyle(color: _accepted ? Colors.green : Colors.red),
                 ),
               ),
@@ -246,12 +197,12 @@ class _FantasyLeagueInvitationRowState
       context: context, // or pass context directly
       builder: (context) {
         return AlertDialog(
-          title: const Text('Accept Invitation'),
-          content: const Text('Are you sure you want to accept this league invitation?'),
+          title: Text(AppLocalizations.of(context)!.accept_invitation),
+          content: Text(AppLocalizations.of(context)!.accept_invitation_confirm),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context),
-              child: const Text('Cancel'),
+              child:  Text(AppLocalizations.of(context)!.cancel),
             ),
             ElevatedButton(
               style: ElevatedButton.styleFrom(backgroundColor: Colors.green.shade300),
@@ -260,9 +211,9 @@ class _FantasyLeagueInvitationRowState
                 acceptInvitation(league);
 
                 // setState(() => _accepted = true);
-                print("Accepted invitation");
+                // print("Accepted invitation");
               },
-              child: const Text('Accept', style: TextStyle(color: Colors.white)),
+              child: Text(AppLocalizations.of(context)!.accept_button_text, style: TextStyle(color: Colors.white)),
             ),
           ],
         );
@@ -275,12 +226,12 @@ class _FantasyLeagueInvitationRowState
       context: context, // or pass context directly
       builder: (context) {
         return AlertDialog(
-          title: const Text('Decline Invitation'),
-          content: const Text('Are you sure you want to decline this league invitation?'),
+          title: Text(AppLocalizations.of(context)!.reject_invitation),
+          content: Text(AppLocalizations.of(context)!.reject_invitation_confirm),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context),
-              child: const Text('Cancel'),
+              child: Text(AppLocalizations.of(context)!.cancel),
             ),
             ElevatedButton(
               style: ElevatedButton.styleFrom(backgroundColor: Colors.red.shade300),
@@ -290,9 +241,8 @@ class _FantasyLeagueInvitationRowState
                 fli.mongoId = league.invitationMongoId;
                 HttpActionsClient.rejectFantasyLeagueInvitation(fli);
                 setState(() => _rejected = true);
-                print("Declined invitation");
               },
-              child: const Text('Decline', style: TextStyle(color: Colors.white)),
+              child: Text(AppLocalizations.of(context)!.decline_button_text, style: TextStyle(color: Colors.white)),
             ),
           ],
         );

@@ -19,8 +19,6 @@
     }
   }
 
-    //print('****** LAsTED PERIOD:' + str);
-
   return null;
 }
 

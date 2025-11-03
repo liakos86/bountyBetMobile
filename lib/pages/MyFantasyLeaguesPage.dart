@@ -109,7 +109,6 @@ class MyFantasyLeaguesPageState extends State<MyFantasyLeaguesPage>  with Single
       });
     } else if (state == AppLifecycleState.resumed) {
       // App is active again
-      print('RESUMED!!!!!!!');
       setState(() {
         isMinimized = false;
       });
@@ -270,7 +269,7 @@ class MyFantasyLeaguesPageState extends State<MyFantasyLeaguesPage>  with Single
                     const SizedBox(height: 20),
                     // Text below the icon
                     Text(
-                      'You are offline',
+                      AppLocalizations.of(context)!.youAreOffline,
                       style: const TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.bold,
@@ -337,8 +336,7 @@ class MyFantasyLeaguesPageState extends State<MyFantasyLeaguesPage>  with Single
             optout();
 
 
-            print("Opted out!");
-          },
+            },
           onInviteEmail: inviteUserByEmail,
         )
 
@@ -389,7 +387,7 @@ class MyFantasyLeaguesPageState extends State<MyFantasyLeaguesPage>  with Single
 
             (invitations.isEmpty) ?
 
-            const Align(alignment: Alignment.center,
+            Align(alignment: Alignment.center,
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
@@ -401,9 +399,9 @@ class MyFantasyLeaguesPageState extends State<MyFantasyLeaguesPage>  with Single
                     ),
                     const SizedBox(height: 20),  // Space between icon and text
                     // Text below the icon
-                    const Text(
-                      'No invitations',
-                      style: TextStyle(
+                    Text(
+                      AppLocalizations.of(context)!.no_invitations,
+                      style: const TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.bold,
                         color: Color(ColorConstants.my_dark_grey),
@@ -729,7 +727,6 @@ class MyFantasyLeaguesPageState extends State<MyFantasyLeaguesPage>  with Single
           products = response.productDetails;
         });
       }else{
-        print('PRODUCTS ERROR');
       }
     }
   }
@@ -860,7 +857,6 @@ class MyFantasyLeaguesPageState extends State<MyFantasyLeaguesPage>  with Single
   }
 
   void update(FantasyLeague league){
-    print('LEAGUE NEW');
     setState(() {
       fantasyLeague.copyFrom(league);
       AppContext.user.fantasyLeagueMongoId = league.mongoId;
@@ -872,7 +868,6 @@ class MyFantasyLeaguesPageState extends State<MyFantasyLeaguesPage>  with Single
   void confirmWinner(bool dontShowAgain, String mongoId){
     alertDialogOpen = false;
     if (dontShowAgain) {
-      print('ACKING ' + mongoId);
       sharedPrefs.appendAckLeagueId(mongoId);
     }
   }
@@ -900,14 +895,12 @@ class MyFantasyLeaguesPageState extends State<MyFantasyLeaguesPage>  with Single
       maxDtEndLeague = completedFantasyLeagues.reduce((a, b) =>
       a.dtEnd.isAfter(b.dtEnd) ? a : b);
 
-      print('League with max dtEnd: ${maxDtEndLeague.mongoId}');
     } else {
       return;
     }
 
     bool isAck = await sharedPrefs.isFantasyLeagueAcknowledged(maxDtEndLeague.mongoId);
     if (isAck){
-      print('ACK ALREADY League with max dtEnd: ${maxDtEndLeague.mongoId}');
       return;
     }
 
@@ -924,7 +917,6 @@ class MyFantasyLeaguesPageState extends State<MyFantasyLeaguesPage>  with Single
   Future<FantasyLeagueInvitation> inviteUserByEmail(String email)async{
     FantasyLeagueInvitation invitation = FantasyLeagueInvitation(email: email);
     invitation = await HttpActionsClient.createFantasyLeagueInvitation(invitation);
-    // print('Invited: $email');
     return invitation;
   }
 

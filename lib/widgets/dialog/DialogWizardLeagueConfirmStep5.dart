@@ -3,6 +3,8 @@ import 'package:intl/intl.dart';
 
 import '../../models/FantasyLeague.dart';
 import '../../models/context/AppContext.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
 
 class DialogWizardLeagueConfirmStep5 extends StatelessWidget {
   final FantasyLeague league;
@@ -74,7 +76,7 @@ class DialogWizardLeagueConfirmStep5 extends StatelessWidget {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text("Starting Balance:", style: TextStyle(fontWeight: FontWeight.bold)),
+            Text(AppLocalizations.of(context)!.initial_credits, style: TextStyle(fontWeight: FontWeight.bold)),
             Text("\$${league.startingBalance.toStringAsFixed(0)}"),
           ],
         ),
@@ -84,8 +86,8 @@ class DialogWizardLeagueConfirmStep5 extends StatelessWidget {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text("Top-Up Allowed:", style: TextStyle(fontWeight: FontWeight.bold)),
-            Text(league.allowTopUp ? "Yes" : "No"),
+            Text(AppLocalizations.of(context)!.topup_allowed, style: TextStyle(fontWeight: FontWeight.bold)),
+            Text(league.allowTopUp ? AppLocalizations.of(context)!.yes : AppLocalizations.of(context)!.no),
           ],
         ),
       ],
@@ -141,7 +143,7 @@ class DialogWizardLeagueConfirmStep5 extends StatelessWidget {
       actions: [
         TextButton(
           onPressed: () => Navigator.of(context).pop(), // cancel
-          child: Text("Cancel"),
+          child: Text(AppLocalizations.of(context)!.cancel),
         ),
         ElevatedButton(
           onPressed: () {
@@ -152,7 +154,7 @@ class DialogWizardLeagueConfirmStep5 extends StatelessWidget {
             backgroundColor: Colors.green.shade500,
             foregroundColor: Colors.white,
           ),
-          child: Text("Create"),
+          child: Text(AppLocalizations.of(context)!.confirm_button_text),
         ),
       ],
     );

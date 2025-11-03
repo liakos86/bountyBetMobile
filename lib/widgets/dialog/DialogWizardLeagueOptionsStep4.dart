@@ -2,10 +2,11 @@ import 'package:flutter/material.dart';
 
 import '../../models/FantasyLeague.dart';
 import '../../models/constants/Constants.dart';
-import '../../models/context/AppContext.dart';
-import '../../pages/MyFantasyLeaguesPage.dart';
 import 'DialogWizardLeagueConfirmStep5.dart';
 import '../../utils/client/HttpActionsClient.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
+
 
 class DialogWizardLeagueOptionsStep4 extends StatefulWidget {
   final FantasyLeague league;
@@ -47,11 +48,11 @@ class _DialogWizardLeagueOptionsStep4State extends State<DialogWizardLeagueOptio
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: Text("Step 4: League Settings"),
+      title: Text(AppLocalizations.of(context)!.step4_league_settings),
       content: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Text("Starting Balance", style: TextStyle(fontWeight: FontWeight.bold)),
+          Text(AppLocalizations.of(context)!.initial_credits, style: TextStyle(fontWeight: FontWeight.bold)),
           SizedBox(height: 12),
           Wrap(
             spacing: 12,
@@ -71,8 +72,7 @@ class _DialogWizardLeagueOptionsStep4State extends State<DialogWizardLeagueOptio
               const SizedBox(width: 8),
               Expanded(
                 child: Text(
-
-                  'A user with < 10 credits can add-on extra credits for all users in league',
+                  AppLocalizations.of(context)!.topup_explained,
                   style: const TextStyle(fontSize: 10, color: Colors.black87),
                 ),
               ),
@@ -81,7 +81,7 @@ class _DialogWizardLeagueOptionsStep4State extends State<DialogWizardLeagueOptio
 
           SizedBox(height: 4),
           CheckboxListTile(
-            title: Text("Allow add-on"),
+            title: Text(AppLocalizations.of(context)!.allow_addon),
             value: _allowTopUp,
             onChanged: (val) => setState(() => _allowTopUp = val ?? false),
           ),
@@ -90,11 +90,11 @@ class _DialogWizardLeagueOptionsStep4State extends State<DialogWizardLeagueOptio
       actions: [
         TextButton(
           onPressed: () => Navigator.of(context).pop(), // Back
-          child: const Text("Cancel"),
+          child: Text(AppLocalizations.of(context)!.cancel),
         ),
         ElevatedButton(
           onPressed: _onNext,
-          child: const Text("Next"),
+          child: Text(AppLocalizations.of(context)!.next),
         ),
       ],
     );

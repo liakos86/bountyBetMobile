@@ -35,10 +35,7 @@ class DialogTextExtraUsers extends StatelessWidget{//} StatefulWidget {
             mainAxisSize: MainAxisSize.min,
             children: [
 
-              Text(
-
-                'extra users',
-                // AppLocalizations.of(context)!.extra_leagues_text,
+              Text(AppLocalizations.of(context)!.extra_users_text,
                 style: const TextStyle(fontSize: 16.0),
               ),
               const SizedBox(height: 20.0),

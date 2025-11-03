@@ -151,7 +151,7 @@ class HttpActionsClient {
       def.mongoId = Constants.offlineMongoId;
       jsonLeaguesData.add(def);
 
-      print('ERROR REST ----FANTASY  LEAGUES MOCKING............');
+      // print('ERROR REST ----FANTASY  LEAGUES MOCKING............');
     }
 
     return jsonLeaguesData;
@@ -1316,7 +1316,7 @@ class HttpActionsClient {
 
     // return true;
 
-    print("CONN CHECK");
+    // print("CONN CHECK");
 
     var connectivityResult = await Connectivity().checkConnectivity();
     if (connectivityResult == ConnectivityResult.none) {

@@ -1,35 +1,40 @@
 {
   "@@locale": "en",
-  "appTitle": "Flutter i18n",
-  "@appTitle": {
-    "description": "Main application title"
-  },
-  "welcome": "Welcome!",
+
   "goal": "goal",
   "incidents": "Incidents",
   "expected_goals" : "Expected goals",
-  
+   "inv_accept": "Invitation accept response sent",
+   "inv_reject": "Invitation reject response sent",
+   "optout_first": "You need to opt-out from ",
+
     "ball_possession" : "Ball possession",
-  
+
     "total_shots" : "Total shots",
-  
+
     "shots_on_target" : "Shots on target",
-  
+
     "corner_kicks" : "Corner kicks",
-  
+
     "offsides" : "Offsides",
-  
+
     "yellow_cards" : "Yellow cards",
-  
+
     "red_cards" : "Red cards",
-  
+
     "goalkeeper_saves" : "Keeper saves",
-  
+
     "hit_woodwork" : "Hit the post",
 
     "points" : "points",
 
-    "won" : "slips won",
+    "accept_invitation" : "Accept Invitation",
+
+    "accept_invitation_confirm" : "Are you sure you want to accept this league invitation?",
+
+     "reject_invitation" : "Decline Invitation",
+
+     "reject_invitation_confirm" : "Are you sure you want to decline this league invitation?",
 
     "buypreds" : "Buy predictions of ",
 
@@ -81,9 +86,14 @@
 
        "topup_text" : "The selected credits can be used whenever you like. They will not affect your leaderboard position, until you place a bet (of any odd).",
 
-       "extra_leagues_text" : "Unlocking this feature gives you access to up to 10 championships for for fantasy league!",
+       "extra_leagues_text" : "Unlocking this feature gives you access to up to 10 championships for your fantasy league!",
+       "extra_users_text" : "Unlocking this feature allows you to create a fantasy league with up to 10 users!",
 
-       "i_want_it_text" : "I want it",
+        "topup_explained" : "*When a user has < 10 credits can add-on extra credits for all users in league",
+
+       "i_want_it_text" : "Yes, unlock this!",
+
+       "allow_addon" : "Allow add-on",
 
         "topup_button_text" : "Top Up",
 
@@ -112,9 +122,20 @@
 
        "loading" : "Loading...",
 
+       "password_reset_fail" : "Password reset failed",
+
+       "delete_account":"Delete my account",
+       "delete_account_confirm":"Are you sure you want to delete your account? This is irreversible!",
+
+       "slips": "Slips",
+       "preds": "Preds",
+       "returned": "Ret.",
+
        "logout_text" : "Are you sure you want to logout?",
        "confirm_button_text" : "Confirm",
+       "accept_button_text" : "Accept",
        "cancel_button_text" : "Cancel",
+       "decline_button_text": "Decline",
        "view_predictions_text" : "View preds",
        "congrats_text" : "Congratulations! You finished in position {position} with {credits} credits! You can now view for FREE all the users' predictions for current month!",
        "congrats_text_fantasy" : "Congratulations! You finished in position {position} with {credits} credits at league {league}!",
@@ -158,7 +179,6 @@
         "month_roi": "Month\nROI",
         "total_roi": "Total\nROI",
 
-        "amount_returned" : "Bet\nReturned",
 
         "leaderboard_info" : "Positions calculated based on ROI (Ratio of returned amount to bet amount). ",
 
@@ -264,6 +284,15 @@
         },
         "youAreOffline": "You are offline",
 
+        "initial_credits" : "Initial credits:",
+
+        "edit" : "Edit",
+
+
+           "no_invitations" : "No invitations",
+
+           "no_bets" : "No predictions",
+
 
         "opt_out_confirm" : "Confirm Opt-Out",
         "opt_out_text" : "Are you sure you want to opt out of this league? This action cannot be undone!",
@@ -278,8 +307,41 @@
 
         "invite_email" : "Invite by Email",
 
+        "possible_earnings" : "Possible earnings: ",
+
+        "credits" : "Credits: ",
+
         "already_inv" : "This email has already been invited.",
         "email_invalid" : "Invalid email address.",
+
+       "available" : "Available",
+
+       "reset_text": "Password reset mail sent to ",
+
+       "step3_dates": "Step 3: Select Dates",
+       "step3_start_date": "Start Date",
+       "step3_end_date": "End Date",
+       "select": "Select",
+
+       "yes": "yes",
+       "no": "no",
+
+       "done": "Prediction placed",
+       "enter_amount": "Select amount",
+
+     "reset_pass_error": "Could not reset password",
+
+     "step2_leagues": "Step 2: Select Leagues",
+
+     "step2_unlock_leagues": "Unlock extra leagues",
+
+     "step2_pro_leagues_on": "Pro leagues enabled",
+
+     "step1_league_name": "Step 1: League Name",
+
+     "step1_select_league": "League Name",
+
+     "step4_league_settings": "Step 4: League Settings",
 
      "run_this" : "flutter gen-l10n"
 }

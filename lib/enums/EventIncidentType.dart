@@ -26,8 +26,6 @@ inGamePenalty(incidentCode: "inGamePenalty");// this means it is missed
       }
     }
 
-    print('****** INCIDENT CODE:' + code);
-
     return EventIncidentType.NONE;
   }
 

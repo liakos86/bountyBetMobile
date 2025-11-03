@@ -48,7 +48,6 @@ class MatchEventIncidentSoccer implements Comparable{
   }
 
   static fromJson(model) {
-    print('checking ' + model['incident_type']);
     MatchEventIncidentSoccer incident = new MatchEventIncidentSoccer(
         id: (model[JsonConstants.id]),
         event_id: (model[JsonConstants.eventId]), incident_type: model['incident_type'],

@@ -33,8 +33,6 @@ enum StatisticsGroupType{
       }
     }
 
-    print('****** GROUP CODE:' + code);
-
     return StatisticsGroupType.NONE;
   }
 

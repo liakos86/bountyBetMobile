@@ -100,7 +100,7 @@ class OtherUserBetsPageState extends State<OtherUserBetsPage>  with  WidgetsBind
             ImageIcon(size:100, AssetImage('assets/images/money-bag-100.png')),
             const SizedBox(height: 20),  // Space between icon and text
             // Text below the icon
-            const Text(
+            Text(
               'No bets',
               style: TextStyle(
                 fontSize: 16,

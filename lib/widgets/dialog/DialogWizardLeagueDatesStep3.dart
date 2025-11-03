@@ -7,6 +7,8 @@ import '../../models/context/AppContext.dart';
 import '../../utils/client/HttpActionsClient.dart';
 import 'DialogWizardLeagueConfirmStep5.dart';
 import 'DialogWizardLeagueOptionsStep4.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
 
 class DialogWizardLeagueDatesStep3 extends StatefulWidget {
   final String leagueName;
@@ -142,7 +144,7 @@ class _DialogWizardLeagueDatesStep3State extends State<DialogWizardLeagueDatesSt
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: Text("Step 3: Select Dates"),
+      title: Text(AppLocalizations.of(context)!.step3_dates),
       content: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
@@ -151,11 +153,11 @@ class _DialogWizardLeagueDatesStep3State extends State<DialogWizardLeagueDatesSt
               Expanded(
                 child: Column(
                   children: [
-                    Text("Start Date", style: TextStyle(fontWeight: FontWeight.bold)),
+                    Text(AppLocalizations.of(context)!.step3_start_date, style: TextStyle(fontWeight: FontWeight.bold)),
                     SizedBox(height: 8),
                     ElevatedButton(
                       onPressed: _pickStartDate,
-                      child: Text(_start != null ? _dateFormat.format(_start!) : "Select"),
+                      child: Text(_start != null ? _dateFormat.format(_start!) : AppLocalizations.of(context)!.select),
                     ),
                   ],
                 ),
@@ -164,11 +166,11 @@ class _DialogWizardLeagueDatesStep3State extends State<DialogWizardLeagueDatesSt
               Expanded(
                 child: Column(
                   children: [
-                    Text("End Date", style: TextStyle(fontWeight: FontWeight.bold)),
+                    Text(AppLocalizations.of(context)!.step3_end_date, style: TextStyle(fontWeight: FontWeight.bold)),
                     SizedBox(height: 8),
                     ElevatedButton(
                       onPressed: _start == null ? null : _pickEndDate,
-                      child: Text(_end != null ? _dateFormat.format(_end!) : "Select"),
+                      child: Text(_end != null ? _dateFormat.format(_end!) : AppLocalizations.of(context)!.select),
                     ),
                   ],
                 ),
@@ -184,11 +186,11 @@ class _DialogWizardLeagueDatesStep3State extends State<DialogWizardLeagueDatesSt
       actions: [
         TextButton(
           onPressed: () => Navigator.of(context).pop(), // Cancel
-          child: const Text("Cancel"),
+          child: Text(AppLocalizations.of(context)!.cancel),
         ),
         ElevatedButton(
           onPressed: _onNext,
-          child: const Text("Next"),
+          child: Text(AppLocalizations.of(context)!.next),
         ),
       ],
     );

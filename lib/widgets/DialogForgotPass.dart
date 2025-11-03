@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_app/utils/client/HttpActionsClient.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
-import '../models/User.dart';
 
 class DialogForgotPass extends StatefulWidget {
   // final Function callback;
@@ -49,7 +48,7 @@ class DialogForgotPassState extends State<DialogForgotPass> {
 
                       passReset ?
 
-                          Text('Password reset mail sent to $email', style: const TextStyle(color: Colors.green, fontSize: 18)) :
+                          Text('${AppLocalizations.of(context)!.reset_text} $email', style: const TextStyle(color: Colors.green, fontSize: 18)) :
 
                       TextField(
                         style: const TextStyle(color: Colors.black),
@@ -133,10 +132,10 @@ class DialogForgotPassState extends State<DialogForgotPass> {
     String? emailResponse = await HttpActionsClient.forgotPasswordClaim(emailInput);
     if (emailResponse == null)  {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-          content: Text("Could not reset password"),
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text(AppLocalizations.of(context)!.reset_pass_error),
           showCloseIcon: true,
-          duration: Duration(seconds: 5),
+          duration: const Duration(seconds: 5),
         ));
       }
 

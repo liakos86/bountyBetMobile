@@ -198,7 +198,7 @@ class BetSlipWithCustomKeyboardState extends State<BetSlipWithCustomKeyboard>{
                                 Row(
                                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                     children: [
-                                      Text('Available ${AppContext.user.fantasyBalance.balance.toStringAsFixed(2)}'),
+                                      Text('${AppLocalizations.of(context)!.available} ${AppContext.user.fantasyBalance.balance.toStringAsFixed(2)}'),
                                       Text(bettingAmount > 0 ? '${AppLocalizations.of(context)!.betslip_returning}${(bettingAmount * BetUtils.finalOddOf(selectedOdds)).toStringAsFixed(2)}' : BetUtils.finalOddOf(selectedOdds).toStringAsFixed(2)),
                                     ]
                                 )

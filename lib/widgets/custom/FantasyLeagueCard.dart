@@ -129,7 +129,7 @@ class _FantasyLeagueCardState extends State<FantasyLeagueCard> {
                         Row(
                           children: [
                             Text(
-                              'Initial credits: ${fantasyLeague.startingBalance.toStringAsFixed(0)} / ' ,
+                              '${AppLocalizations.of(context)!.initial_credits} ${fantasyLeague.startingBalance.toStringAsFixed(0)} / ' ,
                               style: const TextStyle(fontSize: 10, color: Colors.grey),
                             ),
                             Icon(
@@ -163,7 +163,7 @@ class _FantasyLeagueCardState extends State<FantasyLeagueCard> {
                       textStyle: const TextStyle(fontSize: 12),
                     ),
                     icon: const Icon(Icons.edit, size: 16),
-                    label: const Text("Edit"),
+                    label: Text(AppLocalizations.of(context)!.edit),
                   ),
 
 

@@ -58,7 +58,6 @@ big_chances_missed(nameCode: "big_chances_missed");
       }
     }
 
-    // print('****** STAT NAME:' + code);
 
     return StatisticsNameType.NONE;
   }

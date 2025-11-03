@@ -1,13 +1,21 @@
 {
   "@@locale": "el",
-  "appTitle": "Εφαρμογή",
-  "@appTitle": {
-    "description": "Main application title"
-  },
-  "welcome": "Welcome!",
+
   "goal": "Γκολ",
   "incidents": "Φάσεις",
   "expected_goals" : "Αναμενόμενα Γκολ",
+
+   "inv_accept": "Επιτυχής αποδοχή",
+   "inv_reject": "Απορρίφθηκε",
+
+
+    "accept_invitation" : "Αποδοχή πρόσκλησης",
+
+    "accept_invitation_confirm" : "Θέλετε να αποδεχτείτε την πρόσκληση;",
+
+
+   "optout_first": "Πρέπει να αποχωρήσετε από το ",
+
   
     "ball_possession" : "Κατοχή",
   
@@ -31,6 +39,8 @@
 
     "won" : "κερδισμένα",
 
+
+
     "buypreds" : "Αγόρασε τις προβλέψεις του ",
 
     "monthlybetswon" : "Κερδισμένα δελτία μήνα:",
@@ -47,8 +57,8 @@
     "status_will_cont" : "Διακοπή",
     "status_interrupt" : "Διακοπή",
     "status_finished" : "Τελικό",
-    "status_half_time" : "Ημίχρονο",
-    "status_half_time_et" : "Ημίχρονο Παρ.",
+    "status_half_time" : "Ημίχ.",
+    "status_half_time_et" : "Ημίχ. Παρ.",
 
     "status_more_et" : "Παρ.",
      "status_more_pen" : "Πεν.",
@@ -104,12 +114,39 @@
        "logout_text" : "Είστε βέβαιοι πως θέλετε να αποσυνδεθείτε;",
        "confirm_button_text" : "Επιβεβαίωση",
 
+       "accept_button_text" : "Αποδοχή",
         "cancel_button_text" : "Άκύρωση",
+        "decline_button_text": "Απόρριψη",
+
+        "password_reset_fail" : "Αποτυχία επαναφοράς κωδικού",
+
+       "delete_account":"Διαγραφή λογαριασμού",
+       "delete_account_confirm":"Είστε βέβαιοι πως θέλετε να διαγράψετε το λογαριασμό σας; Αυτή η ενέργεια δεν είναι αναστρέψιμη!",
+
+
+        "credits" : "Credits: ",
+
+     "reject_invitation" : "Απόρριψη πρόσκλησης",
+
+     "reject_invitation_confirm" : "Θέλετε να απορρίψετε την πρόσκληση;",
+
+
+       "reset_text": "'Εχει αποσταλεί email επαναφοράς στο ",
+
+
+       "available" : "Διαθέσιμο",
+
+       "edit" : "Επεξ.",
+
+      "step3_dates": "Βήμα 3: Ημερομηνίες",
+      "step3_start_date": "Ημ. Έναρξης",
+      "step3_end_date": "Ημ. Λήξης",
+      "select": "Επιλογή",
+
 
         "opt_out_confirm" : "Επιβεβαίωση αποχώρησης",
 
         "opt_out_text" : "Είστε σίγουροι ότι θέλετε να αποχωρήσετε; Αυτή η ενέργεια δεν είναι αναστρέψιμη!",
-
 
         "out_of" : " από ",
 
@@ -141,8 +178,6 @@
           "tab_past_leagues": "Ολοκληρωμένες",
 
 
-       "amount_returned" : "Ποντάρ.\nΕπιστροφή",
-
        "winners" : "Νικητές",
 
        "me" : "Εγώ",
@@ -154,6 +189,10 @@
         "leaders" : "Κατάταξη",
 
         "bets" : "Προβλέψεις",
+
+       "slips": "Δελτία",
+       "preds": "Προβλ.",
+       "returned": "Επιστρ.",
 
         "no_pending_bets" : "Δεν υπάρχουν ανοιχτές προβλέψεις",
 
@@ -192,10 +231,16 @@
 
        "topup_text" : "Το παρακάτω εικονικό ποσό μπορεί να χρησιμοποιηθεί όποτε εσείς επιθυμείτε. Δεν συμμετέχει στη μηνιαία βαθμολογία, μέχρι να πονταριστεί (σε οποιαδήποτε απόδοση).",
        "extra_leagues_text" : "Ξεκλειδώντας αυτό το αντικείμενο έχετε δυνατότητα προσθήκης έως 10 πρωταθλημάτων στο fantasy league σας!",
+       "extra_users_text" : "Ξεκλειδώντας αυτό το αντικείμενο έχετε δυνατότητα προσθήκης έως 10 παικτών στο fantasy league σας!",
 
         "email_verification" : "Ένα email επαλήθευσης έχει σταλεί στο ",
 
-        "i_want_it_text" : "Το θέλω",
+        "i_want_it_text" : "Ξεκλείδωσέ το!",
+
+        "topup_explained" : "*Όταν ένας παίκτης έχει < 10 μονάδες, μπορεί να προσθέσει έξτρα μονάδες για όλους",
+
+         "allow_addon" : "Ενεργοποίηση add-on",
+
 
 
          "possible_earnings" : "Πιθανά κέρδη",
@@ -244,16 +289,8 @@
                              "credits": {}
                            }},
 
-           "createLeague": "Νέο Πρωτάθλημα",
-           "selectLeaguesStep": "Βήμα {step}: Επιλογή Πρωταθλημάτων",
-           "@selectLeaguesStep": {
-             "description": "Τίτλος του βήματος wizard όπου ο χρήστης επιλέγει πρωταθλήματα",
-             "placeholders": {
-               "step": {}
-             }
-           },
-           "unlockLeagues": "Ξεκλείδωμα πρωταθλημάτων",
-           "proLeaguesEnabled": "Οι Pro πρωταθλήματα είναι ενεργές",
+
+
            "selected": "Επιλεγμένα:",
            "cancel": "Ακύρωση",
            "next": "Επόμενο",
@@ -276,8 +313,14 @@
            },
            "youAreOffline": "Είστε εκτός σύνδεσης",
 
+           "no_invitations" : "Δεν υπάρχουν προσκλήσεις",
+           "no_bets" : "Δεν υπάρχουν προβλέψεις",
+
         "invite": "Πρόσκληση",
         "invitations_pend": "Εκκρεμείς προσκλήσεις: ",
+
+
+        "initial_credits" : "Αρχικό κεφάλαιο:",
 
 
         "topup_allowed" : "Top-up επιτρέπεται",
@@ -293,7 +336,31 @@
 
         "email_invalid" : "Λάθος διεύθυνση email.",
 
-           "opt_out": "Αποχώρηση"
+     "opt_out": "Αποχώρηση",
+
+
+      "yes": "ναι",
+      "no": "όχι",
+
+     "done": "Επιτυχής τοποθέτηση",
+     "enter_amount": "Επιλογή ποσού",
+
+     "reset_pass_error": "Δεν έγινε επαναφορά κωδικού",
+
+     "step2_leagues": "Βήμα 2: Επιλογή πρωταθλημάτων",
+
+      "step2_unlock_leagues": "Ξεκλείδωμα πρωταθλημάτων",
+
+      "step2_pro_leagues_on": "Pro mode ενεργό",
+
+      "step1_league_name": "Βήμα 1: Όνομα πρωταθλήματος",
+
+      "step1_select_league": "Επιλογή ονόματος",
+
+      "step4_league_settings": "Βήμα 4: Ρυθμίσεις",
+
+      "run_this" : "flutter gen-l10n"
+
 
 
 }

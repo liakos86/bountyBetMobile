@@ -1,6 +1,5 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_app/models/constants/ColorConstants.dart';
 
 import '../../models/constants/Constants.dart';
 import '../../models/context/AppContext.dart';
@@ -192,13 +191,13 @@ class FantasyTipsDrawer extends StatelessWidget {
               onTap: () async {
 
                 showDialog(context: context, builder: (context) =>
-                    DialogTextWithConfirmCancel(confirmCallback: deleteCallback, text: 'ARE YOU SURE YOU WANT TO DELETE YOUR ACCOUNT???')
+                    DialogTextWithConfirmCancel(confirmCallback: deleteCallback, text: AppLocalizations.of(context)!.delete_account_confirm)
                 );
 
 
               },
               child: Text(
-                'Delete my account',
+                AppLocalizations.of(context)!.delete_account,
                 style: TextStyle(
                   decoration: TextDecoration.underline,
                   color: Colors.red,

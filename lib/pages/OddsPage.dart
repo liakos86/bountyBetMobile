@@ -527,7 +527,7 @@ class _BottomSheetContentState extends State<BottomSheetContent> {
           ),
           child: Wrap(
             children: [
-              const Text("Enter amount"),
+              Text(AppLocalizations.of(context)!.enter_amount),
               const SizedBox(height: 12),
               TextField(
                 controller: _controller,
@@ -542,7 +542,7 @@ class _BottomSheetContentState extends State<BottomSheetContent> {
                 onPressed: () {
                   Navigator.pop(context);
                 },
-                child: const Text("Done"),
+                child: Text(AppLocalizations.of(context)!.done),
               )
             ],
           ),

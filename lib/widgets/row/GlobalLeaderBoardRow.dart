@@ -5,6 +5,8 @@ import '../../models/UserBet.dart';
 import '../../models/UserPrediction.dart';
 import '../../models/context/AppContext.dart';
 import 'UserPastPredictionCompact.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
 
 
 
@@ -145,7 +147,7 @@ class _GlobalLeaderboardRowState extends State<GlobalLeaderboardRow> {
                         const Icon(Icons.check_circle, color: Colors.green, size: 16),
                         const SizedBox(width: 4),
                         Text(
-                          'Bets: ${_user.overallWonBets}, Preds: ${_user.overallWonPredictions}',
+                          '${AppLocalizations.of(context)!.slips} ${_user.overallWonBets}, ${AppLocalizations.of(context)!.preds} ${_user.overallWonPredictions}',
                           style: const TextStyle(fontSize: 12),
                         ),
                       ],
@@ -156,7 +158,7 @@ class _GlobalLeaderboardRowState extends State<GlobalLeaderboardRow> {
                         const Icon(Icons.cancel, color: Colors.red, size: 16),
                         const SizedBox(width: 4),
                         Text(
-                          'Bets: ${_user.overallLostBets}, Preds: ${_user.overallLostPredictions}',
+                          '${AppLocalizations.of(context)!.slips} ${_user.overallLostBets}, ${AppLocalizations.of(context)!.preds} ${_user.overallLostPredictions}',
                           style: const TextStyle(fontSize: 12),
                         ),
                       ],

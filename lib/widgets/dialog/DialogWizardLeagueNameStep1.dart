@@ -2,6 +2,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:in_app_purchase_platform_interface/src/types/product_details.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
 
 import '../../models/FantasyLeague.dart';
 import 'DialogWizardLeagueLeaguesStep2.dart';
@@ -56,15 +58,15 @@ class _LeagueNameDialogState extends State<DialogWizardLeagueNameStep1> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: const Text("Step 1: League Name"),
+      title: Text(AppLocalizations.of(context)!.step1_league_name),
       content: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
           TextField(
             controller: _nameController,
             maxLength: 50,
-            decoration: const InputDecoration(
-              labelText: "League Name",
+            decoration: InputDecoration(
+              labelText: AppLocalizations.of(context)!.step1_select_league,
               //errorText: _error,
               border: OutlineInputBorder(),
             ),
@@ -74,11 +76,11 @@ class _LeagueNameDialogState extends State<DialogWizardLeagueNameStep1> {
       actions: [
         TextButton(
           onPressed: () => Navigator.of(context).pop(), // Cancel
-          child: const Text("Cancel"),
+          child: Text(AppLocalizations.of(context)!.cancel),
         ),
         ElevatedButton(
           onPressed: _onNext,
-          child: const Text("Next"),
+          child: Text(AppLocalizations.of(context)!.next),
         ),
       ],
     );

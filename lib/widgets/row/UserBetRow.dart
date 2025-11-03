@@ -80,7 +80,7 @@ class UserBetRow extends StatefulWidget {
                        ),
                        const SizedBox(height: 4),
                        Text(
-                         '$placementTime - Bet: ${bet.betAmount.toStringAsFixed(2)} \r\nbetId:${bet.betId}',
+                         '$placementTime - ${AppLocalizations.of(context)!.amount}: ${bet.betAmount.toStringAsFixed(2)} \r\nbetId:${bet.betId}',
                          maxLines: 2,
                          style: Theme.of(context).textTheme.bodySmall,
                        ),
@@ -116,53 +116,7 @@ class UserBetRow extends StatefulWidget {
    }
 
 
-   //  @override
-  // Widget build(BuildContext context) {
-  //
-  //   return
-  //
-  //     Theme(
-  //
-  //       key: PageStorageKey<String>('user_bet_${bet.betId}'),
-  //   data: Theme.of(context).copyWith(
-  //   listTileTheme: ListTileTheme.of(context).copyWith(
-  //   dense: true,
-  //   ),
-  //   ),
-  //     child:
-  //     ExpansionTile(
-  //
-  //         collapsedBackgroundColor:  Colors.blue.shade50 ,
-  //         backgroundColor:   Colors.blue.shade50 ,
-  //
-  //
-  //         initiallyExpanded: true,
-  //
-  //     tilePadding: const EdgeInsets.only(left: 8),
-  //     subtitle: Text(maxLines:2, '$placementTime - Bet: ${bet.betAmount.toStringAsFixed(2)} \r\nbetId:${bet.betId}'),
-  //     leading:
-  //
-  //         bet.betStatus==BetStatus.LOST ?
-  //         const Icon( Icons.highlight_remove, color:   Colors.red)
-  //             : ( bet.betStatus==BetStatus.WON ?
-  //         const Icon(Icons.check_circle_outline_outlined, color: Color(ColorConstants.my_blue)) :
-  //         const Icon(Icons.downloading_outlined, color:   Colors.blueAccent) ),
-  //
-  //
-  //
-  //     title: Text('${AppLocalizations.of(context)!.possible_earnings} ${bet.toReturn().toStringAsFixed(2)}',
-  //         style: const TextStyle(fontSize: 14, color: Colors.black87, fontWeight: FontWeight.bold)),
-  //     children: bet.predictions.map((item)=> _buildSelectedOddRow(item)).toList()
-  //   ));
-  // }
-
   Widget _buildSelectedOddRow(UserPrediction bettingOdd) {
-
-   // return MatchRowTilted(key: PageStorageKey<String>('user_prediction_${bettingOdd.mongoId}'), prediction: bettingOdd, gameWithOdds: AppContext.findEvent(bettingOdd.eventId), selectedOdds: null, callbackForOdds: null);
-
-    // return LiveMatchRowTilted(key: PageStorageKey<String>('user_prediction_${bettingOdd.mongoId}'), gameWithOdds: AppContext.findEvent(bettingOdd.eventId), prediction: bettingOdd);
-
-    // print('key is ' + bettingOdd.mongoId);
     return UserPredictionCardTilted(key: PageStorageKey<String>('user_prediction_${bettingOdd.mongoId}'), prediction: bettingOdd, event: AppContext.findEvent(bettingOdd.eventId), callback: null,);
   }
 

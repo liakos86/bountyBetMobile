@@ -6,18 +6,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_app/enums/ChangeEvent.dart';
 import 'package:flutter_app/enums/MatchEventStatus.dart';
-import 'package:flutter_app/models/match_odds.dart';
-import 'package:flutter_app/pages/MatchInfoSoccerDetailsPage.dart';
-import '../../enums/BetPredictionType.dart';
-import '../../enums/MatchEventStatusMore.dart';
-import '../../enums/WinnerType.dart';
 import '../../helper/SharedPrefs.dart';
 import '../../models/constants/ColorConstants.dart';
 import '../../models/constants/Constants.dart';
 import '../../models/match_event.dart';
 import '../../pages/ParentPage.dart';
 import '../../utils/BetUtils.dart';
-import '../DisplayOdd.dart';
 import '../LogoWithName.dart';
 
 class LiveMatchRowTilted extends StatefulWidget {
@@ -48,18 +42,6 @@ class LiveMatchRowTiltedState extends State<LiveMatchRowTilted> {
     int homeRed = 0;
     int awayRed = 0;
 
-
-
-    // Iterable<MatchEventIncidentSoccer> redCards = gameWithOdds.st.where((element) =>
-    //   element.incident_type=="card" && (element.card_type=='Red' || element.card_type=='YellowRed'));
-    //
-    // for (MatchEventIncidentSoccer redCard in redCards){
-    //   if (redCard.player_team==1){
-    //     ++homeRed;
-    //   }else if (redCard.player_team==2){
-    //     ++awayRed;
-    //   }
-    // }
 
     return
 
@@ -92,29 +74,6 @@ class LiveMatchRowTiltedState extends State<LiveMatchRowTilted> {
                     flex: 14,
                     child:
 
-                // GestureDetector(
-                //   behavior: HitTestBehavior.translucent,
-                // onTap: () {
-                //
-                //   if (gameWithOdds.status != MatchEventStatus.INPROGRESS.statusStr && gameWithOdds.status != MatchEventStatus.FINISHED.statusStr){
-                //     return;
-                //   }
-                //
-                // Navigator.push(
-                // context,
-                // MaterialPageRoute(
-                //
-                //     builder:  (context) =>
-                //
-                //         MatchInfoSoccerDetailsPage(key: UniqueKey(),
-                //             event: gameWithOdds,
-                //             eventCallback: getEvent)
-                //
-                //
-                // )
-                // );
-                // },
-                // child:
 
                     Column(
                     children: [
@@ -226,6 +185,7 @@ class LiveMatchRowTiltedState extends State<LiveMatchRowTilted> {
 
       return
         Transform(
+            transformHitTests: true,
             transform: Matrix4.skewX(-0.2), // Tilt the container
             child: Container(
                 margin: const EdgeInsets.only(left:6),
@@ -299,42 +259,6 @@ class LiveMatchRowTiltedState extends State<LiveMatchRowTilted> {
       gameWithOdds.isFavourite = newfav;
     });
   }
-
-  // _buildWinnerOdds(MatchOdds? odds, int? winner_code) {
-  //   return Column(
-  //       mainAxisSize: MainAxisSize.max,
-  //       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-  //     children: [
-  //       Expanded(flex:1, child:
-  //       DisplayOdd(betPredictionType: BetPredictionType.HOME_WIN, prediction: winnerPredictionType(winner_code), odd: odds!.odd1)
-  //       ),
-  //       Expanded(flex:1, child:
-  //       DisplayOdd(betPredictionType: BetPredictionType.DRAW, prediction: winnerPredictionType(winner_code), odd: odds!.oddX)
-  //       ),
-  //       Expanded(flex:1, child:
-  //       DisplayOdd(betPredictionType: BetPredictionType.AWAY_WIN, prediction: winnerPredictionType(winner_code), odd: odds!.odd2)
-  //       ),
-  //
-  //     ]
-  //
-  //   );
-  // }
-
-  // winnerPredictionType(int? winner_code) {
-  //   if (winner_code == 1){
-  //     return BetPredictionType.HOME_WIN;
-  //   }
-  //
-  //   if (winner_code == 2){
-  //     return BetPredictionType.AWAY_WIN;
-  //   }
-  //
-  //   if (winner_code == 3){
-  //     return BetPredictionType.DRAW;
-  //   }
-  //
-  //   return BetPredictionType.OVER_25;
-  // }
 
   flexSizeForLeading() {
     if ( MatchEventStatus.INPROGRESS.statusStr == gameWithOdds.status || MatchEventStatus.NOTSTARTED.statusStr == gameWithOdds.status ){

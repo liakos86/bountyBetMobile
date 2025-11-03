@@ -126,9 +126,6 @@ class ParentPageState extends State<ParentPage> with WidgetsBindingObserver {
    AppContext.eventsPerDayMap.putIfAbsent(DateUtilsFt.formattedDateWithOffset(1), () => <LeagueWithData>[]);
    AppContext.eventsPerDayMap.putIfAbsent(DateUtilsFt.formattedDateWithOffset(2), () => <LeagueWithData>[]);
 
-   // print('Calling init state ' + AppContext.eventsPerDayMap.keys.toList().length.toString());
-   // print('init state date ' + AppContext.eventsPerDayMap.keys.toList()[0] +' / '+ AppContext.eventsPerDayMap.keys.toList()[1] + ' / ' + AppContext.eventsPerDayMap.keys.toList()[2]);
-
   WidgetsBinding.instance.addObserver(this);
 
   super.initState();
@@ -177,7 +174,6 @@ class ParentPageState extends State<ParentPage> with WidgetsBindingObserver {
       });
     } else if (state == AppLifecycleState.resumed) {
       // App is active again
-      print('RESUMED!!!!!!!');
       setState(() {
         loadingAfterResume = true;
         isMinimized = false;
@@ -436,10 +432,10 @@ class ParentPageState extends State<ParentPage> with WidgetsBindingObserver {
                 width: double.infinity,
                 color: Colors.redAccent,
                 padding: const EdgeInsets.symmetric(vertical: 4),
-                child: const Center(
+                child: Center(
                   child: Text(
-                    'You are currently offline',
-                    style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                    AppLocalizations.of(context)!.youAreOffline,
+                    style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
                   ),
                 ),
               ),
@@ -613,14 +609,10 @@ class ParentPageState extends State<ParentPage> with WidgetsBindingObserver {
       String localStartString = matchTimeFormat.format(incomingEvent.startAtLocalDateTime());
       String eventDateKey = localStartString.split(' ')[0];
 
-      if (eventDateKey == '2025-08-16'){
-        print(eventDateKey);
-      }
+
 
       if (!AppContext.eventsPerDayMap.containsKey(eventDateKey)){
-        // print('SKIPPING GAME ' + incomingEvent.eventId.toString());
         continue;
-        // AppContext.eventsPerDayMap. putIfAbsent(eventDateKey, () => <LeagueWithData>[]);
       }
 
       List<LeagueWithData> matchDayLeagues = AppContext.eventsPerDayMap[eventDateKey] ?? [];
@@ -644,9 +636,6 @@ class ParentPageState extends State<ParentPage> with WidgetsBindingObserver {
         leagueOfMatch.events.add(incomingEvent);
       }else{
 
-        if (matches.length > 1){
-          print('MATCH EEEEEEEEERRRRRRRRRRRRRRRRRRRRRRR');
-        }
 
         existingEvent = matches.first;
         existingEvent.copyFrom(incomingEvent);
@@ -706,7 +695,6 @@ class ParentPageState extends State<ParentPage> with WidgetsBindingObserver {
         for (LeagueWithData lwd in List.of(AppContext.liveLeagues)){
           bool hasLiveGames = lwd.events.any((element) => element.status == MatchEventStatus.INPROGRESS.statusStr);
           if (!hasLiveGames){
-            print('removed LIVE LEAGUE ' + lwd.league.league_id.toString());
             AppContext.liveLeagues.remove(lwd);
           }
         }
@@ -740,19 +728,6 @@ class ParentPageState extends State<ParentPage> with WidgetsBindingObserver {
 
 void setupFirebaseListeners() async{
 
-
-  //handler for app in foreground
-  // FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-  //   if (!mounted){
-  //     return;
-  //   }
-  //   if (message.notification != null) {//we sent only data messages for now
-  //     //print('Message also contained a notification: ${message.notification}');
-  //   }
-  //
-  //   //handleFirebaseTopicMessage(message);
-  // });
-
   //now we can subscribe to topic
 
   // await _subscribeToTopicOnce();
@@ -760,22 +735,6 @@ void setupFirebaseListeners() async{
 
 }
 
-  Future<void> _subscribeToTopicOnce() async {
-    final prefs = await SharedPreferences.getInstance();
-    bool alreadySubscribed = prefs.getBool('subscribedToLiveSoccer') ?? false;
-
-    if (!alreadySubscribed) {
-      try {
-        await FirebaseMessaging.instance.subscribeToTopic("LiveSoccer");
-        await prefs.setBool('subscribedToLiveSoccer', true);
-        //await Fluttertoast.showToast(msg: " Subscribed to LiveSoccer topic.");
-      } catch (e, st) {
-        print("❌ Error subscribing to topic: $e\n$st");
-      }
-    }else{
-      //await Fluttertoast.showToast(msg: "Already  Subscribed to LiveSoccer topic.");
-    }
-  }
 
 /*
 
@@ -1083,7 +1042,7 @@ void setupFirebaseListeners() async{
     }
     );
 
-    Timer.periodic(const Duration(seconds: 15), (timer) {
+    Timer.periodic(const Duration(seconds: 30), (timer) {
       if (!isMinimized) {
         HttpActionsClient.getLeagueEventsAsync(timer).then((leaguesMap) =>
             updateLeagueMatches(leaguesMap)
@@ -1092,7 +1051,7 @@ void setupFirebaseListeners() async{
     }
     );
 
-    Timer.periodic(const Duration(seconds: 5), (timer) {
+    Timer.periodic(const Duration(seconds: 15), (timer) {
 
       if (!AppContext.eventsPerDayMap.containsKey(DateUtilsFt.formattedDateWithOffset(0))){
         return;
@@ -1106,7 +1065,7 @@ void setupFirebaseListeners() async{
     }
     );
 
-    Timer.periodic(const Duration(seconds: 10), (timer) {
+    Timer.periodic(const Duration(seconds: 20), (timer) {
 
       periodicUserUpdate();
 
@@ -1122,10 +1081,7 @@ void setupFirebaseListeners() async{
     dateKeysNew.add(DateUtilsFt.formattedDateWithOffset(0));
     dateKeysNew.add(DateUtilsFt.formattedDateWithOffset(1));
     dateKeysNew.add(DateUtilsFt.formattedDateWithOffset(2));
-    //
-    // print('Dates new are ' + dateKeysNew.first);
-    // print('Dates new are ' + dateKeysNew[1]);
-    // print('Dates new are ' + dateKeysNew[2]);
+
 
     List<String> dateKeysOld  = AppContext.eventsPerDayMap.keys.toList();
     for (String keyOld in dateKeysOld){

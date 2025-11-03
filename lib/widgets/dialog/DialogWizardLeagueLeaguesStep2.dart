@@ -9,6 +9,8 @@ import '../../models/constants/PurchaseConstants.dart';
 import '../../models/context/AppContext.dart';
 import '../../utils/client/HttpActionsClient.dart';
 import 'DialogWizardLeagueDatesStep3.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
 
 class DialogWizardLeagueLeaguesStep2 extends StatefulWidget {
   final String leagueName;
@@ -140,7 +142,7 @@ class _LeagueSelectionDialogState extends State<DialogWizardLeagueLeaguesStep2> 
       //Column(
         //mainAxisSize: MainAxisSize.max,
         //children: [
-          const Text("Step 2: Select Leagues", style: TextStyle(fontSize: 22)),
+          Text(AppLocalizations.of(context)!.step2_leagues, style: TextStyle(fontSize: 22)),
           // const SizedBox(width: 8),
 
         // ],
@@ -163,7 +165,7 @@ class _LeagueSelectionDialogState extends State<DialogWizardLeagueLeaguesStep2> 
                   widget.alertDialogExtraLeagues.call();
                 },
                 icon: const Icon(Icons.lock_open),
-                label: const Text("Unlock leagues"),
+                label: Text(AppLocalizations.of(context)!.step2_unlock_leagues),
               ),
             ),
 
@@ -175,14 +177,14 @@ class _LeagueSelectionDialogState extends State<DialogWizardLeagueLeaguesStep2> 
                   //nothing
                 },
                 icon: const Icon(Icons.lock),
-                label: const Text("Pro leagues enabled"),
+                label: Text(AppLocalizations.of(context)!.step2_pro_leagues_on),
               ),
             ),
 
           if (_selectedLeagueIds.isNotEmpty) ...[
             Align(
               alignment: Alignment.centerLeft,
-              child: Text("Selected:", style: TextStyle(fontWeight: FontWeight.bold)),
+              child: Text(AppLocalizations.of(context)!.selected, style: TextStyle(fontWeight: FontWeight.bold)),
             ),
             const SizedBox(height: 8),
             GridView.count(
@@ -207,17 +209,6 @@ class _LeagueSelectionDialogState extends State<DialogWizardLeagueLeaguesStep2> 
               }).toList(),
             ),
 
-            // Wrap(
-            //   spacing: 4,
-            //   children: _selectedLeagueIds.map((id) {
-            //     final league = allLeaguesMap[id]!;
-            //     return InputChip(
-            //       avatar: CircleAvatar(backgroundImage: NetworkImage(league.logo ?? '')),
-            //       label: Text(league.name),
-            //       onDeleted: () => _onDeselect(id),
-            //     );
-            //   }).toList(),
-            // ),
             const Divider(height: 10),
           ],
           Expanded(
@@ -243,11 +234,11 @@ class _LeagueSelectionDialogState extends State<DialogWizardLeagueLeaguesStep2> 
       actions: [
         TextButton(
           onPressed: () => Navigator.of(context).pop(), // Cancel
-          child: const Text("Cancel"),
+          child: Text(AppLocalizations.of(context)!.cancel),
         ),
         ElevatedButton(
           onPressed: _onNext,
-          child: Text( (widget.isEdit) ? "Save" : "Next"),
+          child: Text( (widget.isEdit) ? AppLocalizations.of(context)!.confirm_button_text : AppLocalizations.of(context)!.next),
         ),
       ],
     );

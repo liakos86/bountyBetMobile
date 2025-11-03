@@ -217,7 +217,6 @@ class MatchInfoSoccerDetailsPageState extends State<MatchInfoSoccerDetailsPage> 
     MatchEventIncidentSoccer latestIncomingInjury = MatchEventIncidentSoccer.defIncident();
 
     for (MatchEventIncidentSoccer meis in incomingIncidents){
-      print("ORDER " + meis.order.toString() + " ID : " + meis.id.toString());
       if (MatchIncidentsConstants.INJURY == meis.incident_type && meis.order > latestIncomingInjury.order){
         latestIncomingInjury = meis;
         continue;
@@ -250,7 +249,6 @@ class MatchInfoSoccerDetailsPageState extends State<MatchInfoSoccerDetailsPage> 
           ( meis.name == "fouls" || meis.name == 'free_kicks' || meis.name ==  "passes" || meis.name == 'throw_ins'
        || meis.name == "expected_goals"  || meis.name =="corner_kicks"   || meis.name =="offsides"  || meis.name =='yellow_cards' || meis.name =="ball_possession")) {
         if (!statistics.contains(meis)) {
-          // print('adding stat ' + meis.group);
           statistics.add(meis);
         } else {
           var firstWhere = statistics.firstWhere((element) =>

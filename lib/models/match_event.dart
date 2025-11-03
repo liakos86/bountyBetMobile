@@ -211,22 +211,14 @@ class MatchEvent implements Comparable<MatchEvent>{
 	@override
 	int compareTo(MatchEvent other){
 
-		if (this.eventId == 3009593 && other.eventId == 3009594){
-			print('HOME:'+ homeTeam.name + ' is starting befora ' + other.homeTeam.name);
-		}
 
 		if (startMillis > other.startMillis){
 
-			if (this.eventId == 3009593 && other.eventId == 3009594){
-				print('HOME:'+ homeTeam.name + ' is starting after ' + other.homeTeam.name);
-			}
 			return 1;
 		}
 
 		if (startMillis < other.startMillis){
-			if (this.eventId == 3009593 && other.eventId == 3009594){
-				print('HOME:'+ homeTeam.name + ' is starting befora ' + other.homeTeam.name);
-			}
+
 			return -1;
 		}
 

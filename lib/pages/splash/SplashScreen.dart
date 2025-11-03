@@ -12,6 +12,8 @@ import '../../models/constants/Constants.dart';
 import '../../models/context/AppContext.dart';
 import '../../utils/client/HttpActionsClient.dart';
 import '../ParentPage.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
 
 class SplashScreen extends StatefulWidget {
 
@@ -101,8 +103,8 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                const Text(
-                  "Loading...",
+                Text(
+                  AppLocalizations.of(context)!.loading,
                   style: TextStyle(fontSize: 22),
                 ),
                 const SizedBox(height: 20),

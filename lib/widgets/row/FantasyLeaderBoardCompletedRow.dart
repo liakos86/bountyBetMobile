@@ -1,13 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:in_app_purchase/in_app_purchase.dart';
-import 'package:intl/intl.dart';
 
 import '../../models/User.dart';
-import '../../models/constants/Constants.dart';
 import '../../models/context/AppContext.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
-import '../dialog/DialogTextTopUp.dart';
 
 
 class FantasyLeaderBoardCompletedRow extends StatefulWidget {
@@ -103,13 +99,13 @@ class _FantasyLeaderBoardCompletedRowState extends State<FantasyLeaderBoardCompl
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
                 Text(
-                    '✅ Bets: ${_user.fantasyBalance.overallWonBets}, Preds: ${_user.fantasyBalance.overallWonPredictions}',
+                    '✅ ${AppLocalizations.of(context)!.slips} ${_user.fantasyBalance.overallWonBets}, ${AppLocalizations.of(context)!.preds} ${_user.fantasyBalance.overallWonPredictions}',
                     style: const TextStyle(fontSize: 12)),
                 Text(
-                    '❌ Bets: ${_user.fantasyBalance.overallLostBets}, Preds: ${_user.fantasyBalance.overallLostPredictions}',
+                    '❌ ${AppLocalizations.of(context)!.slips} ${_user.fantasyBalance.overallLostBets}, ${AppLocalizations.of(context)!.preds} ${_user.fantasyBalance.overallLostPredictions}',
                     style: const TextStyle(fontSize: 12)),
                 Text(
-                    'ROI%: ${_user.fantasyBalance.percentageROIText()}, Ret:${_user.fantasyBalance.amountROIText()}',
+                    'ROI%: ${_user.fantasyBalance.percentageROIText()}, ${AppLocalizations.of(context)!.returned}${_user.fantasyBalance.amountROIText()}',
                     style: const TextStyle(fontSize: 12)),
               ],
             ),

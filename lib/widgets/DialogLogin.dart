@@ -390,10 +390,10 @@ class DialogLoginState extends State<DialogLogin> {
 
     if (userFromServer.errorMessage.isNotEmpty) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-          content: Text('Password reset failed'),
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text(AppLocalizations.of(context)!.password_reset_fail),
           showCloseIcon: true,
-          duration: Duration(seconds: 5),
+          duration: const Duration(seconds: 5),
         ));
       }
 

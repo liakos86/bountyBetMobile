@@ -4,18 +4,14 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_app/models/context/AppContext.dart';
 import 'package:flutter_app/utils/client/HttpActionsClient.dart';
-import 'package:flutter_app/widgets/row/LeaderBoardUserFullInfoRow.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 
 import '../models/User.dart';
-import '../models/UserBet.dart';
 import '../models/UserMonthlyBalance.dart';
-import '../models/UserPrediction.dart';
 import '../models/constants/ColorConstants.dart';
 import '../models/constants/Constants.dart';
 import '../widgets/row/GlobalLeaderBoardRow.dart';
-import '../widgets/row/GlobalMonthLeaderBoardRow.dart';
 import 'LivePage.dart';
 
 
@@ -84,29 +80,15 @@ class LeaderBoardPageState extends State<LeaderBoardPage> with SingleTickerProvi
 
 
    getLeaderBoard();
-   Timer.periodic(const Duration(seconds: 30), (timer) {(
+   Timer.periodic(const Duration(seconds: 60), (timer) {(
        getLeaderBoard()
    );
    } );
-
-   // getMyBalances();
-   //  Timer.periodic(const Duration(seconds: 30), (timer) {(
-   //      getMyBalances()
-   //  );
-   //  }
-   // );
-
 
   }
 
   @override
   Widget build(BuildContext context) {
-    // DateTime dt = DateTime.now();
-    //
-    // const int items = 1;
-    // double width = MediaQuery.of(context).size.width;
-    // const double labelPadding = 0;
-    // double labelWidth = (width - (labelPadding * (items - 1))) / items;
 
 
     String infoMsg = AppLocalizations.of(context)!.leaderboard_info
@@ -116,37 +98,6 @@ class LeaderBoardPageState extends State<LeaderBoardPage> with SingleTickerProvi
 
     (AppLocalizations.of(context)!.leaderboard_info_pos + AppContext.user.globalPosition.toString() + AppLocalizations.of(context)!.out_of ) + AppContext.user.totalUsers.toString() : Constants.empty );
 
-
-    // return
-      // Scaffold(
-      //   backgroundColor: Colors.grey.shade50,
-      //     appBar: AppBar(
-      //       toolbarHeight: 5,
-      //       backgroundColor: Colors.black87, // const Color(ColorConstants.my_dark_grey),
-      //       bottom: TabBar(
-      //         // isScrollable: true,
-      //         labelPadding: const EdgeInsets.symmetric(horizontal: labelPadding),
-      //         indicator: const BoxDecoration(),
-      //         controller: _tabController,
-      //
-      //
-      //         tabs: [
-      //           CustomTabIcon(width: labelWidth, text: BetUtils.getLocalizedMonthString(context, dt.month, dt.year), isSelected: _tabController.index == 0,),
-      //           // CustomTabIcon(width: labelWidth, text: AppLocalizations.of(context)!.winners, isSelected: _tabController.index == 1,),
-      //           // CustomTabIcon(width: labelWidth, text: AppLocalizations.of(context)!.me, isSelected: _tabController.index == 2,),
-      //           // CustomTabIcon(width: labelWidth, text: 'Me all time', isSelected: _tabController.index == 3,),
-      //
-      //         ],
-      //
-      //         onTap: (index) {
-      //           setState(() {
-      //             _tabController.index = index;
-      //           });
-      //         }
-      //       ),
-      //     ),
-      //
-      //     body:
 
     return Scaffold(
 
@@ -161,9 +112,6 @@ class LeaderBoardPageState extends State<LeaderBoardPage> with SingleTickerProvi
               bucket: pageBucket,
               child:
 
-              // TabBarView(
-              //   controller: _tabController,
-              //   children: [
 
                 (leaders.isEmpty) ?
 
@@ -229,86 +177,8 @@ class LeaderBoardPageState extends State<LeaderBoardPage> with SingleTickerProvi
       ),
 
 
-
-
-
-          // (leaders["1"] == null || leaders["1"]!.isEmpty) ?
-          //
-          //         Align(alignment: Alignment.center,
-          //             child: Column(
-          //               mainAxisAlignment: MainAxisAlignment.center,
-          //               children: <Widget>[
-          //                 // Icon on top
-          //                 const ImageIcon(size:100, AssetImage('assets/images/leaders-100.png')),
-          //                 const SizedBox(height: 20),  // Space between icon and text
-          //                 // Text below the icon
-          //                 Text(
-          //                   AppLocalizations.of(context)!.empty_list,
-          //                   style: const TextStyle(
-          //                     fontSize: 16,
-          //                     fontWeight: FontWeight.bold,
-          //                     color: Color(ColorConstants.my_dark_grey),
-          //                   ),
-          //                 ),
-          //               ],
-          //             )
-          //         )
-          //
-          //             :
-          //
-          //
-          //         ListView.builder(
-          //             key: const PageStorageKey<String>(
-          //                 'pageLeaderAll'),
-          //             padding: const EdgeInsets.all(8),
-          //             itemCount: leaders["1"]?.length,
-          //             itemBuilder: (context, item) {
-          //               User user = leaders["1"]![item];
-          //               return _buildUserRow(user, false,  false, 'all$item${user.mongoUserId}');
-          //             }),
-          //
-          //
-          //         (AppContext.user.mongoUserId == User.defUser().mongoUserId
-          //           || !AppContext.user.validated) ?
-          //
-          //         Align(alignment: Alignment.center,
-          //             child: Column(
-          //               mainAxisAlignment: MainAxisAlignment.center,
-          //               children: <Widget>[
-          //                 // Icon on top
-          //                 const ImageIcon(size:100, AssetImage('assets/images/leaders-100.png')),
-          //                 const SizedBox(height: 20),  // Space between icon and text
-          //                 // Text below the icon
-          //                 Text(
-          //                   AppLocalizations.of(context)!.login_or_validate,//'Please login or validate..',
-          //                   style: const TextStyle(
-          //                     fontSize: 16,
-          //                     fontWeight: FontWeight.bold,
-          //                     color: Color(ColorConstants.my_dark_grey),
-          //                   ),
-          //                 ),
-          //               ],
-          //             )
-          //         )
-          //
-          //             :
-          //
-          //         ListView.builder(
-          //             key: const PageStorageKey<String>(
-          //                 'pageLeaderCurrMe'),
-          //             padding: const EdgeInsets.all(8),
-          //             itemCount: balances.length,
-          //             itemBuilder: (context, item) {
-          //               UserMonthlyBalance balance = balances.elementAt(item);
-          //               return _buildBalanceRow(item, balance,    'currme$item${balance.mongoId}');
-          //             }),
-
-
-                // ],
-              // )
           )
 
-      // ),
     );
 
 
@@ -345,20 +215,7 @@ class LeaderBoardPageState extends State<LeaderBoardPage> with SingleTickerProvi
           if (leadersEntry.key == '0') {
             existingLeaders.sort();
           }
-          // else{
-          //   existingLeaders.sort((a, b) {
-          //     // First compare by year (descending)
-          //     int yearComparison = b.balance.year.compareTo(a.balance.year);
-          //     if (yearComparison != 0) return yearComparison;
-          //
-          //     // If years are equal, compare by month (descending)
-          //     return b.balance.month.compareTo(a.balance.month);
-          //   });
-          // }
-      }
-
-      // List<User>? previousMonthWinners = leaders["2"];
-      // checkMonthWinnerNotification(previousMonthWinners);
+          }
 
 
       if (!mounted){
@@ -383,16 +240,5 @@ class LeaderBoardPageState extends State<LeaderBoardPage> with SingleTickerProvi
     // return LeaderBoardUserFullInfoRow(user: leader, isCurrentLeaderBoard: isCurrentLeaderBoard, isLeaderBoardWinner: isCurrentLeaderBoardWinner, key: PageStorageKey<String>(key));
 
   }
-
-  // Widget _buildBalanceRow(int item, UserMonthlyBalance balance, String key) {
-  //   User user = User.defUser();
-  //   user.mongoUserId = AppContext.user.mongoUserId;
-  //   user.username = AppContext.user.username;
-  //   // user.balance = balance;
-  //
-  //
-  //   return GlobalLeaderboardRow(user: user, position: item, key: PageStorageKey<String>(key));
-  //   //return LeaderBoardUserFullInfoRow(user: user, isCurrentLeaderBoard: false, isLeaderBoardWinner: false, key: PageStorageKey<String>(key));
-  // }
 
 }

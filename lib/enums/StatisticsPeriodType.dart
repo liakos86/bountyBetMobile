@@ -24,8 +24,6 @@ enum StatisticsPeriodType{
       }
     }
 
-    print('****** PERIOD TYPE:' + code);
-
     return StatisticsPeriodType.NONE;
   }
 

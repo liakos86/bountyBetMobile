@@ -185,7 +185,7 @@ class _FantasyLeaderboardRowState extends State<FantasyLeaderboardRow> {
                     const Icon(Icons.check_circle, color: Colors.green, size: 16),
                     const SizedBox(width: 4),
                     Text(
-                        'Bets: ${_user.fantasyBalance.overallWonBets}, Preds: ${_user.fantasyBalance.overallWonPredictions}',
+                        '${AppLocalizations.of(context)!.slips} ${_user.fantasyBalance.overallWonBets}, ${AppLocalizations.of(context)!.preds} ${_user.fantasyBalance.overallWonPredictions}',
                         style: const TextStyle(fontSize: 12)),
                   ],
                 ),
@@ -195,7 +195,7 @@ class _FantasyLeaderboardRowState extends State<FantasyLeaderboardRow> {
                     const Icon(Icons.cancel, color: Colors.red, size: 16),
                     const SizedBox(width: 4),
                     Text(
-                        'Bets: ${_user.fantasyBalance.overallLostBets}, Preds: ${_user.fantasyBalance.overallLostPredictions}',
+                        '${AppLocalizations.of(context)!.slips} ${_user.fantasyBalance.overallLostBets}, ${AppLocalizations.of(context)!.preds} ${_user.fantasyBalance.overallLostPredictions}',
                         style: const TextStyle(fontSize: 12)),
                   ],
                 ),

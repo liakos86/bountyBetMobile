@@ -6,6 +6,8 @@ import 'package:flutter_app/widgets/row/UserPredictionCardTilted.dart';
 
 import '../models/UserPrediction.dart';
 import '../models/context/AppContext.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
 
 class DialogSuccessfulBet extends StatelessWidget{
 
@@ -23,9 +25,9 @@ class DialogSuccessfulBet extends StatelessWidget{
             initiallyExpanded: true,
             tilePadding: EdgeInsets.all(8),
             backgroundColor: Colors.white,
-            subtitle: Text('Bet: ' + newBet.betAmount.toStringAsFixed(2)),
+            subtitle: Text(AppLocalizations.of(context)!.credits + newBet.betAmount.toStringAsFixed(2)),
             leading: Icon(Icons.sports, color: Colors.orangeAccent),
-            title: Text('Possible earnings: ' + newBet.toReturn().toStringAsFixed(2),
+            title: Text(AppLocalizations.of(context)!.possible_earnings + newBet.toReturn().toStringAsFixed(2),
                 style: TextStyle(fontSize: 14, color: Colors.black, fontWeight: FontWeight.bold)),
             children: newBet.predictions.map((item)=> _buildSelectedOddRow(item)).toList()
         ),
@@ -39,7 +41,7 @@ class DialogSuccessfulBet extends StatelessWidget{
           onPressed: () {
             Navigator.pop(context);
           },
-          child: Text('Close'),
+          child: Text(AppLocalizations.of(context)!.close),
         )
 
       ],

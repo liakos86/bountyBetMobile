@@ -22,8 +22,6 @@ class Standing{
     var stRows = standing['standings_rows'];
     for (var stRow in stRows){
 
-      // print('checking row ' + stRow['position'].toString());
-
       var teamJson = stRow['team'];
       Team hTeam = Team.fromJson(teamJson);
 
