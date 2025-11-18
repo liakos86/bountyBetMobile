@@ -15,6 +15,8 @@
 
   INPROGRESS_PENALTIES(statusStr:"Penalty shootout"),// TODO find this
 
+  PENALTIES(statusStr:"Penalties"),// TODO find this
+
   GAME_FINISHED(statusStr:"FT"),
 
   FINAL_RESULT_ONLY(statusStr:"FRO"),

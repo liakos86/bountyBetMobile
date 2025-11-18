@@ -189,7 +189,7 @@ class MatchEvent implements Comparable<MatchEvent>{
 
 	 }
 
-	 	if (MatchEventStatusMore.INPROGRESS_PENALTIES.statusStr == status_more) {
+	 	if (MatchEventStatusMore.INPROGRESS_PENALTIES.statusStr == status_more || MatchEventStatusMore.PENALTIES.statusStr == status_more) {
 			return AppLocalizations.of(context)!.status_more_pen;
 	 }
 
