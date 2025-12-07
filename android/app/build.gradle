@@ -36,10 +36,21 @@ android {
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
+
+        // Required for flutter_local_notifications and some AGP 8+ libs
+        //kostaschange
+        coreLibraryDesugaringEnabled true
     }
 
     kotlinOptions {
         jvmTarget = '1.8'
+    }
+
+    //kostaschange
+    packagingOptions {
+        jniLibs {
+            useLegacyPackaging = false
+        }
     }
 
     sourceSets {
@@ -87,4 +98,8 @@ flutter {
 dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
     implementation 'com.google.firebase:firebase-messaging:20.1.0'
+
+    // Required for desugaring
+    //kostaschange
+    coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:2.0.4'
 }
