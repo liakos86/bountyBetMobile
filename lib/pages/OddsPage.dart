@@ -26,6 +26,7 @@ import '../utils/DateUtils.dart';
 import '../widgets/CustomTabIcon.dart';
 import '../widgets/NoGames.dart';
 import '../widgets/row/DialogProgressBarWithText.dart';
+import 'onboarding/OnboardingScreen.dart';
 
 
 class OddsPage extends StatefulWidget{//}WithName {
@@ -267,7 +268,7 @@ class OddsPageState extends State<OddsPage> with SingleTickerProviderStateMixin{
   }
 
   Widget _buildRow(LeagueWithData league, int item) {
-   return LeagueExpandableTile(key: PageStorageKey<String>('oddsLeague${league.league.league_id}$item'),  isAlwaysExpanded: false, leagueWithData: league, expandAll: selectedIndex==item, events: league.events, callbackForOdds: fixOddsCallback, selectedOdds: selectedOdds, favourites: favourites(),);
+   return LeagueExpandableTile(key: PageStorageKey<String>('oddsLeague${league.league.league_id}$item'),  isAlwaysExpanded: false, leagueWithData: league, expandAll: selectedIndex==item, events: league.events, callbackForOdds: fixOddsCallback, callbackForWalkThrough: walkThroughCallback, selectedOdds: selectedOdds, favourites: favourites(),);
   }
 
   void removeOddCallback(UserPrediction? toRemove){
@@ -287,6 +288,12 @@ class OddsPageState extends State<OddsPage> with SingleTickerProviderStateMixin{
       Navigator.pop(context);
     }
 
+  }
+
+  void walkThroughCallback(UserPrediction selectedOdd) {
+    Navigator.of(context).pushReplacement(
+      MaterialPageRoute(builder: (_) => const OnboardingScreen()),
+    );
   }
 
   void fixOddsCallback(UserPrediction selectedOdd) {

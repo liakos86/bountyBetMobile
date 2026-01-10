@@ -27,6 +27,8 @@ class LeagueExpandableTile extends StatefulWidget {
 
   final Function(UserPrediction) callbackForOdds;
 
+  final Function(UserPrediction) callbackForWalkThrough;
+
   final List<String> favourites;
 
   final bool expandAll;
@@ -34,7 +36,7 @@ class LeagueExpandableTile extends StatefulWidget {
   final bool isAlwaysExpanded;
 
   const LeagueExpandableTile(
-      {Key ?key, required this.leagueWithData, required this.isAlwaysExpanded, required this.events, required this.selectedOdds, required this.callbackForOdds, required this.favourites, required this.expandAll, })
+      {Key ?key, required this.leagueWithData, required this.isAlwaysExpanded, required this.events, required this.selectedOdds, required this.callbackForOdds, required this.callbackForWalkThrough, required this.favourites, required this.expandAll, })
       : super(key: key);
 
   @override
@@ -51,6 +53,8 @@ class LeagueExpandableTile extends StatefulWidget {
     late List<UserPrediction> selectedOdds;
 
     late Function(UserPrediction) callbackForOdds;
+
+    late Function(UserPrediction) callbackForWalkThrough;
 
     late List<String> favourites;
 
@@ -73,6 +77,7 @@ class LeagueExpandableTile extends StatefulWidget {
       events = widget.events;
       selectedOdds = widget.selectedOdds;
       callbackForOdds = widget.callbackForOdds;
+      callbackForWalkThrough = widget.callbackForWalkThrough;
       favourites = widget.favourites;
       expandAll = widget.expandAll;
 
@@ -224,7 +229,7 @@ class LeagueExpandableTile extends StatefulWidget {
 
 
   Widget _buildSelectedOddRow(MatchEvent event) {
-     return MatchRowTilted(key: UniqueKey(), gameWithOdds: event, selectedOdds: selectedOdds, callbackForOdds: callbackForOdds);
+     return MatchRowTilted(key: UniqueKey(), gameWithOdds: event, selectedOdds: selectedOdds, callbackForOdds: callbackForOdds, callbackForWalkThrough: callbackForWalkThrough);
   }
 
     updateFav(bool newfav) {

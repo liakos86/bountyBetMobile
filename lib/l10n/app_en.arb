@@ -343,5 +343,15 @@
 
      "step4_league_settings": "Step 4: League Settings",
 
+     "onboard1": "Step 1: Login or create a new account to enable FantasyLeagues!",
+     "onboard2": "Step 2: After login you can create your own FantasyLeague!",
+     "onboard3": "Step 3: Select the soccer Leagues you want to make tips on!",
+     "onboard4": "Step 4: Select the virtual amount you want to start with. Allow add ons when someone zeroes his balance!",
+     "onboard5": "Step 5: Start inviting your friends into your new FantasyLeague!",
+     "onboard6": "Step 6: Now you can start competing with your friends!",
+
+     "skip": "Skip",
+     "welcome": "Welcome to FantasyTips",
+
      "run_this" : "flutter gen-l10n"
 }

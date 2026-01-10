@@ -85,7 +85,7 @@ class LivePageState extends State<LivePage> with WidgetsBindingObserver{
 
   Widget _buildRow(int item) {
     LeagueWithData league = liveLeagues[item];
-    return LeagueExpandableTile(key: PageStorageKey<LeagueWithData>(liveLeagues.elementAt(item)),  leagueWithData: league, isAlwaysExpanded: true,  expandAll: true, events: league.events.where((element) => element.status == MatchEventStatus.INPROGRESS.statusStr).toList(), selectedOdds: [], callbackForOdds: (a)=>{}, favourites: favourites, );
+    return LeagueExpandableTile(key: PageStorageKey<LeagueWithData>(liveLeagues.elementAt(item)),  leagueWithData: league, isAlwaysExpanded: true,  expandAll: true, events: league.events.where((element) => element.status == MatchEventStatus.INPROGRESS.statusStr).toList(), selectedOdds: [], callbackForOdds: (a)=>{}, callbackForWalkThrough: (a)=>{}, favourites: favourites, );
   }
 
   List<String> getFavourites(){

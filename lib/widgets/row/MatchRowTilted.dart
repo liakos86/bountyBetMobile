@@ -2,10 +2,13 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_app/enums/MatchEventStatus.dart';
 import 'package:flutter_app/widgets/GestureDetectorForOdds.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../enums/FantasyLeagueStatus.dart';
+import '../../helper/SharedPrefs.dart';
 import '../../models/UserPrediction.dart';
 import '../../models/constants/ColorConstants.dart';
+import '../../models/constants/Constants.dart';
 import '../../models/context/AppContext.dart';
 import '../../models/match_event.dart';
 import 'LiveMatchRowTilted.dart';
@@ -18,10 +21,12 @@ import 'LiveMatchRowTilted.dart';
 
     final Function(UserPrediction) callbackForOdds;
 
-    const MatchRowTilted({Key ?key, required this.gameWithOdds, required this.callbackForOdds, required this.selectedOdds}) : super(key: key);
+    final Function(UserPrediction) callbackForWalkThrough;
+
+    const MatchRowTilted({Key ?key, required this.gameWithOdds, required this.callbackForOdds, required this.callbackForWalkThrough, required this.selectedOdds}) : super(key: key);
 
     @override
-    MatchRowTiltedState createState() => MatchRowTiltedState(gameWithOdds: gameWithOdds, selectedOdds: selectedOdds, callbackForOdds: callbackForOdds);
+    MatchRowTiltedState createState() => MatchRowTiltedState(gameWithOdds: gameWithOdds, selectedOdds: selectedOdds, callbackForOdds: callbackForOdds, callbackForWalkThrough: callbackForWalkThrough);
   }
 
   class MatchRowTiltedState extends State<MatchRowTilted> {
@@ -32,12 +37,15 @@ import 'LiveMatchRowTilted.dart';
 
     Function(UserPrediction) callbackForOdds;
 
+    Function(UserPrediction) callbackForWalkThrough;
+
     MatchEvent gameWithOdds;
 
     MatchRowTiltedState({
       required this.selectedOdds,
       required this.gameWithOdds,
-      required this.callbackForOdds
+      required this.callbackForOdds,
+      required this.callbackForWalkThrough
     });
 
     @override
@@ -69,9 +77,18 @@ import 'LiveMatchRowTilted.dart';
 
                 /// Odds row
                 if (gameWithOdds.odds != null &&
-                    gameWithOdds.status == MatchEventStatus.NOTSTARTED.statusStr &&
-                    AppContext.fantasyLeague.status == FantasyLeagueStatus.RUNNING.statusCode &&
-                    AppContext.fantasyLeague.selectedLeagueIds.contains(gameWithOdds.leagueId))
+                    gameWithOdds.status == MatchEventStatus.NOTSTARTED.statusStr
+                    &&
+                    (
+                        (AppContext.fantasyLeague.mongoId == Constants.defMongoId && hasNotSeenWalkThrough())
+                        ||
+                        (AppContext.fantasyLeague.status == FantasyLeagueStatus.RUNNING.statusCode &&
+                         AppContext.fantasyLeague.selectedLeagueIds.contains(gameWithOdds.leagueId)
+                        )
+                    )
+                    // AppContext.fantasyLeague.status == FantasyLeagueStatus.RUNNING.statusCode &&
+                    // AppContext.fantasyLeague.selectedLeagueIds.contains(gameWithOdds.leagueId)
+                )
 
                   Padding(
                     padding: const EdgeInsets.symmetric(vertical: 4),
@@ -81,12 +98,16 @@ import 'LiveMatchRowTilted.dart';
                           flex: 5,
                           child: Padding(
                             padding: const EdgeInsets.all(4),
-                            child: GestureDetectorForOdds(
+                            child:
+
+
+
+                            GestureDetectorForOdds(
                               key: UniqueKey(),
                               selectedOdds: selectedOdds,
                               eventId: gameWithOdds.eventId,
                               predictionText: '1:',
-                              callbackForOdds: callbackForOdds,
+                              callbackForOdds: (AppContext.fantasyLeague.mongoId == Constants.defMongoId && hasNotSeenWalkThrough()) ? callbackForWalkThrough : callbackForOdds,
                               prediction: gameWithOdds.odds?.odd1,
                               toRemove: [
                                 gameWithOdds.odds?.odd2,
@@ -104,7 +125,7 @@ import 'LiveMatchRowTilted.dart';
                               selectedOdds: selectedOdds,
                               eventId: gameWithOdds.eventId,
                               predictionText: 'X:',
-                              callbackForOdds: callbackForOdds,
+                              callbackForOdds: (AppContext.fantasyLeague.mongoId == Constants.defMongoId && hasNotSeenWalkThrough()) ? callbackForWalkThrough : callbackForOdds,
                               prediction: gameWithOdds.odds?.oddX,
                               toRemove: [
                                 gameWithOdds.odds?.odd2,
@@ -122,7 +143,7 @@ import 'LiveMatchRowTilted.dart';
                               selectedOdds: selectedOdds,
                               eventId: gameWithOdds.eventId,
                               predictionText: '2:',
-                              callbackForOdds: callbackForOdds,
+                              callbackForOdds: (AppContext.fantasyLeague.mongoId == Constants.defMongoId && hasNotSeenWalkThrough()) ? callbackForWalkThrough : callbackForOdds,
                               prediction: gameWithOdds.odds?.odd2,
                               toRemove: [
                                 gameWithOdds.odds?.odd1,
@@ -140,6 +161,10 @@ import 'LiveMatchRowTilted.dart';
         ),
       );
     }
+
+  bool hasNotSeenWalkThrough(){
+    return !sharedPrefs.getBoolByKey(sp_seen_walk_through);
+  }
 
 
 

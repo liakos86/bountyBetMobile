@@ -73,6 +73,10 @@ class SharedPrefs {
     //reload();
   }
 
+  void ackWalkThrough(){
+    _sharedPrefs?.setBool(sp_seen_walk_through, true);
+  }
+
   void removeFavLeague(String value){
     List<String> current =  _sharedPrefs?.getStringList(sp_fav_league_ids) ?? <String>[];//favEventIds;
     if (!current.contains(value)) {
@@ -94,6 +98,10 @@ class SharedPrefs {
 
   getListByKey(String key){
     return _sharedPrefs?.getStringList(key) ?? <String>[];
+  }
+
+  getBoolByKey(String key){
+    return _sharedPrefs?.getBool(key) ?? false;
   }
 
 
@@ -126,3 +134,4 @@ const String sp_fav_league_ids = "fav_league_ids";
 const String sp_won_months = "won_months";
 const String sp_ack_league_ids = "ack_league_ids";
 const String sp_fantasy_league_id = "fantasy_league_id";
+const String sp_seen_walk_through = "seen_walk_through";

@@ -1043,7 +1043,7 @@ void setupFirebaseListeners() async{
     );
 
     Timer.periodic(const Duration(seconds: 30), (timer) {
-      if (!isMinimized) {
+      if (!isMinimized && mounted) {
         HttpActionsClient.getLeagueEventsAsync(timer).then((leaguesMap) =>
             updateLeagueMatches(leaguesMap)
         );
@@ -1057,7 +1057,7 @@ void setupFirebaseListeners() async{
         return;
       }
 
-      if (!isMinimized) {
+      if (!isMinimized && mounted) {
         HttpActionsClient.getLeagueLiveEventsAsync(timer).then((leaguesMap) =>
             updateLiveLeagueMatches(leaguesMap)
         );
