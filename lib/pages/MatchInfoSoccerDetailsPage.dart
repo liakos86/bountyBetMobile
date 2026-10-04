@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:flutter_app/models/MatchEventStatisticsWithIncidents.dart';
 import 'package:flutter_app/utils/client/HttpActionsClient.dart';
 import 'package:flutter_app/widgets/row/SoccerStatisticRow.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:flutter_app/l10n/app_localizations.dart';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';

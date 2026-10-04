@@ -7,7 +7,7 @@ import '../../models/League.dart';
 import '../../models/constants/Constants.dart';
 import '../../models/context/AppContext.dart';
 import '../../utils/client/HttpActionsClient.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:flutter_app/l10n/app_localizations.dart';
 
 
 

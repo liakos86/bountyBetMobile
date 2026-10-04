@@ -6,7 +6,7 @@ import 'package:in_app_purchase/in_app_purchase.dart';
 import '../../models/FantasyLeague.dart';
 import '../../models/User.dart';
 import '../../models/constants/ColorConstants.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:flutter_app/l10n/app_localizations.dart';
 
 import '../../models/constants/Constants.dart';
 import '../../models/context/AppContext.dart';

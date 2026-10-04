@@ -13,7 +13,7 @@ import '../../models/context/AppContext.dart';
 import 'LiveMatchRowTilted.dart';
 import 'MatchRowTilted.dart';
 // import 'UserPredictionCardTilted.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:flutter_app/l10n/app_localizations.dart';
 
 import 'UserPredictionCardTilted.dart';
 

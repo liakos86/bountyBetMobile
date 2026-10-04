@@ -5,7 +5,7 @@ import '../enums/BetPredictionType.dart';
 import '../enums/MatchEventStatus.dart';
 import '../enums/WinnerType.dart';
 import '../models/UserPrediction.dart';
- import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+ import 'package:flutter_app/l10n/app_localizations.dart';
 
 import '../models/match_event.dart';
 import '../models/match_odds.dart';

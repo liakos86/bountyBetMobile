@@ -9,7 +9,7 @@ import '../../models/constants/PurchaseConstants.dart';
 import '../../models/context/AppContext.dart';
 import '../../utils/client/HttpActionsClient.dart';
 import 'DialogWizardLeagueDatesStep3.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:flutter_app/l10n/app_localizations.dart';
 
 
 class DialogWizardLeagueLeaguesStep2 extends StatefulWidget {

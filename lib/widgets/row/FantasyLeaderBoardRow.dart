@@ -7,7 +7,7 @@ import '../../models/UserBet.dart';
 import '../../models/UserPrediction.dart';
 import '../../models/constants/Constants.dart';
 import '../../models/context/AppContext.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:flutter_app/l10n/app_localizations.dart';
 
 import '../dialog/DialogTextTopUp.dart';
 import 'UserPastPredictionCompact.dart';

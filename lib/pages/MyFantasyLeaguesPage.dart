@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'dart:ui';
 import 'package:collection/collection.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:flutter_app/l10n/app_localizations.dart';
 import 'package:in_app_purchase_android/in_app_purchase_android.dart';
 
 
@@ -24,6 +24,7 @@ import '../models/constants/ColorConstants.dart';
 import '../models/constants/PurchaseConstants.dart';
 import '../widgets/custom/FantasyLeagueCard.dart';
 import '../widgets/custom/FantasyLeagueCompletedCard.dart';
+import '../widgets/custom/PulsingButton.dart';
 import '../widgets/dialog/DialogFantasyLeagueWinner.dart';
 import '../widgets/dialog/DialogTextExtraLeagues.dart';
 import '../widgets/dialog/DialogTextExtraUsers.dart';
@@ -287,28 +288,47 @@ class MyFantasyLeaguesPageState extends State<MyFantasyLeaguesPage>  with Single
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
 
-                    ElevatedButton(
-                      onPressed: () {
-                        if (!AppContext.user.validated){
-                          return;
-                        }
+                PulsingButton(
+                child: ElevatedButton(
+                    onPressed: () {
+              if (!AppContext.user.validated) {
+              return;
+              }
 
-                        showDialog(
-                          context: context,
-                          barrierDismissible: false,
-                          builder: (_) =>
-                              DialogWizardLeagueNameStep1(
-                                  updateCallback: update,
-                                  alertDialogExtraLeaguesCallback: alertDialogExtraLeagues,
-                                  products: products),
-                        );
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: AppContext.user.validated ? Colors.green.shade400 : Colors.grey.shade400 ,
-                        foregroundColor: Colors.white,
-                      ),
-                      child: Text(AppLocalizations.of(context)!.createLeague),
-                    ),
+              showDialog(
+              context: context,
+              barrierDismissible: false,
+              builder: (_) => DialogWizardLeagueNameStep1(
+              updateCallback: update,
+              alertDialogExtraLeaguesCallback: alertDialogExtraLeagues,
+              products: products,
+              ),
+              );
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppContext.user.validated
+                    ? Colors.green.shade400
+                    : Colors.grey.shade400,
+                foregroundColor: Colors.white,
+                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
+                textStyle: const TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Icon(Icons.emoji_events, color: Colors.white), // START ICON
+                  const SizedBox(width: 8),
+                  Text(AppLocalizations.of(context)!.createLeague),
+                  const SizedBox(width: 8),
+                  const Icon(Icons.arrow_forward, color: Colors.white), // END ICON
+                ],
+              ),
+            ),
+            ),
+
 
                     if (!AppContext.user.validated && AppContext.user.mongoUserId != Constants.defMongoId)
                       Text('${AppLocalizations.of(context)!.mail_requires_validation}${AppContext.user.email}', maxLines: 2 )

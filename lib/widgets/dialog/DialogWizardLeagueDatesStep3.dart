@@ -7,7 +7,7 @@ import '../../models/context/AppContext.dart';
 import '../../utils/client/HttpActionsClient.dart';
 import 'DialogWizardLeagueConfirmStep5.dart';
 import 'DialogWizardLeagueOptionsStep4.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:flutter_app/l10n/app_localizations.dart';
 
 
 class DialogWizardLeagueDatesStep3 extends StatefulWidget {

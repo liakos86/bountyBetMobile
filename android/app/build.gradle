@@ -1,3 +1,11 @@
+plugins {
+    id 'com.android.application'
+    id 'org.jetbrains.kotlin.android'
+    id 'com.google.gms.google-services'
+    id 'dev.flutter.flutter-gradle-plugin'
+}
+
+
 def localProperties = new Properties()
 def localPropertiesFile = rootProject.file('local.properties')
 if (localPropertiesFile.exists()) {
@@ -5,11 +13,11 @@ if (localPropertiesFile.exists()) {
         localProperties.load(reader)
     }
 }
-
-def flutterRoot = localProperties.getProperty('flutter.sdk')
-if (flutterRoot == null) {
-    throw new GradleException("Flutter SDK not found. Define location with flutter.sdk in the local.properties file.")
-}
+//
+//def flutterRoot = localProperties.getProperty('flutter.sdk')
+//if (flutterRoot == null) {
+//    throw new GradleException("Flutter SDK not found. Define location with flutter.sdk in the local.properties file.")
+//}
 
 def flutterVersionCode = localProperties.getProperty('flutter.versionCode')
 if (flutterVersionCode == null) {
@@ -21,16 +29,23 @@ if (flutterVersionName == null) {
     flutterVersionName = '1.0'
 }
 
-apply plugin: 'com.android.application'
-apply plugin: 'kotlin-android'
-apply plugin: 'com.google.gms.google-services'
-apply from: "$flutterRoot/packages/flutter_tools/gradle/flutter.gradle"
+// FLUTTER MIGRATION FROM 3.27 -> 3.44
+//apply plugin: 'com.android.application'
+//apply plugin: 'kotlin-android'
+//apply plugin: 'com.google.gms.google-services'
+//apply from: "$flutterRoot/packages/flutter_tools/gradle/flutter.gradle"
 
 android {
 
     namespace "com.dev.mules.fantasy.tips" // 👈 replace with your actual package name
 
+//    compileSdk 37
+
+    // 3. Bypass Flutter's string parser by explicitly assigning the full platform hash string
+//    buildToolsVersion "37.0"
     compileSdkVersion localProperties.getProperty('flutter.compileSdkVersion').toInteger()
+
+    // Hardcode the string version to bypass the integer mismatch for API 37
     ndkVersion flutter.ndkVersion
 
     compileOptions {

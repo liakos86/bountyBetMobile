@@ -26,31 +26,51 @@ class Section{
     return section;
   }
 
-  String getLocalizedName(){
-    if (name_translations == null){
+  // String getLocalizedName(){
+  //   if (name_translations == null){
+  //     return name;
+  //   }
+  //
+  //   if (locale == null){
+  //     return name;
+  //   }
+  //
+  //   //String? lang = locale?.languageCode;
+  //   if (locale == null){
+  //     return name;
+  //   }
+  //
+  //   var candidates = locale?.toLowerCase().split(Constants.underscore);
+  //   for (String candidate in candidates!){
+  //     if (name_translations?[candidate] != null){
+  //
+  //       var utf8Text = name_translations?[candidate].runes.toList();
+  //       return utf8.decode(utf8Text);
+  //     }
+  //   }
+  //
+  //   return name;
+  // }
+
+  String getLocalizedName() {
+    if (name_translations == null || locale == null) {
       return name;
     }
 
-    if (locale == null){
-      return name;
-    }
+    final candidates =
+    locale!.toLowerCase().split(Constants.underscore);
 
-    //String? lang = locale?.languageCode;
-    if (locale == null){
-      return name;
-    }
+    for (final candidate in candidates) {
+      final translation = name_translations?[candidate];
 
-    var candidates = locale?.toLowerCase().split(Constants.underscore);
-    for (String candidate in candidates!){
-      if (name_translations?[candidate] != null){
-
-        var utf8Text = name_translations?[candidate].runes.toList();
-        return utf8.decode(utf8Text);
+      if (translation != null) {
+        return translation; // <-- only change that matters
       }
     }
 
     return name;
   }
+
 
 
 }

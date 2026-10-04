@@ -2,7 +2,7 @@ import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter_app/models/constants/Constants.dart';
 import 'package:flutter_app/models/match_odds.dart';
 import 'package:intl/intl.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:flutter_app/l10n/app_localizations.dart';
 
 
 import '../enums/BetPredictionStatus.dart';

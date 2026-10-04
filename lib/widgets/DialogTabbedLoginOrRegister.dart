@@ -5,7 +5,7 @@ import 'package:flutter_app/widgets/DialogLogin.dart';
 import 'CustomTabIcon.dart';
 import 'DialogForgotPass.dart';
 import 'DialogRegister.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:flutter_app/l10n/app_localizations.dart';
 
 
 class DialogTabbedLoginOrRegister extends StatefulWidget {

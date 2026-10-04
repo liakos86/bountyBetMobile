@@ -887,7 +887,7 @@ class HttpActionsClient {
       }
     }
 
-    if (Constants.defMongoId == mongoId){
+    if (Constants.defMongoId == mongoId || Constants.offlineMongoId == mongoId){
       return User.defUser();
     }
 

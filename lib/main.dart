@@ -2,7 +2,7 @@
 import 'package:flutter_app/models/constants/ColorConstants.dart';
 import 'package:flutter_app/pages/splash/SplashScreen.dart';
 import 'package:flutter_app/utils/ImageUtils.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:flutter_app/l10n/app_localizations.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';

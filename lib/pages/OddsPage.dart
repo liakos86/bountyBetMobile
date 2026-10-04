@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:flutter_app/enums/BetStatus.dart';
 import 'package:flutter_app/utils/client/HttpActionsClient.dart';
 import 'package:flutter_app/widgets/DialogTabbedLoginOrRegister.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:flutter_app/l10n/app_localizations.dart';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -13,6 +13,7 @@ import 'package:flutter_app/models/constants/Constants.dart';
 import 'package:flutter_app/pages/LivePage.dart';
 import 'package:flutter_app/widgets/BetSlipWithCustomKeyboard.dart';
 import 'package:flutter_app/widgets/LeagueExpandableTile.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl/intl.dart';
 
 import '../models/UserBet.dart';
@@ -268,8 +269,18 @@ class OddsPageState extends State<OddsPage> with SingleTickerProviderStateMixin{
   }
 
   Widget _buildRow(LeagueWithData league, int item) {
-   return LeagueExpandableTile(key: PageStorageKey<String>('oddsLeague${league.league.league_id}$item'),  isAlwaysExpanded: false, leagueWithData: league, expandAll: selectedIndex==item, events: league.events, callbackForOdds: fixOddsCallback, callbackForWalkThrough: walkThroughCallback, selectedOdds: selectedOdds, favourites: favourites(),);
-  }
+      return LeagueExpandableTile(key: PageStorageKey<String>(
+          'oddsLeague${league.league.league_id}$item'),
+        isAlwaysExpanded: false,
+        leagueWithData: league,
+        expandAll: selectedIndex == item,
+        events: league.events,
+        callbackForOdds: fixOddsCallback,
+        callbackForWalkThrough: walkThroughCallback,
+        selectedOdds: selectedOdds,
+        favourites: favourites(),);
+
+    }
 
   void removeOddCallback(UserPrediction? toRemove){
 

@@ -5,7 +5,8 @@ import '../../models/UserBet.dart';
 import '../../models/UserPrediction.dart';
 import '../../models/context/AppContext.dart';
 import 'UserPastPredictionCompact.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:flutter_app/l10n/app_localizations.dart';
+
 
 
 

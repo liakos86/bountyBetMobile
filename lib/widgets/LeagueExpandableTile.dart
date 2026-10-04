@@ -6,9 +6,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_app/enums/MatchEventStatus.dart';
 import 'package:flutter_app/models/match_event.dart';
 import 'package:flutter_app/widgets/row/MatchRowTilted.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 import '../enums/FantasyLeagueStatus.dart';
 import '../helper/SharedPrefs.dart';
+import '../models/Section.dart';
 import '../models/UserPrediction.dart';
 import '../models/constants/ColorConstants.dart';
 import '../models/constants/Constants.dart';
@@ -81,7 +83,7 @@ class LeagueExpandableTile extends StatefulWidget {
       favourites = widget.favourites;
       expandAll = widget.expandAll;
 
-      return Theme(
+          return Theme(
         key: UniqueKey(),
         data: Theme.of(context).copyWith(
           listTileTheme: ListTileTheme.of(context).copyWith(
@@ -129,6 +131,9 @@ class LeagueExpandableTile extends StatefulWidget {
             maxLines:1
           ),
         ),
+
+
+
       const SizedBox(width: 4),
 
       if (!expandAll)

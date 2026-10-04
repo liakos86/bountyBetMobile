@@ -4,7 +4,7 @@ import '../../models/FantasyLeague.dart';
 import '../../models/constants/Constants.dart';
 import 'DialogWizardLeagueConfirmStep5.dart';
 import '../../utils/client/HttpActionsClient.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:flutter_app/l10n/app_localizations.dart';
 
 
 
